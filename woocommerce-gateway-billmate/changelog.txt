@@ -1,0 +1,71 @@
+*** Billmate Changelog ***
+
+2013.02.14 - version 1.5.4
+ * WC version 2.0 compat.
+ * Updated Norwegian and Swedish translation files.
+
+2012.12.12 - version 1.5.3
+ * Bugfix - Better load of js in footer for Terms & Conditions popup (Invoice, Account, Special Campaign)
+ * Bugfix - Lower and Upper Threshold (Account & Special Campaign) did not work properly.
+ * Bugfix - PClass id sent to Billmate for Special Campaigns was wrong.
+ * Changed payment status from "On Hold" to "Processing" when BillmateFlags::PENDING is returned from Billmate. This because the customer should experience that the order is confirmed.
+ * Added check: Cart total must be greater than current $pclass->getMinAmount() when displaying a PClass as a available Payment Plan on Checkout.
+ * Added ability for companies to make purchases via Billmate Invoice
+ * Changed Norwegian translation (Fødelsedato to Personnummer)
+ 
+2012.12.05 - version 1.5.2
+ * Updater
+
+2012.11.02 - version 1.5.1
+ * Bugfix - Gender sent to Billmate.
+ * Added Special Campaign terms, linked via Billmate popup javascript.
+
+2012.10.18 - version 1.5
+ * Added Monthly cost display on single product page (enable/disable via settings).
+ * Added Monthly cost display on shop page (enable/disable via settings).
+ * Added Billmate Special Campaigns as a separate payment method.
+ * Added Country specific Billmate icons. Loaded from cdn.billmate.com.
+ * Added apply_filters to Billmate icons.
+ * Added Cart total Lower and Higher threshold for payment gateway enabling/disabling.
+ * Added Product price Lower and Higher threshold for monthly cost display.
+ * Added credit warning banner display for NL users. Image loaded from /www.afm.nl.
+ * Added check: Shipping and billing address must be the same in NL and DE.
+ * Removed extra checkout fields House Number and House Extension for NL & DE. Customer address is now entered via the ordinary checkout form and then separated via the splitAddress-function.
+ * Added Approve consent terms checkbox for DE.
+ * Invoice terms and Account info now linked via Billmate popup javascript.
+ * Payment gateway now only available on checkout page if Billing Country equals Shop base country.
+ * Created helper functions get_invoice_terms_link_text, get_account_terms_link_text & get_terms_country. Used for better display of terms text in the right language.
+ * Updated Swedish and Norwegian translations.
+
+
+2012.09.06 - version 1.4
+ * Check to remove region/state for NL in variable shop_country.
+ * Included Personal / Corporate  select boxes for Netherlands and Germany.
+ * Fetch PClasses from Billmate now moved from checkout to the Billmate settings page. This enables the possibility to manually upload billmatepclasses via ftp.
+ * Customers Personal / Corporate /pno stored in order as post meta.
+ * Added Dutch translation files (Vincent Suurenbroek).
+ * Added Norwegian translation files (Kenneth Bårdseng).
+
+
+2012.06.01 - version 1.3.1
+ * Changed expression Social Security Number to Personal / Corporate .
+
+
+2012.06.01 - version 1.3
+ * Bug fix - country now specified in fetchPClasses (Billmate Part Payment).
+ * Added apply_filters to Description in Billmate Part Payment.
+
+
+2012.05.24 - version 1.2
+ * The gateway now supports Billmate Part Payment.
+ * Added Billmate localization files.
+ * Improved handlig of invoice fee. The gateway now uses a simple (hidden) product that acts as invoice fee.
+ * Added apply_filters to country, language, currency, invoice_terms, invoice_fee.
+ 
+
+2012.03.15 - version 1.1
+ * Gateway can now be used without SSL certificate.
+
+ 
+2011.12.01 - version 1.0
+ * First Release

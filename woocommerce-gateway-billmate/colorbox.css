@@ -1,0 +1,50 @@
+#divFrameParent * {
+	text-align: center!important;
+	font-size: 1em!important;
+	font-family: tahoma!important;
+}
+
+#divFrameParent .heading {
+	color: #000000;
+	font-weight: bold;
+	margin-bottom: 15px;
+	padding: 8px;
+}
+#divFrameParent .button:hover{
+    background:#0B6187!important;
+}
+#divFrameParent .button {
+    background-color: #1DA9E7;
+    border: 0 none;
+    border-radius: 8px 8px 8px 8px;
+    box-shadow: 2px 2px 2px 1px #EAEAEA;
+    color: #FFFFFF;
+    cursor: pointer;
+    font-family: arial;
+    font-size: 14px!important;
+    font-weight: bold;
+    padding: 3px 17px;
+}
+
+.billmate_button{
+	text-align: center!important;
+	width: 84%!important;
+	padding: 0.5em!important;
+	cursor:pointer!important;
+	border-radius: 1em!important;
+	border: 0px!important;
+	background-color: #4EB0D8!important;
+	color: #fff!important;
+	font-weight: bold!important;
+	background-image:initial!important;
+	word-break:break-word!important;
+	margin-top:1em!important;
+}
+.linktag{
+	font-size: 0.8em!important;
+	text-decoration: none!important;
+	cursor:pointer!important;
+}
+.billmate_button:hover{
+	background-color:#444444!important;
+}
