@@ -1,5 +1,4 @@
-<?php
-
+<?php @session_start();
 class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 	
 	/**
@@ -12,6 +11,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 	public function __construct() {
 		global $woocommerce;
 		
+		if( !empty($_SESSION['order_created']) ) $_SESSION['order_created'] = '';
 		
 		parent::__construct();
 		
@@ -139,7 +139,9 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 	}
     function sendBillmate($order_id,$order){
         global $woocommerce;
-
+		
+		if( !empty($_SESSION['order_created']) ) return;
+		
 		require_once(BILLMATE_LIB . 'BillMateCard.php');
 		require_once(BILLMATE_LIB . '/transport/xmlrpc-3.0.0.beta/lib/xmlrpc.inc');
 		require_once(BILLMATE_LIB . '/transport/xmlrpc-3.0.0.beta/lib/xmlrpc_wrappers.inc');
@@ -390,17 +392,18 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
     		$result = $k->AddInvoice('',$bill_address,$ship_address,$goods_list,$transaction);
 
 
-    		if( !empty( $result['error'] ) ){
-                $result['error'] = utf8_encode(strip_tags( $result['error']));
+    		if( !is_array($result) ){
+                $result = utf8_encode(strip_tags( $result ));
             	//Unknown response, store it in a database.
-				$order->add_order_note( __($result['error'], 'billmate') );
-				$woocommerce->add_error( __((string)$result['error'], 'billmate') );
+				$order->add_order_note( __($result, 'billmate') );
+				$woocommerce->add_error( __((string)$result, 'billmate') );
 				return array(
 						'result' 	=> 'failed',
 						'redirect'	=> add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(woocommerce_get_page_id('checkout'))))
 				);
     		} else {
 		        $invno = $result[0];
+				$_SESSION['order_created'] = $result[0];
                 $order->add_order_note( __('Billmate payment completed. Billmate Invoice number:', 'billmate') . $invno );
                 
                 // Payment complete
@@ -609,7 +612,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		$do_3dsecure   = $this->do_3dsecure;
 		$prompt_name_entry = $this->prompt_name_entry;
 		
-		$capture_now   = 'YES';
+		$capture_now   = $this->authentication_method == 'sales' ? 'NO' : 'YES';
 		
 		$pay_method= 'CARD';
 		$amount    = $woocommerce->cart->total*100;

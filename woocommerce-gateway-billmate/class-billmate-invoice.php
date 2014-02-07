@@ -499,8 +499,8 @@ parse_str($_POST['post_data'], $datatemp);
 ?>
 		<div class="clear"></div>
 			<p class="form-row">
-				<input type="checkbox" class="input-checkbox" checked="checked" value="yes" name="valid_email_it_is" id="valid_email_it_is" style="float:left;margin-top:6px" />
-				<label for="valid_email_it_is" ><?php echo sprintf(__('My e-mail address %s is correct and may be used for billing', 'billmate'), $datatemp['billing_email']) ?></label>
+				<input type="checkbox" class="input-checkbox" checked="checked" value="yes" name="valid_email_it_is_invoice" id="valid_email_it_is_invoice" style="float:left;margin-top:6px" />
+				<label for="valid_email_it_is_invoice" ><?php echo sprintf(__('My e-mail address %s is correct and may be used for billing', 'billmate'), $datatemp['billing_email']) ?></label>
 			</p>
 		<div class="clear"></div>
 		
@@ -529,7 +529,7 @@ parse_str($_POST['post_data'], $datatemp);
 		
 		$order = new WC_order( $order_id );
 		
-		if(empty($_POST['valid_email_it_is'])){
+		if(empty($_POST['valid_email_it_is_invoice'])){
             $woocommerce->add_error( sprintf( __('Vänligen bekräfta att e-postadressen "%s" är korrekt. Denna kommer att användas för fakturering.', 'billmate'), $order->billing_email ));
             return;
 		}		

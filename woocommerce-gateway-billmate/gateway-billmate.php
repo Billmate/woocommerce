@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce Billmate Gateway
 Plugin URI: http://woothemes.com/woocommerce
 Description: Extends WooCommerce. Provides a <a href="http://www.billmate.se" target="_blank">Billmate</a> gateway for WooCommerce.
-Version: 1.12
+Version: 1.13
 Author: Billmate
 Author URI: http://billmate.se
 */
@@ -121,9 +121,9 @@ function add_billmate_gateway( $methods ) {
 add_filter('woocommerce_payment_gateways', 'add_billmate_gateway' );
 add_action('wp_footer','get_billmate_woocomm_version');
 function get_billmate_woocomm_version(){
-	echo '<!-- billmate version 1.12 -->';
+	echo '<!-- billmate version 1.13 -->';
 	if(!empty($_GET['debug-bill'])){
-		echo '<h1>billmate version 1.12 </h1>';
+		echo '<h1>billmate version 1.13 </h1>';
 		phpinfo();
 		die;
 	}

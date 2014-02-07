@@ -32,7 +32,7 @@
  */
  class BillMateCard{
  	var $SERVER = "1.1.5";
- 	var $CLIENT = "PHP:Woocommerce:1.12";
+ 	var $CLIENT = "PHP:Woocommerce:1.13";
  	var $URL = "api.billmate.se";
  	var $URL_TEST = "apitest.billmate.se";
  	protected $ssl;

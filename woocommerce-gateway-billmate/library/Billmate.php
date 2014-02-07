@@ -27,7 +27,7 @@ class Billmate {
      * @ignore Do not show this in PHPDoc.
      * @var string
      */
-    protected $VERSION = 'PHP:Woocommerce:1.12';
+    protected $VERSION = 'PHP:Woocommerce:1.13';
 
     /**
      * Billmate protocol identifier.
