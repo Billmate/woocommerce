@@ -386,6 +386,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			"extraInfo"=>array(array("cust_no"=>empty($order->user_id ) || $order->user_id<= 0 ? time(): $order->user_id , "creditcard_data"=>$_POST ))
 		);
 		if( $this->authentication_method == 'sales') $transaction["extraInfo"][0]["status"] = 'Paid';
+
  		try {
 			if(empty($goods_list)) return false;
     		//Transmit all the specified data, from the steps above, to Billmate.
@@ -612,7 +613,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		$do_3dsecure   = $this->do_3dsecure;
 		$prompt_name_entry = $this->prompt_name_entry;
 		
-		$capture_now   = $this->authentication_method == 'sales' ? 'NO' : 'YES';
+		$capture_now   = $this->authentication_method == 'sales' ? 'YES' : 'NO';
 		
 		$pay_method= 'CARD';
 		$amount    = $woocommerce->cart->total*100;
