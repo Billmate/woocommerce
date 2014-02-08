@@ -40,7 +40,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		
 		$this->de_consent_terms		= ( isset( $this->settings['de_consent_terms'] ) ) ? $this->settings['de_consent_terms'] : '';
 		$this->allowed_countries	= ( isset( $this->settings['billmatebank_allowed_countries'] ) ) ? $this->settings['billmatebank_allowed_countries'] : '';
-		$this->authentication_method= 'YES';
+		$this->authentication_method= 'sales';
 
 		if ( $this->invoice_fee_id == "") $this->invoice_fee_id = 0;
 		
