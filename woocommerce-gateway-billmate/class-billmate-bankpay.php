@@ -140,12 +140,6 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
         global $woocommerce;
 
 		if( !empty($_SESSION['order_created']) ) return;
-
-		require_once(BILLMATE_LIB . 'BillMateCard.php');
-		require_once(BILLMATE_LIB . '/transport/xmlrpc-3.0.0.beta/lib/xmlrpc.inc');
-		require_once(BILLMATE_LIB . '/transport/xmlrpc-3.0.0.beta/lib/xmlrpc_wrappers.inc');
-        require_once dirname( __FILE__ ) .'/utf8.php';
-
 	       $billmate_pno = '';	
 
 		// Split address into House number and House extension for NL & DE customers
@@ -189,7 +183,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 
 		$ssl = true;
 		$debug = false;
-		$k = new BillMateCard($eid,$key,$ssl,$debug, $this->testmode);
+		$k = new BillMate($eid,$key,$ssl,$debug, $this->testmode);
 		$goods_list = array();
 		// Cart Contents
 		if (sizeof($order->get_items())>0) : foreach ($order->get_items() as $item) :
@@ -368,6 +362,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 
 		$transaction = array(
 			"order1"=>(string)$order_id,
+			'order2'=>'',
 			"comment"=>(string)"",
 			"flags"=>0,
 			'gender'=>1,
@@ -388,6 +383,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
  		try {
 			if(empty($goods_list)) return false;
     		//Transmit all the specified data, from the steps above, to Billmate.
+			
     		$result = $k->AddInvoice('',$bill_address,$ship_address,$goods_list,$transaction);
 
 
@@ -409,11 +405,16 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 				
 				// Remove cart
 				$woocommerce->cart->empty_cart();			
+				if(version_compare(WC_VERSION, '2.0.0', '<')){
+					$redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))));
+				} else {
+					$redirect = $order->get_view_order_url();
+				}				
 				
 				// Return thank you redirect
 				return array(
 						'result' 	=> 'success',
-						'redirect'	=> add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))))
+						'redirect'	=> $redirect
 				);
     		}
 		}catch(Exception $e) {

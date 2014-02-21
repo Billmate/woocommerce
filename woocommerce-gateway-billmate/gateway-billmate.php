@@ -24,6 +24,10 @@ woothemes_queue_update( plugin_basename( __FILE__ ), '4edd8b595d6d4b76f31b313ba4
 add_action('plugins_loaded', 'init_billmate_gateway', 0);
 //echo $cssfile = plugins_url( '/colorbox.css', __FILE__ );
 
+define('BILLMATE_DIR', dirname(__FILE__) . '/');
+define('BILLMATE_LIB', dirname(__FILE__) . '/library/');
+require_once 'commonfunctions.php';
+
 function init_billmate_gateway() {
 
 	// If the WooCommerce payment gateway class is not available, do nothing
@@ -34,14 +38,6 @@ function init_billmate_gateway() {
 	 * Localisation
 	 */
 	load_plugin_textdomain('billmate', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/');
-
-
-	// Define Billmate root Dir
-	define('BILLMATE_DIR', dirname(__FILE__) . '/');
-	
-	// Define Billmate lib
-	define('BILLMATE_LIB', dirname(__FILE__) . '/library/');
-	
 	
 	class WC_Gateway_Billmate extends WC_Payment_Gateway {
 			
@@ -121,9 +117,9 @@ function add_billmate_gateway( $methods ) {
 add_filter('woocommerce_payment_gateways', 'add_billmate_gateway' );
 add_action('wp_footer','get_billmate_woocomm_version');
 function get_billmate_woocomm_version(){
-	echo '<!-- billmate version 1.13 -->';
+	echo '<!-- billmate version '.BILLPLUGIN_VERSION.' -->';
 	if(!empty($_GET['debug-bill'])){
-		echo '<h1>billmate version 1.13 </h1>';
+		echo '<h1>billmate version '.BILLPLUGIN_VERSION.' </h1>';
 		phpinfo();
 		die;
 	}

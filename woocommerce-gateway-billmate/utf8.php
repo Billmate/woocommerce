@@ -1,14 +1,14 @@
 <?php
 function match_usernamevp( $str1, $str2 ){
-    $name1 = explode(' ', utf8_strtolower( Encoding::fixUTF8( $str1 ) ) );
-    $name2 = explode(' ', utf8_strtolower( Encoding::fixUTF8( $str2 ) ) );
-    $foundName = array_intersect($name1, $name2);
-    return count($foundName ) > 0;                        
+	$name1 = explode(' ', utf8_strtolower( Encoding::fixUTF8( $str1 ) ) );
+	$name2 = explode(' ', utf8_strtolower( Encoding::fixUTF8( $str2 ) ) );
+	$foundName = array_intersect($name1, $name2);
+	return count($foundName ) > 0;                        
 }
 
 function isEqual($string1, $string2 ){
-    //$string1 = utf8_strtolower( preg_replace('/([\s+])/', '', Encoding::fixUTF8($string1) ));
-//    $string2 = utf8_strtolower( preg_replace('/([\s+])/', '', Encoding::fixUTF8($string2 )));
+//		$string1 = utf8_strtolower( preg_replace('/([\s+])/', '', Encoding::fixUTF8($string1) ));
+	//$string2 = utf8_strtolower( preg_replace('/([\s+])/', '', Encoding::fixUTF8($string2 )));
 	$string1 = explode(" ", utf8_strtolower(Encoding::fixUTF8($string1)) );
 	$string2 = explode(" ", utf8_strtolower(Encoding::fixUTF8($string2)) );
 	
@@ -24,9 +24,6 @@ function isEqual($string1, $string2 ){
 			$filterStr2[] = $str2;
 		}
 	}
-//	echo '<pre>';
-//	var_dump( implode(' ', $filterStr1),'--' ,implode(' ', $filterStr2));
-//	echo '<br/></pre>';
 	$foundName = array_intersect( $filterStr1, $filterStr2 );
 	return count($foundName)>0;
 }

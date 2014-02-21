@@ -49,7 +49,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 		$this->de_consent_terms					= ( isset( $this->settings['de_consent_terms'] ) ) ? $this->settings['de_consent_terms'] : '';
 		$this->lower_threshold_monthly_cost		= ( isset( $this->settings['lower_threshold_monthly_cost'] ) ) ? $this->settings['lower_threshold_monthly_cost'] : '';
 		$this->upper_threshold_monthly_cost		= ( isset( $this->settings['upper_threshold_monthly_cost'] ) ) ? $this->settings['upper_threshold_monthly_cost'] : '';
-		$this->allowed_countries		= ( isset( $this->settings['billmateaccount_allowed_countries'] ) ) ? $this->settings['billmateaccount_allowed_countries'] : '';
+		$this->allowed_countries		= ( isset( $this->settings['billmateaccount_allowed_countries'] ) ) ? $this->settings['billmateaccount_allowed_countries'] : array();
 		$this->shop_country				= strlen($this->shop_country) ? $this->shop_country: 'SE';
 		
 		if ($this->lower_threshold_monthly_cost == '') $this->lower_threshold_monthly_cost = 0;
@@ -335,7 +335,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 			}
 			?>
 			<p>
-		    <a class="button" href="<?php echo admin_url('admin.php?page=woocommerce_settings&tab=payment_gateways&section=WC_Gateway_Billmate_Partpayment&billmatePclassListener=1');?>"><?php _e('Uppdatera PClass filen', 'billmate'); ?> billmatepclasses.json</a>
+		    <a class="button" href="<?php echo admin_url('admin.php?'.$_SERVER['QUERY_STRING'].'&billmatePclassListener=1');?>"><?php _e('Uppdatera PClass filen', 'billmate'); ?> billmatepclasses.json</a>
 		    
 		    </p>
     	<table class="form-table">
@@ -352,12 +352,21 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 	/**
 	 * Check if this gateway is enabled and available in the user's country
 	 */
-		
+
+    function correct_lang_billmate(&$item, $index){
+        $keys = array('pclassid', 'description','months', 'start_fee','invoice_fee','interest', 'mintotal', 'country', 'Type', 'expiry' );
+        $item[1] = utf8_encode($item[1]);
+        $item = array_combine( $keys, $item );
+        $item['start_fee'] = $item['start_fee'] / 100;
+        $item['invoice_fee'] = $item['invoice_fee'] / 100;
+        $item['interest'] = $item['interest'] / 100;
+        $item['mintotal'] = $item['mintotal'] / 100;
+    }
 	function is_available() {
 		global $woocommerce;
 
 		if ($this->enabled=="yes") :
-			if(!in_array($woocommerce->customer->get_country() , $this->allowed_countries)){
+			if(is_array($this->allowed_countries) && !in_array($woocommerce->customer->get_country() , $this->allowed_countries)){
 				return false;
 			}
 			
@@ -367,57 +376,25 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 		    $billmate_filename = BILLMATE_DIR . 'srv/billmatepclasses.json';
 			
 			if (file_exists($billmate_filename)) {
-		  	
-		  		require_once(BILLMATE_LIB . 'Billmate.php');
-				require_once(BILLMATE_LIB . 'billmatepclasses/storage.intf.php');
-				require_once(BILLMATE_LIB . '/transport/xmlrpc-3.0.0.beta/lib/xmlrpc.inc');
-				require_once(BILLMATE_LIB . '/transport/xmlrpc-3.0.0.beta/lib/xmlrpc_wrappers.inc');
-				
-				// Test mode or Live mode		
-				if ( $this->testmode == 'yes' ):
-					// Disable SSL if in testmode
-					$billmate_ssl = 'false';
-					$billmate_mode = Billmate::BETA;
-				else :
-					// Set SSL if used in webshop
-					if (is_ssl()) {
-						$billmate_ssl = 'true';
-					} else {
-						$billmate_ssl = 'false';
-					}
-					$billmate_mode = Billmate::LIVE;
-				endif;
-		   		if( empty( $this->settings['eid']) ){
-		   		    return false;
-		   		}
-	  			$k = new Billmate();
-				
-				$k->config(
-				    $eid = $this->settings['eid'],
-				    $secret = $this->settings['secret'],
-				    $country = $this->billmate_country,
-				    $language = $this->billmate_language,
-				    $currency = $this->billmate_currency,
-				    $mode = $billmate_mode,
-				    $pcStorage = 'json',
-				    $pcURI = BILLMATE_DIR . 'srv/billmatepclasses.json',
-				    $ssl = $billmate_ssl,
-				    $candice = true
-				);
-		
-				Billmate::$xmlrpcDebug = false;
-				Billmate::$debug = false;
-
-				$billmate_cart_total = $woocommerce->cart->total;
-				$sum = apply_filters( 'billmate_cart_total', $billmate_cart_total ); // Cart total.
-				
+		  		$pcURI = BILLMATE_DIR . 'srv/billmatepclasses.json';
 				$pclasses_not_available = true;
-				foreach ($k->getPClasses() as $pclass) {
-					if (strlen($pclass->getDescription()) > 0 && ( $pclass->getType() == 0 || $pclass->getType() == 1 )) {
-						if($sum >= $pclass->getMinAmount()) {
-							$pclasses_not_available = false;
-							break;
-						}
+				if(file_exists($pcURI)){
+					$pclasses = file_get_contents($pcURI);
+					if( strlen( $pclasses) ){
+						$pclasses = (array)json_decode($pclasses);
+						$billmate_cart_total = $woocommerce->cart->total;
+						$sum = apply_filters( 'billmate_cart_total', $billmate_cart_total ); // Cart total.
+						
+						
+						foreach ($pclasses as $pclass) {
+							$pclass = (array)$pclass[0];
+							if (strlen($pclass['description']) > 0 ) {
+								if($sum >= $pclass['mintotal']) {
+									$pclasses_not_available = false;
+									break;
+								}
+							}
+						}						
 					}
 				}
 				if( $pclasses_not_available ){
@@ -463,18 +440,12 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
  		global $woocommerce;
 
  		if (isset($_GET['billmatePclassListener']) && $_GET['billmatePclassListener'] == '1'):
- 		
- 			// Get PClasses so that the customer can chose between different payment plans.
-	  		require_once(BILLMATE_LIB . 'Billmate.php');
-			require_once(BILLMATE_LIB . 'billmatepclasses/storage.intf.php');
-			require_once(BILLMATE_LIB . '/transport/xmlrpc-3.0.0.beta/lib/xmlrpc.inc');
-			require_once(BILLMATE_LIB . '/transport/xmlrpc-3.0.0.beta/lib/xmlrpc_wrappers.inc');
 			
 			// Test mode or Live mode		
 			if ( $this->testmode == 'yes' ):
 				// Disable SSL if in testmode
 				$billmate_ssl = 'false';
-				$billmate_mode = Billmate::BETA;
+				$billmate_mode = 'test';
 			else :
 				// Set SSL if used in webshop
 				if (is_ssl()) {
@@ -482,60 +453,57 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 				} else {
 					$billmate_ssl = 'false';
 				}
-				$billmate_mode = Billmate::LIVE;
+				$billmate_mode = 'live';
 			endif;
 		   		if( empty( $this->settings['eid']) ){
 		   		    return false;
 		   		}	   		
-  			$k = new Billmate();
-			unlink(BILLMATE_DIR . 'srv/billmatepclasses.json');
-			$k->config(
-			    $eid = $this->settings['eid'],
-			    $secret = $this->settings['secret'],
-			    $country = $this->billmate_country,
-			    $language = $this->billmate_language,
-			    $currency = $this->billmate_currency,
-			    $mode = $billmate_mode,
-			    $pcStorage = 'json',
-			    $pcURI = BILLMATE_DIR . 'srv/billmatepclasses.json',
-			    $ssl = $billmate_ssl,
-			    $candice = true
-			);
-	
-			Billmate::$xmlrpcDebug = false;
-			Billmate::$debug = false;
-	   
-			// Check if the billmatepclasses.json file exist
-		    $billmate_pclass_file = BILLMATE_DIR . 'srv/billmatepclasses.json';
+
+			$eid = (int)$this->settings['eid'];
+			$secret = $this->settings['secret'];
+			$country = $this->billmate_country;
+			$language = $this->billmate_language;
+			$currency = $this->billmate_currency;
+
+			$billmate_pclass_file = BILLMATE_DIR . 'srv/billmatepclasses.json';
+
+			$k = new BillMate($eid,$secret,true,false, $this->testmode == 'yes');
+			
+			unlink($billmate_pclass_file);
 
 			if (!file_exists($billmate_pclass_file)) {
     			$file=fopen($billmate_pclass_file,"w") or exit(__("Kunde inte skapa/uppdatera filen!",'billmate'));
     			fclose($file);
-    			/*
-    			if (is_writable ( $billmate_filename )) {
-    				echo __("Writable.", 'billmate');
-    			} else {
-	    			echo __("NOT Writable.", 'billmate');
-    			}
-    			*/
+    			
     		}else{
 				@chmod(dirname($billmate_pclass_file), 0777);
 				@chmod($billmate_pclass_file, 0777);
 			}
 			
-							
 			try {
-			    $k->fetchPClasses($this->billmate_country); //You can specify country (and language, currency if you wish) if you don't want to use the configured country.
-			    /* PClasses successfully fetched, now you can use getPClasses() to load them locally or getPClass to load a specific PClass locally. */
+				$data = $k->FetchCampaigns(
+					BillmateCountry::getCountryData($this->billmate_country)
+				);
+				
+				if(!is_array($data)){
+					throw new Exception($data);
+				}
+				$output = array();
+				array_walk($data, array($this,'correct_lang_billmate'));
+				foreach( $data as $row ){
+					$output[$eid][]=$row;
+				}
+				file_put_contents($billmate_pclass_file, json_encode($output));
+
 				// Redirect to settings page
-				wp_redirect(admin_url('admin.php?page=woocommerce_settings&tab=payment_gateways&section=WC_Gateway_Billmate_Partpayment&billmate_error_status=0'));
+				wp_redirect(admin_url('admin.php?page='.$_GET['page'].'&tab='.$_GET['tab'].'&section=WC_Gateway_Billmate_Partpayment&billmate_error_status=0'));
 				}
 				catch(Exception $e) {
 				    //Something went wrong, print the message:
-				    // $woocommerce->add_error( sprintf(__('Billmate PClass problem: %s. Error code: ', 'billmate'), utf8_encode($e->getMessage()) ) . '"' . $e->getCode() . '"' );
+				    wc_bm_errors( sprintf(__('Billmate PClass problem: %s. Error code: ', 'billmate'), utf8_encode($e->getMessage()) ) . '"' . $e->getCode() . '"', 'error' );
 				    //$billmate_error_code = utf8_encode($e->getMessage()) . 'Error code: ' . $e->getCode();
-				    
-				    $redirect_url = 'admin.php?page=woocommerce_settings&tab=payment_gateways&section=WC_Gateway_Billmate_Partpayment&billmate_error_status=1&billmate_error_code=' . $e->getCode();
+					
+				    $redirect_url = 'admin.php?page='.$_GET['page'].'&tab='.$_GET['tab'].'&section=WC_Gateway_Billmate_Partpayment&billmate_error_status=1&billmate_error_code=' . $e->getCode().'&message='.($e->getMessage());
 				    
 				    //wp_redirect(admin_url($redirect_url));
 				    wp_redirect(admin_url($redirect_url));
@@ -555,17 +523,12 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 	function payment_fields( ) {
 	   	global $woocommerce;
 	   	
-	   	// Get PClasses so that the customer can chose between different payment plans.
-	  	require_once(BILLMATE_LIB . 'Billmate.php');
-		require_once(BILLMATE_LIB . 'billmatepclasses/storage.intf.php');
-		require_once(BILLMATE_LIB . '/transport/xmlrpc-3.0.0.beta/lib/xmlrpc.inc');
-		require_once(BILLMATE_LIB . '/transport/xmlrpc-3.0.0.beta/lib/xmlrpc_wrappers.inc');
 		$enabled_plcass = 'no';
 		// Test mode or Live mode		
 		if ( $this->testmode == 'yes' ):
 			// Disable SSL if in testmode
 			$billmate_ssl = 'false';
-			$billmate_mode = Billmate::BETA;
+			$billmate_mode = 'test';
 		else :
 			// Set SSL if used in webshop
 			if (is_ssl()) {
@@ -573,30 +536,20 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 			} else {
 				$billmate_ssl = 'false';
 			}
-			$billmate_mode = Billmate::LIVE;
+			$billmate_mode = 'live';
 		endif;
 	   	
    		if( empty( $this->settings['eid']) ){
    		    return false;
    		}
-  		$k = new Billmate();
-		
-		$k->config(
-		    $eid = $this->settings['eid'],
-		    $secret = $this->settings['secret'],
-		    $country = $this->billmate_country,
-		    $language = $this->billmate_language,
-		    $currency = $this->billmate_currency,
-		    $mode = $billmate_mode,
-		    $pcStorage = 'json',
-		    $pcURI = BILLMATE_DIR . 'srv/billmatepclasses.json',
-		    $ssl = $billmate_ssl,
-		    $candice = true
-		);
+		$eid = (int)$this->settings['eid'];
+		$secret = $this->settings['secret'];
+		$country = $this->billmate_country;
+		$language = $this->billmate_language;
+		$currency = $this->billmate_currency;
 
-		Billmate::$xmlrpcDebug = false;
-		Billmate::$debug = false;
-		
+		$billmate_pclass_file = BILLMATE_DIR . 'srv/billmatepclasses.json';
+
 		// apply_filters to cart total so we can filter this if needed
 		$billmate_cart_total = $woocommerce->cart->total;
 		$sum = apply_filters( 'billmate_cart_total', $billmate_cart_total ); // Cart total.
@@ -621,18 +574,27 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 			<p class="form-row form-row-first">
 			
 				<?php
+		  		$pcURI = BILLMATE_DIR . 'srv/billmatepclasses.json';
+				$pclasses_not_available = true;
+				if(file_exists($pcURI)){
+					$pclasses = file_get_contents($pcURI);
+					if( strlen( $pclasses) ){
+						$pclasses_not_available = false;
+					}
+				}
+				$pclasses = (array)json_decode($pclasses);
 				// Check if we have any PClasses
 				// TODO Deactivate this gateway if the file billmatepclasses.json doesn't exist 
-				if($k->getPClasses()) {
+				if(!$pclasses_not_available) {
 				?>
 					<label for="billmate_partpayment_pclass"><?php echo __("Payment plan", 'billmate') ?> <span class="required">*</span></label><br/>
 					<select style="width:auto" id="billmate_partpayment_pclass" name="billmate_partpayment_pclass" class="woocommerce-select">
 						
 					<?php
 				   	// Loop through the available PClasses stored in the file srv/billmatepclasses.json
-					foreach ($k->getPClasses() as $pclass) {
-						
-						if (strlen($pclass->getDescription()) > 0 && ( $pclass->getType() == 0 || $pclass->getType() == 1 )) {
+					foreach ($pclasses as $pclass) {
+						$pclass = (array)$pclass[0];
+						if (strlen($pclass['description']) > 0 ) {
 						
 							// Get monthly cost for current pclass
 							$monthly_cost = BillmateCalc::calc_monthly_cost(
@@ -650,24 +612,24 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
     										);
     						
     						// Check that Cart total is larger than min amount for current PClass				
-			   				if($sum >= $pclass->getMinAmount()) {
+			   				if($sum >= $pclass['mintotal']) {
 								$enabled_plcass = 'yes';
-			   					echo '<option value="' . $pclass->getId() . '">';
+			   					echo '<option value="' . $pclass['pclassid'] . '">';
 			   					if ($this->billmate_country == 'NO') {
-									if ( $pclass->getType() == 1 ) {
+									if ( $pclass['Type'] == 1 ) {
 										//If Account - Do not show startfee. This is always 0.
-										echo sprintf(__('%s - %s %s/month', 'billmate'), $pclass->getDescription(), $monthly_cost, $this->billmate_currency);
+										echo sprintf(__('%s - %s %s/month', 'billmate'), $pclass['description'], $monthly_cost, $this->billmate_currency);
 										} else {
 											// Norway - Show total cost
-											echo sprintf(__('%s - %s %s/month - %s%s - Start %s - Tot %s %s', 'billmate'), $pclass->getDescription(), $monthly_cost, $this->billmate_currency, $pclass->getInterestRate(), '%', $pclass->getStartFee(), $total_credit_purchase_cost, $this->billmate_currency );
+											echo sprintf(__('%s - %s %s/month - %s%s - Start %s - Tot %s %s', 'billmate'), $pclass['description'], $monthly_cost, $this->billmate_currency, $pclass['interest'], '%', $pclass['start_fee'], $total_credit_purchase_cost, $this->billmate_currency );
 										}
 									} else {
-										if ( $pclass->getType() == 1 ) {
+										if ( $pclass['Type'] == 1 ) {
 											//If Account - Do not show startfee. This is always 0.
-											echo sprintf(__('%s - %s %s/month', 'billmate'), $pclass->getDescription(), $monthly_cost, $this->billmate_currency );
+											echo sprintf(__('%s - %s %s/month', 'billmate'), $pclass['description'], $monthly_cost, $this->billmate_currency );
 										} else {
 											// Sweden, Denmark, Finland, Germany & Netherlands - Don't show total cost
-											echo sprintf(__('%s - %s %s/month - %s%s - Start %s', 'billmate'), $pclass->getDescription(), $monthly_cost, $this->billmate_currency, $pclass->getInterestRate(), '%', $pclass->getStartFee() );
+											echo sprintf(__('%s - %s %s/month - %s%s - Start %s', 'billmate'), $pclass['description'], $monthly_cost, $this->billmate_currency, $pclass['interest'], '%', $pclass['start_fee'] );
 										}
 									}
 								echo '</option>';
@@ -691,7 +653,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 			<?php
 			// Calculate lowest monthly cost and display it
 			if( $enabled_plcass == 'no' ) return false;
-			$pclass = $k->getCheapestPClass($sum, $flag);
+			$pclass = BillmateCalc::getCheapestPClass($sum, $flag, $pclasses);
 	
 			//Did we get a PClass? (it is false if we didn't)
 			if($pclass) {
@@ -888,8 +850,10 @@ jQuery( document).ready(function(){
 });
 </script>
 <?php
-$datatemp = array();
+$datatemp = array('billing_email'=>' ');
+if(!empty($_POST['post_data'])){
 parse_str($_POST['post_data'], $datatemp);
+}
 ?>
 		<div class="clear"></div>
 			<p class="form-row">
@@ -927,7 +891,7 @@ parse_str($_POST['post_data'], $datatemp);
  			
     			// Check if set, if its not set add an error.
     			if (!$_POST['billmate_pno'])
-        		 	$woocommerce->add_error( __('Ej giltigt organisations-/personnummer. Kontrollera numret.', 'billmate') );
+        		 	wc_bm_errors( __('Ej giltigt organisations-/personnummer. Kontrollera numret.', 'billmate') );
         	 	
 			}
 			
@@ -937,36 +901,36 @@ parse_str($_POST['post_data'], $datatemp);
 	    		
 	    		// Gender
 	    		if (!isset($_POST['billmate_partpayment_gender']))
-	        	 	$woocommerce->add_error( __('Ej giltigt organisations-/personnummer. Kontrollera numret.', 'billmate') );
+	        	 	wc_bm_errors( __('Ej giltigt organisations-/personnummer. Kontrollera numret.', 'billmate') );
 	         	
 	         	// Personal / Corporate 
 				if (!$_POST['date_of_birth_day'] || !$_POST['date_of_birth_month'] || !$_POST['date_of_birth_year'])
-	         		$woocommerce->add_error( __('Ej giltigt organisations-/personnummer. Kontrollera numret.', 'billmate') );
+	         		wc_bm_errors( __('Ej giltigt organisations-/personnummer. Kontrollera numret.', 'billmate') );
 	         	
 	         	// Shipping and billing address must be the same
 	         	$billmate_shiptobilling = ( isset( $_POST['shiptobilling'] ) ) ? $_POST['shiptobilling'] : '';
 	         	
 	         	if ($billmate_shiptobilling !=1 && isset($_POST['shipping_first_name']) && $_POST['shipping_first_name'] !== $_POST['billing_first_name'])
-	        	 	$woocommerce->add_error( __('Shipping and billing address must be the same when paying via Billmate.', 'billmate') );
+	        	 	wc_bm_errors( __('Shipping and billing address must be the same when paying via Billmate.', 'billmate') );
 	        	 
 	        	 if ($billmate_shiptobilling !=1 && isset($_POST['shipping_last_name']) && $_POST['shipping_last_name'] !== $_POST['billing_last_name'])
-	        	 	$woocommerce->add_error( __('Shipping and billing address must be the same when paying via Billmate.', 'billmate') );
+	        	 	wc_bm_errors( __('Shipping and billing address must be the same when paying via Billmate.', 'billmate') );
 	        	 
 	        	 if ($billmate_shiptobilling !=1 && isset($_POST['shipping_address_1']) && $_POST['shipping_address_1'] !== $_POST['billing_address_1'])
-	        	 	$woocommerce->add_error( __('Shipping and billing address must be the same when paying via Billmate.', 'billmate') );
+	        	 	wc_bm_errors( __('Shipping and billing address must be the same when paying via Billmate.', 'billmate') );
 	        	 
 	        	 if ($billmate_shiptobilling !=1 && isset($_POST['shipping_postcode']) && $_POST['shipping_postcode'] !== $_POST['billing_postcode'])
-	        	 	$woocommerce->add_error( __('Shipping and billing address must be the same when paying via Billmate.', 'billmate') );
+	        	 	wc_bm_errors( __('Shipping and billing address must be the same when paying via Billmate.', 'billmate') );
 	        	 	
 	        	 if ($billmate_shiptobilling !=1 && isset($_POST['shipping_city']) && $_POST['shipping_city'] !== $_POST['billing_city'])
-	        	 	$woocommerce->add_error( __('Shipping and billing address must be the same when paying via Billmate.', 'billmate') );
+	        	 	wc_bm_errors( __('Shipping and billing address must be the same when paying via Billmate.', 'billmate') );
 			}
 			
 			// DE
 			if ( $this->shop_country == 'DE' && $this->de_consent_terms == 'yes'){
 	    		// Check if set, if its not set add an error.
 	    		if (!isset($_POST['billmate_de_consent_terms']))
-	        	 	$woocommerce->add_error( __('You must accept the Billmate consent terms.', 'billmate') ); 	
+	        	 	wc_bm_errors( __('You must accept the Billmate consent terms.', 'billmate') ); 	
 			}
 		}
 	}
@@ -980,17 +944,10 @@ parse_str($_POST['post_data'], $datatemp);
 		
 		$order = new WC_order( $order_id );
 		if(empty($_POST['valid_email_it_is'])){
-            $woocommerce->add_error( sprintf( __('Vänligen bekräfta att e-postadressen "%s" är korrekt. Denna kommer att användas för fakturering.', 'billmate'), $order->billing_email ));
+            wc_bm_errors( sprintf( __('Vänligen bekräfta att e-postadressen "%s" är korrekt. Denna kommer att användas för fakturering.', 'billmate'), $order->billing_email ));
             return;
 		}		
 
-		require_once(BILLMATE_LIB . 'Billmate.php');
-		require_once(BILLMATE_LIB . 'billmatepclasses/storage.intf.php');
-		require_once(BILLMATE_LIB . '/transport/xmlrpc-3.0.0.beta/lib/xmlrpc.inc');
-		require_once(BILLMATE_LIB . '/transport/xmlrpc-3.0.0.beta/lib/xmlrpc_wrappers.inc');
-		
-		// Get values from billmate form on checkout page
-		
 		// Collect the dob different depending on country
 		if ( $this->shop_country == 'NL' || $this->shop_country == 'DE' ) :
 			$billmate_pno_day 			= isset($_POST['date_of_birth_day']) ? woocommerce_clean($_POST['date_of_birth_day']) : '';
@@ -1046,7 +1003,7 @@ parse_str($_POST['post_data'], $datatemp);
 		if ( $this->testmode == 'yes' ):
 			// Disable SSL if in testmode
 			$billmate_ssl = 'false';
-			$billmate_mode = Billmate::BETA;
+			$billmate_mode = 'test';
 		else :
 			// Set SSL if used in webshop
 			if (is_ssl()) {
@@ -1054,29 +1011,22 @@ parse_str($_POST['post_data'], $datatemp);
 			} else {
 				$billmate_ssl = 'false';
 			}
-			$billmate_mode = Billmate::LIVE;
+			$billmate_mode = 'live';
 		endif;
 
    		if( empty( $this->settings['eid']) ){
    		    return false;
    		}			
-		$k = new Billmate();
-		
-		$k->config(
-		    $eid = $this->settings['eid'],
-		    $secret = $this->settings['secret'],
-		    $country = $this->billmate_country,
-		    $language = $this->billmate_language,
-		    $currency = $this->billmate_currency,
-		    $mode = $billmate_mode,
-		    $pcStorage = 'json',
-		    $pcURI = '/srv/billmatepclasses.json',
-		    $ssl = $billmate_ssl,
-		    $candice = false
-		);
-		
-		Billmate::$xmlrpcDebug = false;
-		Billmate::$debug = false;
+		$eid = (int)$this->settings['eid'];
+		$secret = $this->settings['secret'];
+		$country = $this->billmate_country;
+		$language = $this->billmate_language;
+		$currency = $this->billmate_currency;
+
+		$billmate_pclass_file = BILLMATE_DIR . 'srv/billmatepclasses.json';
+
+		$k = new BillMate($eid,$secret,true,false, $this->testmode == 'yes');
+		$goods_list = array();
 		
 		// Cart Contents
 		if (sizeof($order->get_items())>0) : foreach ($order->get_items() as $item) :
@@ -1095,20 +1045,22 @@ parse_str($_POST['post_data'], $datatemp);
 				$billmate_item_price_including_tax = $order->get_item_total( $item, true );
 				$item_price = apply_filters( 'billmate_item_price_including_tax', $billmate_item_price_including_tax );
 					
-					if ( $_product->get_sku() ) {
-						$sku = $_product->get_sku();
-					} else {
-						$sku = $_product->id;
-					}
+				if ( $_product->get_sku() ) {
+					$sku = $_product->get_sku();
+				} else {
+					$sku = $_product->id;
+				}
 					
-					$k->addArticle(
-		    		$qty = $item['qty'], 					//Quantity
-		    		$artNo = $sku,		 					//Article number
-		    		$title = $item['name'], 	//Article name/title
-		    		$price = $item_price, 					// Price including tax
-		    		$vat = $item_tax_percentage,			// Tax
-		    		$discount = 0, 
-		    		$flags = BillmateFlags::INC_VAT 			//Price is including VAT.
+				$goods_list[] = array(
+					'qty'   => (int)$item['qty'],
+					'goods' => array(
+						'artno'    => $sku,
+						'title'    => $item['name'],
+						'price'    => ($item_price*100), //+$item->unittax
+						'vat'      => (float)$item_tax_percentage,
+						'discount' => (float)0,
+						'flags'    => BillmateFlags::INC_VAT,
+					)
 				);
 									
 			endif;
@@ -1121,15 +1073,17 @@ parse_str($_POST['post_data'], $datatemp);
 			$billmate_order_discount = $order->order_discount;
 			$order_discount = apply_filters( 'billmate_order_discount', $billmate_order_discount );
 		
-			$k->addArticle(
-			    $qty = 1,
-			    $artNo = "",
-			    $title = __('Discount', 'billmate'),
-			    $price = -$order_discount,
-			    $vat = 0,
-			    $discount = 0,
-			    $flags = BillmateFlags::INC_VAT //Price is including VAT
-			);
+	        $goods_list[] = array(
+		        'qty'   => (int)1,
+		        'goods' => array(
+			        'artno'    => "",
+			        'title'    => __('Rabatt', 'billmate'),
+			        'price'    => -($order_discount*100), //+$item->unittax
+			        'vat'      => 0,
+			        'discount' => (float)0,
+			        'flags'    => BillmateFlags::INC_VAT,
+		        )
+	        );
 		endif;
 		
 		// Shipping
@@ -1143,165 +1097,194 @@ parse_str($_POST['post_data'], $datatemp);
 			$billmate_shipping_price_including_tax = $order->order_shipping*$calculated_shipping_tax_decimal;
 			$shipping_price = apply_filters( 'billmate_shipping_price_including_tax', $billmate_shipping_price_including_tax );
 			
-			$k->addArticle(
-			    $qty = 1,
-			    $artNo = "",
-			    $title = __('Shipping cost', 'billmate'),
-			    $price = $shipping_price,
-			    $vat = $calculated_shipping_tax_percentage,
-			    $discount = 0,
-			    $flags = BillmateFlags::INC_VAT + BillmateFlags::IS_SHIPMENT //Price is including VAT and is shipment fee
-			);
+	        $goods_list[] = array(
+		        'qty'   => (int)1,
+		        'goods' => array(
+			        'artno'    => "",
+			        'title'    => __('Shipping cost', 'billmate'),
+			        'price'    => round($shipping_price,0)*100, 
+			        'vat'      => $calculated_shipping_tax_percentage,
+			        'discount' => (float)0,
+			        'flags'    => BillmateFlags::INC_VAT + BillmateFlags::IS_SHIPMENT,
+		        )
+	        );
 		endif;
 		
-        require_once dirname( __FILE__ ) .'/utf8.php';
 		try{
-			$addr = $k->getAddresses($billmate_pno);
+			$addr = $k->GetAddress($billmate_pno);
 		}catch( Exception $ex ){
-			$woocommerce->add_error( $ex->getMessage() );
+			wc_bm_errors( $ex->getMessage() );
             return;
 		}
-        $addr = $addr[0];
-        if( empty( $addr ) ) {
-            $woocommerce->add_error( __('Unable to find address.', 'billmate') );
+        if( !is_array( $addr ) ) {
+		    wc_bm_errors( __('Unable to find address.'.$addr, 'billmate') );
             return;
         }
         $fullname = $order->billing_last_name.' '.$order->billing_first_name.' '.$order->billing_company;
-        if( strlen( $addr->getFirstname() ) <= 0){
-            $addr->setFirstName($order->billing_first_name);
-            $addr->setLastName($order->billing_last_name);
+
+        $firstArr = explode(' ', $order->billing_first_name);
+        $lastArr  = explode(' ', $order->billing_last_name);
+        
+        if( empty( $addr[0][0] ) ){
+            $apifirst = $firstArr;
+            $apilast  = $lastArr ;
+        }else {
+            $apifirst = explode(' ', $addr[0][0] );
+            $apilast  = explode(' ', $addr[0][1] );
         }
-        $apiName  = $addr->getFirstName().' '.$addr->getLastName().' '.$addr->getCompanyName();
+        $matchedFirst = array_intersect($apifirst, $firstArr );
+        $matchedLast  = array_intersect($apilast, $lastArr );
+        $apiMatchedName   = !empty($matchedFirst) && !empty($matchedLast);
+
+        $apiName  = $addr[0][0].' '.$addr[0][1];
         
         $usership = $order->billing_last_name.' '.$order->billing_first_name.' '.$order->billing_company;
         $userbill = $order->shipping_last_name.' '.$order->shipping_first_name.' '.$order->shipping_company;
 
-		$addressNotMatched = !match_usernamevp( $usership, $userbill ) ||
-		    !isEqual($addr->getStreet(), $billmate_billing_address ) ||
-		    !isEqual($addr->getZipCode(), $order->shipping_postcode) || 
-		    !isEqual($addr->getCity(), $order->shipping_city) || 
-		    !isEqual($addr->getCountryCode(), $order->shipping_country);
+		$addressNotMatched = !isEqual( $usership, $userbill ) ||
+		    !isEqual($addr[0][2], $billmate_billing_address ) ||
+		    !isEqual($addr[0][3], $order->shipping_postcode) || 
+		    !isEqual($addr[0][4], $order->shipping_city) || 
+		    !isEqual(BillmateCountry::getCode($addr[0][5]), $order->shipping_country);
 
-        $shippingAndBilling =  !match_usernamevp( $fullname , $apiName) ||
+        $shippingAndBilling =  !$apiMatchedName ||
 		    !isEqual($order->billing_address_1, $order->shipping_address_1 ) ||
 		    !isEqual($order->billing_postcode, $order->shipping_postcode) || 
 		    !isEqual($order->billing_city, $order->shipping_city) || 
 		    !isEqual($order->billing_country, $order->shipping_country) ;
 		
 		$shippingAndBilling = $order->get_shipping_method() == '' ? false : $shippingAndBilling;
-		
-		$name = strlen( $addr->getFirstName() ) ? $addr->getFirstName() : $addr->getCompanyName();
-		global $woocommerce;
-		$displayname = $addr->getCompanyName();
-		if(empty($displayname)){
-			$displayname = $addr->getFirstName().' '.$addr->getLastName();
+		if( strlen( $addr[0][0] )) {
+			$name = $addr[0][0];
+			$lastname = $addr[0][1];
+			$company = '';
+			$displayname = $addr[0][0].' '.$addr[0][1];
+		} else {
+			$name = $order->billing_first_name;
+			$lastname=$order->billing_last_name;
+			$company = $addr[0][1];
+			$displayname = $order->billing_first_name.' '.$order->billing_last_name.'<br/>'.$addr[0][1];
 		}
-		
+		global $woocommerce;
+
 		$importedCountry = '';
-		if(!(strtolower($addr->getCountryCode()) == 'se' && WPLANG == 'sv_SE' )){
-			$importedCountry = $woocommerce->countries->countries[$addr->getCountryCode()];
+		if(!(BillmateCountry::getCode($addr[0][5]) == 'se' && WPLANG == 'sv_SE' )){
+			$importedCountry = $woocommerce->countries->countries[BillmateCountry::getCode($addr[0][5])];
 		}
 		
 		if( $addressNotMatched || $shippingAndBilling ){
 		    if( empty($_POST['geturl'] ) ){
-			    $html = $displayname.'<br>'.$addr->getStreet().'<br>'.$addr->getZipCode().'<br>'.$addr->getCity().'<br/>'.$importedCountry.'<div style="margin-top:1em"><input type="button" value="'.__('Yes, make purchase with this address','billmate').'" onclick="ajax_load(this);modalWin.HideModalPopUp(); " class="billmate_button"/></div><a onclick="noPressButton()" class="linktag">'.__('No, I want to specify a different number or change payment method','billmate').'</a>';
+			    $html = $displayname.'<br>'.$addr[0][2].'<br>'.$addr[0][3].'<br>'.$addr[0][4].'<br/>'.$importedCountry.'<div style="margin-top:1em"><input type="button" value="'.__('Yes, make purchase with this address','billmate').'" onclick="ajax_load(this);modalWin.HideModalPopUp(); " class="billmate_button"/></div><a onclick="noPressButton()" class="linktag">'.__('No, I want to specify a different number or change payment method','billmate').'</a>';
 			    $html.= '<span id="hidden_data"><input type="hidden" id="_first_name" value="'.$name.'" />';
-			    $html.= '<input type="hidden" id="_last_name" value="'.$addr->getLastName().'" />';
-			    $html.= '<input type="hidden" id="_company" value="'.$addr->getCompanyName().'" />';
-			    $html.= '<input type="hidden" id="_address_1" value="'.$addr->getStreet().'" />';
-			    $html.= '<input type="hidden" id="_postcode" value="'.$addr->getZipCode().'" />';
-			    $html.= '<input type="hidden" id="_city" value="'.$addr->getCity().'" /></span>';
+			    $html.= '<input type="hidden" id="_last_name" value="'.$lastname.'" />';
+			    $html.= '<input type="hidden" id="_company" value="'.$company.'" />';
+			    $html.= '<input type="hidden" id="_address_1" value="'.$addr[0][2].'" />';
+			    $html.= '<input type="hidden" id="_postcode" value="'.$addr[0][3].'" />';
+			    $html.= '<input type="hidden" id="_city" value="'.$addr[0][4].'" /></span>';
 			    echo $code = '<script type="text/javascript">setTimeout(function(){modalWin.ShowMessage(\''.$html.'\',350,500,\''.__('Pay by invoice can be made only to the address listed in the National Register. Would you like to make the purchase with address:','billmate').'\');},1000);</script>';
+				//wc_bm_errors($code);
 			    die;
 			}
 		} 
         		
 		//Create the address object and specify the values.
 		
-		// Billing address
-		$addr_billing = new BillmateAddr(
-    		$email = $order->billing_email,
-    		$telno = '', //We skip the normal land line phone, only one is needed.
-    		$cellno = $order->billing_phone,
-    		//$company = $order->billing_company,
-    		$fname = utf8_decode ($order->billing_first_name),
-    		$lname = utf8_decode ($order->billing_last_name),
-    		$careof = utf8_decode ($order->billing_address_2),  //No care of, C/O.
-    		$street = utf8_decode ($billmate_billing_address), //For DE and NL specify street number in houseNo.
-    		$zip = utf8_decode ($order->billing_postcode),
-    		$city = utf8_decode ($order->billing_city),
-    		$country = 'SE',
-    		$houseNo = utf8_decode ($billmate_billing_house_number), //For DE and NL we need to specify houseNo.
-    		$houseExt = utf8_decode ($billmate_billing_house_extension) //Only required for NL.
-		);
+        $countryData = BillmateCountry::getSwedenData();
+		$countries = $woocommerce->countries->get_allowed_countries();
+		$countryname = (int)$order->billing_country != 'SE' ? utf8_decode ($countries[$order->billing_country]) : 209;
 		
+ 	    $bill_address = array(
+		    'email'           => $order->billing_email,
+		    'telno'           => '',
+		    'cellno'          => $order->billing_phone,
+		    'fname'           => utf8_decode ($order->billing_first_name),
+		    'lname'           => utf8_decode ($order->billing_last_name),
+		    'careof'          => utf8_decode ($order->billing_address_2),
+		    'street'          => utf8_decode ($billmate_billing_address),
+		    'zip'             => utf8_decode ($order->billing_postcode),
+		    'city'            => utf8_decode ($order->billing_city),
+		    'country'         => $countryname,
+	    );
 		
 		// Shipping address
 		if ( $order->get_shipping_method() == '' ) {
-			
-			// Use billing address if Shipping is disabled in Woocommerce
-			$addr_shipping = new BillmateAddr(
-    			$email = $order->billing_email,
-    			$telno = '', //We skip the normal land line phone, only one is needed.
-    			$cellno = $order->billing_phone,
-    			//$company = $order->shipping_company,
-    			$fname = utf8_decode ($order->billing_first_name),
-    			$lname = utf8_decode ($order->billing_last_name),
-    			$careof = utf8_decode ($order->billing_address_2),  //No care of, C/O.
-    			$street = utf8_decode ($billmate_billing_address), //For DE and NL specify street number in houseNo.
-    			$zip = utf8_decode ($order->billing_postcode),
-    			$city = utf8_decode ($order->billing_city),
-    			$country = 'SE',
-    			$houseNo = utf8_decode ($billmate_billing_house_number), //For DE and NL we need to specify houseNo.
-    			$houseExt = utf8_decode ($billmate_billing_house_extension) //Only required for NL.
-			);
+			$email = $order->billing_email;
+			$telno = ''; //We skip the normal land line phone, only one is needed.
+			$cellno = $order->billing_phone;
+			$company = utf8_decode ($order->billing_company);
+			$fname = utf8_decode ($order->billing_first_name);
+			$lname = utf8_decode ($order->billing_last_name);
+			$careof = utf8_decode ($order->billing_address_2);  //No care of; C/O.
+			$street = utf8_decode ($billmate_billing_address); //For DE and NL specify street number in houseNo.
+			$zip = utf8_decode ($order->billing_postcode);
+			$city = utf8_decode ($order->billing_city);
+			$country = utf8_decode ($countries[$order->billing_country]);
+			$houseNo = utf8_decode ($billmate_billing_house_number); //For DE and NL we need to specify houseNo.
+			$houseExt = utf8_decode ($billmate_billing_house_extension); //Only required for NL.
+			$countryCode = $order->billing_country;
 		
 		} else {
-		
-			$addr_shipping = new BillmateAddr(
-    			$email = $order->billing_email,
-    			$telno = '', //We skip the normal land line phone, only one is needed.
-    			$cellno = $order->billing_phone,
-    			//$company = $order->shipping_company,
-    			$fname = utf8_decode ($order->shipping_first_name),
-    			$lname = utf8_decode ($order->shipping_last_name),
-    			$careof = utf8_decode ($order->shipping_address_2),  //No care of, C/O.
-    			$street = utf8_decode ($billmate_shipping_address), //For DE and NL specify street number in houseNo.
-    			$zip = utf8_decode ($order->shipping_postcode),
-    			$city = utf8_decode ($order->shipping_city),
-    			$country = 'SE',
-    			$houseNo = utf8_decode ($billmate_shipping_house_number), //For DE and NL we need to specify houseNo.
-    			$houseExt = utf8_decode ($billmate_shipping_house_extension) //Only required for NL.
-			);
+			$email = $order->billing_email;
+			$telno = ''; //We skip the normal land line phone; only one is needed.
+			$cellno = $order->billing_phone;
+			$company = utf8_decode ($order->shipping_company);
+			$fname = utf8_decode ($order->shipping_first_name);
+			$lname = utf8_decode ($order->shipping_last_name);
+			$careof = utf8_decode ($order->shipping_address_2);  //No care of; C/O.
+			$street = utf8_decode ($billmate_shipping_address); //For DE and NL specify street number in houseNo.
+			$zip = utf8_decode ($order->shipping_postcode);
+			$city = utf8_decode ($order->shipping_city);
+			$country = utf8_decode ($countries[$order->shipping_country]);
+			$houseNo = utf8_decode ($billmate_shipping_house_number); //For DE and NL we need to specify houseNo.
+			$houseExt = utf8_decode ($billmate_shipping_house_extension); //Only required for NL.
+			$countryCode = $order->shipping_country;
 		
 		}
 
+	    $ship_address = array(
+		    'email'           => $email,
+		    'telno'           => $telno,
+		    'cellno'          => $cellno,
+		    'fname'           => $fname,
+		    'lname'           => $lname,
+		    'company'         => $company,
+		    'careof'          => $careof,
+		    'street'          => $street,
+		    'house_number'    => '',
+		    'house_extension' => '',
+		    'zip'             => $zip,
+		    'city'            => $city,
+		    'country'         => $countryname,
+	    );
 		
-		//Next we tell the Billmate instance to use the address in the next order.
-		$k->setAddress(BillmateFlags::IS_BILLING, $addr_billing); //Billing / invoice address
-		$k->setAddress(BillmateFlags::IS_SHIPPING, $addr_shipping); //Shipping / delivery address
-
-		//Set store specific information so you can e.g. search and associate invoices with order numbers.
-		$k->setEstoreInfo(
-		    $orderid1 = $order_id, //Maybe the estore's order number/id.
-		    $orderid2 = $order->order_key, //Could an order number from another system?
-		    $user = '' //Username, email or identifier for the user?
+		$transaction = array(
+			"order1"=>(string)$order_id,
+			'order2'=>'',
+			"comment"=>(string)"",
+			"flags"=>0,
+			'gender'=>1,
+			"reference"=>"",
+			"reference_code"=>"",
+			"currency"=>(string)$countryData['currency'],
+			"country"=>209,
+			"language"=>(string)$countryData['language'],
+			"pclass"=>(int)$billmate_pclass,
+			"shipInfo"=>array("delay_adjust"=>"1"),
+			"travelInfo"=>array(),
+			"incomeInfo"=>array(),
+			"bankInfo"=>array(),
+			"sid"=>array("time"=>microtime(true)),
+			"extraInfo"=>array(array("cust_no"=>empty($order->user_id ) || $order->user_id<= 0 ? time(): $order->user_id ))
 		);
 		
-		/** Shipment type? **/
 
 		//Normal shipment is defaulted, delays the start of invoice expiration/due-date.
 		// $k->setShipmentInfo('delay_adjust', BillmateFlags::EXPRESS_SHIPMENT);		    
 		try {
-    		//Transmit all the specified data, from the steps above, to Billmate.
-    		$result = $k->addTransaction(
-    		    $pno = $billmate_pno, //Personal / Corporate .
-    		    
-    		    $gender = intval($billmate_gender),//Gender.
-    		    $flags = BillmateFlags::NO_FLAG, //No specific behaviour like RETURN_OCR or TEST_MODE.
-    		    $pclass = $billmate_pclass // Get the pclass object that the customer has choosen.
-    		);
-    		
+    		$result = $k->AddInvoice($billmate_pno,$bill_address,$ship_address,$goods_list,$transaction);
+    		if( !is_array($result)){
+				throw new Exception($result);
+			}
     		// Retreive response
 
     		$invno = $result[0];
@@ -1311,14 +1294,19 @@ parse_str($_POST['post_data'], $datatemp);
                 
                 // Payment complete
 				$order->payment_complete();		
-				
 				// Remove cart
+				if(version_compare(WC_VERSION, '2.0.0', '<')){
+					$redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))));
+				} else {
+					$redirect = $order->get_view_order_url();
+				}				
+				
 				$woocommerce->cart->empty_cart();			
 				
 				// Return thank you redirect
 				return array(
 						'result' 	=> 'success',
-						'redirect'	=> add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))))
+						'redirect'	=> $redirect
 				);
 						
                 break;
@@ -1331,23 +1319,29 @@ parse_str($_POST['post_data'], $datatemp);
 				// Remove cart
 				$woocommerce->cart->empty_cart();
 				
+				if(version_compare(WC_VERSION, '2.0.0', '<')){
+					$redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))));
+				} else {
+					$redirect = $order->get_view_order_url();
+				}				
+				//add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))))
 				// Return thank you redirect
 				return array(
 						'result' 	=> 'success',
-						'redirect'	=> add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))))
+						'redirect'	=> $redirect
 				);
 				
                 break;
             case BillmateFlags::DENIED:
                 //Order is denied, store it in a database.
 				$order->add_order_note( __('Billmate payment denied.', 'billmate') );
-				$woocommerce->add_error( __('Billmate payment denied.', 'billmate') );
+				wc_bm_errors( __('Billmate payment denied.', 'billmate') );
                 return;
                 break;
             default:
             	//Unknown response, store it in a database.
 				$order->add_order_note( __('Unknown response from Billmate.', 'billmate') );
-				$woocommerce->add_error( __('Unknown response from Billmate.', 'billmate') );
+				wc_bm_errors( __('Unknown response from Billmate.', 'billmate') );
                 return;
                 break;
         	}
@@ -1357,10 +1351,8 @@ parse_str($_POST['post_data'], $datatemp);
 		
 		catch(Exception $e) {
     		//The purchase was denied or something went wrong, print the message:
-			echo '<ul class="woocommerce-error"><li>';
-			echo sprintf(__('%s (Error code: %s)', 'billmate'), utf8_encode($e->getMessage()), $e->getCode() );
-			echo '<script type="text/javascript">jQuery("#billmategeturl").remove();</script></li></ul>';
-			die;
+			$order->add_order_note( utf8_encode($e->getMessage()) );
+			wc_bm_errors( utf8_encode($e->getMessage()) );
 		}
 
 	
@@ -1391,17 +1383,12 @@ parse_str($_POST['post_data'], $datatemp);
 		
 	 	// Only execute this if the feature is activated in the gateway settings
 		if ( $this->show_monthly_cost == 'yes' && file_exists($billmate_filename) ) {
-	 		// Get the lib files and set up a new Billmate() instance.
-	  		require_once(BILLMATE_LIB . 'Billmate.php');
-			require_once(BILLMATE_LIB . 'billmatepclasses/storage.intf.php');
-			require_once(BILLMATE_LIB . '/transport/xmlrpc-3.0.0.beta/lib/xmlrpc.inc');
-			require_once(BILLMATE_LIB . '/transport/xmlrpc-3.0.0.beta/lib/xmlrpc_wrappers.inc');
 			
 			// Test mode or Live mode		
 			if ( $this->testmode == 'yes' ):
 				// Disable SSL if in testmode
 				$billmate_ssl = 'false';
-				$billmate_mode = Billmate::BETA;
+				$billmate_mode = 'test';
 			else :
 				// Set SSL if used in webshop
 				if (is_ssl()) {
@@ -1409,36 +1396,38 @@ parse_str($_POST['post_data'], $datatemp);
 				} else {
 					$billmate_ssl = 'false';
 				}
-				$billmate_mode = Billmate::LIVE;
+				$billmate_mode = 'live';
 			endif;
 
 	   		if( empty( $this->settings['eid']) ){
 	   		    return false;
 	   		}
 		   			   		
-			$k = new Billmate();
+			$eid = (int)$this->settings['eid'];
+			$secret = $this->settings['secret'];
+			$country = $this->billmate_country;
+			$language = $this->billmate_language;
+			$currency = $this->billmate_currency;
+
+			$billmate_pclass_file = BILLMATE_DIR . 'srv/billmatepclasses.json';
+
+			$k = new BillMate($eid,$secret,true,false, $this->testmode == 'yes');
 			
-			$k->config(
-			    $eid = $this->settings['eid'],
-			    $secret = $this->settings['secret'],
-			    $country = $this->billmate_country,
-			    $language = $this->billmate_language,
-			    $currency = $this->billmate_currency,
-			    $mode = $billmate_mode,
-			    $pcStorage = 'json',
-			    $pcURI = BILLMATE_DIR . 'srv/billmatepclasses.json',
-			    $ssl = $billmate_ssl,
-			    $candice = true
-			);
-	
-			Billmate::$xmlrpcDebug = false;
-			Billmate::$debug = false;
+			$pcURI = BILLMATE_DIR . 'srv/billmatepclasses.json';
+			$pclasses_not_available = true;
+			if(file_exists($pcURI)){
+				$pclasses = file_get_contents($pcURI);
+				if( strlen( $pclasses) ){
+					$pclasses_not_available = false;
+				}
+			}
+			$pclasses = (array)json_decode($pclasses);
 			
 			// apply_filters to product price so we can filter this if needed
 			$billmate_product_total = $product->get_price();
 			$sum = apply_filters( 'billmate_product_total', $billmate_product_total ); // Product price.
 			$flag = BillmateFlags::PRODUCT_PAGE; //or BillmateFlags::PRODUCT_PAGE, if you want to do it for one item.
-			$pclass = $k->getCheapestPClass($sum, $flag);
+			$pclass =  BillmateCalc::getCheapestPClass($sum, $flag, $pclasses);
 			
 			
 			//Did we get a PClass? (it is false if we didn't)
@@ -1500,17 +1489,11 @@ parse_str($_POST['post_data'], $datatemp);
 	 	// Only execute this if the feature is activated in the gateway settings		
 		if ( $this->show_monthly_cost_shop == 'yes' && file_exists($billmate_filename) ) {
 			
-	 		// Get the lib files and set up a new Billmate() instance.
-	  		require_once(BILLMATE_LIB . 'Billmate.php');
-			require_once(BILLMATE_LIB . 'billmatepclasses/storage.intf.php');
-			require_once(BILLMATE_LIB . '/transport/xmlrpc-3.0.0.beta/lib/xmlrpc.inc');
-			require_once(BILLMATE_LIB . '/transport/xmlrpc-3.0.0.beta/lib/xmlrpc_wrappers.inc');
-			
 			// Test mode or Live mode		
 			if ( $this->testmode == 'yes' ):
 				// Disable SSL if in testmode
 				$billmate_ssl = 'false';
-				$billmate_mode = Billmate::BETA;
+				$billmate_mode = 'test';
 			else :
 				// Set SSL if used in webshop
 				if (is_ssl()) {
@@ -1518,35 +1501,36 @@ parse_str($_POST['post_data'], $datatemp);
 				} else {
 					$billmate_ssl = 'false';
 				}
-				$billmate_mode = Billmate::LIVE;
+				$billmate_mode = 'live';
 			endif;
 	   		if( empty( $this->settings['eid']) ){
 	   		    return false;
 	   		}
 	   		
-  			$k = new Billmate();
-			
-			$k->config(
-			    $eid = $this->settings['eid'],
-			    $secret = $this->settings['secret'],
-			    $country = $this->billmate_country,
-			    $language = $this->billmate_language,
-			    $currency = $this->billmate_currency,
-			    $mode = $billmate_mode,
-			    $pcStorage = 'json',
-			    $pcURI = BILLMATE_DIR . 'srv/billmatepclasses.json',
-			    $ssl = $billmate_ssl,
-			    $candice = true
-			);
-	
-			Billmate::$xmlrpcDebug = false;
-			Billmate::$debug = false;
-			
+			$eid = (int)$this->settings['eid'];
+			$secret = $this->settings['secret'];
+			$country = $this->billmate_country;
+			$language = $this->billmate_language;
+			$currency = $this->billmate_currency;
+
+			$billmate_pclass_file = BILLMATE_DIR . 'srv/billmatepclasses.json';
+
+			$k = new BillMate($eid,$secret,true,false, $this->testmode == 'yes');
+
+			$pclasses_not_available = true;
+			if(file_exists($billmate_pclass_file)){
+				$pclasses = file_get_contents($billmate_pclass_file);
+				if( strlen( $pclasses) ){
+					$pclasses_not_available = false;
+				}
+			}
+			$pclasses = (array)json_decode($pclasses);
+
 			// apply_filters to product price so we can filter this if needed
 			$billmate_product_total = $product->get_price();
 			$sum = apply_filters( 'billmate_product_total', $billmate_product_total ); // Product price.
 			$flag = BillmateFlags::PRODUCT_PAGE; //or BillmateFlags::PRODUCT_PAGE, if you want to do it for one item.
-			$pclass = $k->getCheapestPClass($sum, $flag);
+			$pclass = BillmateCalc::getCheapestPClass($sum, $flag, $pclasses);
 			
 			
 			//Did we get a PClass? (it is false if we didn't)
@@ -1711,4 +1695,4 @@ class WC_Gateway_Billmate_Partpayment_Extra {
 	}
 } // End class WC_Gateway_Billmate_Partpayment_Extra
 
-$wc_gateway_billmate_partpayment_extra = new WC_Gateway_Billmate_Partpayment_Extra;
+$WC_Gateway_Billmate_Partpayment_extra = new WC_Gateway_Billmate_Partpayment_Extra;

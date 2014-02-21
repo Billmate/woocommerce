@@ -388,28 +388,28 @@ class BillmateCalc {
      * @return array  An array of monthly payments.
      */
     private static function get_payarr($sum, $pclass, $flags) {
-        $monthsfee = (($flags === BillmateFlags::CHECKOUT_PAGE) ? $pclass->getInvoiceFee() : 0);
-        $startfee = (($flags === BillmateFlags::CHECKOUT_PAGE) ? $pclass->getStartFee() : 0);
+        $monthsfee = (($flags === BillmateFlags::CHECKOUT_PAGE) ? $pclass['invoice_fee'] : 0);
+        $startfee = (($flags === BillmateFlags::CHECKOUT_PAGE) ? $pclass['start_fee'] : 0);
 
         //Include start fee in sum
         $sum += $startfee;
 
-        $base = ($pclass->getType() === BillmatePClass::ACCOUNT);
+        $base = ($pclass['Type'] === 1);
 
-        $lowest = self::get_lowest_payment_for_account($pclass->getCountry());
+        $lowest = self::get_lowest_payment_for_account($pclass['country']);
         if($flags == BillmateFlags::CHECKOUT_PAGE) {
-            $minpay = ($pclass->getType() === BillmatePClass::ACCOUNT) ? $lowest : 0;
+            $minpay = ($pclass['Type'] === 1) ? $lowest : 0;
         }
         else {
             $minpay = 0;
         }
 
-        $payment = self::annuity($sum, $pclass->getMonths(), $pclass->getInterestRate());
+        $payment = self::annuity($sum, $pclass['months'], $pclass['interest']);
 
         //Add monthly fee
         $payment += $monthsfee;
 
-        return  self::fulpacc($sum, $pclass->getInterestRate(), $monthsfee, $minpay, $payment, $pclass->getMonths(), $base);
+        return  self::fulpacc($sum, $pclass['interest'], $monthsfee, $minpay, $payment, $pclass['months'], $base);
     }
 
     /**
@@ -429,31 +429,26 @@ class BillmateCalc {
      */
     public static function calc_apr($sum, $pclass, $flags, $free = 0) {
         if(!is_numeric($sum)) {
-            throw new BillmateException('Error in ' . __METHOD__ . ': Argument sum is not numeric!');
+            throw new Exception('Error in ' . __METHOD__ . ': Argument sum is not numeric!');
         }
         else if(is_numeric($sum) && (!is_int($sum) || !is_float($sum))) {
             $sum = floatval($sum);
         }
-
-        if(!($pclass instanceof BillmatePClass)) {
-            throw new BillmateException('Error in ' . __METHOD__ . ': Supplied PClass is not a PClass object!');
-        }
-
         if(!is_numeric($free)) {
-            throw new BillmateException('Error in ' . __METHOD__ . ': Argument free is not an integer!');
+            throw new Exception('Error in ' . __METHOD__ . ': Argument free is not an integer!');
         }
         else if(is_numeric($free) && !is_int($free)) {
             $free = intval($free);
         }
         if($free < 0) {
-            throw new BillmateException('Error in ' . __METHOD__ . ': Number of free months must be positive or zero!');
+            throw new Exception('Error in ' . __METHOD__ . ': Number of free months must be positive or zero!');
         }
 
         if(is_numeric($flags) && !is_int($flags)) {
             $flags = intval($flags);
         }
         if(!is_numeric($flags) || !in_array($flags, array(BillmateFlags::CHECKOUT_PAGE, BillmateFlags::PRODUCT_PAGE))) {
-            throw new BillmateException('Error in ' . __METHOD__ . ': Flags argument invalid!');
+            throw new Exception('Error in ' . __METHOD__ . ': Flags argument invalid!');
         }
 
         $monthsfee = (($flags === BillmateFlags::CHECKOUT_PAGE) ? $pclass->getInvoiceFee() : 0);
@@ -464,7 +459,7 @@ class BillmateCalc {
 
         $lowest = self::get_lowest_payment_for_account($pclass->getCountry());
         if($flags == BillmateFlags::CHECKOUT_PAGE) {
-            $minpay = ($pclass->getType() === BillmatePClass::ACCOUNT) ? $lowest : 0;
+            $minpay = ($pclass->getType() === 1) ? $lowest : 0;
         }
         else {
             $minpay = 0;
@@ -477,7 +472,7 @@ class BillmateCalc {
         $type = $pclass->getType();
         switch($type) {
             case BillmatePClass::CAMPAIGN:
-            case BillmatePClass::ACCOUNT:
+            case 1:
                 $apr = self::apr_annuity($sum, $pclass->getMonths(), $pclass->getInterestRate(), $pclass->getInvoiceFee(), $minpay);
                 break;
             case BillmatePClass::SPECIAL:
@@ -487,7 +482,7 @@ class BillmateCalc {
                 $apr = self::apr_fixed($sum, $payment, $pclass->getInterestRate(), $pclass->getInvoiceFee(), $minpay);
                 break;
             default:
-                throw new BillmateException('Error in ' . __METHOD__ . ': Unknown PClass type! ('.$type.')');
+                throw new Exception('Error in ' . __METHOD__ . ': Unknown PClass type! ('.$type.')');
         }
 
         return round($apr, 2);
@@ -509,21 +504,17 @@ class BillmateCalc {
      */
     public static function total_credit_purchase_cost($sum, $pclass, $flags) {
         if(!is_numeric($sum)) {
-            throw new BillmateException('Error in ' . __METHOD__ . ': Argument sum is not numeric!');
+            throw new Exception('Error in ' . __METHOD__ . ': Argument sum is not numeric!');
         }
         else if(is_numeric($sum) && (!is_int($sum) || !is_float($sum))) {
             $sum = floatval($sum);
-        }
-
-        if(!($pclass instanceof BillmatePClass)) {
-            throw new BillmateException('Error in ' . __METHOD__ . ': Supplied PClass is not a PClass object!');
         }
 
         if(is_numeric($flags) && !is_int($flags)) {
             $flags = intval($flags);
         }
         if(!is_numeric($flags) || !in_array($flags, array(BillmateFlags::CHECKOUT_PAGE, BillmateFlags::PRODUCT_PAGE))) {
-            throw new BillmateException('Error in ' . __METHOD__ . ': Flags argument invalid!');
+            throw new Exception('Error in ' . __METHOD__ . ': Flags argument invalid!');
         }
 
         $payarr = self::get_payarr($sum, $pclass, $flags);
@@ -533,7 +524,38 @@ class BillmateCalc {
             $credit_cost += $pay;
         }
 
-        return self::pRound($credit_cost, $pclass->getCountry());
+        return self::pRound($credit_cost, $pclass['country']);
+    }
+
+    public function getCheapestPClass($sum, $flags, $pclasses) {
+        if (!is_numeric ($sum)) {
+            throw new Exception(
+                'Error in ' . __METHOD__ . ': Argument sum is not numeric!');
+        }
+
+        if(!is_numeric ($flags) || !in_array ($flags,
+                array(BillmateFlags::CHECKOUT_PAGE, BillmateFlags::PRODUCT_PAGE))) {
+            throw new Exception(
+                'Error in ' . __METHOD__ . ': Flags argument invalid!');
+        }
+
+        $lowest_pp = $lowest = false;
+        foreach($pclasses as $pclass) {
+			$pclass = (array)$pclass[0];
+            $lowest_payment = BillmateCalc::get_lowest_payment_for_account($pclass['country']);
+            if($pclass['Type'] < 2 && $sum >= $pclass['mintotal']) {
+                $minpay = BillmateCalc::calc_monthly_cost($sum, $pclass, $flags);
+
+                if($minpay < $lowest_pp || $lowest_pp === false) {
+                    if($pclass['Type'] == 1 || $minpay >= $lowest_payment) {
+                        $lowest_pp = $minpay;
+                        $lowest = $pclass;
+                    }
+                }
+            }
+        }
+
+        return $lowest;
     }
 
     /**
@@ -567,26 +589,22 @@ class BillmateCalc {
      */
     public static function calc_monthly_cost($sum, $pclass, $flags) {
         if(!is_numeric($sum)) {
-            throw new BillmateException('Error in ' . __METHOD__ . ': Argument sum is not numeric!');
+            throw new Exception('Error in ' . __METHOD__ . ': Argument sum is not numeric!');
         }
         else if(is_numeric($sum) && (!is_int($sum) || !is_float($sum))) {
             $sum = floatval($sum);
-        }
-
-        if(!($pclass instanceof BillmatePClass)) {
-            throw new BillmateException('Error in ' . __METHOD__ . ': Supplied PClass is not a PClass object!');
         }
 
         if(is_numeric($flags) && !is_int($flags)) {
             $flags = intval($flags);
         }
         if(!is_numeric($flags) || !in_array($flags, array(BillmateFlags::CHECKOUT_PAGE, BillmateFlags::PRODUCT_PAGE))) {
-            throw new BillmateException('Error in ' . __METHOD__ . ': Flags argument invalid!');
+            throw new Exception('Error in ' . __METHOD__ . ': Flags argument invalid!');
         }
 
         $payarr = self::get_payarr($sum, $pclass, $flags);
         $value = isset($payarr[0]) ? ($payarr[0]) : 0;
-        return (BillmateFlags::CHECKOUT_PAGE == $flags) ? round($value, 2) : self::pRound($value, $pclass->getCountry());
+        return (BillmateFlags::CHECKOUT_PAGE == $flags) ? round($value, 2) : self::pRound($value, $pclass['country']);
     }
 
     /**
@@ -615,7 +633,7 @@ class BillmateCalc {
                 $lowest_monthly_payment = 6.95;
                 break;
             default:
-                throw new BillmateException('Error in ' . __METHOD__ . ': Not allowed for this country!');
+                throw new Exception('Error in ' . __METHOD__ . ': Not allowed for this country!');
         }
 
         return $lowest_monthly_payment;
