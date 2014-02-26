@@ -362,6 +362,13 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 
 		$pclass = -1;
 
+		$languageCode = defined( 'WPLANG' ) && WPLANG ? WPLANG : 'sv_SE';
+		
+		$lang = explode('_', strtoupper($languageCode));
+		$languageCode = $lang[0];
+		$languageCode = $languageCode == 'DA' ? 'DK' : $languageCode;
+		$languageCode = $languageCode == 'SV' ? 'SE' : $languageCode;
+		$languageCode = $languageCode == 'EN' ? 'GB' : $languageCode;
 		$transaction = array(
 			"order1"=>(string)$order_id,
 			'order2'=>'',
@@ -370,9 +377,9 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			'gender'=>1,
 			"reference"=>"",
 			"reference_code"=>"",
-			"currency"=>$countryData['currency'],
+			"currency"=>get_woocommerce_currency(),//$countryData['currency'],
 			"country"=>209,
-			"language"=>$countryData['language'],
+			"language"=>$languageCode,
 			"pclass"=>$pclass,
 			"shipInfo"=>array("delay_adjust"=>"1"),
 			"travelInfo"=>array(),
@@ -619,7 +626,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		$pay_method= 'CARD';
 		$amount    = $woocommerce->cart->total*100;
 		
-        $mac_str = $accept_url. $amount . $callback_url .$cancel_url.$capture_now . $currency. $do_3dsecure . $eid . $order_id . $pay_method . $prompt_name_entry . $return_method . $secret;
+        $mac_str = $accept_url. $amount . $callback_url .$cancel_url.$capture_now . $currency. $do_3dsecure. $languageCode . $eid . $order_id . $pay_method . $prompt_name_entry . $return_method . $secret;
         
         $mac = hash ( "sha256", $mac_str );
 
@@ -627,6 +634,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 	    <form action="{$actionurl}" id="{$this->id}" method="POST">
 	    <input type="hidden" name="currency" value="{$currency}" />
 	    <input type="hidden" name="merchant_id" value="{$eid}" />
+	    <input type="hidden" name="language" value="{$languageCode}" />
 	    <input type="hidden" name="amount" value="{$amount}" />
 	    <input type="hidden" name="order_id" value="{$order_id}" />
 	    <input type="hidden" name="pay_method" value="{$pay_method}" />

@@ -359,7 +359,14 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 	    );
 
 		$pclass = -1;
-
+		$languageCode = defined( 'WPLANG' ) && WPLANG ? WPLANG : 'sv_SE';
+		
+		$lang = explode('_', strtoupper($languageCode));
+		$languageCode = $lang[0];
+		$languageCode = $languageCode == 'DA' ? 'DK' : $languageCode;
+		$languageCode = $languageCode == 'SV' ? 'SE' : $languageCode;
+		$languageCode = $languageCode == 'EN' ? 'GB' : $languageCode;
+		
 		$transaction = array(
 			"order1"=>(string)$order_id,
 			'order2'=>'',
@@ -368,9 +375,9 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			'gender'=>1,
 			"reference"=>"",
 			"reference_code"=>"",
-			"currency"=>$countryData['currency'],
+			"currency"=>get_woocommerce_currency(),//$countryData['currency'],
 			"country"=>209,
-			"language"=>$countryData['language'],
+			"language"=>$languageCode,//$countryData['language'],
 			"pclass"=>$pclass,
 			"shipInfo"=>array("delay_adjust"=>"1"),
 			"travelInfo"=>array(),
@@ -583,6 +590,13 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 	function process_payment( $order_id ) {
 		global $woocommerce;
 		$order = new WC_order( $order_id );
+		$languageCode = defined( 'WPLANG' ) && WPLANG ? WPLANG : 'sv_SE';
+		
+		$lang = explode('_', strtoupper($languageCode));
+		$languageCode = $lang[0];
+		$languageCode = $languageCode == 'DA' ? 'DK' : $languageCode;
+		$languageCode = $languageCode == 'SV' ? 'SE' : $languageCode;
+		$languageCode = $languageCode == 'EN' ? 'GB' : $languageCode;
 		
 		$cancel_url= add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_checkout_page_id'))));
 		$accept_url= trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Bankpay';
@@ -590,7 +604,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		$actionurl = $this->testmode ? $this->tst_url : $this->prod_url;
 		$secret    = substr($this->secret,0,12);
 		$eid       = $this->settings['eid'];
-		$currency  = $this->billmate_currency;
+		$currency  = 'SEK';
 		$return_method = 'GET';
 		
 		$capture_now   = $this->authentication_method == 'sales' ? 'YES' : 'NO';
@@ -598,13 +612,14 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		$pay_method= 'BANK';
 		$amount    = $woocommerce->cart->total*100;
 		
-        $mac_str = $accept_url. $amount . $callback_url .$cancel_url.$capture_now . $currency. $eid . $order_id . $pay_method . $return_method . $secret;
+        $mac_str = $accept_url. $amount . $callback_url .$cancel_url.$capture_now . $currency.  $languageCode . $eid . $order_id . $pay_method . $return_method . $secret;
         
         $mac = hash ( "sha256", $mac_str );
 
 	    echo <<<EOD
 	    <form action="{$actionurl}" id="{$this->id}" method="POST">
 	    <input type="hidden" name="currency" value="{$currency}" />
+	    <input type="hidden" name="language" value="{$languageCode}" />
 	    <input type="hidden" name="merchant_id" value="{$eid}" />
 	    <input type="hidden" name="amount" value="{$amount}" />
 	    <input type="hidden" name="order_id" value="{$order_id}" />

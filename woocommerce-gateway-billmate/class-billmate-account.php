@@ -1121,6 +1121,9 @@ parse_str($_POST['post_data'], $datatemp);
             return;
         }
         $fullname = $order->billing_last_name.' '.$order->billing_first_name.' '.$order->billing_company;
+		for($a=0; $a< count($addr[0]); $a++){
+			$addr[0][$a] = utf8_encode($addr[0][$a]);
+		}
 
         $firstArr = explode(' ', $order->billing_first_name);
         $lastArr  = explode(' ', $order->billing_last_name);
@@ -1181,6 +1184,7 @@ parse_str($_POST['post_data'], $datatemp);
 			    $html.= '<input type="hidden" id="_address_1" value="'.$addr[0][2].'" />';
 			    $html.= '<input type="hidden" id="_postcode" value="'.$addr[0][3].'" />';
 			    $html.= '<input type="hidden" id="_city" value="'.$addr[0][4].'" /></span>';
+				
 			    echo $code = '<script type="text/javascript">setTimeout(function(){modalWin.ShowMessage(\''.$html.'\',350,500,\''.__('Pay by invoice can be made only to the address listed in the National Register. Would you like to make the purchase with address:','billmate').'\');},1000);</script>';
 				//wc_bm_errors($code);
 			    die;
@@ -1257,6 +1261,14 @@ parse_str($_POST['post_data'], $datatemp);
 		    'country'         => $countryname,
 	    );
 		
+		$languageCode = defined( 'WPLANG' ) && WPLANG ? WPLANG : 'sv_SE';
+		
+		$lang = explode('_', strtoupper($languageCode));
+		$languageCode = $lang[0];
+		$languageCode = $languageCode == 'DA' ? 'DK' : $languageCode;
+		$languageCode = $languageCode == 'SV' ? 'SE' : $languageCode;
+		$languageCode = $languageCode == 'EN' ? 'GB' : $languageCode;
+
 		$transaction = array(
 			"order1"=>(string)$order_id,
 			'order2'=>'',
@@ -1265,9 +1277,9 @@ parse_str($_POST['post_data'], $datatemp);
 			'gender'=>1,
 			"reference"=>"",
 			"reference_code"=>"",
-			"currency"=>(string)$countryData['currency'],
+			"currency"=>get_woocommerce_currency(),//$countryData['currency'],
 			"country"=>209,
-			"language"=>(string)$countryData['language'],
+			"language"=>$languageCode,
 			"pclass"=>(int)$billmate_pclass,
 			"shipInfo"=>array("delay_adjust"=>"1"),
 			"travelInfo"=>array(),
@@ -1281,8 +1293,9 @@ parse_str($_POST['post_data'], $datatemp);
 		//Normal shipment is defaulted, delays the start of invoice expiration/due-date.
 		// $k->setShipmentInfo('delay_adjust', BillmateFlags::EXPRESS_SHIPMENT);		    
 		try {
+		
     		$result = $k->AddInvoice($billmate_pno,$bill_address,$ship_address,$goods_list,$transaction);
-    		if( !is_array($result)){
+			if( !is_array($result)){
 				throw new Exception($result);
 			}
     		// Retreive response
