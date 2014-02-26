@@ -609,6 +609,14 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		global $woocommerce;
 		$order = new WC_order( $order_id );
 		
+		$languageCode = defined( 'WPLANG' ) && WPLANG ? WPLANG : 'sv_SE';
+		
+		$lang = explode('_', strtoupper($languageCode));
+		$languageCode = $lang[0];
+		$languageCode = $languageCode == 'DA' ? 'DK' : $languageCode;
+		$languageCode = $languageCode == 'SV' ? 'SE' : $languageCode;
+		$languageCode = $languageCode == 'EN' ? 'GB' : $languageCode;
+
 		$cancel_url= add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_checkout_page_id'))));
 		$accept_url= trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Cardpay';
 		$callback_url= 'http://api.billmate.se/callback.php';
