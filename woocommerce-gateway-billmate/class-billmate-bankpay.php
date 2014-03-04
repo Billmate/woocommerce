@@ -415,7 +415,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 				if(version_compare(WC_VERSION, '2.0.0', '<')){
 					$redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))));
 				} else {
-					$redirect = $order->get_view_order_url();
+					$redirect = $this->get_return_url($order);
 				}				
 				
 				// Return thank you redirect
@@ -598,7 +598,11 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		$languageCode = $languageCode == 'SV' ? 'SE' : $languageCode;
 		$languageCode = $languageCode == 'EN' ? 'GB' : $languageCode;
 		
-		$cancel_url= add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_checkout_page_id'))));
+		if(version_compare(WC_VERSION, '2.0.0', '<')){
+			$cancel_url= add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_checkout_page_id'))));
+		} else {
+			$cancel_url= get_permalink(get_option('woocommerce_checkout_page_id'));
+		}
 		$accept_url= trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Bankpay';
 		$callback_url= 'http://api.billmate.se/callback.php';
 		$actionurl = $this->testmode ? $this->tst_url : $this->prod_url;

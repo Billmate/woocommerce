@@ -814,48 +814,36 @@ parse_str($_POST['post_data'], $datatemp);
         $firstArr = explode(' ', $order->billing_first_name);
         $lastArr  = explode(' ', $order->billing_last_name);
         
-        if( empty( $addr[0][0] ) ){
-            $apifirst = $firstArr;
-            $apilast  = $lastArr ;
-        }else {
-            $apifirst = explode(' ', $addr[0][0] );
-            $apilast  = explode(' ', $addr[0][1] );
-        }
-        $matchedFirst = array_intersect($apifirst, $firstArr );
-        $matchedLast  = array_intersect($apilast, $lastArr );
-        $apiMatchedName   = !empty($matchedFirst) && !empty($matchedLast);
-		
-        $apiName  = $addr[0][0].' '.$addr[0][1];
-        
         $usership = $order->billing_last_name.' '.$order->billing_first_name.' '.$order->billing_company;
         $userbill = $order->shipping_last_name.' '.$order->shipping_first_name.' '.$order->shipping_company;
 
-		$addressNotMatched = !isEqual( $usership, $userbill ) ||
+		if( strlen( $addr[0][0] )) {
+			$name = $addr[0][0];
+			$lastname = $addr[0][1];
+			$company = '';
+			$apiName =  $addr[0][0].' '.$addr[0][1];
+			$displayname = $addr[0][0].' '.$addr[0][1];
+		} else {
+			$name = $order->billing_first_name;
+			$lastname=$order->billing_last_name;
+			$company = $addr[0][1];
+			$apiName =  $name.' '.$lastname.' '.$addr[0][1];
+			$displayname = $order->billing_first_name.' '.$order->billing_last_name.'<br/>'.$addr[0][1];
+		}
+
+		$shippingAndBilling = !isEqual( $usership, $userbill ) ||
 		    !isEqual($addr[0][2], $billmate_billing_address ) ||
 		    !isEqual($addr[0][3], $order->shipping_postcode) || 
 		    !isEqual($addr[0][4], $order->shipping_city) || 
 		    !isEqual(BillmateCountry::getCode($addr[0][5]), $order->shipping_country);
 
-        $shippingAndBilling =  !$apiMatchedName ||
+        $addressNotMatched =  !isEqual($usership, $apiName) ||
 		    !isEqual($order->billing_address_1, $order->shipping_address_1 ) ||
 		    !isEqual($order->billing_postcode, $order->shipping_postcode) || 
 		    !isEqual($order->billing_city, $order->shipping_city) || 
 		    !isEqual($order->billing_country, $order->shipping_country) ;
 		
 		$shippingAndBilling = $order->get_shipping_method() == '' ? false : $shippingAndBilling;
-		
-		if( strlen( $addr[0][0] )) {
-			$name = $addr[0][0];
-			$lastname = $addr[0][1];
-			$company = '';
-			$displayname = $addr[0][0].' '.$addr[0][1];
-		} else {
-			$name = $order->billing_first_name;
-			$lastname=$order->billing_last_name;
-			$company = $addr[0][1];
-			$displayname = $order->billing_first_name.' '.$order->billing_last_name.'<br/>'.$addr[0][1];
-		}
-		
 
 		global $woocommerce;
 		
@@ -999,7 +987,7 @@ parse_str($_POST['post_data'], $datatemp);
 				if(version_compare(WC_VERSION, '2.0.0', '<')){
 					$redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))));
 				} else {
-					$redirect = $order->get_view_order_url();
+					$redirect = $this->get_return_url($order);
 				}				
 				
 				// Return thank you redirect
@@ -1020,7 +1008,7 @@ parse_str($_POST['post_data'], $datatemp);
 				if(version_compare(WC_VERSION, '2.0.0', '<')){
 					$redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))));
 				} else {
-					$redirect = $order->get_view_order_url();
+					$redirect = $this->get_return_url($order);
 				}				
 				
 				// Return thank you redirect

@@ -582,8 +582,9 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 						$pclasses_not_available = false;
 					}
 				}
-				$pclasses = (array)json_decode($pclasses);
+				$pclasses = json_decode($pclasses);
 				// Check if we have any PClasses
+				
 				// TODO Deactivate this gateway if the file billmatepclasses.json doesn't exist 
 				if(!$pclasses_not_available) {
 				?>
@@ -592,8 +593,11 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 						
 					<?php
 				   	// Loop through the available PClasses stored in the file srv/billmatepclasses.json
-					foreach ($pclasses as $pclass) {
-						$pclass = (array)$pclass[0];
+
+					foreach ($pclasses->{$this->eid} as $pclass2) {
+					
+						$pclass = (array)$pclass2;
+						
 						if (strlen($pclass['description']) > 0 ) {
 						
 							// Get monthly cost for current pclass
@@ -1125,22 +1129,20 @@ parse_str($_POST['post_data'], $datatemp);
 			$addr[0][$a] = utf8_encode($addr[0][$a]);
 		}
 
-        $firstArr = explode(' ', $order->billing_first_name);
-        $lastArr  = explode(' ', $order->billing_last_name);
-        
-        if( empty( $addr[0][0] ) ){
-            $apifirst = $firstArr;
-            $apilast  = $lastArr ;
-        }else {
-            $apifirst = explode(' ', $addr[0][0] );
-            $apilast  = explode(' ', $addr[0][1] );
-        }
-        $matchedFirst = array_intersect($apifirst, $firstArr );
-        $matchedLast  = array_intersect($apilast, $lastArr );
-        $apiMatchedName   = !empty($matchedFirst) && !empty($matchedLast);
-
-        $apiName  = $addr[0][0].' '.$addr[0][1];
-        
+ 		if( strlen( $addr[0][0] )) {
+			$name = $addr[0][0];
+			$lastname = $addr[0][1];
+			$company = '';
+			$apiName =  $addr[0][0].' '.$addr[0][1];
+			$displayname = $addr[0][0].' '.$addr[0][1];
+		} else {
+			$name = $order->billing_first_name;
+			$lastname=$order->billing_last_name;
+			$apiName =  $name.' '.$lastname.' '.$addr[0][1];
+			$company = $addr[0][1];
+			$displayname = $order->billing_first_name.' '.$order->billing_last_name.'<br/>'.$addr[0][1];
+		}
+       
         $usership = $order->billing_last_name.' '.$order->billing_first_name.' '.$order->billing_company;
         $userbill = $order->shipping_last_name.' '.$order->shipping_first_name.' '.$order->shipping_company;
 
@@ -1150,24 +1152,13 @@ parse_str($_POST['post_data'], $datatemp);
 		    !isEqual($addr[0][4], $order->shipping_city) || 
 		    !isEqual(BillmateCountry::getCode($addr[0][5]), $order->shipping_country);
 
-        $shippingAndBilling =  !$apiMatchedName ||
+        $shippingAndBilling =  !isEqual($usership, $apiName) ||
 		    !isEqual($order->billing_address_1, $order->shipping_address_1 ) ||
 		    !isEqual($order->billing_postcode, $order->shipping_postcode) || 
 		    !isEqual($order->billing_city, $order->shipping_city) || 
 		    !isEqual($order->billing_country, $order->shipping_country) ;
 		
 		$shippingAndBilling = $order->get_shipping_method() == '' ? false : $shippingAndBilling;
-		if( strlen( $addr[0][0] )) {
-			$name = $addr[0][0];
-			$lastname = $addr[0][1];
-			$company = '';
-			$displayname = $addr[0][0].' '.$addr[0][1];
-		} else {
-			$name = $order->billing_first_name;
-			$lastname=$order->billing_last_name;
-			$company = $addr[0][1];
-			$displayname = $order->billing_first_name.' '.$order->billing_last_name.'<br/>'.$addr[0][1];
-		}
 		global $woocommerce;
 
 		$importedCountry = '';
@@ -1311,7 +1302,7 @@ parse_str($_POST['post_data'], $datatemp);
 				if(version_compare(WC_VERSION, '2.0.0', '<')){
 					$redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))));
 				} else {
-					$redirect = $order->get_view_order_url();
+					$redirect = $this->get_return_url($order);
 				}				
 				
 				$woocommerce->cart->empty_cart();			
@@ -1335,7 +1326,7 @@ parse_str($_POST['post_data'], $datatemp);
 				if(version_compare(WC_VERSION, '2.0.0', '<')){
 					$redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))));
 				} else {
-					$redirect = $order->get_view_order_url();
+					$redirect = $this->get_return_url($order);
 				}				
 				//add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))))
 				// Return thank you redirect

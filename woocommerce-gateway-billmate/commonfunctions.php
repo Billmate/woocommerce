@@ -1,5 +1,5 @@
 <?php
-define('BILLPLUGIN_VERSION','1.15');
+define('BILLPLUGIN_VERSION','1.16');
 define('BILLMATE_VERSION','PHP:Woocommerce:'.BILLPLUGIN_VERSION);
 
 require_once(BILLMATE_LIB . 'BillMate.php');
@@ -11,6 +11,7 @@ require_once dirname( __FILE__ ) .'/utf8.php';
 
 function wc_bm_errors($message){
 	global $woocommerce;
+	$message = utf8_encode($message);
 	if(version_compare(WC_VERSION, '2.0.0', '<')){
 		$woocommerce->add_error( $message );
 	} else {
