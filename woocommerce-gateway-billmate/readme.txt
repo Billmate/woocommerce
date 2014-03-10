@@ -48,3 +48,5 @@ To create a Invoice fee product:
 5. Go to --> WooCommerce --> Settings --> Payment Gateways and configure your Billmate settings.
 6. Billmate Part Payment: Make sure that read and write permissions for the directory "srv" (located in woocommerce-gateway-billmate) and the containing file "billmatepclasses.json" is set to 777 in order to fetch the available PClasses from Billmate.
 7. Billmate Part Payment: Click the button "Update the PClass file billmatepclasses.json" on the settings page to fetch your shops PClasses and store them in the billmatepclasses.json file (or upload your billmatepclasses.json file manually via ftp).
+
+Modifications made by Gagan Preet, Eminence Technology
