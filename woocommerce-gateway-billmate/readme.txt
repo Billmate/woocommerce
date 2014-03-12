@@ -4,6 +4,10 @@
                                              
 === WOOCOMMERCE BILLMATE GATEWAY ===
 
+Original code created by Niklas Högefjord - http://krokedil.com/
+Modified for Billmate by Gagan Preet, Eminence Technology
+
+
 By eFinance Nordic AB - http://efinance.se/
 
 Documentation with instructions on how to setup the plugin can be found at https://efinance.se/plugins/woocommerce/Instruktionsmanual_Woocommerce_Billmate_Plugin.pdf
