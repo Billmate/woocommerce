@@ -113,6 +113,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		if( empty( $_POST ) ){
 			$_POST = $_GET;
 		}
+		
 	    $order_id = $_POST['order_id'];
 	    
 		$order = new WC_Order( $order_id );
@@ -137,7 +138,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 	    */
 	    return true;
 	}
-    function sendBillmate($order_id,$order){
+    function sendBillmate($order_id,$order, $addorder = false){
         global $woocommerce;
 		
 		if( !empty($_SESSION['order_created']) ) return;
@@ -393,6 +394,9 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
  		try {
 			if(empty($goods_list)) return false;
     		//Transmit all the specified data, from the steps above, to Billmate.
+			if( $addorder ){
+				return $k->AddOrder('',$bill_address,$ship_address,$goods_list,$transaction);
+			}
     		$result = $k->AddInvoice('',$bill_address,$ship_address,$goods_list,$transaction);
 
 
@@ -663,6 +667,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 	        document.getElementById("{$this->id}").submit();
 	    </script>
 EOD;
+		$this->sendBillmate($order_id, $order , true);
 die;
 	}
 	
