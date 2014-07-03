@@ -30,7 +30,12 @@ function return_billmate_partpayment_info_link() {
 	//global $billmate_partpayment_shortcode_info_link;	
 	//return '<a id="billmate_partpayment" onclick="ShowBillmatePartPaymentPopup();return false;" href="javascript://">' . __('Read more', 'billmate') . '</a>';
 	
+	$WC_Gateway_Billmate_Partpayment = new WC_Gateway_Billmate_Partpayment;
+	$product = new WC_Product( get_the_ID() );
+  	$price = $product->price;
+	
 	ob_start();
+	$WC_Gateway_Billmate_Partpayment->payment_fields_options( $price, false );
 	echo '<a id="billmate_partpayment" href="#">' . WC_Gateway_Billmate_Partpayment::get_account_terms_link_text($billmate_partpayment_country) . '</a>';
 	echo '<script type="text/javascript">jQuery.getScript("https://efinance.se/billmate/base.js", function(){
 		window.$ = jQuery;
