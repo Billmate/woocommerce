@@ -38,7 +38,7 @@
  		$this->encoding = 2;
  		$this->eid = $eid;
  		$this->key = $key;
-                defined('BILLMATE_VERSION') || define('BILLMATE_VERSION',  "PHP:BillMate:0.5.8" );
+                defined('BILLMATE_VERSION') || define('BILLMATE_VERSION',  "PHP:Billmate:0.5.8" );
 		$this->CLIENT = BILLMATE_VERSION;
  		$this->ssl = $ssl;
  		$this->debugmode = $debug;

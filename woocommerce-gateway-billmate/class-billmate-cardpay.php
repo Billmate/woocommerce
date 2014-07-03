@@ -220,7 +220,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			// We manually calculate the tax percentage here
 			if ($order->get_total_tax() >0) :
 				// Calculate tax percentage
-				$item_tax_percentage = number_format( ( $order->get_line_tax($item) / $order->get_line_total( $item, false ) )*100, 2, '.', '');
+				$item_tax_percentage = number_format( ( $order->get_item_tax($item, false) / $order->get_item_total( $item, false, false ) )*100, 2, '.', '');
 			else :
 				$item_tax_percentage = 0.00;
 			endif;
@@ -280,7 +280,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		        'goods' => array(
 			        'artno'    => "",
 			        'title'    => __('Shipping cost', 'billmate'),
-			        'price'    => round($shipping_price,0)*100, 
+			        'price'    => round($shipping_price*100,0), 
 			        'vat'      => $calculated_shipping_tax_percentage,
 			        'discount' => (float)0,
 			        'flags'    => BillmateFlags::INC_VAT + BillmateFlags::IS_SHIPMENT,
