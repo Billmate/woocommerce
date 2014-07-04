@@ -885,56 +885,58 @@ parse_str($_POST['post_data'], $datatemp);
                     
                 <?php
                 // Loop through the available PClasses stored in the file srv/billmatepclasses.json
-    
-                foreach ($pclasses->{$this->eid} as $pclass2) {
-                
-                    $pclass = (array)$pclass2;
-                    
-                    if (strlen($pclass['description']) > 0 ) {
-                    
-                        // Get monthly cost for current pclass
-                        $monthly_cost = BillmateCalc::calc_monthly_cost(
-                                            $sum,
-                                            $pclass,
-                                            $flag
-                                        );
-                
-                        // Get total credit purchase cost for current pclass
-                        // Only required in Norway
-                        $total_credit_purchase_cost = BillmateCalc::total_credit_purchase_cost(
-                                            $sum,
-                                            $pclass,
-                                            $flag
-                                        );
-                        
-                        // Check that Cart total is larger than min amount for current PClass				
-                        if($sum >= $pclass['mintotal'] && ($sum <= $pclass['maxtotal'] || $pclass['maxtotal'] == 0) ) {
-                            $enabled_plcass = 'yes';
-                            echo '<div>';
-                            if ($this->billmate_country == 'NO') {
-                                if ( $pclass['Type'] == 1 ) {
-                                    //If Account - Do not show startfee. This is always 0.
-                                    echo sprintf(__('%s - %s %s/month', 'billmate'), $pclass['description'], $monthly_cost, $this->billmate_currency);
-                                    } else {
-                                        // Norway - Show total cost
-                                        echo sprintf(__('%s - %s %s/month - %s%s - Start %s - Tot %s %s', 'billmate'), $pclass['description'], $monthly_cost, $this->billmate_currency, $pclass['interest'], '%', $pclass['start_fee'], $total_credit_purchase_cost, $this->billmate_currency );
-                                    }
-                                } else {
-                                    if ( $pclass['Type'] == 1 ) {
-                                        //If Account - Do not show startfee. This is always 0.
-                                        echo sprintf(__('%s - %s %s/month', 'billmate'), $pclass['description'], $monthly_cost, $this->billmate_currency );
-                                    } else {
-                                        // Sweden, Denmark, Finland, Germany & Netherlands - Don't show total cost
-                                        echo sprintf(__('%s - %s %s/month - %s%s - Start %s', 'billmate'), $pclass['description'], $monthly_cost, $this->billmate_currency, $pclass['interest'], '%', $pclass['start_fee'] );
-                                    }
-                                }
-                            echo '</div>';
-                        
-                        } // End if ($sum > $pclass->getMinAmount())
-                        
-                    } // End if $pclass->getType() == 0 or 1
-                
-                } // End foreach
+                if( in_array($this->shop_country, $this->allowed_countries) ) {
+					    
+					foreach ($pclasses->{$this->eid} as $pclass2) {
+					
+						$pclass = (array)$pclass2;
+						
+						if (strlen($pclass['description']) > 0 ) {
+						
+							// Get monthly cost for current pclass
+							$monthly_cost = BillmateCalc::calc_monthly_cost(
+												$sum,
+												$pclass,
+												$flag
+											);
+					
+							// Get total credit purchase cost for current pclass
+							// Only required in Norway
+							$total_credit_purchase_cost = BillmateCalc::total_credit_purchase_cost(
+												$sum,
+												$pclass,
+												$flag
+											);
+							
+							// Check that Cart total is larger than min amount for current PClass				
+							if($sum >= $pclass['mintotal'] && ($sum <= $pclass['maxtotal'] || $pclass['maxtotal'] == 0) ) {
+								$enabled_plcass = 'yes';
+								echo '<div>';
+								if ($this->billmate_country == 'NO') {
+									if ( $pclass['Type'] == 1 ) {
+										//If Account - Do not show startfee. This is always 0.
+										echo sprintf(__('%s - %s %s/month', 'billmate'), $pclass['description'], $monthly_cost, $this->billmate_currency);
+										} else {
+											// Norway - Show total cost
+											echo sprintf(__('%s - %s %s/month - %s%s - Start %s - Tot %s %s', 'billmate'), $pclass['description'], $monthly_cost, $this->billmate_currency, $pclass['interest'], '%', $pclass['start_fee'], $total_credit_purchase_cost, $this->billmate_currency );
+										}
+									} else {
+										if ( $pclass['Type'] == 1 ) {
+											//If Account - Do not show startfee. This is always 0.
+											echo sprintf(__('%s - %s %s/month', 'billmate'), $pclass['description'], $monthly_cost, $this->billmate_currency );
+										} else {
+											// Sweden, Denmark, Finland, Germany & Netherlands - Don't show total cost
+											echo sprintf(__('%s - %s %s/month - %s%s - Start %s', 'billmate'), $pclass['description'], $monthly_cost, $this->billmate_currency, $pclass['interest'], '%', $pclass['start_fee'] );
+										}
+									}
+								echo '</div>';
+							
+							} // End if ($sum > $pclass->getMinAmount())
+							
+						} // End if $pclass->getType() == 0 or 1
+					
+					} // End foreach
+				}
                 ?>
                     
                 </div>
