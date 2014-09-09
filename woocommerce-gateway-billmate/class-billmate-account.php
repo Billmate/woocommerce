@@ -8,7 +8,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
      */
      
 	public function __construct() {
-		global $woocommerce;
+		global $woocommerce, $eid;
 		
 		parent::__construct();
 		
@@ -35,7 +35,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 		$this->enabled							= ( isset( $this->settings['enabled'] ) ) ? $this->settings['enabled'] : '';
 		$this->title 							= ( isset( $this->settings['title'] ) ) ? $this->settings['title'] : '';
 		$this->description  					= ( isset( $this->settings['description'] ) ) ? $this->settings['description'] : '';
-		$this->eid								= ( isset( $this->settings['eid'] ) ) ? $this->settings['eid'] : '';
+		$this->eid	= $eid						= ( isset( $this->settings['eid'] ) ) ? $this->settings['eid'] : '';
 		$this->secret							= ( isset( $this->settings['secret'] ) ) ? $this->settings['secret'] : '';
 		$this->lower_threshold					= ( isset( $this->settings['lower_threshold'] ) ) ? $this->settings['lower_threshold'] : '';
 		$this->upper_threshold					= ( isset( $this->settings['upper_threshold'] ) ) ? $this->settings['upper_threshold'] : '';

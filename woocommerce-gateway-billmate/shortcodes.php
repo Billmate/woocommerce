@@ -8,8 +8,39 @@ add_shortcode( 'billmate_partpayment_info_link', 'return_billmate_partpayment_in
 
 // Return Monthly price
 function return_billmate_price() {
-	global $billmate_partpayment_shortcode_price;
-	return $billmate_partpayment_shortcode_price;
+	global $billmate_partpayment_shortcode_price, $eid;
+	$pcURI = BILLMATE_DIR . 'srv/billmatepclasses.json';
+	$flag = BillmateFlags::CHECKOUT_PAGE;
+	$pclasses_not_available = true;
+	$enabled_plcass = 'no';
+	if(file_exists($pcURI)){
+		$pclasses = file_get_contents($pcURI);
+		if( strlen( $pclasses) ){
+			$pclasses_not_available = false;
+		}
+	}
+	$WC_Gateway_Billmate_Partpayment = new WC_Gateway_Billmate_Partpayment;
+	$product = new WC_Product( get_the_ID() );
+  	$price = $product->price;
+
+	$settings = get_option('woocommerce_billmate_partpayment_settings');
+	$eid = $settings['eid'];
+	$pclasses = json_decode($pclasses);	
+	if(!$pclasses_not_available) {
+		foreach ($pclasses->{$eid} as $pclass2) {
+			$pclass = (array)$pclass2;
+			if (strlen($pclass['description']) > 0 ) {
+				// Get monthly cost for current pclass
+				$billmate_partpayment_shortcode_price = BillmateCalc::calc_monthly_cost(
+									$price,
+									$pclass,
+									$flag
+								);
+			} // End if $pclass->getType() == 0 or 1
+		
+		} // End foreach
+	}
+		return $billmate_partpayment_shortcode_price;
 }
 
 // Return Currency
