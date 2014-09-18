@@ -294,7 +294,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		        'goods' => array(
 			        'artno'    => "",
 			        'title'    => __('Shipping cost', 'billmate'),
-			        'price'    => round($shipping_price,0)*100, 
+			        'price'    => round($shipping_price*100,0), 
 			        'vat'      => $calculated_shipping_tax_percentage,
 			        'discount' => (float)0,
 			        'flags'    => BillmateFlags::INC_VAT + BillmateFlags::IS_SHIPMENT,
