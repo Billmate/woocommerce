@@ -784,7 +784,7 @@ parse_str($_POST['post_data'], $datatemp);
 					'goods' => array(
 						'artno'    => "",
 						'title'    => __('Invoice Fee', 'billmate'),
-						'price'    => round($this->invoice_fee_price,0)*100, 
+						'price'    => round($this->invoice_fee_price*100,0), 
 						'vat'      => $this->invoice_fee_tax_percentage,
 						'discount' => (float)0,
 						'flags'    => BillmateFlags::INC_VAT + BillmateFlags::IS_HANDLING,
