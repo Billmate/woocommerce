@@ -854,7 +854,7 @@ parse_str($_POST['post_data'], $datatemp);
 		
 		if( $addressNotMatched || $shippingAndBilling ){
 		    if( empty($_POST['geturl'] ) ){
-			    $html = $displayname.'<br>'.$addr[0][2].'<br>'.$addr[0][3].'<br>'.$addr[0][4].'<br/>'.$importedCountry.'<div style="margin-top:1em"><input type="button" value="'.__('Yes, make purchase with this address','billmate').'" onclick="ajax_load(this);modalWin.HideModalPopUp(); " class="billmate_button"/></div><a onclick="noPressButton()" class="linktag">'.__('No, I want to specify a different number or change payment method','billmate').'</a>';
+			    $html = $displayname.'<br>'.$addr[0][2].'<br>'.$addr[0][3].' '.$addr[0][4].'<br/>'.$importedCountry.'<div style="margin-top:1em"><input type="button" value="'.__('Yes, make purchase with this address','billmate').'" onclick="ajax_load(this);modalWin.HideModalPopUp(); " class="billmate_button"/></div><a onclick="noPressButton()" class="linktag">'.__('No, I want to specify a different number or change payment method','billmate').'</a>';
 			    $html.= '<span id="hidden_data"><input type="hidden" id="_first_name" value="'.$name.'" />';
 			    $html.= '<input type="hidden" id="_last_name" value="'.$lastname.'" />';
 			    $html.= '<input type="hidden" id="_company" value="'.$company.'" />';
@@ -1134,10 +1134,12 @@ class WC_Gateway_Billmate_Invoice_Extra {
 	public function __construct() {
 		
 		// Add Invoice fee via the new Fees API
-		add_action( 'woocommerce_checkout_process', array($this, 'add_invoice_fee_process') );
+		//add_action( 'woocommerce_checkout_process', array($this, 'add_invoice_fee_process') );
+		add_action( 'woocommerce_cart_calculate_fees', array($this, 'add_invoice_fee_process') );
 		
 		// Chcek Billmate specific fields on Checkout
-		add_action('woocommerce_checkout_process', array(&$this, 'billmate_invoice_checkout_field_process'));
+		//add_action('woocommerce_checkout_process', array(&$this, 'billmate_invoice_checkout_field_process'));
+		add_action('woocommerce_cart_calculate_fees', array(&$this, 'billmate_invoice_checkout_field_process'));
 	}
 	
 	/**

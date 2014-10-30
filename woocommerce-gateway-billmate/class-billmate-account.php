@@ -1238,7 +1238,7 @@ parse_str($_POST['post_data'], $datatemp);
 		
 		if( $addressNotMatched || $shippingAndBilling ){
 		    if( empty($_POST['geturl'] ) ){
-			    $html = $displayname.'<br>'.$addr[0][2].'<br>'.$addr[0][3].'<br>'.$addr[0][4].'<br/>'.$importedCountry.'<div style="margin-top:1em"><input type="button" value="'.__('Yes, make purchase with this address','billmate').'" onclick="ajax_load(this);modalWin.HideModalPopUp(); " class="billmate_button"/></div><a onclick="noPressButton()" class="linktag">'.__('No, I want to specify a different number or change payment method','billmate').'</a>';
+			    $html = $displayname.'<br>'.$addr[0][2].'<br>'.$addr[0][3].' '.$addr[0][4].'<br/>'.$importedCountry.'<div style="margin-top:1em"><input type="button" value="'.__('Yes, make purchase with this address','billmate').'" onclick="ajax_load(this);modalWin.HideModalPopUp(); " class="billmate_button"/></div><a onclick="noPressButton()" class="linktag">'.__('No, I want to specify a different number or change payment method','billmate').'</a>';
 			    $html.= '<span id="hidden_data"><input type="hidden" id="_first_name" value="'.$name.'" />';
 			    $html.= '<input type="hidden" id="_last_name" value="'.$lastname.'" />';
 			    $html.= '<input type="hidden" id="_company" value="'.$company.'" />';
@@ -1652,7 +1652,7 @@ parse_str($_POST['post_data'], $datatemp);
 	 **/
 	function billmate_partpayment_terms_js() {
 		
-		if ( is_checkout() || is_product() || is_shop() || is_product_category() || is_product_tag() ) {
+		if ( is_checkout() && $this->enabled=="yes" ) {
 			?>
 			<script type="text/javascript">
 				var billmate_eid = "<?php echo $this->eid; ?>";
