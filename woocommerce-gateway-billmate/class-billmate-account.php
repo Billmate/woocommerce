@@ -1426,7 +1426,7 @@ parse_str($_POST['post_data'], $datatemp);
 		catch(Exception $e) {
     		//The purchase was denied or something went wrong, print the message:
 			$order->add_order_note( utf8_encode($e->getMessage()) );
-			wc_bm_errors( utf8_encode($e->getMessage()) );
+			wc_bm_errors( ($e->getMessage()) );
 		}
 
 	
