@@ -390,7 +390,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 						foreach ($pclasses as $pclass) {
 							$pclass = (array)$pclass[0];
 							if (strlen($pclass['description']) > 0 ) {
-								if($sum >= $pclass['mintotal'] && ($sum <= $pclass['maxtotal'] || $pclass['maxtotal'] == 0) ) {
+								if($sum >= $pclass['mintotal'] && ($sum <= $pclass['maxtotal'] || $pclass['maxtotal'] == 0) )  {
 									$pclasses_not_available = false;
 									break;
 								}
