@@ -381,7 +381,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		    'country'         => $country,
 	    );
 		$pclass = -1;
-		$languageCode = defined( 'WPLANG' ) && WPLANG ? WPLANG : 'sv_SE';
+		$languageCode = get_locale();
 		
 		$lang = explode('_', strtoupper($languageCode));
 		$languageCode = $lang[0];
@@ -621,7 +621,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		global $woocommerce;
 		$order = new WC_order( $order_id );
 		
-		$languageCode = defined( 'WPLANG' ) && WPLANG ? WPLANG : 'sv_SE';
+		$languageCode = get_locale();
 		
 		$lang = explode('_', strtoupper($languageCode));
 		$languageCode = $lang[0];
