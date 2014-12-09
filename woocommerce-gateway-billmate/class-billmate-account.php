@@ -390,7 +390,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 						foreach ($pclasses as $pclass) {
 							$pclass = (array)$pclass[0];
 							if (strlen($pclass['description']) > 0 ) {
-								if($sum >= $pclass['mintotal'] && ($sum <= $pclass['maxtotal'] || $pclass['maxtotal'] == 0) ) {
+								if($sum >= $pclass['mintotal'] && ($sum <= $pclass['maxtotal'] || $pclass['maxtotal'] == 0) )  {
 									$pclasses_not_available = false;
 									break;
 								}
@@ -753,9 +753,9 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 				<p class="form-row form-row-last">
 					<label for="billmate_partpayment_gender"><?php echo __("Kön", 'billmate') ?> <span class="required">*</span></label>
 					<select id="billmate_partpayment_gender" name="billmate_partpayment_gender" class="woocommerce-select" style="width:120px;">
-						<option value=""><?php echo __("Select gender", 'billmate') ?></options>
-						<option value="0"><?php echo __("Female", 'billmate') ?></options>
-						<option value="1"><?php echo __("Male", 'billmate') ?></options>
+						<option value=""><?php echo __("Select gender", 'billmate') ?></option>
+						<option value="0"><?php echo __("Female", 'billmate') ?></option>
+						<option value="1"><?php echo __("Male", 'billmate') ?></option>
 					</select>
 				</p>
 			<?php endif; ?>
@@ -1322,7 +1322,7 @@ parse_str($_POST['post_data'], $datatemp);
 		    'country'         => $countryname,
 	    );
 		
-		$languageCode = defined( 'WPLANG' ) && WPLANG ? WPLANG : 'sv_SE';
+		$languageCode = get_locale();
 		
 		$lang = explode('_', strtoupper($languageCode));
 		$languageCode = $lang[0];
