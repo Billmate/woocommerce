@@ -471,9 +471,9 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 				<p class="form-row form-row-last">
 					<label for="billmate_invo_gender"><?php echo __("Gender", 'billmate') ?> <span class="required">*</span></label>
 					<select id="billmate_invo_gender" name="billmate_invo_gender" class="woocommerce-select" style="width:120px;">
-						<option value=""><?php echo __("Select gender", 'billmate') ?></options>
-						<option value="0"><?php echo __("Female", 'billmate') ?></options>
-						<option value="1"><?php echo __("Male", 'billmate') ?></options>
+						<option value=""><?php echo __("Select gender", 'billmate') ?></option>
+						<option value="0"><?php echo __("Female", 'billmate') ?></option>
+						<option value="1"><?php echo __("Male", 'billmate') ?></option>
 					</select>
 				</p>
 			<?php endif; ?>
@@ -936,7 +936,7 @@ parse_str($_POST['post_data'], $datatemp);
 		    'country'         => $countryname,
 	    );
 
-		$languageCode = defined( 'WPLANG' ) && WPLANG ? WPLANG : 'sv_SE';
+		$languageCode = get_locale();
 		
 		$lang = explode('_', strtoupper($languageCode));
 		$languageCode = $lang[0];
