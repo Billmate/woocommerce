@@ -541,8 +541,11 @@ class BillmateCalc {
 
         $lowest_pp = $lowest = false;
         foreach($pclasses as $pclass) {
-			$pclass = (array)$pclass[0];
+			$pclass = (array)$pclass;
+            // Lowest for SE is 50
             $lowest_payment = BillmateCalc::get_lowest_payment_for_account($pclass['country']);
+
+            // Check if sum is over mintotal. And Type is 1 or less.
             if($pclass['Type'] < 2 && $sum >= $pclass['mintotal']) {
                 $minpay = BillmateCalc::calc_monthly_cost($sum, $pclass, $flags);
 
