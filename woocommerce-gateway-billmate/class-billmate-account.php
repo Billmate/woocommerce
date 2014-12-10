@@ -577,7 +577,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 			<?php
 			// Calculate lowest monthly cost and display it
 			if( $enabled_plcass == 'no' ) return false;
-			$pclass = BillmateCalc::getCheapestPClass($sum, $flag, $pclasses);
+			$pclass = BillmateCalc::getCheapestPClass($sum, $flag, $pclasses->{$eid});
 	
 			//Did we get a PClass? (it is false if we didn't)
 			if($pclass) {
@@ -1495,13 +1495,13 @@ parse_str($_POST['post_data'], $datatemp);
 					$pclasses_not_available = false;
 				}
 			}
-			$pclasses = (array)json_decode($pclasses);
+			$pclasses = json_decode($pclasses);
 			
 			// apply_filters to product price so we can filter this if needed
 			$billmate_product_total = $product->get_price();
 			$sum = apply_filters( 'billmate_product_total', $billmate_product_total ); // Product price.
 			$flag = BillmateFlags::PRODUCT_PAGE; //or BillmateFlags::PRODUCT_PAGE, if you want to do it for one item.
-			$pclass =  BillmateCalc::getCheapestPClass($sum, $flag, $pclasses);
+			$pclass =  BillmateCalc::getCheapestPClass($sum, $flag, $pclasses->{$eid});
 			
 			
 			//Did we get a PClass? (it is false if we didn't)
@@ -1598,13 +1598,13 @@ parse_str($_POST['post_data'], $datatemp);
 					$pclasses_not_available = false;
 				}
 			}
-			$pclasses = (array)json_decode($pclasses);
+			$pclasses = json_decode($pclasses);
 
 			// apply_filters to product price so we can filter this if needed
 			$billmate_product_total = $product->get_price();
 			$sum = apply_filters( 'billmate_product_total', $billmate_product_total ); // Product price.
 			$flag = BillmateFlags::PRODUCT_PAGE; //or BillmateFlags::PRODUCT_PAGE, if you want to do it for one item.
-			$pclass = BillmateCalc::getCheapestPClass($sum, $flag, $pclasses);
+			$pclass = BillmateCalc::getCheapestPClass($sum, $flag, $pclasses->{$eid});
 			
 			
 			//Did we get a PClass? (it is false if we didn't)

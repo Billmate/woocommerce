@@ -67,7 +67,7 @@ function return_billmate_partpayment_info_link() {
 	
 	ob_start();
 	$WC_Gateway_Billmate_Partpayment->payment_fields_options( $price, false );
-	echo '<a id="billmate_partpayment" href="#">' . WC_Gateway_Billmate_Partpayment::get_account_terms_link_text($billmate_partpayment_country) . '</a>';
+	echo '<a id="billmate_partpayment" href="#">' . $WC_Gateway_Billmate_Partpayment->get_account_terms_link_text($billmate_partpayment_country) . '</a>';
 	echo '<script type="text/javascript">jQuery.getScript("https://efinance.se/billmate/base.js", function(){
 		window.$ = jQuery;
 		$ = jQuery;

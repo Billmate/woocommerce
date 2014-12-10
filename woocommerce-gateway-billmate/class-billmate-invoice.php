@@ -50,7 +50,7 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 				$product = new WC_Product( $this->invoice_fee_id );
 			}
 			
-			if ( $product->exists() ) :
+			if ((is_object($product) && $product->exists())) :
 			
 				// We manually calculate the tax percentage here
 				@$this->invoice_fee_tax_percentage = number_format( (( $product->get_price() / $product->get_price_excluding_tax() )-1)*100, 2, '.', '');
@@ -64,7 +64,7 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 							
 			endif;
 		
-		else :
+		else:
 		
 		$this->invoice_fee_price = 0;
 		
