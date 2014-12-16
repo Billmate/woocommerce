@@ -527,7 +527,7 @@ class BillmateCalc {
         return self::pRound($credit_cost, $pclass['country']);
     }
 
-    public function getCheapestPClass($sum, $flags, $pclasses) {
+    public static function getCheapestPClass($sum, $flags, $pclasses) {
         if (!is_numeric ($sum)) {
             throw new Exception(
                 'Error in ' . __METHOD__ . ': Argument sum is not numeric!');

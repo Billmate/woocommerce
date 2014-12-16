@@ -471,9 +471,9 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 				<p class="form-row form-row-last">
 					<label for="billmate_invo_gender"><?php echo __("Gender", 'billmate') ?> <span class="required">*</span></label>
 					<select id="billmate_invo_gender" name="billmate_invo_gender" class="woocommerce-select" style="width:120px;">
-						<option value=""><?php echo __("Select gender", 'billmate') ?></options>
-						<option value="0"><?php echo __("Female", 'billmate') ?></options>
-						<option value="1"><?php echo __("Male", 'billmate') ?></options>
+						<option value=""><?php echo __("Select gender", 'billmate') ?></option>
+						<option value="0"><?php echo __("Female", 'billmate') ?></option>
+						<option value="1"><?php echo __("Male", 'billmate') ?></option>
 					</select>
 				</p>
 			<?php endif; ?>
@@ -936,7 +936,7 @@ parse_str($_POST['post_data'], $datatemp);
 		    'country'         => $countryname,
 	    );
 
-		$languageCode = defined( 'WPLANG' ) && WPLANG ? WPLANG : 'sv_SE';
+		$languageCode = get_locale();
 		
 		$lang = explode('_', strtoupper($languageCode));
 		$languageCode = $lang[0];
@@ -1149,7 +1149,7 @@ class WC_Gateway_Billmate_Invoice_Extra {
 		 global $woocommerce;
 		 	 
 		 // Only run this if Billmate Invoice is the choosen payment method and this is WC +2.0
-		 if ($_POST['payment_method'] == 'billmate' && version_compare( WOOCOMMERCE_VERSION, '2.0', '>=' )) {
+		 if (isset($_POST['payment_method']) && $_POST['payment_method'] == 'billmate' && version_compare( WOOCOMMERCE_VERSION, '2.0', '>=' )) {
 		 	
 		 	$invoice_fee = new WC_Gateway_Billmate_Invoice;
 		 	$this->invoice_fee_id = $invoice_fee->get_billmate_invoice_fee_product();
@@ -1184,13 +1184,13 @@ class WC_Gateway_Billmate_Invoice_Extra {
 		$this->shop_country = $data->get_billmate_shop_country();
  		
  		// Only run this if Billmate Invoice is the choosen payment method
- 		if ($_POST['payment_method'] == 'billmate') {
+ 		if (isset($_POST['payment_method']) && $_POST['payment_method'] == 'billmate') {
  			
  			// SE, NO, DK & FI
 	 		if ( $this->shop_country == 'SE' || $this->shop_country == 'NO' || $this->shop_country == 'DK' || $this->shop_country == 'FI' ){
  			
     			// Check if set, if its not set add an error.
-    			if (!$_POST['billmate_invo_pno'])
+    			if (isset($_POST['billmate_invo_pno']) && !$_POST['billmate_invo_pno'])
     	    	 	wc_bm_errors( __('Ej giltigt organisations-/personnummer. Kontrollera numret.', 'billmate') );
 
 			}
