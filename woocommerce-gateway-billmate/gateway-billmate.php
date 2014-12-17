@@ -48,27 +48,23 @@ function init_billmate_gateway() {
 			$this->shop_country	= get_option('woocommerce_default_country');
 
 			// Check if woocommerce_default_country includes state as well. If it does, remove state
-        	if (strstr($this->shop_country, ':')) :
-        		$this->shop_country = current(explode(':', $this->shop_country));
-        	else :
-        		$this->shop_country = $this->shop_country;
-        	endif;
+    	if (strstr($this->shop_country, ':')) :
+    		$this->shop_country = current(explode(':', $this->shop_country));
+    	else :
+    		$this->shop_country = $this->shop_country;
+    	endif;
 
-        	add_action( 'wp_enqueue_scripts', array(&$this, 'billmate_load_scripts'), 6 );
-			add_action('wp_head', array(&$this, 'billmate_load_styles'), 6 );
-	    }
-	    function billmate_load_styles(){
-	    	echo '<link href="'.plugins_url( '/colorbox.css', __FILE__ ).'" rel="stylesheet" />';
-	    }
-
+    	add_action( 'wp_enqueue_scripts', array(&$this, 'billmate_load_scripts_styles'), 6 );
+    }
 
 
 		/**
-	 	 * Register and Enqueue Billmate scripts
+	 	 * Register and Enqueue Billmate scripts & styles
 	 	 */
-		function billmate_load_scripts() {
+		function billmate_load_scripts_styles() {
 
 			wp_enqueue_script( 'jquery' );
+			wp_enqueue_style( 'billmate-colorbox', plugins_url( '/colorbox.css', __FILE__ ), array(), '1.0', 'all');
 
 			// Invoice terms popup
 			if ( is_checkout() ) {
