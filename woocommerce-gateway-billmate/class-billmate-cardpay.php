@@ -40,8 +40,6 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		$this->authentication_method= ( isset( $this->settings['authentication_method'] ) ) ? $this->settings['authentication_method'] : '';
 		$this->prompt_name_entry	= ( isset( $this->settings['prompt_name_entry'] ) ) ? $this->settings['prompt_name_entry'] : 'YES';
 		$this->do_3dsecure			= ( isset( $this->settings['do_3dsecure'] ) ) ? $this->settings['do_3dsecure'] : 'NO';
-		//if ( $this->handlingfee == "") $this->handlingfee = 0;
-		//if ( $this->handlingfee_tax == "") $this->handlingfee_tax = 0;
 		if ( $this->invoice_fee_id == "") $this->invoice_fee_id = 0;
 
 		if ( $this->invoice_fee_id > 0 ) :
