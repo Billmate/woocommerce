@@ -55,8 +55,22 @@ function init_billmate_gateway() {
     	endif;
 
     	add_action( 'wp_enqueue_scripts', array(&$this, 'billmate_load_scripts_styles'), 6 );
+
+    	// Loads the billmatecustom.css if it exists, loads with prio 999 so it loads at the end
+    	add_action( 'wp_enqueue_scripts', array(&$this, 'billmate_load_custom_css'), 999 );
     }
 
+    /**
+     * Includes a billmatecustom.css if it exists, in case you need to make any special css edits on the css for Billmate regarding the shop.
+		 * It could take a minute or two before it shows up withhour cache depending on server. Clear cache on server if it does not show up.
+		 * The file automaticlly creates a version depending on the md5 for the file.
+		 */
+    function billmate_load_custom_css() {
+			$filepath = plugin_dir_path( __FILE__ ) . 'billmatecustom.css';
+			if ( file_exists( $filepath ) ) {
+				wp_enqueue_style( 'billmate-custom', plugins_url( '/billmatecustom.css', __FILE__ ), array(), md5_file($filepath), 'all');
+			}
+    }
 
 		/**
 	 	 * Register and Enqueue Billmate scripts & styles
@@ -77,9 +91,10 @@ function init_billmate_gateway() {
 			// Account terms popup
 			if ( is_checkout() || is_product() || is_shop() || is_product_category() || is_product_tag() ) {
 				// Original file: https://static.billmate.com:444/external/js/billmatepart.js
-//				wp_register_script( 'billmate-part-js', plugins_url( '/js/billmatepart.js', __FILE__ ), array('jquery'), '1.0', false );
-				//wp_enqueue_script( 'billmate-part-js' );
+				// wp_register_script( 'billmate-part-js', plugins_url( '/js/billmatepart.js', __FILE__ ), array('jquery'), '1.0', false );
+				// wp_enqueue_script( 'billmate-part-js' );
 			}
+
 		}
 
 
