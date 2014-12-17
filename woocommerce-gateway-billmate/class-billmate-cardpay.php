@@ -121,17 +121,6 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 	    $order_id = $_POST['order_id'];
 		$order = new WC_Order( $order_id );
 
-		if( $accept_url_hit ) {
-			// Remove cart
-			if(version_compare(WC_VERSION, '2.0.0', '<')){
-				$redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))));
-			} else {
-				$redirect = $this->get_return_url($order);
-			}
-			wp_safe_redirect($redirect);
-			return false;
-		}
-
 	    if( $_POST['status'] != 0 ){
 			if($_POST['error_message'] == 'Invalid credit card number') {
 				$error_message = 'Tyvärr kunde inte din betalning genomföras';
