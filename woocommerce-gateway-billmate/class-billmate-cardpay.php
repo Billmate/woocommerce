@@ -146,7 +146,6 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			if( $accept_url_hit ) wp_safe_redirect($data['redirect']);
 			exit;
 		} elseif( $accept_url_hit ) {
-
 			// Remove cart
 			$woocommerce->cart->empty_cart();
 			if(version_compare(WC_VERSION, '2.0.0', '<')) {
