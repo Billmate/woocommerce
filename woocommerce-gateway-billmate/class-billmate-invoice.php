@@ -1161,17 +1161,20 @@ class WC_Gateway_Billmate_Invoice_Extra {
           $product = new WC_Product( $this->invoice_fee_id );
         }
 
-        if ( !empty($this->invoice_fee_id) && $product->exists() ) :
+        if ((is_object($product) && $product->exists())) :
 
-          // Is this a taxable product?
-          if ( $product->is_taxable() ) {
-			 		  $product_tax = true;
-          } else {
-            $product_tax = false;
-          }
+          if ( !empty($this->invoice_fee_id) ) :
 
-          $woocommerce->cart->add_fee($product->get_title(),$product->get_price_excluding_tax(),$product_tax,$product->get_tax_class());
+            // Is this a taxable product?
+            if ( $product->is_taxable() ) {
+  			 		  $product_tax = true;
+            } else {
+              $product_tax = false;
+            }
 
+            $woocommerce->cart->add_fee($product->get_title(),$product->get_price_excluding_tax(),$product_tax,$product->get_tax_class());
+
+          endif;
         endif;
 		  }
     } // End function add_invoice_fee_process
