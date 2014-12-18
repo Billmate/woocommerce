@@ -1143,7 +1143,7 @@ class WC_Gateway_Billmate_Invoice_Extra {
 	}
 
 	/**
-	 * Add the invoice fee to the cart if Payson Invoice is selected payment method, if this is WC 2.0 and if invoice fee is used.
+	 * Add the invoice fee to the cart if Billmate Invoice is selected payment method, if this is WC 2.0 and if invoice fee is used.
 	 **/
     function add_invoice_fee_process() {
       global $woocommerce;
@@ -1154,6 +1154,12 @@ class WC_Gateway_Billmate_Invoice_Extra {
         $this->invoice_fee_id = $invoice_fee->get_billmate_invoice_fee_product();
         //if( empty( $this->invoice_fee_id  ) ) throw new Exception(__('Missing Invoice Fee') );
         $product = get_product($this->invoice_fee_id);
+
+        if ( function_exists( 'get_product' ) ) {
+          $product = get_product($this->invoice_fee_id);
+        } else {
+          $product = new WC_Product( $this->invoice_fee_id );
+        }
 
         if ( !empty($this->invoice_fee_id) && $product->exists() ) :
 
