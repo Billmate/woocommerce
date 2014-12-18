@@ -42,3 +42,15 @@ To create a Invoice fee product:
 
 == To Place billmate logo copy this <img> tag to your widget or post or code ==
 <img src="http://wordpress.billmate.se/wp-content/plugins/woocommerce-gateway-billmate/images/billmate-logo.png" title="Billmate Payment Gateway" alt="Billmate Payment Gateway" />
+
+
+== Changelog ==
+
+= 1.2.3 =
+* Feature - Added the functionality so that if you put a file called billmatecustom.css in the plugin it will include that. Useful if you need to overwrite some CSS to make the Billmate plugin look good in you checkout without everwriting the themes css.
+* Fix - Fixed so that an error on the checkout page does not occur if you enter wrong "personnummer" twice.
+* Fix - If you enter a wroong ID for the invoice fee the checkout and settings page does not crash.
+* Fix - Removed references to WPLANG and now uses get_locale function instead. According to Wordpres coding standard.
+* Tweak - Updated to new company name : Billmate AB.
+* Tweak - Change to correct include of colorbox.css to follow Wordpress coding standard
+* Tweak - Fixed so that partpayment prices is shown as 12 mounths instead of 3
