@@ -3,7 +3,7 @@
 Original code created by Niklas Högefjord - http://krokedil.com/
 Modified for Billmate by Gagan Preet, Eminence Technology
 
-Documentation with instructions on how to setup the plugin can be found at https://efinance.se/plugins/woocommerce/Instruktionsmanual_Woocommerce_Billmate_Plugin.pdf
+Documentation with instructions on how to setup the plugin can be found at http://billmate.se/plugins/manual/Installation_Manual_Woocommerce_Billmate.pdf
 
 == DESCRIPTION ==
 
@@ -24,7 +24,7 @@ If you want to, you can also manually upload your billmatepclasses.json file via
 INVOICE FEE HANDLING
 Since of version 1.9 the Invoice Fee for Billmate Invoice are added as a simple (hidden) product. This is to match order total in WooCommerce and your billmate part payment (in earlier versions the invoice fee only were added to Billmate).
 
-To create a Invoice fee product: 
+To create a Invoice fee product:
 - Add a simple (hidden) product. Mark it as a taxable product.
 - Go to the Billmate Gateway settings page and add the ID of the Invoice Fee product. The ID can be found by hovering the Invoice Fee product on the Products page in WooCommerce.
 
