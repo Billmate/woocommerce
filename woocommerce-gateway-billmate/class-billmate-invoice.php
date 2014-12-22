@@ -671,7 +671,7 @@ parse_str($_POST['post_data'], $datatemp);
 				'artnr'    => $sku,
 				'title'    => $item['name'],
 				'aprice'    => ($priceExcl*100), //+$item->unittax
-				'tax'      => (float)$item_tax_percentage,
+				'taxrate'      => (float)$item_tax_percentage,
 				'discount' => (float)0,
 				'withouttax' => $item['qty'] * ($priceExcl*100)
 			);
@@ -694,7 +694,7 @@ parse_str($_POST['post_data'], $datatemp);
 				'artnr'    => "",
 				'title'    => __('Rabatt', 'billmate'),
 				'aprice'    => -($order_discount*100), //+$item->unittax
-				'tax'      => 0,
+				'taxrate'      => 0,
 				'discount' => (float)0,
 				'withouttax' => -($order_discount*100)
 
@@ -705,7 +705,7 @@ parse_str($_POST['post_data'], $datatemp);
 		// Shipping
 		if ($order->order_shipping>0) :
 
-			// We manually calculate the shipping tax percentage here
+			// We manually calculate the shipping taxrate percentage here
 			$calculated_shipping_tax_percentage = ($order->order_shipping_tax/$order->order_shipping)*100; //25.00
 			$calculated_shipping_tax_decimal = ($order->order_shipping_tax/$order->order_shipping)+1; //0.25
 
@@ -715,7 +715,7 @@ parse_str($_POST['post_data'], $datatemp);
 
 			$orderValues['Cart']['Shipping'] = array(
 				'withouttax'    => round(($shipping_price-$order->order_shipping_tax)*100,0),
-				'tax'      => $calculated_shipping_tax_percentage,
+				'taxrate'      => $calculated_shipping_tax_percentage,
 
 			);
 			$total += ($shipping_price-$order->order_shipping_tax) * 100;
@@ -741,7 +741,7 @@ parse_str($_POST['post_data'], $datatemp);
 
 				$orderValues['Cart']['Handling'] = array(
 					'withoutvat'    => round($this->invoice_fee_price*100,0),
-					'tax'      => $this->invoice_fee_tax_percentage,
+					'taxrate'      => $this->invoice_fee_tax_percentage,
 				);
 
 				$total += $this->invoice_fee_price * 100;

@@ -787,7 +787,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 					'artnr'    => $sku,
 					'title'    => $item['name'],
 					'aprice'    => ($priceExcl*100), //+$item->unittax
-					'tax'      => (float)$item_tax_percentage,
+					'taxrate'      => (float)$item_tax_percentage,
 					'discount' => (float)0,
 					'withouttax' => $item['qty'] * ($priceExcl*100)
 				);
@@ -810,7 +810,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 				'artnr'    => "",
 				'title'    => __('Rabatt', 'billmate'),
 				'aprice'    => -($order_discount*100), //+$item->unittax
-				'tax'      => 0,
+				'taxrate'      => 0,
 				'discount' => (float)0,
 				'withouttax' => -($order_discount*100)
 
@@ -821,7 +821,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		// Shipping
 		if ($order->order_shipping>0) :
 
-			// We manually calculate the shipping tax percentage here
+			// We manually calculate the shipping taxrate percentage here
 			$calculated_shipping_tax_percentage = ($order->order_shipping_tax/$order->order_shipping)*100; //25.00
 			$calculated_shipping_tax_decimal = ($order->order_shipping_tax/$order->order_shipping)+1; //0.25
 
@@ -831,7 +831,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 
 			$orderValues['Cart']['Shipping'] = array(
 				'withouttax'    => round(($shipping_price-$order->order_shipping_tax)*100,0),
-				'tax'      => $calculated_shipping_tax_percentage,
+				'taxrate'      => $calculated_shipping_tax_percentage,
 
 			);
 			$total += ($shipping_price-$order->order_shipping_tax) * 100;
