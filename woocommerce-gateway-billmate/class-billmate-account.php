@@ -285,7 +285,6 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 
 			$content = get_option('wc_gateway_billmate_partpayment_pclasses',false);
 			if($content){
-				error_log(print_r($content,true));
 				$fields = array('eid','paymentplanid','description','months','interestrate','startfee','handlingfee','minamount','maxamount','currency','country','expirydate');
 				?>
 				<table border="0" style="border:1px solid #000">
@@ -299,7 +298,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 							<td><?php echo $terms['eid']; ?></td>
 							<td><?php echo $terms['paymentplanid']; ?></td>
 							<td><?php echo $terms['description']; ?></td>
-							<td><?php echo $terms['nbrofmonts']; ?></td>
+							<td><?php echo $terms['nbrofmonths']; ?></td>
 							<td><?php echo $terms['interestrate']; ?></td>
 							<td><?php echo $terms['startfee']; ?></td>
 							<td><?php echo $terms['handlingfee'];?></td>
@@ -553,7 +552,9 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 			<?php
 			// Calculate lowest monthly cost and display it
 			if( $enabled_plcass == 'no' ) return false;
-			$pclass = BillmateCalc::getCheapestPClass($sum, $flag, $pclasses->{$eid});
+			$pclasses = get_option('wc_gateway_billmate_partpayment_pclasses');
+			if(!$pclasses) return false;
+			$pclass = BillmateCalc::getCheapestPClass($sum, $flag, $pclasses);
 
 			//Did we get a PClass? (it is false if we didn't)
 			if($pclass) {
@@ -780,17 +781,14 @@ parse_str($_POST['post_data'], $datatemp);
 	**/
 	function payment_fields_options( $sum, $label = true ){
 
-		$pcURI = BILLMATE_DIR . 'srv/billmatepclasses.json';
 		$flag = BillmateFlags::CHECKOUT_PAGE;
 		$pclasses_not_available = true;
 		$enabled_plcass = 'no';
-		if(file_exists($pcURI)){
-			$pclasses = file_get_contents($pcURI);
-			if( strlen( $pclasses) ){
-				$pclasses_not_available = false;
-			}
+
+		$pclasses = get_option('wc_gateway_billmate_partpayment_pclasses',false);
+		if($pclasses){
+			$pclasses_not_available = false;
 		}
-		$pclasses = json_decode($pclasses);
 		// Check if we have any PClasses
 
 		// TODO Deactivate this gateway if the file billmatepclasses.json doesn't exist
@@ -803,9 +801,9 @@ parse_str($_POST['post_data'], $datatemp);
                 <?php
                 // Loop through the available PClasses stored in the file srv/billmatepclasses.json
 
-                foreach ($pclasses->{$this->eid} as $pclass2) {
+                foreach ($pclasses as $pclass2) {
 
-                    $pclass = (array)$pclass2;
+                    $pclass = $pclass2;
 
                     if (strlen($pclass['description']) > 0 ) {
 
@@ -825,9 +823,9 @@ parse_str($_POST['post_data'], $datatemp);
                                         );
 
                         // Check that Cart total is larger than min amount for current PClass
-                        if($sum >= $pclass['mintotal'] && ($sum <= $pclass['maxtotal'] || $pclass['maxtotal'] == 0) ) {
+                        if($sum >= $pclass['minamount'] && ($sum <= $pclass['maxamount'] || $pclass['maxamount'] == 0) ) {
                             $enabled_plcass = 'yes';
-                            echo '<option value="' . $pclass['pclassid'] . '">';
+                            echo '<option value="' . $pclass['paymentplanid'] . '">';
                             if ($this->billmate_country == 'NO') {
                                 if ( $pclass['Type'] == 1 ) {
                                     //If Account - Do not show startfee. This is always 0.
@@ -863,9 +861,9 @@ parse_str($_POST['post_data'], $datatemp);
                 // Loop through the available PClasses stored in the file srv/billmatepclasses.json
                 if( in_array($this->shop_country, $this->allowed_countries) ) {
 
-					foreach ($pclasses->{$this->eid} as $pclass2) {
+					foreach ($pclasses as $pclass2) {
 
-						$pclass = (array)$pclass2;
+						$pclass = $pclass2;
 
 						if (strlen($pclass['description']) > 0 ) {
 
@@ -885,7 +883,7 @@ parse_str($_POST['post_data'], $datatemp);
 											);
 
 							// Check that Cart total is larger than min amount for current PClass
-							if($sum >= $pclass['mintotal'] && ($sum <= $pclass['maxtotal'] || $pclass['maxtotal'] == 0) ) {
+							if($sum >= $pclass['minamount'] && ($sum <= $pclass['maxamount'] || $pclass['maxamount'] == 0) ) {
 								$enabled_plcass = 'yes';
 								echo '<div>';
 								if ($this->billmate_country == 'NO') {
@@ -1073,12 +1071,13 @@ parse_str($_POST['post_data'], $datatemp);
 
 		$billmate_pclass_file = BILLMATE_DIR . 'srv/billmatepclasses.json';
 
-		$k = new BillMate($eid,$secret,true,false, $this->testmode == 'yes');
+		$k = new Billmate($eid,$secret,true, $this->testmode == 'yes',false);
 		$total = 0;
 		$totalTax = 0;
 		$orderValues = array();
 		$orderValues['PaymentData'] = array(
-			'method' => 1,
+			'method' => 4,
+			'paymentplanid' => $billmate_pclass,
 			'currency' => get_woocommerce_currency(),
 			'language' => get_locale(),
 			'country' => $country,
@@ -1175,7 +1174,7 @@ parse_str($_POST['post_data'], $datatemp);
 			'withtax' => $total + $totalTax
 		);
 		try{
-			$addr = $k->GetAddress($billmate_pno);
+			$addr = $k->GetAddress(array('pno' => $billmate_pno));
 		}catch( Exception $ex ){
 			wc_bm_errors( $ex->getMessage() );
             return;
@@ -1438,11 +1437,11 @@ parse_str($_POST['post_data'], $datatemp);
 		//global $woocommerce, $product, $billmate_partpayment_shortcode_currency, $billmate_partpayment_shortcode_price, $billmate_partpayment_shortcode_img, $billmate_partpayment_shortcode_info_link;
 		global $woocommerce, $product, $billmate_partpayment_shortcode_currency, $billmate_partpayment_shortcode_price, $billmate_shortcode_img, $billmate_partpayment_country,$billmate_partpayment_eid;
 
-		$billmate_filename = BILLMATE_DIR . 'srv/billmatepclasses.json';
+		$pclasses = get_option('wc_gateway_billmate_partpayment_pclasses',false);
 		$billmate_partpayment_eid = $this->settings['eid'];
 
 	 	// Only execute this if the feature is activated in the gateway settings
-		if ( $this->show_monthly_cost == 'yes' && file_exists($billmate_filename) ) {
+		if ( $this->show_monthly_cost == 'yes' && is_array($pclasses) ) {
 
 			// Test mode or Live mode
 			if ( $this->testmode == 'yes' ):
@@ -1469,25 +1468,19 @@ parse_str($_POST['post_data'], $datatemp);
 			$language = $this->billmate_language;
 			$currency = $this->billmate_currency;
 
-			$billmate_pclass_file = BILLMATE_DIR . 'srv/billmatepclasses.json';
 
 			$k = new BillMate($eid,$secret,true,false, $this->testmode == 'yes');
 
 			$pcURI = BILLMATE_DIR . 'srv/billmatepclasses.json';
 			$pclasses_not_available = true;
-			if(file_exists($pcURI)){
-				$pclasses = file_get_contents($pcURI);
-				if( strlen( $pclasses) ){
-					$pclasses_not_available = false;
-				}
-			}
-			$pclasses = json_decode($pclasses);
+			if($pclasses) $pclasses_not_available = false;
+
 
 			// apply_filters to product price so we can filter this if needed
 			$billmate_product_total = $product->get_price();
 			$sum = apply_filters( 'billmate_product_total', $billmate_product_total ); // Product price.
 			$flag = BillmateFlags::PRODUCT_PAGE; //or BillmateFlags::PRODUCT_PAGE, if you want to do it for one item.
-			$pclass =  BillmateCalc::getCheapestPClass($sum, $flag, $pclasses->{$eid});
+			$pclass =  BillmateCalc::getCheapestPClass($sum, $flag, $pclasses);
 
 
 			//Did we get a PClass? (it is false if we didn't)
@@ -1544,10 +1537,10 @@ parse_str($_POST['post_data'], $datatemp);
  		//global $woocommerce, $product, $billmate_partpayment_shortcode_currency, $billmate_partpayment_shortcode_price, $billmate_partpayment_shortcode_img, $billmate_partpayment_shortcode_info_link;
  		global $woocommerce, $product, $billmate_partpayment_shortcode_currency, $billmate_partpayment_shortcode_price, $billmate_shortcode_img, $billmate_partpayment_country;
 
-	 	$billmate_filename = BILLMATE_DIR . 'srv/billmatepclasses.json';
+	 	$pclasses = get_option('wc_gateway_billmate_partpayment_pclasses',false);
 
 	 	// Only execute this if the feature is activated in the gateway settings
-		if ( $this->show_monthly_cost_shop == 'yes' && file_exists($billmate_filename) ) {
+		if ( $this->show_monthly_cost_shop == 'yes' && is_array($pclasses) ) {
 
 			// Test mode or Live mode
 			if ( $this->testmode == 'yes' ):
@@ -1573,24 +1566,18 @@ parse_str($_POST['post_data'], $datatemp);
 			$language = $this->billmate_language;
 			$currency = $this->billmate_currency;
 
-			$billmate_pclass_file = BILLMATE_DIR . 'srv/billmatepclasses.json';
 
 			$k = new BillMate($eid,$secret,true,false, $this->testmode == 'yes');
 
 			$pclasses_not_available = true;
-			if(file_exists($billmate_pclass_file)){
-				$pclasses = file_get_contents($billmate_pclass_file);
-				if( strlen( $pclasses) ){
-					$pclasses_not_available = false;
-				}
-			}
-			$pclasses = json_decode($pclasses);
+			if($pclasses) $pclasses_not_available = false;
+
 
 			// apply_filters to product price so we can filter this if needed
 			$billmate_product_total = $product->get_price();
 			$sum = apply_filters( 'billmate_product_total', $billmate_product_total ); // Product price.
 			$flag = BillmateFlags::PRODUCT_PAGE; //or BillmateFlags::PRODUCT_PAGE, if you want to do it for one item.
-			$pclass = BillmateCalc::getCheapestPClass($sum, $flag, $pclasses->{$eid});
+			$pclass = BillmateCalc::getCheapestPClass($sum, $flag, $pclasses);
 
 
 			//Did we get a PClass? (it is false if we didn't)
