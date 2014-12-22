@@ -664,18 +664,18 @@ parse_str($_POST['post_data'], $datatemp);
 			$billmate_item_price_including_tax = $order->get_item_total( $item, true );
 			$item_price = apply_filters( 'billmate_item_price_including_tax', $billmate_item_price_including_tax );
 
+			$priceExcl = $item_price-$order->get_item_tax($item,false);
+
 			$orderValues['Articles'][] = array(
 				'quantity'   => (int)$item['qty'],
 				'artnr'    => $sku,
 				'title'    => $item['name'],
-				'aprice'    => ($item_price*100), //+$item->unittax
+				'aprice'    => ($priceExcl*100), //+$item->unittax
 				'tax'      => (float)$item_tax_percentage,
 				'discount' => (float)0,
-				'withouttax' => $item['qty'] * ($item_price*100)
-
+				'withouttax' => $item['qty'] * ($priceExcl*100)
 			);
-			$totalTemp = ((int)$item['qty'] * ($item_price*100));
-
+			$totalTemp = ((int)$item['qty'] * ($priceExcl*100));
 			$total += $totalTemp;
 			$totalTax += ($totalTemp * $item_tax_percentage/100);
 
@@ -714,12 +714,12 @@ parse_str($_POST['post_data'], $datatemp);
 			$shipping_price = apply_filters( 'billmate_shipping_price_including_tax', $billmate_shipping_price_including_tax );
 
 			$orderValues['Cart']['Shipping'] = array(
-				'withouttax'    => round($shipping_price*100,0),
+				'withouttax'    => round(($shipping_price-$order->order_shipping_tax)*100,0),
 				'tax'      => $calculated_shipping_tax_percentage,
 
 			);
-			$total += $shipping_price * 100;
-			$totalTax += ($shipping_price * ($calculated_shipping_tax_percentage/100))*100;
+			$total += ($shipping_price-$order->order_shipping_tax) * 100;
+			$totalTax += (($shipping_price-$order->order_shipping_tax) * ($calculated_shipping_tax_percentage/100))*100;
 		endif;
 
 
