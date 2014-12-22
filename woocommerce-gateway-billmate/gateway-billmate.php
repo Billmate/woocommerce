@@ -27,7 +27,11 @@ add_action('plugins_loaded', 'init_billmate_gateway', 0);
 define('BILLMATE_DIR', dirname(__FILE__) . '/');
 define('BILLMATE_LIB', dirname(__FILE__) . '/library/');
 require_once 'commonfunctions.php';
-
+/** Activate hook. Install database for paymentclasses */
+/*function activate_billmate_gateway(){
+	Check if invoice fee is post
+}
+register_activation_hook(__FILE__,'activate_billmate_gateway');*/
 function init_billmate_gateway() {
 
 	// If the WooCommerce payment gateway class is not available, do nothing

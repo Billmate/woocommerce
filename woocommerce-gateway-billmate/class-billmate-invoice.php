@@ -579,8 +579,6 @@ parse_str($_POST['post_data'], $datatemp);
 
 		endif;
 
-		// Store Billmate specific form values in order as post meta
-		update_post_meta( $order_id, 'billmate_pno', $billmate_pno);
 
 		// Test mode or Live mode
 
