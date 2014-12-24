@@ -117,19 +117,32 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		}
 
 		$order_id = $_POST['order_id'];
-		$order = new WC_Order( $order_id );
 
-    if( $_POST['status'] != 0 ) {
-			if($_POST['error_message'] == 'Invalid credit card number') {
-				$error_message = 'Tyvärr kunde inte din betalning genomföras';
+
+		$order = new WC_Order( $order_id );
+		// Check if transient is set(Success url is processing)
+		if(false === get_transient('billmate_cardpay_order_id_'.$order_id)){
+			if(version_compare(WC_VERSION, '2.0.0', '<')) {
+				$redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))));
 			} else {
-				$error_message = $_POST['error_message'];
+				$redirect = $this->get_return_url($order);
 			}
-			$order->add_order_note( __($error_message, 'billmate') );
-			$woocommerce->add_error( __($error_message, 'billmate') );
-			wp_safe_redirect(add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_checkout_page_id')))));
-			return false;
-    }
+			wp_safe_redirect($redirect);
+		}
+		// Set Transient if not exists to prevent multiple callbacks
+		set_transient('billmate_cardpay_order_id_'.$order_id,true,3600);
+
+		if( $_POST['status'] != 0 ) {
+				if($_POST['error_message'] == 'Invalid credit card number') {
+					$error_message = 'Tyvärr kunde inte din betalning genomföras';
+				} else {
+					$error_message = $_POST['error_message'];
+				}
+				$order->add_order_note( __($error_message, 'billmate') );
+				$woocommerce->add_error( __($error_message, 'billmate') );
+				wp_safe_redirect(add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_checkout_page_id')))));
+				return false;
+		}
 
 		if( method_exists($order, 'get_status') ) {
 			$order_status = $order->get_status();
@@ -424,6 +437,9 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
             	//Unknown response, store it in a database.
 				$order->add_order_note( __($result, 'billmate') );
 				$woocommerce->add_error( __((string)$result, 'billmate') );
+
+				// Delete Transient
+				delete_transient('billmate_cardpay_order_id_'.$order_id);
 				return array(
 						'result' 	=> 'failed',
 						'redirect'	=> add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(woocommerce_get_page_id('checkout'))))
@@ -444,6 +460,8 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 				} else {
 					$redirect = $this->get_return_url($order);;
 				}
+				// Delete Transient
+				delete_transient('billmate_cardpay_order_id_'.$order_id);
 				// Return thank you redirect
 				return array(
 						'result' 	=> 'success',
