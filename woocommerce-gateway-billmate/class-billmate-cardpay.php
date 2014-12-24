@@ -150,12 +150,16 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			$order_status_terms = wp_get_object_terms( $order_id, 'shop_order_status', array('fields' => 'slugs') );
 			$order_status = $order_status_terms[0];
 		}
-
-		if( in_array($order_status, array('pending')) ) {
-			$data = $this->sendBillmate($order_id, $order );
-			$order->update_status('completed', $payment_note);
-			if( $accept_url_hit ) wp_safe_redirect($data['redirect']);
-			exit;
+		// Check if lockstate equals false.
+		if(false === ($lockState = get_transient('billmate_cardpay_order_id_'.$order_id))){
+			// Set Transient to prevent multiple running
+			set_transient('billmate_cardpay_order_id_'.$order_id,'locked',3600);
+			if( in_array($order_status, array('pending')) ) {
+				$data = $this->sendBillmate($order_id, $order );
+				$order->update_status('completed', $payment_note);
+				if( $accept_url_hit ) wp_safe_redirect($data['redirect']);
+				exit;
+			}
 		}
 
 		if( $accept_url_hit ) {
