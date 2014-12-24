@@ -153,7 +153,8 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			set_transient('billmate_bankpay_order_id_'.$order_id,'locked',3600);
 			if( in_array($order_status, array('pending')) ) {
 				$data = $this->sendBillmate($order_id, $order );
-				$order->update_status('completed', $payment_note);
+				// Do not update to completed as its not WooCommerce Bestpractice
+				//$order->update_status('completed', $payment_note);
 				if( $accept_url_hit ) wp_safe_redirect($data['redirect']);
 				exit;
 			}

@@ -156,7 +156,8 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			set_transient('billmate_cardpay_order_id_'.$order_id,'locked',3600);
 			if( in_array($order_status, array('pending')) ) {
 				$data = $this->sendBillmate($order_id, $order );
-				$order->update_status('completed', $payment_note);
+				// Not update status to completed as its against WooCommerce Bestpractice
+				//$order->update_status('completed', $payment_note);
 				if( $accept_url_hit ) wp_safe_redirect($data['redirect']);
 				exit;
 			}
