@@ -120,17 +120,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 
 
 		$order = new WC_Order( $order_id );
-		// Check if transient is set(Success url is processing)
-		if(false === get_transient('billmate_cardpay_order_id_'.$order_id)){
-			if(version_compare(WC_VERSION, '2.0.0', '<')) {
-				$redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))));
-			} else {
-				$redirect = $this->get_return_url($order);
-			}
-			wp_safe_redirect($redirect);
-		}
-		// Set Transient if not exists to prevent multiple callbacks
-		set_transient('billmate_cardpay_order_id_'.$order_id,true,3600);
+
 
 		if( $_POST['status'] != 0 ) {
 				if($_POST['error_message'] == 'Invalid credit card number') {
