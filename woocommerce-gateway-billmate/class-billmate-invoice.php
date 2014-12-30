@@ -34,13 +34,16 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 		$this->invoice_fee_id		= ( isset( $this->settings['invoice_fee_id'] ) ) ? $this->settings['invoice_fee_id'] : '';
 		$this->testmode				= ( isset( $this->settings['testmode'] ) ) ? $this->settings['testmode'] : '';
 		$this->de_consent_terms		= ( isset( $this->settings['de_consent_terms'] ) ) ? $this->settings['de_consent_terms'] : '';
-		$this->allowed_countries		= ( isset( $this->settings['billmateinvoice_allowed_countries'] ) ) ? $this->settings['billmateinvoice_allowed_countries'] : array();
+		$this->invoice_fee 			= ( isset( $this->settings['billmate_invoice_fee'] ) ) ? $this->settings['billmate_invoice_fee'] : 0;
+		$this->invoice_fee_tax_class = (isset( $this->settings['billmate_invoice_fee_tax_class'] ) ) ? $this->settings['billmate_invoice_fee_tax_class'] : '';
+		$this->allowed_countries 		= ( isset( $this->settings['billmateinvoice_allowed_countries'] ) ) ? $this->settings['billmateinvoice_allowed_countries'] : array();
 
 		//if ( $this->handlingfee == "") $this->handlingfee = 0;
 		//if ( $this->handlingfee_tax == "") $this->handlingfee_tax = 0;
 		if ( $this->invoice_fee_id == "") $this->invoice_fee_id = 0;
 
 
+		/*
 		if ( $this->invoice_fee_id > 0 ) :
 
 			// Version check - 1.6.6 or 2.0
@@ -69,7 +72,7 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 		$this->invoice_fee_price = 0;
 
 		endif;
-
+		*/
 		// Country and language
 		switch ( $this->shop_country )
 		{
@@ -208,6 +211,19 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 								'description' => __( 'Create a hidden (simple) product that acts as the invoice fee. Enter the ID number in this textfield. Leave blank to disable. ', 'billmate' ),
 								'default' => ''
 							),
+			'billmate_invoice_fee' => array(
+								'title' => __( 'Invoice fee', 'billmate'),
+								'type' => 'text',
+								'description' => __( 'Add a invoice fee cost'),
+								'default' => ''
+			),
+			'billmate_invoice_fee_tax_class' => array(
+								'title' => __('Invoice fee tax class', 'billmate'),
+								'type' => 'select',
+								'description' => __('The tax class for Invoice fee'),
+								'default' => '',
+								'options' => array_filter( array_map( 'trim', explode( "\n", get_option( 'woocommerce_tax_classes' ) ) ) )
+			),
 			'billmateinvoice_allowed_countries' => array(
 				'title' 		=> __( 'Allowed Countries', 'woocommerce' ),
 				'type' 			=> 'multiselect',
@@ -726,7 +742,7 @@ parse_str($_POST['post_data'], $datatemp);
 		// Invoice/handling fee
 
 		// Get the invoice fee product if invoice fee is used
-		if ( $this->invoice_fee_price > 0 ) {
+		if ( $this->invoice_fee > 0 ) {
 
 			// We have already checked that the product exists in billmate_invoice_init()
 			// Version check - 1.6.6 or 2.0
@@ -738,16 +754,17 @@ parse_str($_POST['post_data'], $datatemp);
 
 
 			if ( version_compare( WOOCOMMERCE_VERSION, '2.0', '<' ) ) {
-
+				$rate = WC_Tax::get_rates($this->invoice_fee_tax_class);
 				$orderValues['Cart']['Handling'] = array(
-					'withoutvat'    => round($this->invoice_fee_price*100,0),
-					'taxrate'      => $this->invoice_fee_tax_percentage,
+					'withouttax'    => round($this->invoice_fee*100,0),
+					'taxrate'      => $rate,
 				);
 
 				$total += $this->invoice_fee_price * 100;
-				$totalTax += (($this->invoice_fee_tax_percentage/100) * $this->invoice_fee_price)*100;
+				$totalTax += (($rate/100) * $this->invoice_fee_price)*100;
 				// Add the invoice fee to the order
 				// Get all order items and unserialize the array
+				//$woocommerce->cart->add_fee(__('Invoice Fee',$this->invoice_fee,true,$this->invoice_fee_tax_class));
 				$originalarray = unserialize($order->order_custom_fields['_order_items'][0]);
 
 
@@ -755,15 +772,15 @@ parse_str($_POST['post_data'], $datatemp);
 				$addfee[] = array (
 					'id' => $this->invoice_fee_id,
 					'variation_id' => '',
-					'name' => $product->get_title(),
+					'name' => __('Invoice Fee','billmate'),
 					'qty' => '1',
 					'item_meta' =>
 						array (
 						),
-					'line_subtotal' => $product->get_price_excluding_tax(),
-					'line_subtotal_tax' => $product->get_price()-$product->get_price_excluding_tax(),
-					'line_total' => $product->get_price_excluding_tax(),
-					'line_tax' => $product->get_price()-$product->get_price_excluding_tax(),
+					'line_subtotal' => $this->invoice_fee,
+					'line_subtotal_tax' => ($this->invoice_fee * ($rate/100)),
+					'line_total' => $this->invoice_fee,
+					'line_tax' => ($this->invoice_fee * ($rate/100)),
 					'tax_class' => $product->get_tax_class(),
 				);
 
@@ -775,24 +792,24 @@ parse_str($_POST['post_data'], $datatemp);
 
 				// Update _order_total
 				$old_order_total = $order->order_custom_fields['_order_total'][0];
-				$new_order_total = $old_order_total+$product->get_price();
+				$new_order_total = $old_order_total+$this->invoice_fee;
 				update_post_meta( $order->id, '_order_total', $new_order_total );
 
 				// Update _order_tax
 				$invoice_fee_tax = $product->get_price()-$product->get_price_excluding_tax();
 				$old_order_tax = $order->order_custom_fields['_order_tax'][0];
-				$new_order_tax = $old_order_tax+$invoice_fee_tax;
+				$new_order_tax = $old_order_tax+($this->invoice_fee*($rate/100));
 				update_post_meta( $order->id, '_order_tax', $new_order_tax );
 
 			} else {
-
+				$rate = WC_Tax::get_rates($this->invoice_fee_tax_class);
 				$orderValues['Cart']['Handling'] = array(
-					'withoutvat'    => round($this->invoice_fee_price*100,0),
-					'tax'      => $this->invoice_fee_tax_percentage,
+					'withouttax'    => round($this->invoice_fee*100,0),
+					'taxrate'      => $rate,
 				);
-
+				$woocommerce->cart->add_fee(__('Invoice Fee',$this->invoice_fee,true,$this->invoice_fee_tax_class));
 				$total += $this->invoice_fee_price * 100;
-				$totalTax += (($this->invoice_fee_tax_percentage/100) * $this->invoice_fee_price)*100;
+				$totalTax += (($rate/100) * $this->invoice_fee_price)*100;
 			} // End version check
 
 		} // End invoice_fee_price > 0
@@ -1150,22 +1167,7 @@ class WC_Gateway_Billmate_Invoice_Extra {
 		 if (isset($_POST['payment_method']) && $_POST['payment_method'] == 'billmate' && version_compare( WOOCOMMERCE_VERSION, '2.0', '>=' )) {
 
 		 	$invoice_fee = new WC_Gateway_Billmate_Invoice;
-		 	$this->invoice_fee_id = $invoice_fee->get_billmate_invoice_fee_product();
-		 	//if( empty( $this->invoice_fee_id  ) ) throw new Exception(__('Missing Invoice Fee') );
-		 	$product = get_product($this->invoice_fee_id);
-
-		 	if ( !empty($this->invoice_fee_id) && $product->exists() ) :
-
-		 		// Is this a taxable product?
-		 		if ( $product->is_taxable() ) {
-			 		$product_tax = true;
-		 		} else {
-			 		$product_tax = false;
-		 		}
-
-    	   	 	$woocommerce->cart->add_fee($product->get_title(),$product->get_price_excluding_tax(),$product_tax,$product->get_tax_class());
-
-    	    endif;
+			$woocommerce->cart->add_fee(__('Invoice fee','billmate'),$invoice_fee->invoice_fee,true,$invoice_fee->invoice_fee_tax_class);
 
 		}
 	} // End function add_invoice_fee_process

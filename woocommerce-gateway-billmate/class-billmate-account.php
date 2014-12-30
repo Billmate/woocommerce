@@ -285,7 +285,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 
 			$content = get_option('wc_gateway_billmate_partpayment_pclasses',false);
 			if($content){
-				$fields = array('eid','paymentplanid','description','months','interestrate','startfee','handlingfee','minamount','maxamount','currency','country','expirydate');
+				$fields = array(_e('eid','billmate'),_e('paymentplanid','billmate'),_e('description','billmate'),_e('months','billmate'),_e('interestrate','billmate'),_e('startfee','billmate'),_e('handlingfee','billmate'),_e('minamount','billmate'),_e('maxamount','billmate'),_e('currency','billmate'),_e('country','billmate'),_e('expirydate','billmate'));
 				?>
 				<table border="0" style="border:1px solid #000">
 					<tr>

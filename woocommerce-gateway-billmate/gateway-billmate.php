@@ -28,10 +28,28 @@ define('BILLMATE_DIR', dirname(__FILE__) . '/');
 define('BILLMATE_LIB', dirname(__FILE__) . '/library/');
 require_once 'commonfunctions.php';
 /** Activate hook. Install database for paymentclasses */
-/*function activate_billmate_gateway(){
-	Check if invoice fee is post
+function activate_billmate_gateway(){
+
+	$invoiceSettings = get_option('woocommerce_billmate_settings');
+	if($invoiceSettings !== false && isset($invoiceSettings['invoice_fee_id']) && $invoiceSettings['invoice_fee_id']){
+		// Version check - 1.6.6 or 2.0
+		if ( function_exists( 'get_product' ) ) {
+			$product = get_product($invoiceSettings['invoice_fee_id']);
+		} else {
+			$product = new WC_Product( $invoiceSettings['invoice_fee_id']);
+
+		}
+
+		$fee = $product->get_price_excluding_tax();
+		$taxClass = $product->get_tax_class();
+		$invoiceSettings['billmate_invoice_fee'] = $fee;
+		$invoiceSettings['billmate_invoice_fee_tax_class'] = $taxClass;
+		$feeId = $product->id;
+		update_option('woocommerce_billmate_settings',$invoiceSettings);
+		unset($invoiceSettings['invoice_fee_id']);
+	}
 }
-register_activation_hook(__FILE__,'activate_billmate_gateway');*/
+register_activation_hook(__FILE__,'activate_billmate_gateway');
 function init_billmate_gateway() {
 
 	// If the WooCommerce payment gateway class is not available, do nothing
