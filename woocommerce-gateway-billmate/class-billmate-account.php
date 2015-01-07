@@ -452,7 +452,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 					'PaymentData' => array(
 						'currency' => $currency,
 						'language' => $language[0],
-						'country' => $country
+						'country' => strtolower($country)
 					)
 				);
 				$data = $k->getPaymentplans($values);
