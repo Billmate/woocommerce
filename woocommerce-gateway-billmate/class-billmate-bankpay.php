@@ -115,7 +115,9 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			$payment_note = 'Note: Payment Completed (callback success).';
 		}
 		$_POST['data'] = json_decode(stripslashes($_POST['data']),true);
-		$order_id = $_POST['data']['orderid'];
+		$k = new Billmate($this->eid,$this->secret,true,$this->testmode,false);
+		$data = $k->verify_hash($_POST);
+		$order_id = $data['orderid'];
 		$order = new WC_Order( $order_id );
 		// Check if transient is set(Success url is processing)
 		if(false === get_transient('billmate_bankpay_order_id_'.$order_id)){
@@ -129,11 +131,11 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		// Set Transient if not exists to prevent multiple callbacks
 		set_transient('billmate_bankpay_order_id_'.$order_id,true,3600);
 
-    	if(isset($_POST['data']['code'])){
+    	if(isset($data['code']) || isset($data['error'])){
 			if($_POST['error_message'] == 'Invalid credit bank number') {
 				$error_message = 'Tyvärr kunde inte din betalning genomföras';
 			} else {
-				$error_message = $_POST['data']['message'];
+				$error_message = $data['message'];
 			}
 			$order->add_order_note( __($error_message, 'billmate') );
 			$woocommerce->add_error( __($error_message, 'billmate') );
@@ -149,7 +151,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 
 		if( in_array($order_status, array('pending')) ){
 
-			$order->update_status('completed', $payment_note);
+			$order->payment_complete();
 			if( $accept_url_hit ){
 				$redirect = '';
 				$woocommerce->cart->empty_cart();

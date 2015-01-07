@@ -80,7 +80,7 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 			$billmate_country = 'DK';
 			$billmate_language = 'DA';
 			$billmate_currency = 'DKK';
-			$billmate_invoice_terms = 'https://online.billmate.com/villkor_dk.yaws?eid=' . $this->eid . '&charge=' . $this->invoice_fee_price;
+			$billmate_invoice_terms = 'https://online.billmate.com/villkor_dk.yaws?eid=' . $this->eid . '&charge=' . $this->invoice_fee;
 			//$billmate_invoice_icon = plugins_url(basename(dirname(__FILE__))."/images/billmate_invoice_dk.png");
 			$billmate_invoice_icon =  plugins_url( '/images/bm_faktura_l.png', __FILE__ );
 			break;
@@ -88,7 +88,7 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 			$billmate_country = 'DE';
 			$billmate_language = 'DE';
 			$billmate_currency = 'EUR';
-			$billmate_invoice_terms = 'https://online.billmate.com/villkor_de.yaws?eid=' . $this->eid . '&charge=' . $this->invoice_fee_price;
+			$billmate_invoice_terms = 'https://online.billmate.com/villkor_de.yaws?eid=' . $this->eid . '&charge=' . $this->invoice_fee;
 			//$billmate_invoice_icon = plugins_url(basename(dirname(__FILE__))."/images/billmate_invoice_de.png");
 			$billmate_invoice_icon = plugins_url( '/images/bm_faktura_l.png', __FILE__ );;
 			break;
@@ -96,27 +96,27 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 			$billmate_country = 'NL';
 			$billmate_language = 'NL';
 			$billmate_currency = 'EUR';
-			$billmate_invoice_terms = 'https://online.billmate.com/villkor_nl.yaws?eid=' . $this->eid . '&charge=' . $this->invoice_fee_price;
+			$billmate_invoice_terms = 'https://online.billmate.com/villkor_nl.yaws?eid=' . $this->eid . '&charge=' . $this->invoice_fee;
 			//$billmate_invoice_icon = plugins_url(basename(dirname(__FILE__))."/images/billmate_invoice_nl.png");
 			break;
 		case 'NO' :
 			$billmate_country = 'NO';
 			$billmate_language = 'NB';
 			$billmate_currency = 'NOK';
-			$billmate_invoice_terms = 'https://online.billmate.com/villkor_no.yaws?eid=' . $this->eid . '&charge=' . $this->invoice_fee_price;
+			$billmate_invoice_terms = 'https://online.billmate.com/villkor_no.yaws?eid=' . $this->eid . '&charge=' . $this->invoice_fee;
 			//$billmate_invoice_icon = plugins_url(basename(dirname(__FILE__))."/images/billmate_invoice_no.png");
 			break;
 		case 'FI' :
 			$billmate_country = 'FI';
 			$billmate_language = 'FI';
 			$billmate_currency = 'EUR';
-			$billmate_invoice_terms = 'https://online.billmate.com/villkor_fi.yaws?eid=' . $this->eid . '&charge=' . $this->invoice_fee_price;
+			$billmate_invoice_terms = 'https://online.billmate.com/villkor_fi.yaws?eid=' . $this->eid . '&charge=' . $this->invoice_fee;
 			break;
 		case 'SE' :
 			$billmate_country = 'SE';
 			$billmate_language = 'SV';
 			$billmate_currency = 'SEK';
-			$billmate_invoice_terms = 'https://online.billmate.com/villkor.yaws?eid=' . $this->eid . '&charge=' . $this->invoice_fee_price;
+			$billmate_invoice_terms = 'https://online.billmate.com/villkor.yaws?eid=' . $this->eid . '&charge=' . $this->invoice_fee;
 			break;
 		default:
 			$billmate_country = '';
@@ -162,6 +162,13 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 			'NO' =>__( 'Norway' ,'woocommerce')
 		);
 
+		$tax_classes = array_filter( array_map( 'trim', explode( "\n", get_option( 'woocommerce_tax_classes' ) ) ) );
+		$classes_options = array();
+		$classes_options[''] = __( 'Standard', 'woocommerce' );
+		if ( $tax_classes )
+			foreach ( $tax_classes as $class )
+				$classes_options[ sanitize_title( $class ) ] = esc_html( $class );
+
 	   	$this->form_fields = apply_filters('billmate_invoice_form_fields', array(
 			'enabled' => array(
 							'title' => __( 'Enable/Disable', 'billmate' ),
@@ -205,16 +212,10 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 							'description' => __( 'Avaktivera Billmate Faktura om varukorgen är mindre än den angivna summan. Lämna tomt för att avaktivera denna funktion.', 'billmate' ),
 							'default' => ''
 						),
-			'invoice_fee_id' => array(
-								'title' => __( 'Product ID for Invoice Fee', 'billmate' ),
-								'type' => 'text',
-								'description' => __( 'Create a hidden (simple) product that acts as the invoice fee. Enter the ID number in this textfield. Leave blank to disable. ', 'billmate' ),
-								'default' => ''
-							),
 			'billmate_invoice_fee' => array(
 								'title' => __( 'Invoice fee', 'billmate'),
 								'type' => 'text',
-								'description' => __( 'Add a invoice fee cost'),
+								'description' => __( 'Add a invoice fee cost without vat, leave empty to disable'),
 								'default' => ''
 			),
 			'billmate_invoice_fee_tax_class' => array(
@@ -222,7 +223,7 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 								'type' => 'select',
 								'description' => __('The tax class for Invoice fee'),
 								'default' => '',
-								'options' => array_filter( array_map( 'trim', explode( "\n", get_option( 'woocommerce_tax_classes' ) ) ) )
+								'options' => $classes_options
 			),
 			'billmateinvoice_allowed_countries' => array(
 				'title' 		=> __( 'Allowed Countries', 'woocommerce' ),
@@ -256,7 +257,10 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
     	<h3><?php _e('Billmate Invoice', 'billmate'); ?></h3>
 
 	    	<p><?php _e('With Billmate your customers can pay by invoice. Billmate works by adding extra personal information fields and then sending the details to Billmate for verification.','billmate'); ?></p>
+			<?php if(isset($this->invoice_fee_id) && $this->invoice_fee_id != ''): ?>
 
+			<i class="ui-icon ui-icon-info"></i><div><?php printf(__('You may inactivate or remove the invoice fee product with id %s','billmate'),$this->invoice_fee_id); ?></div>
+			<?php endif ?>
 
     	<table class="form-table">
     	<?php
@@ -328,7 +332,7 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 
 	   	<?php if ($this->testmode=='yes') : ?><p><?php _e('TEST MODE ENABLED', 'billmate'); ?></p><?php endif; ?>
 		<?php if ($this->description) : ?><p><?php echo $this->description; ?></p><?php endif; ?>
-		<?php if ($this->invoice_fee_price>0) : ?><p><?php printf(__('An invoice fee of %1$s %2$s will be added to your order.', 'billmate'), $this->invoice_fee_price, $this->billmate_currency ); ?></p><?php endif; ?>
+		<?php if ($this->invoice_fee_price>0) : ?><p><?php printf(__('An invoice fee of %1$s %2$s will be added to your order.', 'billmate'), $this->invoice_fee, $this->billmate_currency ); ?></p><?php endif; ?>
 
 		<fieldset>
 			<p class="form-row form-row-first">
@@ -754,14 +758,18 @@ parse_str($_POST['post_data'], $datatemp);
 
 
 			if ( version_compare( WOOCOMMERCE_VERSION, '2.0', '<' ) ) {
-				$rate = WC_Tax::get_rates($this->invoice_fee_tax_class);
+				$tax = new WC_Tax();
+				$rate = array_pop($tax->get_rates($this->invoice_fee_tax_class));
+				$rate = $rate['rate'];
+
 				$orderValues['Cart']['Handling'] = array(
 					'withouttax'    => round($this->invoice_fee*100,0),
 					'taxrate'      => $rate,
 				);
 
-				$total += $this->invoice_fee_price * 100;
-				$totalTax += (($rate/100) * $this->invoice_fee_price)*100;
+				$total += $this->invoice_fee * 100;
+				$totalTax += (($rate/100) * $this->invoice_fee)*100;
+
 				// Add the invoice fee to the order
 				// Get all order items and unserialize the array
 				//$woocommerce->cart->add_fee(__('Invoice Fee',$this->invoice_fee,true,$this->invoice_fee_tax_class));
@@ -802,14 +810,19 @@ parse_str($_POST['post_data'], $datatemp);
 				update_post_meta( $order->id, '_order_tax', $new_order_tax );
 
 			} else {
-				$rate = WC_Tax::get_rates($this->invoice_fee_tax_class);
+				$tax = new WC_Tax();
+				$rate = array_pop($tax->get_rates($this->invoice_fee_tax_class));
+				$rate = $rate['rate'];
+
 				$orderValues['Cart']['Handling'] = array(
 					'withouttax'    => round($this->invoice_fee*100,0),
 					'taxrate'      => $rate,
 				);
-				$woocommerce->cart->add_fee(__('Invoice Fee',$this->invoice_fee,true,$this->invoice_fee_tax_class));
-				$total += $this->invoice_fee_price * 100;
-				$totalTax += (($rate/100) * $this->invoice_fee_price)*100;
+
+				$total += $this->invoice_fee * 100;
+				$totalTax += (($rate/100) * $this->invoice_fee)*100;
+				$woocommerce->cart->add_fee(__('Invoice Fee'),$this->invoice_fee + $tax,true,$this->invoice_fee_tax_class);
+
 			} // End version check
 
 		} // End invoice_fee_price > 0
@@ -1080,7 +1093,7 @@ parse_str($_POST['post_data'], $datatemp);
 			<script type="text/javascript">
 				var billmate_eid = "<?php echo $this->eid; ?>";
 				var billmate_country = "<?php echo strtolower($this->billmate_country); ?>";
-				var billmate_invoice_fee_price = "<?php echo $this->invoice_fee_price; ?>";
+				var billmate_invoice_fee_price = "<?php echo $this->invoice_fee; ?>";
 				//addBillmateInvoiceEvent(function(){InitBillmateInvoiceElements('billmate_invoice', billmate_eid, billmate_country, billmate_invoice_fee_price); });
 			</script>
 			<?php
@@ -1158,7 +1171,7 @@ class WC_Gateway_Billmate_Invoice_Extra {
 	}
 
 	/**
-	 * Add the invoice fee to the cart if Payson Invoice is selected payment method, if this is WC 2.0 and if invoice fee is used.
+	 * Add the invoice fee to the cart if Billmate Invoice is selected payment method, if this is WC 2.0 and if invoice fee is used.
 	 **/
 	 function add_invoice_fee_process() {
 		 global $woocommerce;
@@ -1167,6 +1180,9 @@ class WC_Gateway_Billmate_Invoice_Extra {
 		 if (isset($_POST['payment_method']) && $_POST['payment_method'] == 'billmate' && version_compare( WOOCOMMERCE_VERSION, '2.0', '>=' )) {
 
 		 	$invoice_fee = new WC_Gateway_Billmate_Invoice;
+			 $tax = new WC_Tax();
+			 $rate = $tax->get_rates($this->invoice_fee_tax_class);
+
 			$woocommerce->cart->add_fee(__('Invoice fee','billmate'),$invoice_fee->invoice_fee,true,$invoice_fee->invoice_fee_tax_class);
 
 		}

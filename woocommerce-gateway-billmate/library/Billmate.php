@@ -21,6 +21,8 @@
  * 2.0.9 20141204 Yuksel Findik: Returns array and verifies the data is safe
  * 2.1.0 20141215 Yuksel Findik: Unnecessary variables are removed
  * 2.1.1 20141218 Yuksel Findik: If response can not be json_decoded, will return actuall response
+ * 2.1.2.20150107 Jesper Johansson verify_hash function taxes the post from notify and accepturls and verifies hash
+ * 									usage: Billmage->verify_hash($_POST); Returns error code 9511 when hash failing.
  */
 class BillMate{
 	var $ID = "";
@@ -94,6 +96,26 @@ class BillMate{
 		}else curl_close($ch);
 		
 	    return $data;
+	}
+
+	/**
+	 * A Method for verify hash response
+	 * @param $post The post data
+	 *
+	 * @return mixed true|false
+	 */
+	public function verify_hash($response) {
+		$response_array['data'] = json_decode(stripslashes($response['data']),true);
+		$response_array['credentials'] = json_decode(stripslashes($response_array['credentials']),true);
+		if(!$response_array) return $response;
+		if(isset($response_array["credentials"])){
+			$hash = $this->hash(json_encode($response_array["data"]));
+			if($response_array["credentials"]["hash"]==$hash)
+				return $response_array["data"];
+			else return array("error"=>9511,"message"=>"Verification error","hash"=>$hash,"hash_received"=>$response_array["credentials"]["hash"]);
+		}
+		return $response_array;
+
 	}
 	function hash($args) {
 		$this->out("TO BE HASHED DATA",$args);

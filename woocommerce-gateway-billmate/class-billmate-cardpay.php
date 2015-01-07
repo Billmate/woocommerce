@@ -103,6 +103,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 	function check_ipn_response() {
 		global $woocommerce;
 		//header( 'HTTP/1.1 200 OK' );
+		$k = new Billmate($this->eid,$this->secret,true,$this->testmode,false);
 		if( !empty($_GET['payment']) && $_GET['payment'] == 'success' ) {
 			if( empty( $_POST ) ){
 				$_POST = $_GET;
@@ -116,10 +117,11 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			$payment_note = 'Note: Payment Completed (callback success).';
 		}
 		$_POST['data'] = json_decode(stripslashes($_POST['data']),true);
-		$order_id = $_POST['data']['orderid'];
+		$data = $k->verify_hash($_POST);
+		$order_id = $data['orderid'];
 		$order = new WC_Order( $order_id );
 
-		if(false === get_transient('billmate_cardpay_order_id_'.$order_id)){
+		if(false !== get_transient('billmate_cardpay_order_id_'.$order_id)){
 			if(version_compare(WC_VERSION, '2.0.0', '<')) {
 				$redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))));
 			} else {
@@ -130,11 +132,11 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		// Set Transient if not exists to prevent multiple callbacks
 		set_transient('billmate_cardpay_order_id_'.$order_id,true,3600);
 
-		if(isset($_POST['data']['code'])){
-			if($_POST['error_message'] == 'Invalid credit bank number') {
+		if(isset($data['code']) || isset($data['error'])){
+			if($data['error_message'] == 'Invalid credit bank number') {
 				$error_message = 'Tyvärr kunde inte din betalning genomföras';
 			} else {
-				$error_message = $_POST['data']['message'];
+				$error_message = $data['message'];
 			}
 			$order->add_order_note( __($error_message, 'billmate') );
 			$woocommerce->add_error( __($error_message, 'billmate') );
@@ -150,7 +152,8 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 
 		if( in_array($order_status, array('pending')) ){
 
-			$order->update_status('completed', $payment_note);
+			//$order->update_status('completed', $payment_note);
+			$order->payment_complete();
 			if( $accept_url_hit ){
 				$redirect = '';
 				$woocommerce->cart->empty_cart();

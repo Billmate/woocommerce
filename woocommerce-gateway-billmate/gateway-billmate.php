@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce Billmate Gateway
 Plugin URI: http://woothemes.com/woocommerce
 Description: Extends WooCommerce. Provides a <a href="http://www.billmate.se" target="_blank">Billmate</a> gateway for WooCommerce.
-Version: 1.23
+Version: 2.00
 Author: Billmate
 Author URI: http://billmate.se
 */
@@ -27,11 +27,20 @@ add_action('plugins_loaded', 'init_billmate_gateway', 0);
 define('BILLMATE_DIR', dirname(__FILE__) . '/');
 define('BILLMATE_LIB', dirname(__FILE__) . '/library/');
 require_once 'commonfunctions.php';
-/** Activate hook. Install database for paymentclasses */
+/** Change invoice fee to field instead of product. */
 function activate_billmate_gateway(){
 
+	// Get settings for Billmate gateway
 	$invoiceSettings = get_option('woocommerce_billmate_settings');
-	if($invoiceSettings !== false && isset($invoiceSettings['invoice_fee_id']) && $invoiceSettings['invoice_fee_id']){
+
+	// No settings, new installation
+	if($invoiceSettings === false){
+		// Initialize plugin
+	}
+
+	// If settings and Product for invoice fee is set.
+	elseif($invoiceSettings !== false && isset($invoiceSettings['invoice_fee_id']) && $invoiceSettings['invoice_fee_id']){
+
 		// Version check - 1.6.6 or 2.0
 		if ( function_exists( 'get_product' ) ) {
 			$product = get_product($invoiceSettings['invoice_fee_id']);
@@ -44,9 +53,13 @@ function activate_billmate_gateway(){
 		$taxClass = $product->get_tax_class();
 		$invoiceSettings['billmate_invoice_fee'] = $fee;
 		$invoiceSettings['billmate_invoice_fee_tax_class'] = $taxClass;
-		$feeId = $product->id;
+		$invoiceSettings['plugin_version'] = BILLMATE_VERSION;
+
 		update_option('woocommerce_billmate_settings',$invoiceSettings);
-		unset($invoiceSettings['invoice_fee_id']);
+
+	// Else Plugin version in DB differs from Billmate Version.
+	}elseif(BILLMATE_VERSION != $invoiceSettings['plugin_version']){
+		// Plugin update after Billmate gateway 2.0.0
 	}
 }
 register_activation_hook(__FILE__,'activate_billmate_gateway');
