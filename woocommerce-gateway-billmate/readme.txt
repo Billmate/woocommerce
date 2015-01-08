@@ -3,7 +3,7 @@
 Original code created by Niklas Högefjord - http://krokedil.com/
 Modified for Billmate by Gagan Preet, Eminence Technology
 
-Documentation with instructions on how to setup the plugin can be found at https://efinance.se/plugins/woocommerce/Instruktionsmanual_Woocommerce_Billmate_Plugin.pdf
+Documentation with instructions on how to setup the plugin can be found at http://billmate.se/plugins/manual/Installation_Manual_Woocommerce_Billmate.pdf
 
 == DESCRIPTION ==
 
@@ -24,7 +24,7 @@ If you want to, you can also manually upload your billmatepclasses.json file via
 INVOICE FEE HANDLING
 Since of version 1.9 the Invoice Fee for Billmate Invoice are added as a simple (hidden) product. This is to match order total in WooCommerce and your billmate part payment (in earlier versions the invoice fee only were added to Billmate).
 
-To create a Invoice fee product: 
+To create a Invoice fee product:
 - Add a simple (hidden) product. Mark it as a taxable product.
 - Go to the Billmate Gateway settings page and add the ID of the Invoice Fee product. The ID can be found by hovering the Invoice Fee product on the Products page in WooCommerce.
 
@@ -42,3 +42,15 @@ To create a Invoice fee product:
 
 == To Place billmate logo copy this <img> tag to your widget or post or code ==
 <img src="http://wordpress.billmate.se/wp-content/plugins/woocommerce-gateway-billmate/images/billmate-logo.png" title="Billmate Payment Gateway" alt="Billmate Payment Gateway" />
+
+
+== Changelog ==
+
+= 1.2.3 =
+* Feature - Added the functionality so that if you put a file called billmatecustom.css in the plugin it will include that. Useful if you need to overwrite some CSS to make the Billmate plugin look good in you checkout without everwriting the themes css.
+* Fix - Fixed so that an error on the checkout page does not occur if you enter wrong "personnummer" twice.
+* Fix - If you enter a wroong ID for the invoice fee the checkout and settings page does not crash.
+* Fix - Removed references to WPLANG and now uses get_locale function instead. According to Wordpres coding standard.
+* Tweak - Updated to new company name : Billmate AB.
+* Tweak - Change to correct include of colorbox.css to follow Wordpress coding standard
+* Tweak - Fixed so that partpayment prices is shown as 12 mounths instead of 3

@@ -1,29 +1,29 @@
 <?php @session_start();
 class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
-	
+
 	/**
      * Class for Billmate Faktura payment.
      *
      */
     private $prod_url = 'https://cardpay.billmate.se/pay';
-    private $tst_url = 'https://cardpay.billmate.se/pay/test'; 
+    private $tst_url = 'https://cardpay.billmate.se/pay/test';
 	public function __construct() {
 		global $woocommerce;
-		
+
 		if( !empty($_SESSION['order_created']) ) $_SESSION['order_created'] = '';
-		
+
 		parent::__construct();
-		
+
 		$this->id			= 'billmate_cardpay';
 		$this->method_title = __('Billmate Cardpay', 'billmate');
 		$this->has_fields 	= true;
-		
+
 		// Load the form fields.
 		$this->init_form_fields();
-				
+
 		// Load the settings.
 		$this->init_settings();
-		
+
 		// Define user set variables
 		$this->enabled				= ( isset( $this->settings['enabled'] ) ) ? $this->settings['enabled'] : '';
 		$this->title 				= ( isset( $this->settings['title'] ) ) ? $this->settings['title'] : '';
@@ -33,78 +33,76 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		$this->lower_threshold		= ( isset( $this->settings['lower_threshold'] ) ) ? $this->settings['lower_threshold'] : '';
 		$this->upper_threshold		= ( isset( $this->settings['upper_threshold'] ) ) ? $this->settings['upper_threshold'] : '';
 		$this->invoice_fee_id		= ( isset( $this->settings['invoice_fee_id'] ) ) ? $this->settings['invoice_fee_id'] : '';
-		
+
 		$this->testmode				= ( isset( $this->settings['testmode'] ) && $this->settings['testmode'] == 'yes' ) ? true : false;
-		
+
 		$this->de_consent_terms		= ( isset( $this->settings['de_consent_terms'] ) ) ? $this->settings['de_consent_terms'] : '';
 		$this->authentication_method= ( isset( $this->settings['authentication_method'] ) ) ? $this->settings['authentication_method'] : '';
 		$this->prompt_name_entry	= ( isset( $this->settings['prompt_name_entry'] ) ) ? $this->settings['prompt_name_entry'] : 'YES';
 		$this->do_3dsecure			= ( isset( $this->settings['do_3dsecure'] ) ) ? $this->settings['do_3dsecure'] : 'NO';
-		//if ( $this->handlingfee == "") $this->handlingfee = 0;
-		//if ( $this->handlingfee_tax == "") $this->handlingfee_tax = 0;
 		if ( $this->invoice_fee_id == "") $this->invoice_fee_id = 0;
-		
+
 		if ( $this->invoice_fee_id > 0 ) :
-			
+
 			// Version check - 1.6.6 or 2.0
 			if ( function_exists( 'get_product' ) ) {
 				$product = get_product($this->invoice_fee_id);
 			} else {
 				$product = new WC_Product( $this->invoice_fee_id );
 			}
-		
+
 			if ( $product->exists() ) :
-			
+
 				// We manually calculate the tax percentage here
 				$this->invoice_fee_tax_percentage = number_format( (( $product->get_price() / $product->get_price_excluding_tax() )-1)*100, 2, '.', '');
-				
+
 				// apply_filters to invoice fee price so we can filter this if needed
 				$billmate_invoice_fee_price_including_tax = $product->get_price();
 				$this->invoice_fee_price = apply_filters( 'billmate_invoice_fee_price_including_tax', $billmate_invoice_fee_price_including_tax );
-				
+
 			else :
-			
-				$this->invoice_fee_price = 0;	
-							
+
+				$this->invoice_fee_price = 0;
+
 			endif;
-		
+
 		else :
-		
+
 		$this->invoice_fee_price = 0;
-		
+
 		endif;
-		
+
 		$billmate_country = 'SE';
 		$billmate_language = 'SV';
 		$billmate_currency = 'SEK';
 		$billmate_invoice_terms = '';
 		$billmate_invoice_icon = plugins_url( '/images/bm_kort_l.png', __FILE__ );
-		
+
 		// Apply filters to Country and language
 		$this->billmate_country 		= apply_filters( 'billmate_country', $billmate_country );
 		$this->billmate_language 		= apply_filters( 'billmate_language', $billmate_language );
 		$this->billmate_currency 		= apply_filters( 'billmate_currency', $billmate_currency );
 		$this->icon 				= apply_filters( 'billmate_invoice_icon', $billmate_invoice_icon );
-		
-		
+
+
 		// Actions
 		add_action( 'valid-billmate-cardpay-standard-ipn-request', array( $this, 'successful_request' ) );
 		add_action( 'woocommerce_api_wc_gateway_billmate_cardpay', array( $this, 'check_ipn_response' ) );
 		/* 1.6.6 */
 		add_action( 'woocommerce_update_options_payment_gateways', array( &$this, 'process_admin_options' ) );
- 
+
 		/* 2.0.0 */
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
-		
+
 		add_action('woocommerce_receipt_billmate', array(&$this, 'receipt_page'));
-		
+
 		//add_action('wp_footer', array(&$this, 'billmate_invoice_terms_js'));
-		
+
 	}
-	
-	function check_ipn_response(){
+
+	function check_ipn_response() {
 		global $woocommerce;
-//		header( 'HTTP/1.1 200 OK' );
+		//header( 'HTTP/1.1 200 OK' );
 		if( !empty($_GET['payment']) && $_GET['payment'] == 'success' ) {
 			if( empty( $_POST ) ){
 				$_POST = $_GET;
@@ -118,21 +116,10 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			$payment_note = 'Note: Payment Completed (callback success).';
 		}
 
-	    $order_id = $_POST['order_id'];
+		$order_id = $_POST['order_id'];
 		$order = new WC_Order( $order_id );
 
-		if( $accept_url_hit ) {
-			// Remove cart
-			if(version_compare(WC_VERSION, '2.0.0', '<')){
-				$redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))));
-			} else {
-				$redirect = $this->get_return_url($order);
-			}				
-			wp_safe_redirect($redirect);
-			return false;
-		}
-			    
-	    if( $_POST['status'] != 0 ){
+    if( $_POST['status'] != 0 ) {
 			if($_POST['error_message'] == 'Invalid credit card number') {
 				$error_message = 'Tyvärr kunde inte din betalning genomföras';
 			} else {
@@ -140,83 +127,85 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			}
 			$order->add_order_note( __($error_message, 'billmate') );
 			$woocommerce->add_error( __($error_message, 'billmate') );
-			
-            wp_safe_redirect(add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_checkout_page_id')))));
+			wp_safe_redirect(add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_checkout_page_id')))));
 			return false;
-	    }
+    }
 
-		if( method_exists($order, 'get_status') ) { $order_status = $order->get_status(); }
-		else { $order_status_terms = wp_get_object_terms( $order_id, 'shop_order_status', array('fields' => 'slugs') ); $order_status = $order_status_terms[0]; }
+		if( method_exists($order, 'get_status') ) {
+			$order_status = $order->get_status();
+		} else {
+			$order_status_terms = wp_get_object_terms( $order_id, 'shop_order_status', array('fields' => 'slugs') );
+			$order_status = $order_status_terms[0];
+		}
 
-		if( in_array($order_status, array('pending')) ){
-
-	        $data = $this->sendBillmate($order_id, $order );
+		if( in_array($order_status, array('pending')) ) {
+			$data = $this->sendBillmate($order_id, $order );
 			$order->update_status('completed', $payment_note);
 			if( $accept_url_hit ) wp_safe_redirect($data['redirect']);
-			
 			exit;
-		} elseif( $accept_url_hit ) {
+		}
+
+		if( $accept_url_hit ) {
 			// Remove cart
-			$woocommerce->cart->empty_cart();			
-			if(version_compare(WC_VERSION, '2.0.0', '<')){
+			$woocommerce->cart->empty_cart();
+			if(version_compare(WC_VERSION, '2.0.0', '<')) {
 				$redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))));
 			} else {
 				$redirect = $this->get_return_url($order);
-			}				
+			}
 			wp_safe_redirect($redirect);
 		}
-        exit;
-        
-       /* 
-	    */
-	    return true;
+
+    exit;
+    return true;
+
 	}
     function sendBillmate($order_id,$order, $addorder = false){
         global $woocommerce;
-		
+
 		if( method_exists($order, 'get_status') ) { $order_status = $order->get_status(); }
 		else { $order_status_terms = wp_get_object_terms( $order_id, 'shop_order_status', array('fields' => 'slugs') ); $order_status = $order_status_terms[0]; }
-		
+
 		if( !in_array($order_status, array('pending')) ){
 			return false;
 		}
 
 		if( !empty($_SESSION['order_created']) ) return;
-	       $billmate_pno = '';	
+	       $billmate_pno = '';
 		// Split address into House number and House extension for NL & DE customers
 		if ( $this->shop_country == 'NL' || $this->shop_country == 'DE' ) :
-		
+
 			require_once('split-address.php');
-			
+
 			$billmate_billing_address				= $order->billing_address_1;
 			$splitted_address 					= splitAddress($billmate_billing_address);
-			
+
 			$billmate_billing_address				= $splitted_address[0];
 			$billmate_billing_house_number		= $splitted_address[1];
 			$billmate_billing_house_extension		= $splitted_address[2];
-			
+
 			$billmate_shipping_address			= $order->shipping_address_1;
 			$splitted_address 					= splitAddress($billmate_shipping_address);
-			
+
 			$billmate_shipping_address			= $splitted_address[0];
 			$billmate_shipping_house_number		= $splitted_address[1];
 			$billmate_shipping_house_extension	= $splitted_address[2];
-		
+
 		else :
-			
+
 			$billmate_billing_address				= $order->billing_address_1;
 			$billmate_billing_house_number		= '';
 			$billmate_billing_house_extension		= '';
-			
+
 			$billmate_shipping_address			= $order->shipping_address_1;
 			$billmate_shipping_house_number		= '';
 			$billmate_shipping_house_extension	= '';
-			
+
 		endif;
-		
+
 		// Store Billmate specific form values in order as post meta
 		$pno = '';
-		
+
         $eid  = (int)$this->settings['eid'] ;
         $key = (float)$this->settings['secret'];
 		$ssl = true;
@@ -225,33 +214,33 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		$goods_list = array();
 		// Cart Contents
 		if (sizeof($order->get_items())>0) : foreach ($order->get_items() as $item) :
-			
+
 			if ( function_exists( 'get_product' ) ) {
-				
+
 				// Version 2.0
 				$_product = $order->get_product_from_item($item);
-				
+
 				// Get SKU or product id
 					if ( $_product->get_sku() ) {
 						$sku = $_product->get_sku();
 					} else {
 						$sku = $_product->id;
 					}
-					
+
 			} else {
-				
+
 				// Version 1.6.6
 				$_product = new WC_Product( $item['id'] );
-				
+
 				// Get SKU or product id
 				if ( $_product->get_sku() ) {
 					$sku = $_product->get_sku();
 				} else {
 					$sku = $item['id'];
 				}
-					
-			}	
-				
+
+			}
+
 			// We manually calculate the tax percentage here
 			if ($order->get_total_tax() >0) :
 				// Calculate tax percentage
@@ -259,12 +248,12 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			else :
 				$item_tax_percentage = 0.00;
 			endif;
-				
-				
+
+
 			// apply_filters to item price so we can filter this if needed
 			$billmate_item_price_including_tax = $order->get_item_total( $item, true );
 			$item_price = apply_filters( 'billmate_item_price_including_tax', $billmate_item_price_including_tax );
-    				
+
 	        $goods_list[] = array(
 		        'qty'   => (int)$item['qty'],
 		        'goods' => array(
@@ -280,11 +269,11 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		endforeach; endif;
 		// Discount
 		if ($order->order_discount>0) :
-			
+
 			// apply_filters to order discount so we can filter this if needed
 			$billmate_order_discount = $order->order_discount;
 			$order_discount = apply_filters( 'billmate_order_discount', $billmate_order_discount );
-		
+
 	        $goods_list[] = array(
 		        'qty'   => (int)1,
 		        'goods' => array(
@@ -297,40 +286,40 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		        )
 	        );
 		endif;
-		
+
 		// Shipping
 		if ($order->order_shipping>0) :
-			
+
 			// We manually calculate the shipping tax percentage here
 			$calculated_shipping_tax_percentage = ($order->order_shipping_tax/$order->order_shipping)*100; //25.00
 			$calculated_shipping_tax_decimal = ($order->order_shipping_tax/$order->order_shipping)+1; //0.25
-			
+
 			// apply_filters to Shipping so we can filter this if needed
 			$billmate_shipping_price_including_tax = $order->order_shipping*$calculated_shipping_tax_decimal;
 			$shipping_price = apply_filters( 'billmate_shipping_price_including_tax', $billmate_shipping_price_including_tax );
-			
+
 	        $goods_list[] = array(
 		        'qty'   => (int)1,
 		        'goods' => array(
 			        'artno'    => "",
 			        'title'    => __('Shipping cost', 'billmate'),
-			        'price'    => round($shipping_price*100,0), 
+			        'price'    => round($shipping_price*100,0),
 			        'vat'      => $calculated_shipping_tax_percentage,
 			        'discount' => (float)0,
 			        'flags'    => BillmateFlags::INC_VAT + BillmateFlags::IS_SHIPMENT,
 		        )
 	        );
 		endif;
-		
+
         $fullname = $order->billing_last_name.' '.$order->billing_first_name.' '.$order->billing_company;
-        
+
         $usership = $order->billing_last_name.' '.$order->billing_first_name.' '.$order->billing_company;
         $userbill = $order->shipping_last_name.' '.$order->shipping_first_name.' '.$order->shipping_company;
         $countryData = BillmateCountry::getSwedenData();
 		$countries = $woocommerce->countries->get_allowed_countries();
-		
+
 		$countryname = $order->billing_country != 'SE' ? utf8_decode ($countries[$order->billing_country]) : 209;
-		
+
   	    $bill_address = array(
 		    'email'           => $order->billing_email,
 		    'telno'           => $order->billing_phone,
@@ -361,7 +350,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			$houseExt = utf8_decode ($billmate_billing_house_extension); //Only required for NL.
 			$countryCode = $order->billing_country;
 		} else {
-		
+
 			$email = $order->billing_email;
 			$telno = ''; //We skip the normal land line phone; only one is needed.
 			$cellno = $order->billing_phone;
@@ -394,8 +383,8 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		    'country'         => $country,
 	    );
 		$pclass = -1;
-		$languageCode = defined( 'WPLANG' ) && WPLANG ? WPLANG : 'sv_SE';
-		
+		$languageCode = get_locale();
+
 		$lang = explode('_', strtoupper($languageCode));
 		$languageCode = $lang[0];
 		$languageCode = $languageCode == 'DA' ? 'DK' : $languageCode;
@@ -427,8 +416,8 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			if( $addorder ){
 				return $k->AddOrder('',$bill_address,$ship_address,$goods_list,$transaction);
 			}
-			
-			
+
+
     		$result = $k->AddInvoice('',$bill_address,$ship_address,$goods_list,$transaction);
     		if( !is_array($result) ){
                 $result = utf8_encode(strip_tags( $result ));
@@ -443,18 +432,18 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		        $invno = $result[0];
 				$_SESSION['order_created'] = $result[0];
                 $order->add_order_note( __('Billmate payment completed. Billmate Invoice number:', 'billmate') . $invno );
-                
+
                 // Payment complete
 				$order->payment_complete();
-				
+
 				// Remove cart
-				$woocommerce->cart->empty_cart();			
-				
+				$woocommerce->cart->empty_cart();
+
 				if(version_compare(WC_VERSION, '2.0.0', '<')){
 					$redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))));
 				} else {
 					$redirect = $this->get_return_url($order);;
-				}				
+				}
 				// Return thank you redirect
 				return array(
 						'result' 	=> 'success',
@@ -466,100 +455,100 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			$woocommerce->add_error( sprintf(__('%s (Error code: %s)', 'billmate'), utf8_encode($e->getMessage()), $e->getCode() ) );
 			return;
 		}
-    }	
-	
+    }
+
 	/**
 	 * Initialise Gateway Settings Form Fields
 	 */
 	function init_form_fields() {
-	    
+
 	   	$this->form_fields = apply_filters('billmate_invoice_form_fields', array(
 			'enabled' => array(
-							'title' => __( 'Enable/Disable', 'billmate' ), 
-							'type' => 'checkbox', 
-							'label' => __( 'Enable Billmate Cardpay', 'billmate' ), 
+							'title' => __( 'Enable/Disable', 'billmate' ),
+							'type' => 'checkbox',
+							'label' => __( 'Enable Billmate Cardpay', 'billmate' ),
 							'default' => 'yes'
-						), 
+						),
 			'title' => array(
-							'title' => __( 'Title', 'billmate' ), 
-							'type' => 'text', 
-							'description' => __( 'This controls the title which the user sees during checkout.', 'billmate' ), 
+							'title' => __( 'Title', 'billmate' ),
+							'type' => 'text',
+							'description' => __( 'This controls the title which the user sees during checkout.', 'billmate' ),
 							'default' => __( 'Billmate Cardpay', 'billmate' )
 						),
 			'description' => array(
-							'title' => __( 'Description', 'billmate' ), 
-							'type' => 'textarea', 
-							'description' => __( 'This controls the description which the user sees during checkout.', 'billmate' ), 
+							'title' => __( 'Description', 'billmate' ),
+							'type' => 'textarea',
+							'description' => __( 'This controls the description which the user sees during checkout.', 'billmate' ),
 							'default' => ''
-						), 
+						),
 			'eid' => array(
-							'title' => __( 'Eid', 'billmate' ), 
-							'type' => 'text', 
-							'description' => __( 'Please enter your Billmate Eid; this is needed in order to take payment!', 'billmate' ), 
+							'title' => __( 'Eid', 'billmate' ),
+							'type' => 'text',
+							'description' => __( 'Please enter your Billmate Eid; this is needed in order to take payment!', 'billmate' ),
 							'default' => ''
 						),
 			'secret' => array(
-							'title' => __( 'Shared Secret', 'billmate' ), 
-							'type' => 'text', 
-							'description' => __( 'Please enter your Billmate Shared Secret; this is needed in order to take payment!', 'billmate' ), 
+							'title' => __( 'Shared Secret', 'billmate' ),
+							'type' => 'text',
+							'description' => __( 'Please enter your Billmate Shared Secret; this is needed in order to take payment!', 'billmate' ),
 							'default' => ''
 						),
 			'lower_threshold' => array(
-							'title' => __( 'Lower threshold', 'billmate' ), 
-							'type' => 'text', 
-							'description' => __( 'Disable Billmate Cardpay if Cart Total is lower than the specified value. Leave blank to disable this feature.', 'billmate' ), 
+							'title' => __( 'Lower threshold', 'billmate' ),
+							'type' => 'text',
+							'description' => __( 'Disable Billmate Cardpay if Cart Total is lower than the specified value. Leave blank to disable this feature.', 'billmate' ),
 							'default' => ''
 						),
 			'upper_threshold' => array(
-							'title' => __( 'Upper threshold', 'billmate' ), 
-							'type' => 'text', 
-							'description' => __( 'Disable Billmate Cardpay if Cart Total is higher than the specified value. Leave blank to disable this feature.', 'billmate' ), 
+							'title' => __( 'Upper threshold', 'billmate' ),
+							'type' => 'text',
+							'description' => __( 'Disable Billmate Cardpay if Cart Total is higher than the specified value. Leave blank to disable this feature.', 'billmate' ),
 							'default' => ''
 						),
 			'authentication_method' => array(
-							'title' => __( 'Authentication Method', 'billmate' ), 
-							'type' => 'select', 
+							'title' => __( 'Authentication Method', 'billmate' ),
+							'type' => 'select',
 							'options' => array(
 								'authentication'  =>__( 'Authentication', 'billmate' ),
 								'sales' => __('Sales','billmate'),
 								),
-							'label' => __( 'Authentication Method', 'billmate' ), 
+							'label' => __( 'Authentication Method', 'billmate' ),
 							'default' => ''
 						),
 			'do_3dsecure' => array(
-							'title' => __( 'Enable 3D Secure', 'billmate' ), 
-							'type' => 'select', 
+							'title' => __( 'Enable 3D Secure', 'billmate' ),
+							'type' => 'select',
 							'options' => array(
 								'YES'  => __('Yes','billmate'),
 								'NO' => __('No','billmate'),
 								),
-							'label' => __( 'Enable 3D Secure', 'billmate' ), 
+							'label' => __( 'Enable 3D Secure', 'billmate' ),
 							'default' => 'YES'
 						),
 			'prompt_name_entry' => array(
-							'title' => __( 'Enable Name', 'billmate' ), 
-							'type' => 'select', 
+							'title' => __( 'Enable Name', 'billmate' ),
+							'type' => 'select',
 							'options' => array(
 								'YES'  => __('Yes','billmate'),
 								'NO' => __('No','billmate'),
 								),
-							'label' => __( 'Enable Name', 'billmate' ), 
+							'label' => __( 'Enable Name', 'billmate' ),
 							'default' => 'NO'
 						),
 			'testmode' => array(
-							'title' => __( 'Test Mode', 'billmate' ), 
-							'type' => 'checkbox', 
-							'label' => __( 'Enable Billmate Test Mode.', 'billmate' ), 
+							'title' => __( 'Test Mode', 'billmate' ),
+							'type' => 'checkbox',
+							'label' => __( 'Enable Billmate Test Mode.', 'billmate' ),
 							'default' => 'no'
 						)
 		) );
-	    
+
 	} // End init_form_fields()
-	
-	
-	
+
+
+
 	/**
-	 * Admin Panel Options 
+	 * Admin Panel Options
 	 * - Options for bits like 'title' and availability on a country-by-country basis
 	 *
 	 * @since 1.0.0
@@ -567,10 +556,10 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 	public function admin_options() {
     	?>
     	<h3><?php _e('Billmate Cardpay', 'billmate'); ?></h3>
-	    	
+
 	    	<p><?php _e('With Billmate your customers can pay by cardpay. Billmate works by adding extra personal information fields and then sending the details to Billmate for verification.', 'billmate');?></p>
-	    	
-	    	
+
+
     	<table class="form-table">
     	<?php
     		// Generate the HTML For the settings form.
@@ -579,50 +568,50 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		</table><!--/.form-table-->
     	<?php
     } // End admin_options()
-	
-	
+
+
 	/**
 	 * Check if this gateway is enabled and available in the user's country
 	 */
-		
+
 	function is_available() {
 		global $woocommerce;
 		if ($this->enabled=="yes") :
-		
+
 			// if (!is_ssl()) return false;
-			
+
 			// Currency check
 			// if (!in_array(get_option('woocommerce_currency'), array('DKK', 'EUR', 'NOK', 'SEK'))) return false;
-			
+
 			// Base country check
 			//if (!in_array(get_option('woocommerce_default_country'), array('DK', 'DE', 'FI', 'NL', 'NO', 'SE'))) return false;
-			
+
 			// Required fields check
 			if (!$this->eid || !$this->secret) return false;
-			
+
 			// Cart totals check - Lower threshold
 			if ( $this->lower_threshold !== '' ) {
 				if ( $woocommerce->cart->total < $this->lower_threshold ) return false;
 			}
-			
+
 			// Cart totals check - Upper threshold
 			if ( $this->upper_threshold !== '' ) {
 				if ( $woocommerce->cart->total > $this->upper_threshold ) return false;
 			}
-			
+
 			// Only activate the payment gateway if the customers country is the same as the filtered shop country ($this->billmate_country)
 	   		//if ( $woocommerce->customer->get_country() == true && $woocommerce->customer->get_country() != $this->billmate_country ) return false;
-								
+
 			return true;
-					
-		endif;	
-	
+
+		endif;
+
 		return false;
 	}
 	/**
 	 * Payment form on checkout page
 	 */
-	
+
 	function payment_fields() {
 	   	global $woocommerce;
 	   	?><p><?php echo strlen($this->description)? $this->description: 'Visa & MasterCard.'; ?></p><?php
@@ -633,9 +622,9 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 	function process_payment( $order_id ) {
 		global $woocommerce;
 		$order = new WC_order( $order_id );
-		
-		$languageCode = defined( 'WPLANG' ) && WPLANG ? WPLANG : 'sv_SE';
-		
+
+		$languageCode = get_locale();
+
 		$lang = explode('_', strtoupper($languageCode));
 		$languageCode = $lang[0];
 		$languageCode = $languageCode == 'DA' ? 'DK' : $languageCode;
@@ -655,17 +644,17 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		$eid       = $this->settings['eid'];
 		$currency  = get_woocommerce_currency();
 		$return_method = 'GET';
-		
+
 		$do_3dsecure   = $this->do_3dsecure;
 		$prompt_name_entry = $this->prompt_name_entry;
-		
+
 		$capture_now   = $this->authentication_method == 'sales' ? 'YES' : 'NO';
-		
+
 		$pay_method= 'CARD';
 		$amount    = $woocommerce->cart->total*100;
-		
+
         $mac_str = $accept_url. $amount . $callback_url .$cancel_url.$capture_now . $currency. $do_3dsecure. $languageCode . $eid . $order_id . $pay_method . $prompt_name_entry . $return_method . $secret;
-        
+
         $mac = hash ( "sha256", $mac_str );
 	    echo <<<EOD
 	    <form action="{$actionurl}" id="{$this->id}" method="POST">
@@ -691,16 +680,16 @@ EOD;
 		$this->sendBillmate($order_id, $order , true);
 die;
 	}
-	
+
 	/**
 	 * receipt_page
 	 **/
-	function receipt_page( $order ) {		
+	function receipt_page( $order ) {
 		echo '<p>'.__('Thank you for your order.', 'billmate').'</p>';
-		
+
 	}
-	
-	
+
+
 	/**
 	 * Javascript for Invoice terms popup on checkout page
 	 **/
@@ -716,17 +705,17 @@ die;
 			<?php
 		}
 	}
-	
-	
+
+
 	/**
 	 * get_terms_invoice_link_text function.
 	 * Helperfunction - Get Invoice Terms link text based on selected Billing Country in the Ceckout form
 	 * Defaults to $this->billmate_country
 	 * At the moment $this->billmate_country is allways returned. This will change in the next update.
 	 **/
-	 
+
 	function get_invoice_terms_link_text($country) {
-				
+
 		switch ( $country )
 		{
 		case 'SE':
@@ -750,16 +739,16 @@ die;
 		default:
 			$term_link_account = __('Terms for Invoice', 'billmate');
 		}
-		
+
 		return $term_link_account;
 	} // end function get_account_terms_link_text()
-	
-	
+
+
 	// Helper function - get Invoice fee id
 	function get_billmate_invoice_fee_product() {
 		return $this->invoice_fee_id;
 	}
-	
+
 	// Helper function - get Shop Country
 	function get_billmate_shop_country() {
 		return $this->shop_country;

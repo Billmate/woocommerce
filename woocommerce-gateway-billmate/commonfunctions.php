@@ -1,5 +1,5 @@
 <?php
-define('BILLPLUGIN_VERSION','1.22');
+define('BILLPLUGIN_VERSION','1.23');
 define('BILLMATE_VERSION','PHP:Woocommerce:'.BILLPLUGIN_VERSION);
 
 require_once(BILLMATE_LIB . 'BillMate.php');
@@ -906,7 +906,7 @@ if(!class_exists('BillmateCountry')){
 					$encoding = 5;
 					$currency = 3;
 					break;
-				// Norway	
+				// Norway
 				case 'NOR':
 				case 'NO':
 				case 164:
@@ -915,7 +915,7 @@ if(!class_exists('BillmateCountry')){
 					$encoding = 3;
 					$currency = 1;
 					break;
-				// Germany	
+				// Germany
 				case 'DEU':
 				case 'DE':
 				case 81:
@@ -924,7 +924,7 @@ if(!class_exists('BillmateCountry')){
 					$encoding = 6;
 					$currency = 2;
 					break;
-				// Netherlands															
+				// Netherlands
 				case 'NLD':
 				case 'NL':
 				case 154:
@@ -936,7 +936,7 @@ if(!class_exists('BillmateCountry')){
 			}
 			return array('country'=>$country,'language'=> $language, 'encoding' => $encoding,'currency' => $currency );
 		}
-		function getSwedenData(){
+		public static function getSwedenData(){
 			$country = 209;
 			$language = 138;
 			$encoding = 2;

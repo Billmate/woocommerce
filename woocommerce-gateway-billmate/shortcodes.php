@@ -25,7 +25,7 @@ function return_billmate_price() {
 
 	$settings = get_option('woocommerce_billmate_partpayment_settings');
 	$eid = $settings['eid'];
-	$pclasses = json_decode($pclasses);	
+	$pclasses = json_decode($pclasses);
 	if(!$pclasses_not_available) {
 		foreach ($pclasses->{$eid} as $pclass2) {
 			$pclass = (array)$pclass2;
@@ -37,7 +37,7 @@ function return_billmate_price() {
 									$flag
 								);
 			} // End if $pclass->getType() == 0 or 1
-		
+
 		} // End foreach
 	}
 		return $billmate_partpayment_shortcode_price;
@@ -58,16 +58,16 @@ function return_billmate_basic_img() {
 // Return Account info popup link
 function return_billmate_partpayment_info_link() {
 	global $billmate_partpayment_country, $billmate_partpayment_eid;
-	//global $billmate_partpayment_shortcode_info_link;	
+	//global $billmate_partpayment_shortcode_info_link;
 	//return '<a id="billmate_partpayment" onclick="ShowBillmatePartPaymentPopup();return false;" href="javascript://">' . __('Read more', 'billmate') . '</a>';
-	
+
 	$WC_Gateway_Billmate_Partpayment = new WC_Gateway_Billmate_Partpayment;
 	$product = new WC_Product( get_the_ID() );
   	$price = $product->price;
-	
+
 	ob_start();
 	$WC_Gateway_Billmate_Partpayment->payment_fields_options( $price, false );
-	echo '<a id="billmate_partpayment" href="#">' . WC_Gateway_Billmate_Partpayment::get_account_terms_link_text($billmate_partpayment_country) . '</a>';
+	echo '<a id="billmate_partpayment" href="#">' . $WC_Gateway_Billmate_Partpayment->get_account_terms_link_text($billmate_partpayment_country) . '</a>';
 	echo '<script type="text/javascript">jQuery.getScript("https://efinance.se/billmate/base.js", function(){
 		window.$ = jQuery;
 		$ = jQuery;

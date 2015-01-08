@@ -130,3 +130,11 @@ function ajax_load(obj){
     jQuery('.checkout').prepend(hidden);
     jQuery('#place_order').trigger('click');
 }
+
+jQuery(document).ready(function(){
+jQuery('form.checkout').on( 'change', 'input[name="payment_method"]', function() {
+dirtyInput = this;
+jQuery('body').trigger('update_checkout');
+})
+})
+
