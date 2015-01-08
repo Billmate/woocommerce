@@ -285,13 +285,22 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 
 			$content = get_option('wc_gateway_billmate_partpayment_pclasses',false);
 			if($content){
-				$fields = array(_e('eid','billmate'),_e('paymentplanid','billmate'),_e('description','billmate'),_e('months','billmate'),_e('interestrate','billmate'),_e('startfee','billmate'),_e('handlingfee','billmate'),_e('minamount','billmate'),_e('maxamount','billmate'),_e('currency','billmate'),_e('country','billmate'),_e('expirydate','billmate'));
+				//$fields = array(_e('eid','billmate'),_e('paymentplanid','billmate'),_e('description','billmate'),_e('months','billmate'),_e('interestrate','billmate'),_e('startfee','billmate'),_e('handlingfee','billmate'),_e('minamount','billmate'),_e('maxamount','billmate'),_e('currency','billmate'),_e('country','billmate'),_e('expirydate','billmate'));
 				?>
 				<table border="0" style="border:1px solid #000">
 					<tr>
-						<?php foreach($fields as $field ): ?>
-							<th><?php echo ucfirst($field )?></th>
-						<?php endforeach; ?>
+						<th><?php echo ucfirst(_e('eid','billmate') )?></th>
+						<th><?php echo ucfirst(_e('paymentplanid','billmate')); ?></th>
+						<th><?php echo ucfirst(_e('description','billmate')); ?></th>
+						<th><?php echo ucfirst(_e('months','billmate')); ?></th>
+						<th><?php echo ucfirst(_e('interestrate','billmate')); ?></th>
+						<th><?php echo ucfirst(_e('startfee','billmate')); ?></th>
+						<th><?php echo ucfirst(_e('handlingfee','billmate')); ?></th>
+						<th><?php echo ucfirst(_e('minamount','billmate')); ?></th>
+						<th><?php echo ucfirst(_e('maxamount','billmate')); ?></th>
+						<th><?php echo ucfirst(_e('currency','billmate')); ?></th>
+						<th><?php echo ucfirst(_e('country','billmate')); ?></th>
+						<th><?php echo ucfirst(_e('expirydate','billmate')); ?></th>
 					</tr>
 					<?php foreach( $content as $terms ):?>
 						<tr>

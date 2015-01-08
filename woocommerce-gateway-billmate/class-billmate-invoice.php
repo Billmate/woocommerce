@@ -332,7 +332,7 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 
 	   	<?php if ($this->testmode=='yes') : ?><p><?php _e('TEST MODE ENABLED', 'billmate'); ?></p><?php endif; ?>
 		<?php if ($this->description) : ?><p><?php echo $this->description; ?></p><?php endif; ?>
-		<?php if ($this->invoice_fee_price>0) : ?><p><?php printf(__('An invoice fee of %1$s %2$s will be added to your order.', 'billmate'), $this->invoice_fee, $this->billmate_currency ); ?></p><?php endif; ?>
+		<?php if ($this->invoice_fee>0) : ?><p><?php printf(__('An invoice fee of %1$s %2$s will be added to your order.', 'billmate'), $this->invoice_fee, $this->billmate_currency ); ?></p><?php endif; ?>
 
 		<fieldset>
 			<p class="form-row form-row-first">
