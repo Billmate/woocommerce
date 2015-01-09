@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2015-01-08 10:46+0100\n"
-"PO-Revision-Date: 2015-01-08 10:50+0100\n"
+"PO-Revision-Date: 2015-01-09 10:45+0100\n"
 "Last-Translator: Jesper Johansson <jesper@boxedlogistics.se>\n"
 "Language-Team: \n"
 "Language: en\n"
@@ -116,7 +116,6 @@ msgid "Upper threshold"
 msgstr "Övre tröskel"
 
 #: class-billmate-invoice.php:216 class-billmate-invoice.php:1186
-#, fuzzy
 msgid "Invoice fee"
 msgstr "Fakturaavgift"
 
@@ -125,14 +124,12 @@ msgid "Add a invoice fee cost without vat, leave empty to disable"
 msgstr "Faktura avgift utan moms, lämna tomt for att inaktivera"
 
 #: class-billmate-invoice.php:222
-#, fuzzy
 msgid "Invoice fee tax class"
-msgstr "Fakturaavgift"
+msgstr "Fakturaavgift Momsklass"
 
 #: class-billmate-invoice.php:224
-#, fuzzy
 msgid "The tax class for Invoice fee"
-msgstr "Produkt ID för Fakturaavgift"
+msgstr "Momsklass för faktura avgift"
 
 #: class-billmate-invoice.php:229 class-billmate-bankpay.php:240
 #: class-billmate-account.php:252
@@ -279,7 +276,7 @@ msgstr ""
 "Händlers."
 
 #: class-billmate-invoice.php:553 class-billmate-account.php:995
-#, fuzzy, php-format
+#, php-format
 msgid ""
 "Vänligen bekräfta att e-postadressen \"%s\" är korrekt. Denna kommer att "
 "användas för fakturering."
@@ -350,7 +347,6 @@ msgstr "Tack för din order."
 
 #: class-billmate-invoice.php:1134 class-billmate-bankpay.php:632
 #: class-billmate-cardpay.php:647
-#, fuzzy
 msgid "Terms for Invoice"
 msgstr "Produkt ID för Fakturaavgift"
 
@@ -376,7 +372,6 @@ msgstr "Du måste acceptera Billmates villkor"
 
 #: class-billmate-bankpay.php:18 class-billmate-bankpay.php:206
 #: class-billmate-bankpay.php:207 class-billmate-bankpay.php:267
-#, fuzzy
 msgid "Billmate Bank"
 msgstr "Aktivera Billmate Bank"
 
@@ -644,22 +639,18 @@ msgstr ""
 "informationen till Billmate för verifiering."
 
 #: class-billmate-account.php:288
-#, fuzzy
 msgid "eid"
 msgstr "Billmate ID"
 
 #: class-billmate-account.php:288
-#, fuzzy
 msgid "paymentplanid"
-msgstr "Betalningsplan"
+msgstr "Betalningsplan ID"
 
 #: class-billmate-account.php:288
-#, fuzzy
 msgid "description"
 msgstr "Beskrivning"
 
 #: class-billmate-account.php:288
-#, fuzzy
 msgid "months"
 msgstr "Månad"
 
@@ -672,7 +663,6 @@ msgid "startfee"
 msgstr "uppläggningsavgift"
 
 #: class-billmate-account.php:288
-#, fuzzy
 msgid "handlingfee"
 msgstr "Fakturaavgift"
 
@@ -689,9 +679,8 @@ msgid "currency"
 msgstr "Valuta"
 
 #: class-billmate-account.php:288
-#, fuzzy
 msgid "country"
-msgstr "Rabatt"
+msgstr "Land"
 
 #: class-billmate-account.php:288
 msgid "expirydate"
@@ -726,7 +715,7 @@ msgid "Kön"
 msgstr "Kön"
 
 #: class-billmate-account.php:762
-#, fuzzy, php-format
+#, php-format
 msgid "Min e-postadress %s är korrekt och får användas för fakturering"
 msgstr ""
 "Vänligen bekräfta att e-postadressen '%s' är korrekt. Denna kommer att "

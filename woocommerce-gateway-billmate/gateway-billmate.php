@@ -60,6 +60,8 @@ function activate_billmate_gateway(){
 	// Else Plugin version in DB differs from Billmate Version.
 	}elseif(BILLMATE_VERSION != $invoiceSettings['plugin_version']){
 		// Plugin update after Billmate gateway 2.0.0
+		$invoiceSettings['plugin_version'] = BILLMATE_VERSION;
+		update_option('woocommerce_billmate_settings',$invoiceSettings);
 	}
 }
 register_activation_hook(__FILE__,'activate_billmate_gateway');
