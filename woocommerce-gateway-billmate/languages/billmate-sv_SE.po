@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2015-01-08 10:46+0100\n"
-"PO-Revision-Date: 2015-01-09 10:45+0100\n"
+"PO-Revision-Date: 2015-01-09 13:30+0100\n"
 "Last-Translator: Jesper Johansson <jesper@boxedlogistics.se>\n"
 "Language-Team: \n"
 "Language: en\n"
@@ -688,17 +688,16 @@ msgstr "Utgångsdatum"
 
 #: class-billmate-account.php:322
 msgid "Filen billmatepclasses.json har uppdaterats."
-msgstr "Filen billmatepclasses.json har uppdaterats."
+msgstr "Betalplanerna har uppdaterats"
 
 #: class-billmate-account.php:327
 msgid ""
 "Filen billmatepclasses.json kunde inte uppdateras. Billmate felmeddelande"
-msgstr ""
-"Filen billmatepclasses.json kunde inte uppdateras. Billmate felmeddelande"
+msgstr "Delbetalningsplanerna kunde inte uppdateras. Billmate felmeddelande"
 
 #: class-billmate-account.php:331
 msgid "Uppdatera PClass filen"
-msgstr "Uppdatera PClass filen"
+msgstr "Uppdatera Delbetalningsplanerna"
 
 #: class-billmate-account.php:478
 #, php-format
