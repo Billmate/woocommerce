@@ -117,19 +117,22 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		}
 
 		$order_id = $_POST['order_id'];
+
+
 		$order = new WC_Order( $order_id );
 
-    if( $_POST['status'] != 0 ) {
-			if($_POST['error_message'] == 'Invalid credit card number') {
-				$error_message = 'Tyvärr kunde inte din betalning genomföras';
-			} else {
-				$error_message = $_POST['error_message'];
-			}
-			$order->add_order_note( __($error_message, 'billmate') );
-			$woocommerce->add_error( __($error_message, 'billmate') );
-			wp_safe_redirect(add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_checkout_page_id')))));
-			return false;
-    }
+
+		if( $_POST['status'] != 0 ) {
+				if($_POST['error_message'] == 'Invalid credit card number') {
+					$error_message = 'Tyvärr kunde inte din betalning genomföras';
+				} else {
+					$error_message = $_POST['error_message'];
+				}
+				$order->add_order_note( __($error_message, 'billmate') );
+				$woocommerce->add_error( __($error_message, 'billmate') );
+				wp_safe_redirect(add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_checkout_page_id')))));
+				return false;
+		}
 
 		if( method_exists($order, 'get_status') ) {
 			$order_status = $order->get_status();
@@ -137,12 +140,17 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			$order_status_terms = wp_get_object_terms( $order_id, 'shop_order_status', array('fields' => 'slugs') );
 			$order_status = $order_status_terms[0];
 		}
-
-		if( in_array($order_status, array('pending')) ) {
-			$data = $this->sendBillmate($order_id, $order );
-			$order->update_status('completed', $payment_note);
-			if( $accept_url_hit ) wp_safe_redirect($data['redirect']);
-			exit;
+		// Check if lockstate equals false.
+		if(false === ($lockState = get_transient('billmate_cardpay_order_id_'.$order_id))){
+			// Set Transient to prevent multiple running
+			set_transient('billmate_cardpay_order_id_'.$order_id,'locked',3600);
+			if( in_array($order_status, array('pending')) ) {
+				$data = $this->sendBillmate($order_id, $order );
+				// Not update status to completed as its against WooCommerce Bestpractice
+				//$order->update_status('completed', $payment_note);
+				if( $accept_url_hit ) wp_safe_redirect($data['redirect']);
+				exit;
+			}
 		}
 
 		if( $accept_url_hit ) {
@@ -424,6 +432,9 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
             	//Unknown response, store it in a database.
 				$order->add_order_note( __($result, 'billmate') );
 				$woocommerce->add_error( __((string)$result, 'billmate') );
+
+				// Delete Transient
+				delete_transient('billmate_cardpay_order_id_'.$order_id);
 				return array(
 						'result' 	=> 'failed',
 						'redirect'	=> add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(woocommerce_get_page_id('checkout'))))
@@ -444,6 +455,8 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 				} else {
 					$redirect = $this->get_return_url($order);;
 				}
+				// Delete Transient
+				delete_transient('billmate_cardpay_order_id_'.$order_id);
 				// Return thank you redirect
 				return array(
 						'result' 	=> 'success',

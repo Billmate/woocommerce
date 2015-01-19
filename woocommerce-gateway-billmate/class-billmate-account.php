@@ -331,7 +331,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 
 			if (isset($_GET['billmate_error_status']) && $_GET['billmate_error_status'] == '1') {
 				// billmatepclasses.json file could not be updated
-				echo '<div class="error">'.__('Filen billmatepclasses.json kunde inte uppdateras. Billmate felmeddelande','billmate').': ' . $_GET['billmate_error_code'] . '</div>';
+				echo '<div class="error">'.__('Filen billmatepclasses.json kunde inte uppdateras. Billmate felmeddelande','billmate').': ' . $_GET['billmate_error_code'] .' ' .$_GET['message'].'</div>';
 			}
 			?>
 			<p>
@@ -500,10 +500,11 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 				}
 				catch(Exception $e) {
 				    //Something went wrong, print the message:
-				    wc_bm_errors( sprintf(__('Billmate PClass problem: %s. Error code: ', 'billmate'), utf8_encode($e->getMessage()) ) . '"' . $e->getCode() . '"', 'error' );
+
+					$error = new WP_Error('error', sprintf(__('Billmate PClass problem: %s. Error code: ', 'billmate'), utf8_encode($e->getMessage()) ) . '"' . $e->getCode() . '"', 'error' );
 				    //$billmate_error_code = utf8_encode($e->getMessage()) . 'Error code: ' . $e->getCode();
 
-				    $redirect_url = 'admin.php?page='.$_GET['page'].'&tab='.$_GET['tab'].'&section=WC_Gateway_Billmate_Partpayment&billmate_error_status=1&billmate_error_code=' . $e->getCode().'&message='.($e->getMessage());
+					$redirect_url = 'admin.php?page='.$_GET['page'].'&tab='.$_GET['tab'].'&section=WC_Gateway_Billmate_Partpayment&billmate_error_status=1&billmate_error_code=' . $e->getCode().'&message='.(urlencode($e->getMessage()));
 
 				    //wp_redirect(admin_url($redirect_url));
 				    wp_redirect(admin_url($redirect_url));
@@ -1068,9 +1069,6 @@ parse_str($_POST['post_data'], $datatemp);
 			$billmate_shipping_house_extension	= '';
 
 		endif;
-
-		// Store Billmate specific form values in order as post meta
-		update_post_meta( $order_id, 'billmate_pno', $billmate_pno);
 
 
 		// Test mode or Live mode

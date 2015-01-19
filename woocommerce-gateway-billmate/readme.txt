@@ -46,7 +46,11 @@ To create a Invoice fee product:
 
 == Changelog ==
 
-= 1.2.3 =
+= 1.23.1 =
+* Fix - The payment status is set to the correct on all payment methods
+
+
+= 1.23 =
 * Feature - Added the functionality so that if you put a file called billmatecustom.css in the plugin it will include that. Useful if you need to overwrite some CSS to make the Billmate plugin look good in you checkout without everwriting the themes css.
 * Fix - Fixed so that an error on the checkout page does not occur if you enter wrong "personnummer" twice.
 * Fix - If you enter a wroong ID for the invoice fee the checkout and settings page does not crash.
