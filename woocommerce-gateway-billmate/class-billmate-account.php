@@ -1211,8 +1211,8 @@ parse_str($_POST['post_data'], $datatemp);
 			$displayname = $order->billing_first_name.' '.$order->billing_last_name.'<br/>'.$addr[0][1];
 		}
 
-        $usership = $order->billing_last_name.' '.$order->billing_first_name.' '.$order->billing_company;
-        $userbill = $order->shipping_last_name.' '.$order->shipping_first_name.' '.$order->shipping_company;
+        $usership = $order->billing_first_name.' '.$order->billing_last_name.' '.$order->billing_company;
+        $userbill = $order->shipping_first_name.' '.$order->shipping_last_name.' '.$order->shipping_company;
 
 		$addressNotMatched = !isEqual( $usership, $userbill ) ||
 		    !isEqual($addr[0][2], $billmate_billing_address ) ||
