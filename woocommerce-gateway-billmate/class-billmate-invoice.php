@@ -812,8 +812,8 @@ parse_str($_POST['post_data'], $datatemp);
         $firstArr = explode(' ', $order->billing_first_name);
         $lastArr  = explode(' ', $order->billing_last_name);
 
-        $usership = $order->billing_last_name.' '.$order->billing_first_name.' '.$order->billing_company;
-        $userbill = $order->shipping_last_name.' '.$order->shipping_first_name.' '.$order->shipping_company;
+        $usership = $order->billing_first_name.' '.$order->billing_last_name.' '.$order->billing_company;
+        $userbill = $order->shipping_first_name.' '.$order->shipping_last_name.' '.$order->shipping_company;
 
 		if( strlen( $addr[0][0] )) {
 			$name = $addr[0][0];

@@ -39,21 +39,21 @@ To create a Invoice fee product:
 ##How to place Billmate logo on your site.
 Copy the code below for the size that fits your needs.
 
-###Large  
+###Large
 
-<a href="http://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_l.png" alt="Billmate Payment Gateway" /></a>  
+<a href="http://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_l.png" alt="Billmate Payment Gateway" /></a>
 
 `<a href="http://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_l.png" alt="Billmate Payment Gateway" /></a>`
 
-###Medium  
+###Medium
 
 <a href="http://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_m.png" alt="Billmate Payment Gateway" /></a>
 
 `<a href="http://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_m.png" alt="Billmate Payment Gateway" /></a>`
 
-###Small  
+###Small
 
-<a href="http://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_s.png" alt="Billmate Payment Gateway" /></a>  
+<a href="http://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_s.png" alt="Billmate Payment Gateway" /></a>
 
 `<a href="http://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_s.png" alt="Billmate Payment Gateway" /></a>`
 
@@ -61,7 +61,7 @@ Copy the code below for the size that fits your needs.
 
 ###1.23.2 (2015-01-30)
 * Fix - Fixed a bug that if you enterd a matching adress, the verification of the adress popup still appeared.
- 
+
 
 ###1.23.1 (2015-01-19)
 * Fix - The payment status is set to the correct on all payment methods.

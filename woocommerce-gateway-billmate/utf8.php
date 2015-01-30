@@ -25,7 +25,7 @@ function isEqual($string1, $string2 ){
 		}
 	}
 	$foundName = array_intersect( $filterStr1, $filterStr2 );
-	return (count($foundName)==count($filterStr1));
+	return count($foundName) > 0;
 }
 
 function utf8_strlen($string) {
