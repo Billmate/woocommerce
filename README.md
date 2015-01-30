@@ -60,7 +60,7 @@ Copy the code below for the size that fits your needs.
 ##Changelog
 
 ###1.23.2 (2015-01-30)
-* Fix - Fixed a bug that if you enterd a matching adress, the verification of the adress popup still appeared.
+* Fix - Fixed a bug that if you entered a matching adress, the verification of the adress popup still appeared.
 
 
 ###1.23.1 (2015-01-19)
