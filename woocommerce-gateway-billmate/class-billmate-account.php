@@ -768,7 +768,7 @@ parse_str($_POST['post_data'], $datatemp);
 		<div class="clear"></div>
 			<p class="form-row">
 				<input type="checkbox" class="input-checkbox" checked="checked" value="yes" name="valid_email_it_is" id="valid_email_it_is" style="float:left;margin-top:6px" />
-				<label for="valid_email_it_is" ><?php echo sprintf(__('Min e-postadress %s är korrekt och får användas för fakturering', 'billmate'), $datatemp['billing_email']) ?></label>
+				<label for="valid_email_it_is" ><?php echo sprintf(__('My e-mail ,%s, is correct och and may be used for billing. I confirm the ', 'billmate'), $datatemp['billing_email']) ?></label>
 			</p>
 
 			<?php if ( $this->shop_country == 'DE' && $this->de_consent_terms == 'yes' ) : ?>
@@ -800,7 +800,6 @@ parse_str($_POST['post_data'], $datatemp);
 		}
 		// Check if we have any PClasses
 
-		// TODO Deactivate this gateway if the file billmatepclasses.json doesn't exist
 		if(!$pclasses_not_available) {
 			if( $label ) {
 		?>
