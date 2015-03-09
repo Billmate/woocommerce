@@ -13,6 +13,7 @@ class BillmateCommon {
 	public function __construct() {
 		add_action( 'admin_menu', array( $this, 'add_plugin_page' ) );
 		add_action( 'admin_init', array( $this, 'page_init' ) );
+		add_action('wp_ajax_verify_credentials', array($this,'verify_credentials'));
 	}
 
 	public function page_init() {
@@ -91,6 +92,72 @@ class BillmateCommon {
 				?>
 			</form>
 		</div>
+		<script type="text/javascript">
+			jQuery(document).ready(function($){
+				$('form').on('submit',function(e){
+				var credentialStatus = false;
+
+					$.ajax({
+						url: ajaxurl,
+						type: 'POST',
+						async: false,
+						data: {
+							action:'verify_credentials',
+							billmate_id: $('#billmate_common_eid').val(),
+							billmate_secret: $('#billmate_common_secret').val()
+						},
+						success: function(response){
+							var result = JSON.parse(response);
+							if(result.success){
+								$(this).parent('form').submit();
+								credentialStatus = true;
+							} else {
+								alert("<?php echo __('Please, check your credentials')?>");
+								credentialStatus = false;
+
+
+							}
+						}
+					});
+					if(!credentialStatus){
+						e.preventDefault();
+						e.stopPropagation();
+						e.returnValue = false;
+						return false;
+					}
+
+
+					/*var apa = false;
+					if(apa){
+						$(this).parent('form').submit();
+					} else {
+						e.preventDefault();
+					}*/
+				})
+			})
+
+		</script>
 	<?php
+	}
+
+	public function verify_credentials()
+	{
+		require_once 'library/Billmate.php';
+		$billmate = new BillMate($_POST['billmate_id'],$_POST['billmate_secret'],true, false,false);
+		$values['PaymentData'] = array(
+			'currency' => 'SEK',
+			'language' => 'sv',
+			'country' => 'se'
+		);
+		$result = $billmate->getPaymentplans($values);
+		$response = array();
+		if(isset($result['code']) && $result['code'] == 9013 || $result['code'] == 9010){
+			$response['success'] = false;
+		}
+		else{
+			$response['success'] = true;
+		}
+		echo json_encode($response);
+		wp_die();
 	}
 }
