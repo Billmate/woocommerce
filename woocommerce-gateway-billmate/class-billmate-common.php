@@ -18,19 +18,24 @@ class BillmateCommon {
 	public function page_init() {
 		register_setting(
 			'billmate_common', // Option group
-			'billmate_common_settings', // Option name
+			'billmate_common_eid', // Option name
+			array( $this, 'sanitize' ) // Sanitize
+		);
+		register_setting(
+			'billmate_common', // Option group
+			'billmate_common_secret', // Option name
 			array( $this, 'sanitize' ) // Sanitize
 		);
 
 		add_settings_section(
 			'setting_credentials', // ID
-			'My Custom Settings', // Title
+			__('Common Billmate Settings'), // Title
 			array( $this, 'print_section_info' ), // Callback
 			'billmate-settings' // Page
 		);
 
 		add_settings_field(
-			'eid', // ID
+			'billmate_common_eid', // ID
 			__('Billmate ID'), // Title
 			array( $this, 'eid_callback' ), // Callback
 			'billmate-settings', // Page
@@ -38,7 +43,7 @@ class BillmateCommon {
 		);
 
 		add_settings_field(
-			'seecret',
+			'billmate_common_secret',
 			__('Secret'),
 			array( $this, 'secret_callback' ),
 			'billmate-settings',
@@ -56,6 +61,19 @@ class BillmateCommon {
 		);
 	}
 
+	public function eid_callback(){
+		$value = get_option('billmate_common_eid','');
+		echo '<input type="text" id="billmate_common_eid" name="billmate_common_eid" value="'.$value.'" />';
+	}
+
+	public function secret_callback(){
+		$value = get_option('billmate_common_secret','');
+		echo '<input type="text" id="billmate_common_secret" name="billmate_common_secret" value="'.$value.'" />';
+	}
+
+	public function sanitize($input){
+		return $input;
+	}
 	public function create_admin_page()
 	{
 		// Set class property
@@ -63,7 +81,7 @@ class BillmateCommon {
 		?>
 		<div class="wrap">
 			<?php screen_icon(); ?>
-			<h2>My Settings</h2>
+			<h2><?php echo __('Billmate Settings'); ?></h2>
 			<form method="post" action="options.php">
 				<?php
 				// This prints out all hidden setting fields

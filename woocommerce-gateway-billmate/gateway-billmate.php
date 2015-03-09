@@ -148,6 +148,9 @@ function init_billmate_gateway() {
 	require_once 'class-billmate-cardpay.php';
 	require_once 'class-billmate-bankpay.php';
 
+	require_once 'class-billmate-common.php';
+	$common = new BillmateCommon();
+
 
 } // End init_billmate_gateway.
 
