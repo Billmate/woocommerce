@@ -11,7 +11,7 @@ require_once dirname( __FILE__ ) .'/utf8.php';
 
 function wc_bm_errors($message){
 	global $woocommerce;
-	$message = utf8_encode($message);
+	$message = mb_convert_encoding($message,'UTF-8','auto');
 	if(version_compare(WC_VERSION, '2.0.0', '<')){
 		$woocommerce->add_error( $message );
 	} else {

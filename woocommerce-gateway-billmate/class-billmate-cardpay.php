@@ -28,8 +28,8 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		$this->enabled				= ( isset( $this->settings['enabled'] ) ) ? $this->settings['enabled'] : '';
 		$this->title 				= ( isset( $this->settings['title'] ) ) ? $this->settings['title'] : '';
 		$this->description  		= ( isset( $this->settings['description'] ) ) ? $this->settings['description'] : '';
-		$this->secret				= ( isset( $this->settings['secret'] ) ) ? $this->settings['secret'] : '';
-		$this->eid					= ( isset( $this->settings['eid'] ) ) ? $this->settings['eid'] : '';
+		$this->secret				= get_option('billmate_common_secret');//( isset( $this->settings['secret'] ) ) ? $this->settings['secret'] : '';
+		$this->eid					= get_option('billmate_common_eid');//( isset( $this->settings['eid'] ) ) ? $this->settings['eid'] : '';
 		$this->lower_threshold		= ( isset( $this->settings['lower_threshold'] ) ) ? $this->settings['lower_threshold'] : '';
 		$this->upper_threshold		= ( isset( $this->settings['upper_threshold'] ) ) ? $this->settings['upper_threshold'] : '';
 		$this->invoice_fee_id		= ( isset( $this->settings['invoice_fee_id'] ) ) ? $this->settings['invoice_fee_id'] : '';
@@ -495,13 +495,22 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			$_product = $order->get_product_from_item( $item );
 			if ($_product->exists() && $item['qty']) :
 
-				// We manually calculate the tax percentage here
-				if ($order->get_line_tax($item) !==0) :
-					// Calculate tax percentage
-					$item_tax_percentage = number_format( ( $order->get_item_tax($item, false) / $order->get_item_total( $item, false, false ) )*100, 2, '.', '');
-				else :
-					$item_tax_percentage = 0.00;
-				endif;
+				// is product taxable?
+				if ($_product->is_taxable())
+				{
+					$taxClass = $_product->get_tax_class();
+					$tax = new WC_Tax();
+					$rates = $tax->get_rates($taxClass);
+					$item_tax_percentage = 0;
+					foreach($rates as $row){
+						// Is it Compound Tax?
+						if($row['compund'] == 'yes')
+							$item_tax_percentage += $row['rate'];
+						else
+							$item_tax_percentage = $row['rate'];
+					}
+				} else
+					$item_tax_percentage = 0;
 
 				// apply_filters to item price so we can filter this if needed
 				$billmate_item_price_including_tax = $order->get_item_total( $item, true );
@@ -514,7 +523,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 				}
 
 
-				$priceExcl = $item_price-$order->get_item_tax($item,false);
+				$priceExcl = round($item_price-$order->get_item_tax($item,false),2);
 
 				$orderValues['Articles'][] = array(
 					'quantity'   => (int)$item['qty'],
@@ -571,10 +580,13 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			$total += ($shipping_price-$order->order_shipping_tax) * 100;
 			$totalTax += (($shipping_price-$order->order_shipping_tax) * ($calculated_shipping_tax_percentage/100))*100;
 		endif;
+		$round = ($woocommerce->cart->total * 100) - $total - $totalTax;
+
 		$orderValues['Cart']['Total'] = array(
 			'withouttax' => $total,
 			'tax' => $totalTax,
-			'withtax' => $total + $totalTax
+			'rounding' => $round,
+			'withtax' => $total + $totalTax + $round
 		);
 		$k = new Billmate($this->eid,$this->secret,true,$this->testmode,false);
 		$result = $k->addPayment($orderValues);

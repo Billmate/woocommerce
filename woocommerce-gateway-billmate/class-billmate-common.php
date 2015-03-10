@@ -126,13 +126,6 @@ class BillmateCommon {
 						return false;
 					}
 
-
-					/*var apa = false;
-					if(apa){
-						$(this).parent('form').submit();
-					} else {
-						e.preventDefault();
-					}*/
 				})
 			})
 
