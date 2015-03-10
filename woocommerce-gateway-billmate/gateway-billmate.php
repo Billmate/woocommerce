@@ -55,6 +55,8 @@ function activate_billmate_gateway(){
 		$invoiceSettings['billmate_invoice_fee_tax_class'] = $taxClass;
 		$invoiceSettings['plugin_version'] = BILLMATE_VERSION;
 
+		update_option('billmate_common_eid',$invoiceSettings['eid']);
+		update_option('billmate_common_secret',$invoiceSettings['secret']);
 		update_option('woocommerce_billmate_settings',$invoiceSettings);
 
 	// Else Plugin version in DB differs from Billmate Version.

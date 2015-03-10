@@ -174,18 +174,6 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 							'description' => __( 'This controls the description which the user sees during checkout.', 'billmate' ),
 							'default' => ''
 						),
-			'eid' => array(
-							'title' => __( 'Eid', 'billmate' ),
-							'type' => 'text',
-							'description' => __( 'Please enter your Billmate Eid; this is needed in order to take payment!', 'billmate' ),
-							'default' => ''
-						),
-			'secret' => array(
-							'title' => __( 'Shared Secret', 'billmate' ),
-							'type' => 'text',
-							'description' => __( 'Please enter your Billmate Shared Secret; this is needed in order to take payment!', 'billmate' ),
-							'default' => ''
-						),
 			'lower_threshold' => array(
 							'title' => __( 'Lower threshold', 'billmate' ),
 							'type' => 'text',
@@ -1197,11 +1185,12 @@ parse_str($_POST['post_data'], $datatemp);
 		$total = 0;
 		$totalTax = 0;
 		$orderValues = array();
+		$lang = explode('_',get_locale());
 		$orderValues['PaymentData'] = array(
 			'method' => 4,
 			'paymentplanid' => $billmate_pclass,
 			'currency' => get_woocommerce_currency(),
-			'language' => get_locale(),
+			'language' => $lang[0],
 			'country' => $country,
 			'orderid' => $order->id
 		);

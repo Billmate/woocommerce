@@ -207,18 +207,6 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 							'description' => __( 'This controls the description which the user sees during checkout.', 'billmate' ),
 							'default' => ''
 						),
-			'eid' => array(
-							'title' => __( 'Eid', 'billmate' ),
-							'type' => 'text',
-							'description' => __( 'Please enter your Billmate Eid; this is needed in order to take payment!', 'billmate' ),
-							'default' => ''
-						),
-			'secret' => array(
-							'title' => __( 'Shared Secret', 'billmate' ),
-							'type' => 'text',
-							'description' => __( 'Please enter your Billmate Shared Secret; this is needed in order to take payment!', 'billmate' ),
-							'default' => ''
-						),
 			'lower_threshold' => array(
 							'title' => __( 'Lower threshold', 'billmate' ),
 							'type' => 'text',
@@ -348,8 +336,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 	function process_payment( $order_id ) {
 		global $woocommerce;
 		$order = new WC_order( $order_id );
-		$languageCode = get_locale();
-		$language = explode('_',$languageCode);
+		$language = explode('_',get_locale());
 		$orderValues = array();
 		$capture_now   = $this->authentication_method == 'sales' ? 'YES' : 'NO';
 		$orderValues['PaymentData'] = array(
@@ -367,8 +354,8 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		);
 
 
-		$lang = explode('_', strtoupper($languageCode));
-		$languageCode = $lang[0];
+
+		$languageCode = $language[0];
 		$languageCode = $languageCode == 'DA' ? 'DK' : $languageCode;
 		$languageCode = $languageCode == 'SV' ? 'SE' : $languageCode;
 		$languageCode = $languageCode == 'EN' ? 'GB' : $languageCode;

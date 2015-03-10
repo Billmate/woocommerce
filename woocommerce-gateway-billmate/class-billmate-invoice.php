@@ -188,18 +188,6 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 							'description' => __( 'This controls the description which the user sees during checkout.', 'billmate' ),
 							'default' => ''
 						),
-			'eid' => array(
-							'title' => __( 'Eid', 'billmate' ),
-							'type' => 'text',
-							'description' => __( 'Please enter your Billmate Eid; this is needed in order to take payment!', 'billmate' ),
-							'default' => ''
-						),
-			'secret' => array(
-							'title' => __( 'Shared Secret', 'billmate' ),
-							'type' => 'text',
-							'description' => __( 'Please enter your Billmate Shared Secret; this is needed in order to take payment!', 'billmate' ),
-							'default' => ''
-						),
 			'lower_threshold' => array(
 							'title' => __( 'Lower threshold', 'billmate' ),
 							'type' => 'text',
