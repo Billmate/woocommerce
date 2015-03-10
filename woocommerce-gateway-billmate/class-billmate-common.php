@@ -72,6 +72,11 @@ class BillmateCommon {
 		echo '<input type="text" id="billmate_common_secret" name="billmate_common_secret" value="'.$value.'" />';
 	}
 
+	public function print_section_info()
+	{
+		echo __('Here is the common settings for the Billmate Payment module');
+	}
+
 	public function sanitize($input){
 		return $input;
 	}
