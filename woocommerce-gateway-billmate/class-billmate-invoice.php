@@ -500,7 +500,6 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 
 			<div class="clear"></div>
 
-			<p><a id="billmate_invoice" href="javascript://"><?php echo $this->get_invoice_terms_link_text($this->billmate_country); ?></a></p>
  <script type="text/javascript">
  jQuery(document).ready(function(){
 	window.$ = $ = jQuery;
@@ -520,7 +519,7 @@ parse_str($_POST['post_data'], $datatemp);
 		<div class="clear"></div>
 			<p class="form-row">
 				<input type="checkbox" class="input-checkbox" checked="checked" value="yes" name="valid_email_it_is_invoice" id="valid_email_it_is_invoice" style="float:left;margin-top:6px" />
-				<label for="valid_email_it_is_invoice" ><?php echo sprintf(__('My e-mail address ,%s, is correct and may be used for billing. I also confirm ', 'billmate'), $datatemp['billing_email']) ?></label>
+				<label><?php echo sprintf(__('My e-mail address ,%s, is correct and may be used for billing. I also confirm ', 'billmate'), $datatemp['billing_email']) ?>&nbsp;<a id="billmate_invoice" href="javascript://"><?php echo __('Terms of invoice'); ?></a></label>
 			</p>
 		<div class="clear"></div>
 
