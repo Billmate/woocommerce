@@ -787,6 +787,65 @@ parse_str($_POST['post_data'], $datatemp);
 		</fieldset>
 		<?php
 	}
+	public function update_billmatepclasses_from_frontend(){
+		global $wpdb;
+		if ( $this->testmode == 'yes' ):
+			// Disable SSL if in testmode
+			$billmate_ssl = 'false';
+			$billmate_mode = 'test';
+		else :
+			// Set SSL if used in webshop
+			if (is_ssl()) {
+				$billmate_ssl = 'true';
+			} else {
+				$billmate_ssl = 'false';
+			}
+			$billmate_mode = 'live';
+		endif;
+		if( empty( $this->eid) ){
+			return false;
+		}
+
+		$eid = (int)$this->eid;
+		$secret = $this->secret;
+		$country = $this->billmate_country;
+		$language = $this->billmate_language;
+		$currency = $this->billmate_currency;
+
+
+		$k = new BillMate($eid,$secret,true, $this->testmode == 'yes',false);
+
+
+		try {
+			$language = explode('_',get_locale());
+			$values = array(
+				'PaymentData' => array(
+					'currency' => $currency,
+					'language' => $language[0],
+					'country' => strtolower($country)
+				)
+			);
+			$data = $k->getPaymentplans($values);
+			if(!is_array($data)){
+				throw new Exception($data);
+			}
+			if(isset($data['code'])){
+				throw new Exception($data);
+			}
+			$output = array();
+			array_walk($data, array($this,'correct_lang_billmate'));
+			foreach( $data as $row ){
+				$row['eid'] = $eid;
+				$output[]=$row;
+			}
+			$wpdb->update($wpdb->options,$output,array('option_name' => 'wc_gateway_billmate_partpayment_pclasses'));
+
+		}
+		catch(Exception $e) {
+			//Something went wrong, print the message:
+			wc_bm_errors( sprintf(__('Billmate PClass problem: %s. Error code: ', 'billmate'), utf8_encode($e->getMessage()) ) . '"' . $e->getCode() . '"', 'error' );
+		}
+	}
 
 	/**
 	 * Payment field opttions
@@ -798,6 +857,10 @@ parse_str($_POST['post_data'], $datatemp);
 		$enabled_plcass = 'no';
 
 		$pclasses = get_option('wc_gateway_billmate_partpayment_pclasses',false);
+		if(date('Y-m-d',strtotime('+1 week')) >= $pclasses[0]['expirydate']){
+			$_GET['billmatePclassListener'] = 1;
+			$this->update_billmatepclasses_from_frontend();
+		}
 		if($pclasses){
 			$pclasses_not_available = false;
 		}
@@ -843,7 +906,7 @@ parse_str($_POST['post_data'], $datatemp);
                                     echo sprintf(__('%s - %s %s/month', 'billmate'), $pclass['description'], $monthly_cost, $this->billmate_currency);
                                     } else {
                                         // Norway - Show total cost
-                                        echo sprintf(__('%s - %s %s/month - %s%s - Start %s - Tot %s %s', 'billmate'), $pclass['description'], $monthly_cost, $this->billmate_currency, $pclass['interest'], '%', $pclass['start_fee'], $total_credit_purchase_cost, $this->billmate_currency );
+                                        echo sprintf(__('%s - %s %s/month - %s%s - Start %s - Tot %s %s', 'billmate'), $pclass['description'], $monthly_cost, $this->billmate_currency, $pclass['interestrate'], '%', $pclass['startfee'], $total_credit_purchase_cost, $this->billmate_currency );
                                     }
                                 } else {
                                     if ( $pclass['Type'] == 1 ) {
@@ -851,7 +914,7 @@ parse_str($_POST['post_data'], $datatemp);
                                         echo sprintf(__('%s - %s %s/month', 'billmate'), $pclass['description'], $monthly_cost, $this->billmate_currency );
                                     } else {
                                         // Sweden, Denmark, Finland, Germany & Netherlands - Don't show total cost
-                                        echo sprintf(__('%s - %s %s/month - %s%s - Start %s', 'billmate'), $pclass['description'], $monthly_cost, $this->billmate_currency, $pclass['interest'], '%', $pclass['start_fee'] );
+                                        echo sprintf(__('%s - %s %s/month - %s%s - Start %s', 'billmate'), $pclass['description'], $monthly_cost, $this->billmate_currency, $pclass['interestrate'], '%', $pclass['startfee'] );
                                     }
                                 }
                             echo '</option>';
