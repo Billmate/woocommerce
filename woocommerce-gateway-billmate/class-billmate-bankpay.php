@@ -39,6 +39,8 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		$this->de_consent_terms		= ( isset( $this->settings['de_consent_terms'] ) ) ? $this->settings['de_consent_terms'] : '';
 		$this->allowed_countries	= ( isset( $this->settings['billmatebank_allowed_countries'] ) ) ? $this->settings['billmatebank_allowed_countries'] : '';
 		$this->authentication_method= 'sales';
+		$this->custom_order_status = ( isset($this->settings['custom_order_status']) ) ? $this->settings['custom_order_status'] : false;
+		$this->order_status = (isset($this->settings['order_status'])) ? $this->settings['order_status'] : false;
 		if ( $this->invoice_fee_id == "") $this->invoice_fee_id = 0;
 
 		if ( $this->invoice_fee_id > 0 ) :
@@ -151,7 +153,12 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 
 		if( in_array($order_status, array('pending')) ){
 
-			$order->payment_complete();
+			if($this->custom_order_status == 'no')
+			{
+				$order->payment_complete();
+			} else {
+				$order->update_status($this->order_status);
+			}
 			if( $accept_url_hit ){
 				$redirect = '';
 				$woocommerce->cart->empty_cart();
@@ -193,6 +200,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			'DK' =>__('Danmark', 'woocommerce'),
 			'NO' =>__( 'Norway' ,'woocommerce')
 		);
+		$order_statuses = wc_get_order_statuses();
 	   	$this->form_fields = apply_filters('billmate_invoice_form_fields', array(
 			'enabled' => array(
 							'title' => __( 'Enable/Disable', 'billmate' ),
@@ -237,7 +245,20 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 							'type' => 'checkbox',
 							'label' => __( 'Enable Billmate Test Mode.', 'billmate' ),
 							'default' => 'no'
-						)
+						),
+			'custom_order_status' => array(
+				'title' => __('Custom Order status','billmate'),
+				'type' => 'checkbox',
+				'label' => __('Enable custom order status','billmate'),
+				'default' => 'no'
+			),
+			'order_status' => array(
+				'title' => __('Order status'),
+				'type' => 'select',
+				'description' => __('Choose a special order status for Billmate invoice, if you want to use a own status and not WooCommerce built in'.'billmate'),
+				'default' => '',
+				'options' => $order_statuses
+			)
 		) );
 
 	} // End init_form_fields()

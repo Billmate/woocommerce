@@ -155,6 +155,8 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 			'NO' =>__( 'Norway' ,'woocommerce')
 		);
 
+		$order_statuses = wc_get_order_statuses();
+
 	   	$this->form_fields = array(
 			'enabled' => array(
 							'title' => __( 'Enable/Disable', 'billmate' ),
@@ -250,7 +252,20 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 							'type' => 'checkbox',
 							'label' => __( 'Enable Billmate Test Mode.', 'billmate' ),
 							'default' => 'no'
-						)
+						),
+			'custom_order_status' => array(
+				'title' => __('Custom Order status','billmate'),
+				'type' => 'checkbox',
+				'label' => __('Enable custom order status','billmate'),
+				'default' => 'no'
+			),
+			'order_status' => array(
+				'title' => __('Order status'),
+				'type' => 'select',
+				'description' => __('Choose a special order status for Billmate invoice, if you want to use a own status and not WooCommerce built in'.'billmate'),
+				'default' => '',
+				'options' => $order_statuses
+			)
 		);
 
 	} // End init_form_fields()
@@ -1479,7 +1494,12 @@ parse_str($_POST['post_data'], $datatemp);
 					$order->add_order_note( __('Billmate payment completed. Billmate Invoice number:', 'billmate') . $invno );
 
 					// Payment complete
-					$order->payment_complete();
+					if($this->custom_order_status == 'no')
+					{
+						$order->payment_complete();
+					} else {
+						$order->update_status($this->order_status);
+					}
 
 					// Remove cart
 					$woocommerce->cart->empty_cart();
@@ -1501,7 +1521,12 @@ parse_str($_POST['post_data'], $datatemp);
 					$order->add_order_note( __('Order is PENDING APPROVAL by Billmate. Please visit Billmate Online for the latest status on this order. Billmate Invoice number: ', 'billmate') . $invno );
 
 					// Payment complete
-					$order->payment_complete();
+					if($this->custom_order_status == 'no')
+					{
+						$order->payment_complete();
+					} else {
+						$order->update_status($this->order_status);
+					}
 
 					// Remove cart
 					$woocommerce->cart->empty_cart();

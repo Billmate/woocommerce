@@ -37,6 +37,8 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 		$this->invoice_fee 			= ( isset( $this->settings['billmate_invoice_fee'] ) ) ? $this->settings['billmate_invoice_fee'] : 0;
 		$this->invoice_fee_tax_class = (isset( $this->settings['billmate_invoice_fee_tax_class'] ) ) ? $this->settings['billmate_invoice_fee_tax_class'] : '';
 		$this->allowed_countries 		= ( isset( $this->settings['billmateinvoice_allowed_countries'] ) ) ? $this->settings['billmateinvoice_allowed_countries'] : array();
+		$this->custom_order_status = ( isset($this->settings['custom_order_status']) ) ? $this->settings['custom_order_status'] : false;
+		$this->order_status = (isset($this->settings['order_status'])) ? $this->settings['order_status'] : false;
 
 		//if ( $this->handlingfee == "") $this->handlingfee = 0;
 		//if ( $this->handlingfee_tax == "") $this->handlingfee_tax = 0;
@@ -169,6 +171,10 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 			foreach ( $tax_classes as $class )
 				$classes_options[ sanitize_title( $class ) ] = esc_html( $class );
 
+		$order_statuses = wc_get_order_statuses();
+
+
+
 	   	$this->form_fields = apply_filters('billmate_invoice_form_fields', array(
 			'enabled' => array(
 							'title' => __( 'Enable/Disable', 'billmate' ),
@@ -226,7 +232,20 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 							'type' => 'checkbox',
 							'label' => __( 'Enable Billmate Test Mode.', 'billmate' ),
 							'default' => 'no'
-						)
+						),
+			'custom_order_status' => array(
+				'title' => __('Custom Order status','billmate'),
+				'type' => 'checkbox',
+				'label' => __('Enable custom order status','billmate'),
+				'default' => 'no'
+			),
+		    'order_status' => array(
+			    'title' => __('Order status'),
+			    'type' => 'select',
+			    'description' => __('Choose a special order status for Billmate invoice, if you want to use a own status and not WooCommerce built in'.'billmate'),
+			    'default' => '',
+			    'options' => $order_statuses
+		    )
 		) );
 
 	} // End init_form_fields()
@@ -330,7 +349,7 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 				$rate = array_pop($rate);
 				$rate = $rate['rate'];
 				$taxAmount = ($rate/100) * $this->invoice_fee;
-				printf(__('An invoice fee of %1$s %2$s will be added to your order.', 'billmate'), $this->invoice_fee+$taxAmount, $this->billmate_currency ); ?>
+				printf(__('An invoice fee of %1$s %2$s will be added to your order.', 'billmate'), $this->invoice_fee+$taxAmount, get_woocommerce_currency_symbol() ); ?>
 			</p>
 		<?php endif; ?>
 
@@ -1064,7 +1083,13 @@ parse_str($_POST['post_data'], $datatemp);
 					$order->add_order_note( __('Billmate payment completed. Billmate Invoice number:', 'billmate') . $invno );
 
 					// Payment complete
-					$order->payment_complete();
+					error_log('custom_order_status'.$this->custom_order_status);
+					if($this->custom_order_status == 'no')
+					{
+						$order->payment_complete();
+					} else {
+						$order->update_status($this->order_status);
+					}
 
 					// Remove cart
 					$woocommerce->cart->empty_cart();
@@ -1086,7 +1111,12 @@ parse_str($_POST['post_data'], $datatemp);
 					$order->add_order_note( __('Order is PENDING APPROVAL by Billmate. Please visit Billmate Online for the latest status on this order. Billmate Invoice number: ', 'billmate') . $invno );
 
 					// Payment complete
-					$order->payment_complete();
+					if($this->custom_order_status == 'no')
+					{
+						$order->payment_complete();
+					} else {
+						$order->update_status($this->order_status);
+					}
 
 					// Remove cart
 					$woocommerce->cart->empty_cart();
