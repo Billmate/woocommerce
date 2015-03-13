@@ -197,13 +197,13 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 			'lower_threshold' => array(
 							'title' => __( 'Lower threshold', 'billmate' ),
 							'type' => 'text',
-							'description' => __( 'Avaktivera Billmate Faktura om varukorgen är mindre än den angivna summan. Lämna tomt för att avaktivera denna funktion.' ),
+							'description' => __( 'Disable Billmate Invoice if Cart Total is lower than the specified value. Leave blank to disable this feature.' ),
 							'default' => ''
 						),
 			'upper_threshold' => array(
 							'title' => __( 'Upper threshold', 'billmate' ),
 							'type' => 'text',
-							'description' => __( 'Avaktivera Billmate Faktura om varukorgen är mindre än den angivna summan. Lämna tomt för att avaktivera denna funktion.', 'billmate' ),
+							'description' => __( 'Disable Billmate Invoice if Cart Total is higher than the specified value. Leave blank to disable this feature.', 'billmate' ),
 							'default' => ''
 						),
 			'billmate_invoice_fee' => array(
@@ -242,7 +242,7 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 		    'order_status' => array(
 			    'title' => __('Order status'),
 			    'type' => 'select',
-			    'description' => __('Choose a special order status for Billmate invoice, if you want to use a own status and not WooCommerce built in'.'billmate'),
+			    'description' => __('Choose a special order status for Billmate Invoice, if you want to use a own status and not WooCommerce built in','billmate'),
 			    'default' => '',
 			    'options' => $order_statuses
 		    )
@@ -679,7 +679,7 @@ parse_str($_POST['post_data'], $datatemp);
 		$order = new WC_order( $order_id );
 
 		if(empty($_POST['valid_email_it_is_invoice'])){
-            wc_bm_errors( sprintf( __('Vänligen bekräfta att e-postadressen "%s" är korrekt. Denna kommer att användas för fakturering.', 'billmate'), $order->billing_email ));
+            wc_bm_errors( sprintf( __('Please confirm the email %s is correct. The email will be used for invoicing.', 'billmate'), $order->billing_email ));
             return;
 		}
 
@@ -851,7 +851,7 @@ parse_str($_POST['post_data'], $datatemp);
 			$orderValues['Articles'][] = array(
 				'quantity'   => (int)1,
 				'artnr'    => "",
-				'title'    => __('Rabatt', 'billmate'),
+				'title'    => __('Discount', 'billmate'),
 				'aprice'    => -($order_discount*100), //+$item->unittax
 				'taxrate'      => 0,
 				'discount' => (float)0,
@@ -1296,7 +1296,7 @@ class WC_Gateway_Billmate_Invoice_Extra {
 
     			// Check if set, if its not set add an error.
     			if (isset($_POST['billmate_invo_pno']) && !$_POST['billmate_invo_pno'])
-    	    	 	wc_bm_errors( __('Ej giltigt organisations-/personnummer. Kontrollera numret.', 'billmate') );
+    	    	 	wc_bm_errors( __('Non Valid Person / Corporate number. Check the number.', 'billmate') );
 
 			}
 			// NL & DE
@@ -1309,7 +1309,7 @@ class WC_Gateway_Billmate_Invoice_Extra {
 
 	         	// Personal / Corporate
 				if (!$_POST['billmate_invo_date_of_birth_day'] || !$_POST['billmate_invo_date_of_birth_month'] || !$_POST['billmate_invo_date_of_birth_year'])
-	         		wc_bm_errors( __('Ej giltigt organisations-/personnummer. Kontrollera numret.', 'billmate') );
+	         		wc_bm_errors( __('Non Valid Person / Corporate number. Check the number.', 'billmate') );
 
 	         	// Shipping and billing address must be the same
 	         	$billmate_shiptobilling = ( isset( $_POST['shiptobilling'] ) ) ? $_POST['shiptobilling'] : '';

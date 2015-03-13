@@ -272,7 +272,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			'order_status' => array(
 				'title' => __('Order status'),
 				'type' => 'select',
-				'description' => __('Choose a special order status for Billmate invoice, if you want to use a own status and not WooCommerce built in'.'billmate'),
+				'description' => __('Choose a special order status for Billmate Cardpay, if you want to use a own status and not WooCommerce built in','billmate'),
 				'default' => '',
 				'options' => $order_statuses
 			)
@@ -559,7 +559,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			$orderValues['Articles'][] = array(
 				'quantity'   => (int)1,
 				'artnr'    => "",
-				'title'    => __('Rabatt', 'billmate'),
+				'title'    => __('Discount', 'billmate'),
 				'aprice'    => -($order_discount*100), //+$item->unittax
 				'taxrate'      => 0,
 				'discount' => (float)0,

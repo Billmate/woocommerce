@@ -248,7 +248,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 			),
 
 			'testmode' => array(
-							'title' => __( 'Testläge', 'billmate' ),
+							'title' => __( 'Testmode', 'billmate' ),
 							'type' => 'checkbox',
 							'label' => __( 'Enable Billmate Test Mode.', 'billmate' ),
 							'default' => 'no'
@@ -262,7 +262,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 			'order_status' => array(
 				'title' => __('Order status'),
 				'type' => 'select',
-				'description' => __('Choose a special order status for Billmate invoice, if you want to use a own status and not WooCommerce built in'.'billmate'),
+				'description' => __('Choose a special order status for Billmate Partpayment, if you want to use a own status and not WooCommerce built in','billmate'),
 				'default' => '',
 				'options' => $order_statuses
 			)
@@ -331,16 +331,16 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 
 			if (isset($_GET['billmate_error_status']) && $_GET['billmate_error_status'] == '0') {
 				// billmatepclasses.json file saved sucessfully
-				echo '<div class="updated">'.__('Filen billmatepclasses.json har uppdaterats.','billmate').'</div>';
+				echo '<div class="updated">'.__('The paymentplans is updated.','billmate').'</div>';
 			}
 
 			if (isset($_GET['billmate_error_status']) && $_GET['billmate_error_status'] == '1') {
 				// billmatepclasses.json file could not be updated
-				echo '<div class="error">'.__('Filen billmatepclasses.json kunde inte uppdateras. Billmate felmeddelande','billmate').': ' . $_GET['billmate_error_code'] . '</div>';
+				echo '<div class="error">'.__('Billmate paymentplans couldnt be uppdated, Billmate error message ','billmate').': ' . $_GET['billmate_error_code'] . '</div>';
 			}
 			?>
 			<p>
-		    <a class="button" href="<?php echo admin_url('admin.php?'.$_SERVER['QUERY_STRING'].'&billmatePclassListener=1');?>"><?php _e('Uppdatera PClass filen', 'billmate'); ?> billmatepclasses.json</a>
+		    <a class="button" href="<?php echo admin_url('admin.php?'.$_SERVER['QUERY_STRING'].'&billmatePclassListener=1');?>"><?php _e('Update Paymentplans', 'billmate'); ?> </a>
 
 		    </p>
     	<table class="form-table">
@@ -740,7 +740,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 
 			<?php if ( $this->shop_country == 'NL' || $this->shop_country == 'DE' ) : ?>
 				<p class="form-row form-row-last">
-					<label for="billmate_partpayment_gender"><?php echo __("Kön", 'billmate') ?> <span class="required">*</span></label>
+					<label for="billmate_partpayment_gender"><?php echo __("Gender", 'billmate') ?> <span class="required">*</span></label>
 					<select id="billmate_partpayment_gender" name="billmate_partpayment_gender" class="woocommerce-select" style="width:120px;">
 						<option value=""><?php echo __("Select gender", 'billmate') ?></option>
 						<option value="0"><?php echo __("Female", 'billmate') ?></option>
@@ -1013,7 +1013,7 @@ parse_str($_POST['post_data'], $datatemp);
 
     			// Check if set, if its not set add an error.
     			if (!$_POST['billmate_pno'])
-        		 	wc_bm_errors( __('Ej giltigt organisations-/personnummer. Kontrollera numret.', 'billmate') );
+        		 	wc_bm_errors( __('Non Valid Person / Corporate number. Check the number.', 'billmate') );
 
 			}
 
@@ -1023,11 +1023,11 @@ parse_str($_POST['post_data'], $datatemp);
 
 	    		// Gender
 	    		if (!isset($_POST['billmate_partpayment_gender']))
-	        	 	wc_bm_errors( __('Ej giltigt organisations-/personnummer. Kontrollera numret.', 'billmate') );
+	        	 	wc_bm_errors( __('Non Valid Person / Corporate number. Check the number.', 'billmate') );
 
 	         	// Personal / Corporate
 				if (!$_POST['date_of_birth_day'] || !$_POST['date_of_birth_month'] || !$_POST['date_of_birth_year'])
-	         		wc_bm_errors( __('Ej giltigt organisations-/personnummer. Kontrollera numret.', 'billmate') );
+	         		wc_bm_errors( __('Non Valid Person / Corporate number. Check the number.', 'billmate') );
 
 	         	// Shipping and billing address must be the same
 	         	$billmate_shiptobilling = ( isset( $_POST['shiptobilling'] ) ) ? $_POST['shiptobilling'] : '';
@@ -1180,7 +1180,7 @@ parse_str($_POST['post_data'], $datatemp);
 
 		$order = new WC_order( $order_id );
 		if(empty($_POST['valid_email_it_is'])){
-            wc_bm_errors( sprintf( __('Vänligen bekräfta att e-postadressen "%s" är korrekt. Denna kommer att användas för fakturering.', 'billmate'), $order->billing_email ));
+            wc_bm_errors( sprintf( __('Please confirm the email %s is correct. The email will be used for invoicing.', 'billmate'), $order->billing_email ));
             return;
 		}
 
@@ -1339,7 +1339,7 @@ parse_str($_POST['post_data'], $datatemp);
 			$orderValues['Articles'][] = array(
 				'quantity'   => (int)1,
 				'artnr'    => "",
-				'title'    => __('Rabatt', 'billmate'),
+				'title'    => __('Discount', 'billmate'),
 				'aprice'    => -($order_discount*100), //+$item->unittax
 				'taxrate'      => 0,
 				'discount' => (float)0,

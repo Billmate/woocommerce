@@ -1,520 +1,137 @@
-# reiki <vipan.eminence@gmail.com>, 2013.
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
-"POT-Creation-Date: 2015-01-08 10:46+0100\n"
-"PO-Revision-Date: 2015-01-09 13:30+0100\n"
-"Last-Translator: Jesper Johansson <jesper@boxedlogistics.se>\n"
-"Language-Team: \n"
-"Language: en\n"
+"Project-Id-Version: Billmate Woocommerce plugin\n"
+"POT-Creation-Date: 2015-03-13 15:26+0100\n"
+"PO-Revision-Date: 2015-03-13 15:28+0100\n"
+"Last-Translator: \n"
+"Language-Team: Boxedsolutions <jesper@boxedsolutions.se>\n"
+"Language: sv_SE\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.7.4\n"
+"X-Poedit-Basepath: woocommerce\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 1.5.4\n"
-
-#: class-billmate-invoice.php:17 class-billmate-invoice.php:257
-msgid "Billmate Invoice"
-msgstr "Billmate Faktura"
-
-#: class-billmate-invoice.php:159 class-billmate-bankpay.php:191
-#: class-billmate-account.php:152
-msgid "Sweden"
-msgstr "Sverige"
-
-#: class-billmate-invoice.php:160 class-billmate-bankpay.php:192
-#: class-billmate-account.php:153
-msgid "Finland"
-msgstr "Finland"
-
-#: class-billmate-invoice.php:161 class-billmate-bankpay.php:193
-#: class-billmate-account.php:154
-msgid "Danmark"
-msgstr "Danmark"
-
-#: class-billmate-invoice.php:162 class-billmate-bankpay.php:194
-#: class-billmate-account.php:155
-msgid "Norway"
-msgstr "Norge"
-
-#: class-billmate-invoice.php:167
-msgid "Standard"
-msgstr "Standard"
-
-#: class-billmate-invoice.php:174 class-billmate-bankpay.php:198
-#: class-billmate-cardpay.php:193 class-billmate-account.php:160
-msgid "Enable/Disable"
-msgstr "Aktivera/avaktivera"
-
-#: class-billmate-invoice.php:176
-msgid "Enable Billmate Invoice"
-msgstr "Aktivera Billmate Faktura"
-
-#: class-billmate-invoice.php:180 class-billmate-bankpay.php:204
-#: class-billmate-cardpay.php:199 class-billmate-account.php:166
-msgid "Title"
-msgstr "Titel"
-
-#: class-billmate-invoice.php:182 class-billmate-cardpay.php:201
-#: class-billmate-account.php:168
-msgid "This controls the title which the user sees during checkout."
-msgstr "Det här kontrollerar vilken titel kunden ser i kassan."
-
-#: class-billmate-invoice.php:183
-msgid "Billmate Invoice - pay within 14 days"
-msgstr "Billmate faktura - betala inom 14 dagar"
-
-#: class-billmate-invoice.php:186 class-billmate-bankpay.php:210
-#: class-billmate-cardpay.php:205 class-billmate-account.php:172
-msgid "Description"
-msgstr "Beskrivning"
-
-#: class-billmate-invoice.php:188 class-billmate-cardpay.php:207
-#: class-billmate-account.php:174
-msgid "This controls the description which the user sees during checkout."
-msgstr "Det här kontrollerar den beskrivning kunden ser i kassan."
-
-#: class-billmate-invoice.php:192 class-billmate-bankpay.php:216
-#: class-billmate-cardpay.php:211 class-billmate-account.php:178
-msgid "Eid"
-msgstr "Billmate ID"
-
-#: class-billmate-invoice.php:194 class-billmate-bankpay.php:218
-#: class-billmate-cardpay.php:213 class-billmate-account.php:180
-msgid ""
-"Please enter your Billmate Eid; this is needed in order to take payment!"
-msgstr "Ange ditt Billmate ID. Detta behövs för att du ska kunna ta betalt."
-
-#: class-billmate-invoice.php:198 class-billmate-bankpay.php:222
-#: class-billmate-cardpay.php:217 class-billmate-account.php:184
-msgid "Shared Secret"
-msgstr "Billmate nyckel"
-
-#: class-billmate-invoice.php:200 class-billmate-bankpay.php:224
-#: class-billmate-cardpay.php:219 class-billmate-account.php:186
-msgid ""
-"Please enter your Billmate Shared Secret; this is needed in order to take "
-"payment!"
-msgstr "Ange din Billmate nyckel. Detta behövs för att du ska kunna ta betalt."
-
-#: class-billmate-invoice.php:204 class-billmate-bankpay.php:228
-#: class-billmate-cardpay.php:223 class-billmate-account.php:190
-msgid "Lower threshold"
-msgstr "Nedre tröskel"
-
-#: class-billmate-invoice.php:206 class-billmate-invoice.php:212
-msgid ""
-"Avaktivera Billmate Faktura om varukorgen är mindre än den angivna summan. "
-"Lämna tomt för att avaktivera denna funktion."
-msgstr ""
-"Avaktivera Billmate Faktura om varukorgen är mindre än den angivna summan. "
-"Lämna tomt för att avaktivera denna funktion."
-
-#: class-billmate-invoice.php:210 class-billmate-bankpay.php:234
-#: class-billmate-cardpay.php:229 class-billmate-account.php:196
-msgid "Upper threshold"
-msgstr "Övre tröskel"
-
-#: class-billmate-invoice.php:216 class-billmate-invoice.php:1186
-msgid "Invoice fee"
-msgstr "Fakturaavgift"
-
-#: class-billmate-invoice.php:218
-msgid "Add a invoice fee cost without vat, leave empty to disable"
-msgstr "Faktura avgift utan moms, lämna tomt for att inaktivera"
-
-#: class-billmate-invoice.php:222
-msgid "Invoice fee tax class"
-msgstr "Fakturaavgift Momsklass"
-
-#: class-billmate-invoice.php:224
-msgid "The tax class for Invoice fee"
-msgstr "Momsklass för faktura avgift"
-
-#: class-billmate-invoice.php:229 class-billmate-bankpay.php:240
-#: class-billmate-account.php:252
-msgid "Allowed Countries"
-msgstr "Tillåtna Länder"
-
-#: class-billmate-invoice.php:231
-msgid "Billmate Invoice activated for customers in these countries"
-msgstr "Billmate Faktura aktiverad för kunder i dessa länder"
-
-#: class-billmate-invoice.php:237 class-billmate-bankpay.php:248
-#: class-billmate-cardpay.php:265
-msgid "Test Mode"
-msgstr "Testläge"
-
-#: class-billmate-invoice.php:239 class-billmate-bankpay.php:250
-#: class-billmate-cardpay.php:267 class-billmate-account.php:263
-msgid "Enable Billmate Test Mode."
-msgstr "Aktivera Billmate testläge. "
-
-#: class-billmate-invoice.php:259
-msgid ""
-"With Billmate your customers can pay by invoice. Billmate works by adding "
-"extra personal information fields and then sending the details to Billmate "
-"for verification."
-msgstr ""
-"Med Billmate kan dina kunder betala via faktura. Billmate fungerar genom att "
-"lägga till fler formulärfält i kassan och sedan skicka informationen till "
-"Billmate för verifikation."
-
-#: class-billmate-invoice.php:262
-#, php-format
-msgid "You may inactivate or remove the invoice fee product with id %s"
-msgstr "Du kan inaktivera eller radera produkten för faktura ID: %s"
-
-#: class-billmate-invoice.php:333 class-billmate-account.php:535
-msgid "TEST MODE ENABLED"
-msgstr "TESTLÄGE AKTIVERAT"
-
-#: class-billmate-invoice.php:335
-#, php-format
-msgid "An invoice fee of %1$s %2$s will be added to your order."
-msgstr "En fakturaavgift om %1$s %2$s tillkommer på din order."
-
-#: class-billmate-invoice.php:341 class-billmate-invoice.php:485
-#: class-billmate-account.php:582 class-billmate-account.php:724
-msgid "Personal / Corporate "
-msgstr "Personnummer/Organisationsnummer"
-
-#: class-billmate-invoice.php:345 class-billmate-account.php:585
-msgid "Day"
-msgstr "Dag"
-
-#: class-billmate-invoice.php:381 class-billmate-account.php:621
-msgid "Month"
-msgstr "Månad"
-
-#: class-billmate-invoice.php:383 class-billmate-account.php:623
-msgid "Jan"
-msgstr "Jan"
-
-#: class-billmate-invoice.php:384 class-billmate-account.php:624
-msgid "Feb"
-msgstr "Feb"
-
-#: class-billmate-invoice.php:385 class-billmate-account.php:625
-msgid "Mar"
-msgstr "Mar"
-
-#: class-billmate-invoice.php:386 class-billmate-account.php:626
-msgid "Apr"
-msgstr "Apr"
-
-#: class-billmate-invoice.php:387 class-billmate-account.php:627
-msgid "May"
-msgstr "Maj"
-
-#: class-billmate-invoice.php:388 class-billmate-account.php:628
-msgid "Jun"
-msgstr "Jun"
-
-#: class-billmate-invoice.php:389 class-billmate-account.php:629
-msgid "Jul"
-msgstr "Jul"
-
-#: class-billmate-invoice.php:390 class-billmate-account.php:630
-msgid "Aug"
-msgstr "Aug"
-
-#: class-billmate-invoice.php:391 class-billmate-account.php:631
-msgid "Sep"
-msgstr "Sep"
-
-#: class-billmate-invoice.php:392 class-billmate-account.php:632
-msgid "Oct"
-msgstr "Okt"
-
-#: class-billmate-invoice.php:393 class-billmate-account.php:633
-msgid "Nov"
-msgstr "Nov"
-
-#: class-billmate-invoice.php:394 class-billmate-account.php:634
-msgid "Dec"
-msgstr "Dec"
-
-#: class-billmate-invoice.php:398 class-billmate-account.php:638
-msgid "Year"
-msgstr "År"
-
-#: class-billmate-invoice.php:492
-msgid "Gender"
-msgstr "Kön"
-
-#: class-billmate-invoice.php:494 class-billmate-account.php:733
-msgid "Select gender"
-msgstr "Välj kön"
-
-#: class-billmate-invoice.php:495 class-billmate-account.php:734
-msgid "Female"
-msgstr "Kvinna"
-
-#: class-billmate-invoice.php:496 class-billmate-account.php:735
-msgid "Male"
-msgstr "Man"
-
-#: class-billmate-invoice.php:523
-#, php-format
-msgid "My e-mail address %s is correct and may be used for billing"
-msgstr "Min e-postadress %s är korrekt och får användas för fakturering"
-
-#: class-billmate-invoice.php:531 class-billmate-account.php:769
-#, php-format
-msgid ""
-"Mit der Übermittlung der für die Abwicklungdes Rechnungskaufes und einer "
-"Identitäts-und Bonitätsprüfung erforderlichen Daten an Billmate bin ich "
-"einverstanden. Meine <a href=\"%s\" target=\"_blank\">Einwilligung</a> kann "
-"ich jederzeit mit Wirkung für die Zukunft widerrufen. Es gelten die AGB des "
-"Händlers."
-msgstr ""
-"Mit der Übermittlung der für die Abwicklungdes Rechnungskaufes und einer "
-"Identitäts-und Bonitätsprüfung erforderlichen Daten an Billmate bin ich "
-"einverstanden. Meine <a href=\"%s\" target=\"_blank\">Einwilligung</a> kann "
-"ich jederzeit mit Wirkung für die Zukunft widerrufen. Es gelten die AGB des "
-"Händlers."
-
-#: class-billmate-invoice.php:553 class-billmate-account.php:995
-#, php-format
-msgid ""
-"Vänligen bekräfta att e-postadressen \"%s\" är korrekt. Denna kommer att "
-"användas för fakturering."
-msgstr ""
-"Vänligen bekräfta att e-postadressen '%s' är korrekt. Denna kommer att "
-"användas för fakturering."
-
-#: class-billmate-invoice.php:715 class-billmate-bankpay.php:529
-#: class-billmate-cardpay.php:545 class-billmate-account.php:1143
-msgid "Rabatt"
-msgstr "Rabatt"
-
-#: class-billmate-invoice.php:783 class-billmate-invoice.php:824
-msgid "Invoice Fee"
-msgstr "Fakturaavgift"
-
-#: class-billmate-invoice.php:843 class-billmate-account.php:1184
-msgid "Unable to find address."
-msgstr "Hittar ingen folkbokföringsadress."
-
-#: class-billmate-invoice.php:893 class-billmate-account.php:1233
-msgid "Yes, make purchase with this address"
-msgstr "Ja, genomför köp med denna adress"
-
-#: class-billmate-invoice.php:893 class-billmate-account.php:1233
-msgid "No, I want to specify a different number or change payment method"
-msgstr "Nej, jag vill ange ett annat personnummer eller byta betalsätt"
-
-#: class-billmate-invoice.php:901 class-billmate-account.php:1241
-msgid ""
-"Pay by invoice can be made only to the address listed in the National "
-"Register. Would you like to make the purchase with address:"
-msgstr ""
-"Köp mot faktura kan bara göras till den adress som är angiven i "
-"folkbokföringen. Vill du genomföra köpet med adressen:"
-
-#: class-billmate-invoice.php:990 class-billmate-invoice.php:991
-#: class-billmate-account.php:1339 class-billmate-account.php:1340
-msgid "Billmate payment denied."
-msgstr "Billmate betalning nekad."
-
-#: class-billmate-invoice.php:1007 class-billmate-account.php:1355
-msgid "Billmate payment completed. Billmate Invoice number:"
-msgstr "Billmate betalning genomförd. Billmate fakturanummer:"
-
-#: class-billmate-invoice.php:1029 class-billmate-account.php:1377
-msgid ""
-"Order is PENDING APPROVAL by Billmate. Please visit Billmate Online for the "
-"latest status on this order. Billmate Invoice number: "
-msgstr ""
-"Ordern är markerad UNDER GODKÄNNANDE av Billmate. Vänligen besök Billmate "
-"för aktuell status om den här ordern. Billmate fakturanummer: "
-
-#: class-billmate-invoice.php:1057 class-billmate-invoice.php:1058
-#: class-billmate-account.php:1405 class-billmate-account.php:1406
-msgid "Unknown response from Billmate."
-msgstr "Okänt svar från Billmate."
-
-#: class-billmate-invoice.php:1070
-#, php-format
-msgid "%s (Error code: %s)"
-msgstr "%s (Felkod: %s)"
-
-#: class-billmate-invoice.php:1082 class-billmate-bankpay.php:580
-#: class-billmate-cardpay.php:595 class-billmate-account.php:1426
-msgid "Thank you for your order."
-msgstr "Tack för din order."
-
-#: class-billmate-invoice.php:1134 class-billmate-bankpay.php:632
-#: class-billmate-cardpay.php:647
-msgid "Terms for Invoice"
-msgstr "Produkt ID för Fakturaavgift"
-
-#: class-billmate-invoice.php:1210 class-billmate-invoice.php:1223
-#: class-billmate-account.php:942 class-billmate-account.php:952
-#: class-billmate-account.php:956
-msgid "Ej giltigt organisations-/personnummer. Kontrollera numret."
-msgstr "Ej giltigt organisations-/personnummer. Kontrollera numret."
-
-#: class-billmate-invoice.php:1219
-msgid "<strong>Gender</strong> is a required field"
-msgstr "<strong>Kön</strong> måste anges"
-
-#: class-billmate-invoice.php:1229 class-billmate-invoice.php:1232
-#: class-billmate-invoice.php:1235 class-billmate-invoice.php:1238
-#: class-billmate-invoice.php:1241
-msgid "Shipping and billing address must be the same when paying via Billmate"
-msgstr "Leverans- och fakturaadress måste vara lika vid betalning med Billmate"
-
-#: class-billmate-invoice.php:1248 class-billmate-account.php:981
-msgid "You must accept the Billmate consent terms."
-msgstr "Du måste acceptera Billmates villkor"
-
-#: class-billmate-bankpay.php:18 class-billmate-bankpay.php:206
-#: class-billmate-bankpay.php:207 class-billmate-bankpay.php:267
-msgid "Billmate Bank"
-msgstr "Aktivera Billmate Bank"
-
-#: class-billmate-bankpay.php:200
-msgid "Enable Billmate Bank"
-msgstr "Aktivera Billmate Bank"
-
-#: class-billmate-bankpay.php:230
-msgid ""
-"Disable Billmate Bank if Cart Total is lower than the specified value. Leave "
-"blank to disable this feature."
-msgstr ""
-"Avaktivera Billmate Bank om varukorgen är lägre än den angivna summan. Lämna "
-"tomt för att avaktivera denna funktion."
-
-#: class-billmate-bankpay.php:236
-msgid ""
-"Disable Billmate Bank if Cart Total is higher than the specified value. "
-"Leave blank to disable this feature."
-msgstr ""
-"Avaktivera Billmate Bank om varukorgen är högre än den angivna summan. Lämna "
-"tomt för att avaktivera denna funktion."
-
-#: class-billmate-bankpay.php:242
-msgid "Billmate Bank activated for customers in these countries"
-msgstr "Billmate Bank aktiverad för kunder i dessa länder"
-
-#: class-billmate-bankpay.php:269
-msgid ""
-"With Billmate your customers can pay by bank. Billmate works by adding extra "
-"personal information fields and then sending the details to Billmate for "
-"verification."
-msgstr ""
-"Med Billmate kan dina kunder betala med bank. Billmate fungerar genom att "
-"lägga till extra personlig information fält och sedan skicka informationen "
-"till Billmate för verifiering."
-
-#: class-billmate-cardpay.php:18 class-billmate-cardpay.php:202
-#: class-billmate-cardpay.php:284
-msgid "Billmate Cardpay"
-msgstr "Billmate Kort"
-
-#: class-billmate-cardpay.php:195
-msgid "Enable Billmate Cardpay"
-msgstr "Aktivera Billmate Kort"
-
-#: class-billmate-cardpay.php:225
-msgid ""
-"Disable Billmate Cardpay if Cart Total is lower than the specified value. "
-"Leave blank to disable this feature."
-msgstr ""
-"Avaktivera Billmate Kort om varukorgen är lägre än den angivna summan. Lämna "
-"tomt för att avaktivera denna funktion."
-
-#: class-billmate-cardpay.php:231
-msgid ""
-"Disable Billmate Cardpay if Cart Total is higher than the specified value. "
-"Leave blank to disable this feature."
-msgstr ""
-"Avaktivera Billmate Kort om varukorgen är högre än den angivna summan. Lämna "
-"tomt för att avaktivera denna funktion."
-
-#: class-billmate-cardpay.php:235 class-billmate-cardpay.php:241
-msgid "Authentication Method"
-msgstr "Autentiseringsmetod"
-
-#: class-billmate-cardpay.php:238
-msgid "Authentication"
-msgstr "Reservera belopp"
-
-#: class-billmate-cardpay.php:239
-msgid "Sales"
-msgstr "Debitera belopp direkt"
-
-#: class-billmate-cardpay.php:245 class-billmate-cardpay.php:251
-msgid "Enable 3D Secure"
-msgstr "Aktivera 3D secure"
-
-#: class-billmate-cardpay.php:248 class-billmate-cardpay.php:258
-msgid "Yes"
-msgstr "Ja"
-
-#: class-billmate-cardpay.php:249 class-billmate-cardpay.php:259
-msgid "No"
-msgstr "Nej"
-
-#: class-billmate-cardpay.php:255 class-billmate-cardpay.php:261
-msgid "Enable Name"
-msgstr "Visa namn i betalfönster"
-
-#: class-billmate-cardpay.php:286
-msgid ""
-"With Billmate your customers can pay by cardpay. Billmate works by adding "
-"extra personal information fields and then sending the details to Billmate "
-"for verification."
-msgstr ""
-"Med Billmate kan dina kunder betala med kort. Billmate fungerar genom att "
-"lägga till extra personlig information fält och sedan skicka informationen "
-"till Billmate för verifiering."
-
-#: class-billmate-account.php:16 class-billmate-account.php:280
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:16
+#: woocommerce-gateway-billmate/class-billmate-account.php:283
 msgid "Billmate Part Payment"
 msgstr "Billmate Delbetalning"
 
-#: class-billmate-account.php:162
+#: woocommerce-gateway-billmate/class-billmate-account.php:152
+#: woocommerce-gateway-billmate/class-billmate-bankpay.php:198
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:161
+msgid "Sweden"
+msgstr "Sverige"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:153
+#: woocommerce-gateway-billmate/class-billmate-bankpay.php:199
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:162
+msgid "Finland"
+msgstr "Finland"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:154
+#: woocommerce-gateway-billmate/class-billmate-bankpay.php:200
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:163
+msgid "Danmark"
+msgstr "Danmark"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:155
+#: woocommerce-gateway-billmate/class-billmate-bankpay.php:201
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:164
+msgid "Norway"
+msgstr "Norge"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:162
+#: woocommerce-gateway-billmate/class-billmate-bankpay.php:206
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:201
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:180
+msgid "Enable/Disable"
+msgstr "Aktivera/Inaktivera"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:164
 msgid "Enable Billmate Part Payment"
 msgstr "Aktivera Billmate Delbetalning"
 
-#: class-billmate-account.php:169
+#: woocommerce-gateway-billmate/class-billmate-account.php:168
+#: woocommerce-gateway-billmate/class-billmate-bankpay.php:212
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:207
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:186
+msgid "Title"
+msgstr "Titel"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:170
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:209
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:188
+msgid "This controls the title which the user sees during checkout."
+msgstr "Detta är titeln på betalmetoden kunden ser i kassan"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:171
 msgid "Billmate - Part Payment"
 msgstr "Billmate - Delbetalning"
 
-#: class-billmate-account.php:192 class-billmate-account.php:198
+#: woocommerce-gateway-billmate/class-billmate-account.php:174
+#: woocommerce-gateway-billmate/class-billmate-bankpay.php:218
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:213
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:192
+msgid "Description"
+msgstr "Beskrivning"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:176
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:215
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:194
+msgid "This controls the description which the user sees during checkout."
+msgstr "Detta är beskrivningen kunden ser i kassan."
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:180
+#: woocommerce-gateway-billmate/class-billmate-bankpay.php:224
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:219
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:198
+msgid "Lower threshold"
+msgstr "Lägsta belopp"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:182
+#: woocommerce-gateway-billmate/class-billmate-account.php:188
 msgid ""
 "Disable Billmate Part Payment if Cart Total is higher than the specified "
 "value. Leave blank to disable this feature."
 msgstr ""
-"Avaktivera Billmate Delbetalning om varukorgen är större än den angivna "
-"summan. Lämna tomt för att avaktivera denna funktion."
+"Inaktivare Billmate Delbetalning om varukorgens belopp är högre än "
+"specificerat värde. Lämna blankt för att inaktivare denna funktion."
 
-#: class-billmate-account.php:202
+#: woocommerce-gateway-billmate/class-billmate-account.php:186
+#: woocommerce-gateway-billmate/class-billmate-bankpay.php:230
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:225
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:204
+msgid "Upper threshold"
+msgstr "Högsta belopp"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:192
 msgid "Display monthly cost - product page"
-msgstr "Visa månadskostnad - produktsida"
+msgstr "Visa månadskostnad - Produkt sida"
 
-#: class-billmate-account.php:204
+#: woocommerce-gateway-billmate/class-billmate-account.php:194
 msgid "Display monthly cost on single products page."
-msgstr "Visa månadskostnad på produktsidan."
+msgstr "Visa månadskostnad på enskilda produkt sidor"
 
-#: class-billmate-account.php:208
+#: woocommerce-gateway-billmate/class-billmate-account.php:198
 msgid "Text for Monthly cost - product page"
-msgstr "Text för månadskostnad - produktsida"
+msgstr "Text för månadskostnad - Produktsida"
 
-#: class-billmate-account.php:210
+#: woocommerce-gateway-billmate/class-billmate-account.php:200
 msgid ""
 "This controls the Monthly cost text displayed on the single product page. "
 "You can use the following shortcodes: [billmate_img] [billmate_price] "
 "[billmate_currency] & [billmate_partpayment_info_link]."
 msgstr ""
-"Det här kontrollerar texten för månadskostnad som visas på produktsidan. Du "
-"kan använda följande variabler: [billmate_img] [billmate_price] "
+"Detta bestämmer texten för månadskostnad för enskilda produkt sidor. Man kan "
+"använda följande shortcodes: [billmate_img] [billmate_price] "
 "[billmate_currency] & [billmate_partpayment_info_link]."
 
-#: class-billmate-account.php:211
+#: woocommerce-gateway-billmate/class-billmate-account.php:201
 msgid ""
 "[billmate_img]<br/>Part pay from [billmate_price] [billmate_currency]/month."
 "<br/>[billmate_partpayment_info_link]"
@@ -522,390 +139,784 @@ msgstr ""
 "[billmate_img]<br/>Delbetala från [billmate_price] [billmate_currency]/månad."
 "<br/>[billmate_partpayment_info_link]"
 
-#: class-billmate-account.php:214
+#: woocommerce-gateway-billmate/class-billmate-account.php:204
 msgid "Placement of monthly cost - product page"
-msgstr "Placering av månadskostnad - produktsida"
+msgstr "Placering av månadskostnad - Produkt sida"
 
-#: class-billmate-account.php:216
+#: woocommerce-gateway-billmate/class-billmate-account.php:206
 msgid "Above Title"
-msgstr "Ovanför Titel"
+msgstr "Över titeln"
 
-#: class-billmate-account.php:216
+#: woocommerce-gateway-billmate/class-billmate-account.php:206
 msgid "Between Title and Price"
-msgstr "Mellan titel och pris"
+msgstr "Mellan Titeln och priset"
 
-#: class-billmate-account.php:216
+#: woocommerce-gateway-billmate/class-billmate-account.php:206
 msgid "Between Price and Excerpt"
-msgstr "Mellan pris och utdrag"
+msgstr "Mellan priset och beskrivningen"
 
-#: class-billmate-account.php:216
+#: woocommerce-gateway-billmate/class-billmate-account.php:206
 msgid "Between Excerpt and Add to cart-button"
-msgstr "Mellan utdrag och Lägg i varukorg-knapp"
+msgstr "Mellan beskrivningen och lägg i varukorg knappen"
 
-#: class-billmate-account.php:216
+#: woocommerce-gateway-billmate/class-billmate-account.php:206
 msgid "Between Add to cart-button and Product meta"
-msgstr "Mellan Lägg i varukorg-knapp och produktmeta"
+msgstr "Mellan \"lägg i varukorg\"-knappen och produkt-meta"
 
-#: class-billmate-account.php:216
+#: woocommerce-gateway-billmate/class-billmate-account.php:206
 msgid "Between Product meta and Product sharing-buttons"
-msgstr "Mellan produktmeta och delningsknappar"
+msgstr "Mellan produkt-meta och produktens delning via sociala nätverk."
 
-#: class-billmate-account.php:216
+#: woocommerce-gateway-billmate/class-billmate-account.php:206
 msgid "After Product sharing-buttons"
-msgstr "Efter delningsknappar"
+msgstr "Efter produktens delning via sociala nätverk-knappar"
 
-#: class-billmate-account.php:217
+#: woocommerce-gateway-billmate/class-billmate-account.php:207
 msgid ""
 "Select where on the products page the Monthly cost information should be "
 "displayed."
-msgstr "Välj var på produktsidan som informationen om månadskostnad ska visas."
+msgstr "Välj var på produkt sidan månadskostnads informationen ska visas"
 
-#: class-billmate-account.php:221
+#: woocommerce-gateway-billmate/class-billmate-account.php:211
 msgid "Display monthly cost - shop page"
-msgstr "Visa månadskostnad - butiksida"
+msgstr "Visa månadskostnad - butikssida"
 
-#: class-billmate-account.php:223
+#: woocommerce-gateway-billmate/class-billmate-account.php:213
 msgid "Display monthly cost next to each product on shop page."
-msgstr "Visa månadskostnad bredvid varje produkt på butiksidan."
+msgstr "Visa månadskostnad bredvid var produkt på butik sidan."
 
-#: class-billmate-account.php:227
+#: woocommerce-gateway-billmate/class-billmate-account.php:217
 msgid "Text for Monthly cost - shop page"
-msgstr "Text för månadskostnad - butiksida"
+msgstr "Text för månadskostnad - butik sida"
 
-#: class-billmate-account.php:229
+#: woocommerce-gateway-billmate/class-billmate-account.php:219
 msgid ""
 "This controls the text displayed next to each product on shop page. You can "
 "use the following shortcodes: [billmate_img] [billmate_price] "
 "[billmate_currency] & [billmate_partpayment_info_link]."
 msgstr ""
-"Det här kontrollerar texten för månadskostnad som visas på butiksidan. Du "
-"kan använda följande shortcodes: [billmate_img] [billmate_price] "
-"[billmate_currency] & [billmate_partpayment_info_link]."
+"Detta är texten som visas bredvid var produkt på butiksidan. Man kan använda "
+"följande shortcodes: [billmate_img] [billmate_price] [billmate_currency] & "
+"[billmate_partpayment_info_link]."
 
-#: class-billmate-account.php:230
+#: woocommerce-gateway-billmate/class-billmate-account.php:220
 msgid "From [billmate_price] [billmate_currency]/month"
 msgstr "Från [billmate_price] [billmate_currency]/månad"
 
-#: class-billmate-account.php:233
+#: woocommerce-gateway-billmate/class-billmate-account.php:223
 msgid "Placement of monthly cost - shop page"
 msgstr "Placering av månadskostnad - butiksida"
 
-#: class-billmate-account.php:235
+#: woocommerce-gateway-billmate/class-billmate-account.php:225
 msgid "Above Add to cart button"
-msgstr "Ovanför Lägg i varukorg-knapp"
+msgstr "Över \"lägg i varukorg\"-knappen"
 
-#: class-billmate-account.php:235
+#: woocommerce-gateway-billmate/class-billmate-account.php:225
 msgid "Below Add to cart button"
-msgstr "Nedanför Lägg i varukorg-knapp"
+msgstr "Under \"Lägg i varukorg\"-knappen"
 
-#: class-billmate-account.php:236
+#: woocommerce-gateway-billmate/class-billmate-account.php:226
 msgid ""
 "Select where on the shop page the Monthly cost information should be "
 "displayed."
-msgstr "Välj var på butiksidan som informationen om månadskostnad ska visas."
+msgstr "Välj var på butiksidan månadskostnaden ska visas"
 
-#: class-billmate-account.php:240
+#: woocommerce-gateway-billmate/class-billmate-account.php:230
 msgid "Lower threshold for monthly cost"
-msgstr "Nedre tröskel för månadskostnad"
+msgstr "Lägsta belopp för månadskostnad"
 
-#: class-billmate-account.php:242 class-billmate-account.php:248
+#: woocommerce-gateway-billmate/class-billmate-account.php:232
+#: woocommerce-gateway-billmate/class-billmate-account.php:238
 msgid ""
 "Disable the monthly cost feature if <i>Product price</i> is higher than the "
 "specified value. Leave blank to disable."
 msgstr ""
-"Avaktivera visningen av månadskostnad om <i>produktpriset</i> är högre än "
-"det angivna summan. Lämna tomt för att avaktivera denna funktion."
+"Inaktiverar månadskostnads funktionen om <i>Produktens pris</i> är högre än "
+"specificerat belopp. Lämna tomt för att inaktiverar."
 
-#: class-billmate-account.php:246
+#: woocommerce-gateway-billmate/class-billmate-account.php:236
 msgid "Upper threshold for monthly cost"
-msgstr "Övre tröskel för månadskostnad"
+msgstr "Högsta belopp för månadskostnad"
 
-#: class-billmate-account.php:254
+#: woocommerce-gateway-billmate/class-billmate-account.php:242
+#: woocommerce-gateway-billmate/class-billmate-bankpay.php:236
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:223
+msgid "Allowed Countries"
+msgstr "Tillåtna Länder"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:244
 msgid "Billmate Partpayment activated for customers in these countries"
-msgstr "Billmate delbetalning aktiverat för kunder i dessa länder"
+msgstr "Billmate Delbetalning aktiverat för kunder i dessa länder"
 
-#: class-billmate-account.php:261
-msgid "Testläge"
+#: woocommerce-gateway-billmate/class-billmate-account.php:251
+msgid "Testmode"
 msgstr "Testläge"
 
-#: class-billmate-account.php:281
+#: woocommerce-gateway-billmate/class-billmate-account.php:253
+#: woocommerce-gateway-billmate/class-billmate-bankpay.php:246
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:263
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:233
+msgid "Enable Billmate Test Mode."
+msgstr "Aktivera Billmate Testläge"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:257
+#: woocommerce-gateway-billmate/class-billmate-bankpay.php:250
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:267
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:237
+msgid "Custom Order status"
+msgstr "Anpassad Order status"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:259
+#: woocommerce-gateway-billmate/class-billmate-bankpay.php:252
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:269
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:239
+msgid "Enable custom order status"
+msgstr "Aktivera anpassad orderstatus"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:263
+#: woocommerce-gateway-billmate/class-billmate-bankpay.php:256
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:273
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:243
+msgid "Order status"
+msgstr "Order status"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:265
+msgid ""
+"Choose a special order status for Billmate Partpayment, if you want to use a "
+"own status and not WooCommerce built in"
+msgstr ""
+"Välj en anpassad order status för Billmate Delbetalning, om du vill använda "
+"en egen status och inte WooCommerce inbyggda."
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:284
 msgid ""
 "With Billmate your customers can pay by partpayment. Billmate works by "
 "adding extra personal information fields and then sending the details to "
 "Billmate for verification."
 msgstr ""
-"Med Billmate kan dina kunder betala med delbetalning. Billmate fungerar "
-"genom att lägga till extra personlig information fält och sedan skicka "
-"informationen till Billmate för verifiering."
+"Med Billmate kan dina kunder delbetala. Billmate fungerar genom att lägga "
+"till extra informationsfält och sen skicka detaljerna till Billmate för "
+"verifiering."
 
-#: class-billmate-account.php:288
+#: woocommerce-gateway-billmate/class-billmate-account.php:295
 msgid "eid"
 msgstr "Billmate ID"
 
-#: class-billmate-account.php:288
+#: woocommerce-gateway-billmate/class-billmate-account.php:296
 msgid "paymentplanid"
-msgstr "Betalningsplan ID"
+msgstr "Betalplan ID"
 
-#: class-billmate-account.php:288
+#: woocommerce-gateway-billmate/class-billmate-account.php:297
 msgid "description"
 msgstr "Beskrivning"
 
-#: class-billmate-account.php:288
+#: woocommerce-gateway-billmate/class-billmate-account.php:298
 msgid "months"
-msgstr "Månad"
+msgstr "Månader"
 
-#: class-billmate-account.php:288
+#: woocommerce-gateway-billmate/class-billmate-account.php:299
 msgid "interestrate"
-msgstr "ränta"
+msgstr "Ränta"
 
-#: class-billmate-account.php:288
+#: woocommerce-gateway-billmate/class-billmate-account.php:300
 msgid "startfee"
-msgstr "uppläggningsavgift"
+msgstr "Startavgift"
 
-#: class-billmate-account.php:288
+#: woocommerce-gateway-billmate/class-billmate-account.php:301
 msgid "handlingfee"
-msgstr "Fakturaavgift"
+msgstr "Expedieringsavgift"
 
-#: class-billmate-account.php:288
+#: woocommerce-gateway-billmate/class-billmate-account.php:302
 msgid "minamount"
-msgstr "Min belopp"
+msgstr "Minsta belopp"
 
-#: class-billmate-account.php:288
+#: woocommerce-gateway-billmate/class-billmate-account.php:303
 msgid "maxamount"
 msgstr "Max belopp"
 
-#: class-billmate-account.php:288
+#: woocommerce-gateway-billmate/class-billmate-account.php:304
 msgid "currency"
 msgstr "Valuta"
 
-#: class-billmate-account.php:288
+#: woocommerce-gateway-billmate/class-billmate-account.php:305
 msgid "country"
 msgstr "Land"
 
-#: class-billmate-account.php:288
+#: woocommerce-gateway-billmate/class-billmate-account.php:306
 msgid "expirydate"
 msgstr "Utgångsdatum"
 
-#: class-billmate-account.php:322
-msgid "Filen billmatepclasses.json har uppdaterats."
-msgstr "Betalplanerna har uppdaterats"
+#: woocommerce-gateway-billmate/class-billmate-account.php:334
+msgid "The paymentplans is updated."
+msgstr "Betalningsplanerna uppdaterades"
 
-#: class-billmate-account.php:327
-msgid ""
-"Filen billmatepclasses.json kunde inte uppdateras. Billmate felmeddelande"
-msgstr "Delbetalningsplanerna kunde inte uppdateras. Billmate felmeddelande"
+#: woocommerce-gateway-billmate/class-billmate-account.php:339
+msgid "Billmate paymentplans couldnt be uppdated, Billmate error message "
+msgstr "Betalningsplanerna kunde inte uppdateras, Billmate fel meddelande "
 
-#: class-billmate-account.php:331
-msgid "Uppdatera PClass filen"
-msgstr "Uppdatera Delbetalningsplanerna"
+#: woocommerce-gateway-billmate/class-billmate-account.php:343
+msgid "Update Paymentplans"
+msgstr "Uppdatera Betalplaner"
 
-#: class-billmate-account.php:478
+#: woocommerce-gateway-billmate/class-billmate-account.php:490
+#: woocommerce-gateway-billmate/class-billmate-account.php:846
 #, php-format
 msgid "Billmate PClass problem: %s. Error code: "
-msgstr "Billmate PClass problem: %s. Felkod:"
+msgstr "Billmate Betalningsplan problem %s. Felkod: "
 
-#: class-billmate-account.php:571
+#: woocommerce-gateway-billmate/class-billmate-account.php:547
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:340
+msgid "TEST MODE ENABLED"
+msgstr "TESTLÄGE AKTIVERAT"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:583
 #, php-format
 msgid "From %s %s/month"
 msgstr "Från %s %s/månad"
 
-#: class-billmate-account.php:731
-msgid "Kön"
+#: woocommerce-gateway-billmate/class-billmate-account.php:594
+#: woocommerce-gateway-billmate/class-billmate-account.php:736
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:360
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:504
+msgid "Personal / Corporate "
+msgstr "Person / Organisationsnummer"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:597
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:364
+msgid "Day"
+msgstr "Dag"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:633
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:400
+msgid "Month"
+msgstr "Månad"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:635
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:402
+msgid "Jan"
+msgstr "Jan"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:636
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:403
+msgid "Feb"
+msgstr "Feb"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:637
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:404
+msgid "Mar"
+msgstr "Mar"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:638
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:405
+msgid "Apr"
+msgstr "Apr"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:639
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:406
+msgid "May"
+msgstr "Maj"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:640
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:407
+msgid "Jun"
+msgstr "Jun"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:641
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:408
+msgid "Jul"
+msgstr "Jul"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:642
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:409
+msgid "Aug"
+msgstr "Aug"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:643
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:410
+msgid "Sep"
+msgstr "Sep"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:644
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:411
+msgid "Oct"
+msgstr "Okt"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:645
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:412
+msgid "Nov"
+msgstr "Nov"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:646
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:413
+msgid "Dec"
+msgstr "Dec"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:650
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:417
+msgid "Year"
+msgstr "År"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:743
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:511
+msgid "Gender"
 msgstr "Kön"
 
-#: class-billmate-account.php:762
+#: woocommerce-gateway-billmate/class-billmate-account.php:745
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:513
+msgid "Select gender"
+msgstr "Väl kön"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:746
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:514
+msgid "Female"
+msgstr "Kvinna"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:747
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:515
+msgid "Male"
+msgstr "Man"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:774
 #, php-format
-msgid "Min e-postadress %s är korrekt och får användas för fakturering"
+msgid ""
+"My e-mail ,%s, is correct och and may be used for billing. I confirm the "
 msgstr ""
-"Vänligen bekräfta att e-postadressen '%s' är korrekt. Denna kommer att "
-"användas för fakturering."
+"Min e-post, %s, är korrekt och får användas för fakturering. Jag bekräftar "
 
-#: class-billmate-account.php:798
+#: woocommerce-gateway-billmate/class-billmate-account.php:774
+msgid "terms of partpayment"
+msgstr "köpvillkoren"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:781
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:549
+#, php-format
+msgid ""
+"Mit der Übermittlung der für die Abwicklungdes Rechnungskaufes und einer "
+"Identitäts-und Bonitätsprüfung erforderlichen Daten an Billmate bin ich "
+"einverstanden. Meine <a href=\"%s\" target=\"_blank\">Einwilligung</a> kann "
+"ich jederzeit mit Wirkung für die Zukunft widerrufen. Es gelten die AGB des "
+"Händlers."
+msgstr ""
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:872
 msgid "Payment plan"
-msgstr "Betalningsplan"
+msgstr "Betalplan"
 
-#: class-billmate-account.php:832 class-billmate-account.php:840
-#: class-billmate-account.php:892 class-billmate-account.php:900
+#: woocommerce-gateway-billmate/class-billmate-account.php:906
+#: woocommerce-gateway-billmate/class-billmate-account.php:914
+#: woocommerce-gateway-billmate/class-billmate-account.php:966
+#: woocommerce-gateway-billmate/class-billmate-account.php:974
 #, php-format
 msgid "%s - %s %s/month"
-msgstr "%s - %s %s/månad "
+msgstr "%s - %s %s/månad"
 
-#: class-billmate-account.php:835 class-billmate-account.php:895
+#: woocommerce-gateway-billmate/class-billmate-account.php:909
+#: woocommerce-gateway-billmate/class-billmate-account.php:969
 #, php-format
 msgid "%s - %s %s/month - %s%s - Start %s - Tot %s %s"
 msgstr "%s - %s %s/månad - %s%s - Start %s - Tot %s %s"
 
-#: class-billmate-account.php:843 class-billmate-account.php:903
+#: woocommerce-gateway-billmate/class-billmate-account.php:917
+#: woocommerce-gateway-billmate/class-billmate-account.php:977
 #, php-format
 msgid "%s - %s %s/month - %s%s - Start %s"
 msgstr "%s - %s %s/månad - %s%s - Start %s"
 
-#: class-billmate-account.php:920
+#: woocommerce-gateway-billmate/class-billmate-account.php:994
 msgid ""
 "Billmate PClasses seem to be missing. Billmate Part Payment does not work."
-msgstr "Billmate PClasses verkar saknas. Billmate Delbetalning fungerar ej."
+msgstr ""
+"Billmate Delbetalningsplaner verkar inte finnas, Billmate Delbetalning "
+"fungerar inte."
 
-#: class-billmate-account.php:962 class-billmate-account.php:965
-#: class-billmate-account.php:968 class-billmate-account.php:971
-#: class-billmate-account.php:974
+#: woocommerce-gateway-billmate/class-billmate-account.php:1016
+#: woocommerce-gateway-billmate/class-billmate-account.php:1026
+#: woocommerce-gateway-billmate/class-billmate-account.php:1030
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:1299
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:1312
+msgid "Non Valid Person / Corporate number. Check the number."
+msgstr "Ej giltigt person / organisationsnummer. Kontrollera numret."
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:1036
+#: woocommerce-gateway-billmate/class-billmate-account.php:1039
+#: woocommerce-gateway-billmate/class-billmate-account.php:1042
+#: woocommerce-gateway-billmate/class-billmate-account.php:1045
+#: woocommerce-gateway-billmate/class-billmate-account.php:1048
 msgid "Shipping and billing address must be the same when paying via Billmate."
-msgstr "Leverans- och fakturaadress måste vara lika vid betalning med Billmate"
+msgstr "Leverans och faktura adress måste vara samma vid köp via Billmate"
 
-#: class-billmate-account.php:1697
+#: woocommerce-gateway-billmate/class-billmate-account.php:1055
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:1337
+msgid "You must accept the Billmate consent terms."
+msgstr "Du måste acceptera Billmate köpvillkor"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:1109
+#: woocommerce-gateway-billmate/class-billmate-account.php:1386
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:607
+msgid "Unable to find address."
+msgstr "Kunde inte hitta adressen."
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:1159
+#: woocommerce-gateway-billmate/class-billmate-account.php:1435
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:657
+msgid "Yes, make purchase with this address"
+msgstr "Ja, köp med denna adressen."
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:1159
+#: woocommerce-gateway-billmate/class-billmate-account.php:1435
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:657
+msgid "No, I want to specify a different number or change payment method"
+msgstr "Nej jag vill ändra till ett annat nummer eller byta betalmetod."
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:1167
+#: woocommerce-gateway-billmate/class-billmate-account.php:1443
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:665
+msgid ""
+"Pay by invoice can be made only to the address listed in the National "
+"Register. Would you like to make the purchase with address:"
+msgstr ""
+"Köp mot faktura kan endast göras till folkbokföringsadressen. Vill du göra "
+"köpet med följande adress:"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:1183
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:682
+#, php-format
+msgid ""
+"Please confirm the email %s is correct. The email will be used for invoicing."
+msgstr ""
+"Vänligen bekräfta att e-postadressen \"%s\" är korrekt. Denna kommer att "
+"användas för fakturering."
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:1342
+#: woocommerce-gateway-billmate/class-billmate-bankpay.php:545
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:562
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:854
+msgid "Discount"
+msgstr "Rabatt"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:1541
+#: woocommerce-gateway-billmate/class-billmate-account.php:1542
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:1066
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:1067
+msgid "Billmate payment denied."
+msgstr "Billmate betalning nekad"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:1557
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:1083
+msgid "Billmate payment completed. Billmate Invoice number:"
+msgstr "Billmate betalning färdig. Billmate fakturanummer:"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:1584
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:1111
+msgid ""
+"Order is PENDING APPROVAL by Billmate. Please visit Billmate Online for the "
+"latest status on this order. Billmate Invoice number: "
+msgstr ""
+"Ordern är under granskning av Billmate. Vänligen besök Billmate Online för "
+"senaste status på denna order. Billmate fakturanummer: "
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:1617
+#: woocommerce-gateway-billmate/class-billmate-account.php:1618
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:1144
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:1145
+msgid "Unknown response from Billmate."
+msgstr "Okänt svar från Billmate"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:1638
+#: woocommerce-gateway-billmate/class-billmate-bankpay.php:599
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:615
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:1169
+msgid "Thank you for your order."
+msgstr "Tack för din order"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:1909
 msgid "Read more"
-msgstr "Villkor delbetalning"
+msgstr "Visa mer."
 
-#~ msgid "Product ID for Invoice Fee"
-#~ msgstr "Produkt ID för Fakturaavgift"
+#: woocommerce-gateway-billmate/class-billmate-bankpay.php:18
+#: woocommerce-gateway-billmate/class-billmate-bankpay.php:214
+#: woocommerce-gateway-billmate/class-billmate-bankpay.php:215
+#: woocommerce-gateway-billmate/class-billmate-bankpay.php:276
+msgid "Billmate Bank"
+msgstr "Billmate Bankbetalning"
+
+#: woocommerce-gateway-billmate/class-billmate-bankpay.php:208
+msgid "Enable Billmate Bank"
+msgstr "Aktivera Billmate Bankbetalning"
+
+#: woocommerce-gateway-billmate/class-billmate-bankpay.php:226
+msgid ""
+"Disable Billmate Bank if Cart Total is lower than the specified value. Leave "
+"blank to disable this feature."
+msgstr ""
+"Inaktivera Billmate Bankbetalning om varukorgens belopp är lägre än inställt "
+"värde. Lämna tomt för att inaktivera denna funktion"
+
+#: woocommerce-gateway-billmate/class-billmate-bankpay.php:232
+msgid ""
+"Disable Billmate Bank if Cart Total is higher than the specified value. "
+"Leave blank to disable this feature."
+msgstr ""
+"Inaktivera Billmate Bankbetalning om varukorgens belopp är högre än inställt "
+"värde. Lämna tomt för att inaktivera denna funktion."
+
+#: woocommerce-gateway-billmate/class-billmate-bankpay.php:238
+msgid "Billmate Bank activated for customers in these countries"
+msgstr "Billmate Bankbetalning aktiverat för dessa länder"
+
+#: woocommerce-gateway-billmate/class-billmate-bankpay.php:244
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:261
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:231
+msgid "Test Mode"
+msgstr "Testläge"
+
+#: woocommerce-gateway-billmate/class-billmate-bankpay.php:258
+msgid ""
+"Choose a special order status for Billmate Bankpay, if you want to use a own "
+"status and not WooCommerce built in"
+msgstr ""
+"Väl en speciell order status för Billmate Bankbetalning, om du vill använda "
+"en egen status och inte WooCommerce inbyggda."
+
+#: woocommerce-gateway-billmate/class-billmate-bankpay.php:278
+msgid ""
+"With Billmate your customers can pay by bank. Billmate works by adding extra "
+"personal information fields and then sending the details to Billmate for "
+"verification."
+msgstr ""
+"Med Billmate kan dina kunder direktbetala med bank. Billmate lägger till "
+"några extra informationsfält och skickar detta till Billmate för "
+"verifikation."
+
+#: woocommerce-gateway-billmate/class-billmate-bankpay.php:651
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:667
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:1221
+msgid "Terms for Invoice"
+msgstr "köpvillkor."
+
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:18
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:210
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:293
+msgid "Billmate Cardpay"
+msgstr "Billmate Kortbetalning"
+
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:203
+msgid "Enable Billmate Cardpay"
+msgstr "Aktivera Billmate Kortbetalning"
+
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:221
+msgid ""
+"Disable Billmate Cardpay if Cart Total is lower than the specified value. "
+"Leave blank to disable this feature."
+msgstr ""
+"Inaktivera Billmate Kortbetalning om varukorgens summa är lägre än inställt "
+"värde. Lämna tomt för att inaktivera funktionen."
+
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:227
+msgid ""
+"Disable Billmate Cardpay if Cart Total is higher than the specified value. "
+"Leave blank to disable this feature."
+msgstr ""
+"Inaktivera Billmate Kortbetalning om varukorgens summa är högre än inställt "
+"värde. Lämna tomt för att inaktivera funktionen."
+
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:231
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:237
+msgid "Authentication Method"
+msgstr "Betalningsåtgärd"
+
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:234
+msgid "Authentication"
+msgstr "Reservera beloppet,"
+
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:235
+msgid "Sales"
+msgstr "Debitera beloppet Direkt"
+
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:241
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:247
+msgid "Enable 3D Secure"
+msgstr "Aktivera 3D Secure"
+
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:244
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:254
+msgid "Yes"
+msgstr "Ja"
+
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:245
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:255
+msgid "No"
+msgstr "Nej"
+
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:251
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:257
+msgid "Enable Name"
+msgstr "Visa namn i Betalfönstret"
+
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:275
+msgid ""
+"Choose a special order status for Billmate Cardpay, if you want to use a own "
+"status and not WooCommerce built in"
+msgstr ""
+"Välj en speciell order status för Billmate Kortbetalning, om du vill använda "
+"en egen status och inte WooCommerce inbyggda"
+
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:295
+msgid ""
+"With Billmate your customers can pay by cardpay. Billmate works by adding "
+"extra personal information fields and then sending the details to Billmate "
+"for verification."
+msgstr ""
+"Med Billmate kan dina kunder handla med kort. Billmate fungerar genom att "
+"lägga till några extra fält som skickas till Billmate för verifiering."
+
+#: woocommerce-gateway-billmate/class-billmate-common.php:33
+msgid "Common Billmate Settings"
+msgstr "Generella Billmate Inställningar"
+
+#: woocommerce-gateway-billmate/class-billmate-common.php:40
+msgid "Billmate ID"
+msgstr "Billmate ID"
+
+#: woocommerce-gateway-billmate/class-billmate-common.php:48
+msgid "Secret"
+msgstr "Lösenord"
+
+#: woocommerce-gateway-billmate/class-billmate-common.php:77
+msgid "Here is the common settings for the Billmate Payment module"
+msgstr "Här finns de generella inställningarna för Billmate betalmodul."
+
+#: woocommerce-gateway-billmate/class-billmate-common.php:90
+msgid "Billmate Settings"
+msgstr "Billmate Inställningar"
+
+#: woocommerce-gateway-billmate/class-billmate-common.php:120
+msgid "Please, check your credentials"
+msgstr "Vänligen, kontrollera dina billmateuppgifter"
+
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:17
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:264
+msgid "Billmate Invoice"
+msgstr "Billmate Faktura"
+
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:169
+msgid "Standard"
+msgstr "Standard"
+
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:182
+msgid "Enable Billmate Invoice"
+msgstr "Aktivera Billmate Faktura."
+
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:189
+msgid "Billmate Invoice - pay within 14 days"
+msgstr "Billmate Faktura - Betala inom 14 dagar"
+
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:200
+msgid ""
+"Disable Billmate Invoice if Cart Total is lower than the specified value. "
+"Leave blank to disable this feature."
+msgstr ""
+"Inaktivera Billmate Faktura om varukorgens summa är lägre än inställt värde. "
+"Lämna tomt för att inaktivare."
+
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:206
+msgid ""
+"Disable Billmate Invoice if Cart Total is higher than the specified value. "
+"Leave blank to disable this feature."
+msgstr ""
+"Inaktivera Billmate Faktura om varukorgens summa är högre än inställt värde. "
+"Lämna tomt för att inaktivera"
+
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:210
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:1275
+msgid "Invoice fee"
+msgstr "Faktura avgift"
+
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:212
+msgid "Add a invoice fee cost without vat, leave empty to disable"
+msgstr "Lägg till en faktura avgift utan moms, lämna tomt för att inaktivera."
+
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:216
+msgid "Invoice fee tax class"
+msgstr "Moms klass för faktura avgift"
+
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:218
+msgid "The tax class for Invoice fee"
+msgstr "Momsklassen för fakturaavgiften"
+
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:225
+msgid "Billmate Invoice activated for customers in these countries"
+msgstr "Billmate faktura aktiverat för dessa länder"
+
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:245
+msgid ""
+"Choose a special order status for Billmate Invoice, if you want to use a own "
+"status and not WooCommerce built in"
+msgstr ""
+"Välj en speciell order status för Billmate faktura, om du vill använda en "
+"egen status och inte WooCommerce inbyggda."
+
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:266
+msgid ""
+"With Billmate your customers can pay by invoice. Billmate works by adding "
+"extra personal information fields and then sending the details to Billmate "
+"for verification."
+msgstr ""
+"Med Billmate kan dina kunder handla med faktura. Billmate fungerar genom att "
+"lägga till extra informationsfält som skickas till Billmate för verifiering"
+
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:269
+#, php-format
+msgid "You may inactivate or remove the invoice fee product with id %s"
+msgstr "Inaktivera eller ta bort fakturaavgiftsprodukten med id %s"
+
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:352
+#, php-format
+msgid "An invoice fee of %1$s %2$s will be added to your order."
+msgstr "Fakturaavgiften på %1$s %2$s adderas till totalbeloppet"
+
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:541
+#, php-format
+msgid ""
+"My e-mail address ,%s, is correct and may be used for billing. I also "
+"confirm "
+msgstr ""
+"Min e-post, %s, är korrekt och får användas för fakturering. Jag bekräftar "
+
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:541
+msgid "Terms of invoice"
+msgstr "köpvillkor"
+
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:922
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:965
+msgid "Invoice Fee"
+msgstr "Faktura avgift"
+
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:1157
+#, php-format
+msgid "%s (Error code: %s)"
+msgstr "%s (Felkod: %s)"
+
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:1308
+msgid "<strong>Gender</strong> is a required field"
+msgstr "<strong>Kön</strong> krävs för att gå vidare"
+
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:1318
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:1321
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:1324
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:1327
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:1330
+msgid "Shipping and billing address must be the same when paying via Billmate"
+msgstr "Leverans och Faktura adress måste vara samma vid köp med Billmate"
 
 #~ msgid ""
-#~ "Create a hidden (simple) product that acts as the invoice fee. Enter the "
-#~ "ID number in this textfield. Leave blank to disable. "
+#~ "Choose a special order status for Billmate Partpayment, if you want to "
+#~ "use a own status and not WooCommerce built inbillmate"
 #~ msgstr ""
-#~ "Skapa en dold (enkel) produkt som agerar fakturaavgift. Ange produktens "
-#~ "ID-nummer här i textfältet. Lämna tomt för att avaktivera."
-
-#~ msgid "Shipping cost"
-#~ msgstr "Fraktkostnad"
+#~ "Välj en anpassad order status för Billmate Delbetalning, om du vill "
+#~ "använda en egen status och inte WooCommerce inbyggda."
 
 #~ msgid ""
-#~ "The file billmatepclasses.json does exist on your web server. You can "
-#~ "update the file by clicking the button below or create the file manually "
-#~ "and upload it to <i>%s</i>. Note that read and write permissions for the "
-#~ "directory <i>srv</i> and the containing file <i>billmatepclasses.json</i> "
-#~ "must be set to 777 in order to fetch the available PClasses from "
-#~ "Billmate. This does not apply if you manually upload your "
-#~ "billmatepclasses.json file via ftp."
-#~ msgstr ""
-#~ "Filen billmatepclasses.json finns på din webbserver. Du kan uppdatera den "
-#~ "genom att klicka på knappen nedanför eller ladda upp den manuellt till <i>"
-#~ "%s</i>. Observera att skriv- och läsrättigheterna för mappen <i>srv</i> "
-#~ "och den innehållande filen <i>billmatepclasses.json</i> måste sättas till "
-#~ "777 för att kunna hämta de tillgängliga PClasserna från Billmate. Detta "
-#~ "gäller ej om du laddar upp filen manuellt via ftp."
-
-#~ msgid ""
-#~ "Filen billmatepclasses.json existerar ej på din webbserver. Denna behövs "
-#~ "för att du ska kunna spara dina Billmate PClasses. Skapa filen genom att "
-#~ "klicka på knappen nedanför eller ladda upp en tidigare skapad fil "
-#~ "manuellt till <i>%s</i>. Observera att skriv- och läsrättigheterna för "
-#~ "mappen <i>srv</i> och den innehållande filen <i>billmatepclasses.json</i> "
-#~ "måste sättas till 777 för att kunna hämta de tillgängliga PClasses från "
-#~ "Billmate. Detta gäller ej om du laddar upp filen manuellt via ftp."
-#~ msgstr ""
-#~ "Filen billmatepclasses.json existerar ej på din webbserver. Denna behövs "
-#~ "för att du ska kunna spara dina Billmate PClasses. Skapa filen genom att "
-#~ "klicka på knappen nedanför eller ladda upp en tidigare skapad fil "
-#~ "manuellt till <i>%s</i>. Observera att skriv- och läsrättigheterna för "
-#~ "mappen <i>srv</i> och den innehållande filen <i>billmatepclasses.json</i> "
-#~ "måste sättas till 777 för att kunna hämta de tillgängliga PClasses från "
-#~ "Billmate. Detta gäller ej om du laddar upp filen manuellt via ftp."
-
-#~ msgid "Kunde inte skapa/uppdatera filen!"
-#~ msgstr "Kunde inte skapa/uppdatera filen!"
-
-#~ msgid ""
-#~ "Click Yes to continue with new address, No to choose other payment method"
-#~ msgstr ""
-#~ "Klicka Ja för att byta faktura och leveransadress. Klicka Nej för att "
-#~ "välja en annan betalningsmetod."
-
-#~ msgid "Correct Address is :"
-#~ msgstr "Bokföringsadress:"
-
-#~ msgid "Your Billing address is wrong."
-#~ msgstr ""
-#~ "Din angivna adress kan inte användas. Köp mot faktura kan bara faktureras "
-#~ "och levereras till din bokföringsadress."
-
-#~ msgid ""
-#~ "<img src=\"%s\" /> <br/><a href=\"%s\" target=\"_blank\">Part pay from %s "
-#~ "%s/month</a>"
-#~ msgstr ""
-#~ "<img src=\"%s\" /> <br/><a href=\"%s\" target=\"_blank\">Delbetala från "
-#~ "%s %s/månad</a>"
-
-#~ msgid "<strong>Personal / Corporate </strong> is a required field"
-#~ msgstr "<strong>Födelsedatum</strong> måste anges"
-
-#~ msgid "Billmate Cadpay"
-#~ msgstr "Billmate Kort"
-
-#~ msgid "Billmate concent terms (DE only)"
-#~ msgstr "Billmate samtyckande villkor (endast Tyskland)"
-
-#~ msgid ""
-#~ "Disable Billmate Invoice if Cart Total is higher than the specified "
-#~ "value. Leave blank to disable this feature."
-#~ msgstr ""
-#~ "Avaktivera Billmate Faktura om varukorgen är högre än den angivna summan. "
-#~ "Lämna tomt för att avaktivera denna funktion."
-
-#~ msgid ""
-#~ "Disable Billmate Invoice if Cart Total is lower than the specified value. "
-#~ "Leave blank to disable this feature."
-#~ msgstr ""
-#~ "Avaktivera Billmate Faktura om varukorgen är lägre än den angivna summan. "
-#~ "Lämna tomt för att avaktivera denna funktion."
-
-#~ msgid ""
-#~ "Disable Billmate Part Payment if Cart Total is lower than the specified "
-#~ "value. Leave blank to disable this feature."
-#~ msgstr ""
-#~ "Avaktivera Billmate Delbetalning om varukorgen är mindre än den angivna "
-#~ "summan. Lämna tomt för att avaktivera denna funktion."
-
-#~ msgid ""
-#~ "Disable the monthly cost feature if <i>Product price</i> is lower than "
-#~ "the specified value. Leave blank to disable."
-#~ msgstr ""
-#~ "Avaktivera visningen av månadskostnad om <i>produktpriset</i> är lägre än "
-#~ "det angivna summan. Lämna tomt för att avaktivera denna funktion."
-
-#~ msgid ""
-#~ "Enable Billmate concent terms checkbox in checkout. This only apply to "
-#~ "German merchants."
-#~ msgstr ""
-#~ "Aktivera checkbox för Billmates samtyckande villkor på checkout-sidan. "
-#~ "Gäller endast för Billmate i Tyskland."
-
-#~ msgid "Merchant ID"
-#~ msgstr "Billmate ID"
-
-#~ msgid "NOT Writable."
-#~ msgstr "EJ skrivbar."
-
-#~ msgid "Personal / Corporate"
-#~ msgstr "Person-/organisationsnummer"
-
-#~ msgid ""
-#~ "Please enter your Billmate Merchant id; this is needed in order to take "
-#~ "payment!"
-#~ msgstr "Ange ditt Billmate ID. Detta behövs för att du ska kunna ta betalt."
-
-#~ msgid ""
-#~ "The file billmatepclasses.json does not exist on your web server. This is "
-#~ "needed to store your Billmate PClasses. Either create and update the file "
-#~ "by clicking the button below or manually upload a previous created file "
-#~ "to <i>%s</i>. Note that read and write permissions for the directory "
-#~ "<i>srv</i> and the containing file <i>billmatepclasses.json</i> must be "
-#~ "set to 777 in order to fetch the available PClasses from Billmate. This "
-#~ "does not apply if you manually upload your billmatepclasses.json file via "
-#~ "ftp."
-#~ msgstr ""
-#~ "Filen billmatepclasses.json existerar ej på din webbserver. Denna behövs "
-#~ "för att du ska kunna spara dina Billmate PClasses. Skapa filen genom att "
-#~ "klicka på knappen nedanför eller ladda upp en tidigare skapad fil "
-#~ "manuellt till <i>%s</i>. Observera att skriv- och läsrättigheterna för "
-#~ "mappen <i>srv</i> och den innehållande filen <i>billmatepclasses.json</i> "
-#~ "måste sättas till 777 för att kunna hämta de tillgängliga PClasses från "
-#~ "Billmate. Detta gäller ej om du laddar upp filen manuellt via ftp."
-
-#~ msgid "Writable."
-#~ msgstr "Skrivbar."
-
-#~ msgid "error_message"
-#~ msgstr "felmeddelande"
-
-#~ msgid "IPN payment completed"
-#~ msgstr "Billmate betalning genomförd."
+#~ "Choose a special order status for Billmate invoice, if you want to use a "
+#~ "own status and not WooCommerce built inbillmate"
+#~ msgstr "Välj en anpassad order status för Billmate Faktura"
