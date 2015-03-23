@@ -526,11 +526,11 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 			$billmate_mode = 'live';
 		endif;
 
-   		if( empty( $this->settings['eid']) ){
+   		if( empty( $this->secret) ){
    		    return false;
    		}
-		$eid = (int)$this->settings['eid'];
-		$secret = $this->settings['secret'];
+		$eid = (int)$this->eid;
+		$secret = $this->secret;
 		$country = $this->billmate_country;
 		$language = $this->billmate_language;
 		$currency = $this->billmate_currency;
@@ -865,7 +865,6 @@ parse_str($_POST['post_data'], $datatemp);
 			$pclasses_not_available = false;
 		}
 		// Check if we have any PClasses
-
 		if(!$pclasses_not_available) {
 			if( $label ) {
 		?>
@@ -901,7 +900,7 @@ parse_str($_POST['post_data'], $datatemp);
                             $enabled_plcass = 'yes';
                             echo '<option value="' . $pclass['paymentplanid'] . '">';
                             if ($this->billmate_country == 'NO') {
-                                if ( $pclass['Type'] == 1 ) {
+                                if ( $pclass['type'] == 1 ) {
                                     //If Account - Do not show startfee. This is always 0.
                                     echo sprintf(__('%s - %s %s/month', 'billmate'), $pclass['description'], $monthly_cost, $this->billmate_currency);
                                     } else {
@@ -909,7 +908,7 @@ parse_str($_POST['post_data'], $datatemp);
                                         echo sprintf(__('%s - %s %s/month - %s%s - Start %s - Tot %s %s', 'billmate'), $pclass['description'], $monthly_cost, $this->billmate_currency, $pclass['interestrate'], '%', $pclass['startfee'], $total_credit_purchase_cost, $this->billmate_currency );
                                     }
                                 } else {
-                                    if ( $pclass['Type'] == 1 ) {
+                                    if ( $pclass['type'] == 1 ) {
                                         //If Account - Do not show startfee. This is always 0.
                                         echo sprintf(__('%s - %s %s/month', 'billmate'), $pclass['description'], $monthly_cost, $this->billmate_currency );
                                     } else {
