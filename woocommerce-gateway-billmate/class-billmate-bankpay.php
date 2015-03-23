@@ -38,7 +38,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 
 		$this->de_consent_terms		= ( isset( $this->settings['de_consent_terms'] ) ) ? $this->settings['de_consent_terms'] : '';
 		$this->allowed_countries	= ( isset( $this->settings['billmatebank_allowed_countries'] ) ) ? $this->settings['billmatebank_allowed_countries'] : '';
-		$this->authentication_method= 'sales';
+		$this->authentication_method= ( isset( $this->settings['authentication_method'] ) ) ? $this->settings['authentication_method'] : '';
 		$this->custom_order_status = ( isset($this->settings['custom_order_status']) ) ? $this->settings['custom_order_status'] : false;
 		$this->order_status = (isset($this->settings['order_status'])) ? $this->settings['order_status'] : false;
 		if ( $this->invoice_fee_id == "") $this->invoice_fee_id = 0;
@@ -232,6 +232,16 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 							'description' => __( 'Disable Billmate Bank if Cart Total is higher than the specified value. Leave blank to disable this feature.', 'billmate' ),
 							'default' => ''
 						),
+			'authentication_method' => array(
+				'title' => __( 'Authentication Method', 'billmate' ),
+				'type' => 'select',
+				'options' => array(
+					'authentication'  =>__( 'Authentication', 'billmate' ),
+					'sales' => __('Sales','billmate'),
+				),
+				'label' => __( 'Authentication Method', 'billmate' ),
+				'default' => ''
+			),
 			'billmatebank_allowed_countries' => array(
 				'title' 		=> __( 'Allowed Countries', 'woocommerce' ),
 				'type' 			=> 'multiselect',
