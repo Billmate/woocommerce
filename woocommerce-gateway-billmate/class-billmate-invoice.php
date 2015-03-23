@@ -209,7 +209,7 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 			'billmate_invoice_fee' => array(
 								'title' => __( 'Invoice fee', 'billmate'),
 								'type' => 'text',
-								'description' => __( 'Add a invoice fee cost without vat, leave empty to disable'),
+								'description' => __( 'Add an invoice fee cost without vat, leave empty to disable'),
 								'default' => ''
 			),
 			'billmate_invoice_fee_tax_class' => array(

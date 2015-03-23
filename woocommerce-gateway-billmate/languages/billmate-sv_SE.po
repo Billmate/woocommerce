@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Billmate Woocommerce plugin\n"
-"POT-Creation-Date: 2015-03-23 22:09+0100\n"
-"PO-Revision-Date: 2015-03-23 22:10+0100\n"
+"POT-Creation-Date: 2015-03-23 22:36+0100\n"
+"PO-Revision-Date: 2015-03-23 22:37+0100\n"
 "Last-Translator: \n"
 "Language-Team: Boxedsolutions <jesper@boxedsolutions.se>\n"
 "Language: sv_SE\n"
@@ -837,8 +837,8 @@ msgid "Invoice fee"
 msgstr "Faktura avgift"
 
 #: woocommerce-gateway-billmate/class-billmate-invoice.php:212
-msgid "Add a invoice fee cost without vat, leave empty to disable"
-msgstr "Lägg till en faktura avgift utan moms, lämna tomt för att inaktivera."
+msgid "Add an invoice fee cost without vat, leave empty to disable"
+msgstr "Lägg till en fakturaavgift utan moms, lämna tomt för att inaktivera"
 
 #: woocommerce-gateway-billmate/class-billmate-invoice.php:216
 msgid "Invoice fee tax class"
@@ -912,6 +912,10 @@ msgstr "<strong>Kön</strong> krävs för att gå vidare"
 #: woocommerce-gateway-billmate/class-billmate-invoice.php:1330
 msgid "Shipping and billing address must be the same when paying via Billmate"
 msgstr "Leverans och Faktura adress måste vara samma vid köp med Billmate"
+
+#~ msgid "Add a invoice fee cost without vat, leave empty to disable"
+#~ msgstr ""
+#~ "Lägg till en faktura avgift utan moms, lämna tomt för att inaktivera."
 
 #~ msgid "An invoice fee of %1$s %2$s will be added to your order."
 #~ msgstr "Fakturaavgiften på %1$s %2$s adderas till totalbeloppet"
