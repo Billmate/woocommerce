@@ -349,7 +349,7 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 				$rate = array_pop($rate);
 				$rate = $rate['rate'];
 				$taxAmount = ($rate/100) * $this->invoice_fee;
-				printf(__('An invoice fee of %1$s %2$s will be added to your order.', 'billmate'), $this->invoice_fee+$taxAmount, get_woocommerce_currency_symbol() ); ?>
+				printf(__('An invoice fee of %1$s will be added to your order.', 'billmate'), wc_price($this->invoice_fee+$taxAmount)); ?>
 			</p>
 		<?php endif; ?>
 
