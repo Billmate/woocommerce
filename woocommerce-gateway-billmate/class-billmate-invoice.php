@@ -608,7 +608,7 @@ parse_str($_POST['post_data'], $datatemp);
 			return;
 		}
 		foreach($addr as $key => $value){
-			$addr[$key] = utf8_encode($value);
+			$addr[$key] = mb_convert_encoding($value,'UTF-8','auto');
 		}
 		$fullname = $_POST['billing_last_name'].' '.$_POST['billing_first_name'];
 		$firstArr = explode(' ', $_POST['billing_last_name']);
