@@ -1151,7 +1151,7 @@ parse_str($_POST['post_data'], $datatemp);
 		global $woocommerce;
 
 		$importedCountry = '';
-		if(!(BillmateCountry::getCode($addr['country']) == 'se' && WPLANG == 'sv_SE' )){
+		if(isset($addr['country']) && !(BillmateCountry::getCode($addr['country']) == 'se' && get_locale() == 'sv_SE')){
 			$importedCountry = $woocommerce->countries->countries[BillmateCountry::getCode($addr['country'])];
 		}
 
