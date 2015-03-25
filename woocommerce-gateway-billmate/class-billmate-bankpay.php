@@ -111,13 +111,17 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			$accept_url_hit = true;
 			$payment_note = 'Note: Payment Completed Accept Url.';
 		} else {
-			$input = file_get_contents("php://input");
-			$_POST = $_GET = (array)json_decode($input);
+			$_POST = $_GET = file_get_contents("php://input");
 			$accept_url_hit = false;
 			$payment_note = 'Note: Payment Completed (callback success).';
 		}
-		$_POST['data'] = json_decode(stripslashes($_POST['data']),true);
 		$k = new Billmate($this->eid,$this->secret,true,$this->testmode,false);
+
+		if(is_array($_POST))
+		{
+			foreach($_POST as $key => $value)
+				$_POST[$key] = stripslashes($value);
+		}
 		$data = $k->verify_hash($_POST);
 		$order_id = $data['orderid'];
 		$order = new WC_Order( $order_id );
