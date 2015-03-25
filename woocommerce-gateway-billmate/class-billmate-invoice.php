@@ -594,6 +594,8 @@ parse_str($_POST['post_data'], $datatemp);
 			$billmate_shipping_house_number		= '';
 			$billmate_shipping_house_extension	= '';
 		endif;
+		$language = explode('_',get_locale());
+		if(!defined('BILLMATE_LANGUAGE')) define('BILLMATE_LANGUAGE',strtolower($language[0]));
 
 		$k = new Billmate($this->eid,$this->secret,true, $this->testmode == 'yes',false);
 		try{
@@ -750,15 +752,18 @@ parse_str($_POST['post_data'], $datatemp);
 		$country = $this->billmate_country;
 		$language = $this->billmate_language;
 		$currency = $this->billmate_currency;
+		$lang = explode('_',get_locale());
 
 		$billmate_pclass_file = BILLMATE_DIR . 'srv/billmatepclasses.json';
+		if(!defined('BILLMATE_LANGUAGE')) define('BILLMATE_LANGUAGE',strtolower($lang[0]));
+
 
 		$k = new Billmate($eid,$secret,true, $this->testmode == 'yes',false);
 		$goods_list = array();
 		$total = 0;
 		$totalTax = 0;
 		$orderValues = array();
-		$lang = explode('_',get_locale());
+
 		$orderValues['PaymentData'] = array(
 			'method' => 1,
 			'currency' => get_woocommerce_currency(),

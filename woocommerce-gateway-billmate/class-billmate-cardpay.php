@@ -358,6 +358,8 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		global $woocommerce;
 		$order = new WC_order( $order_id );
 		$language = explode('_',get_locale());
+		if(!defined('BILLMATE_LANGUAGE')) define('BILLMATE_LANGUAGE',strtolower($language[0]));
+
 		$orderValues = array();
 		$capture_now   = $this->authentication_method == 'sales' ? 'YES' : 'NO';
 		$orderValues['PaymentData'] = array(
