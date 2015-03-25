@@ -541,7 +541,6 @@ class BillmateCalc {
 
         $lowest_pp = $lowest = false;
         foreach($pclasses as $pclass) {
-            error_log(print_r($pclass,true));
             // Lowest for SE is 50
             $lowest_payment = BillmateCalc::get_lowest_payment_for_account(strtoupper($pclass['country']));
 

@@ -812,7 +812,7 @@ parse_str($_POST['post_data'], $datatemp);
 				$item_tax_percentage = 0;
 				foreach($rates as $row){
 					// Is it Compound Tax?
-					if($row['compund'] == 'yes')
+					if(isset($row['compund']) && $row['compound'] == 'yes')
 						$item_tax_percentage += $row['rate'];
 					else
 						$item_tax_percentage = $row['rate'];
