@@ -1150,10 +1150,7 @@ parse_str($_POST['post_data'], $datatemp);
 
 		global $woocommerce;
 
-		$importedCountry = '';
-		if(isset($addr['country']) && !(BillmateCountry::getCode($addr['country']) == 'se' && get_locale() == 'sv_SE')){
-			$importedCountry = $woocommerce->countries->countries[BillmateCountry::getCode($addr['country'])];
-		}
+		$importedCountry = isset($addr['country']) ? $addr['country'] : '';
 
 		if( $addressNotMatched || $shippingAndBilling ){
 			if( empty($_POST['geturl'] ) ){
