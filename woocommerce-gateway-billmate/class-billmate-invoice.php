@@ -25,8 +25,8 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 
 		// Define user set variables
 		$this->enabled				= ( isset( $this->settings['enabled'] ) ) ? $this->settings['enabled'] : '';
-		$this->title 				= ( isset( $this->settings['title'] ) ) ? $this->settings['title'] : '';
-		$this->description  		= ( isset( $this->settings['description'] ) && $this->settings['description'] != '') ? $this->settings['description'] : __('Billmate Invoice');
+		$this->title 				= ( isset( $this->settings['title'] )  && $this->settings['title'] != '') ? $this->settings['title'] : __('Billmate Invoice','billmate');
+		$this->description  		= ( isset( $this->settings['description'] ) ) ? $this->settings['description'] : '';
 		$this->eid					= get_option('billmate_common_eid');//( isset( $this->settings['eid'] ) ) ? $this->settings['eid'] : '';
 		$this->secret				= get_option('billmate_common_secret');//( isset( $this->settings['secret'] ) ) ? $this->settings['secret'] : '';
 		$this->lower_threshold		= ( isset( $this->settings['lower_threshold'] ) ) ? $this->settings['lower_threshold'] : '';
@@ -334,11 +334,11 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 
 	function payment_fields() {
 	   	global $woocommerce;
-
+		$billmate_description = strlen($this->description) ? $this->description : '';
 	   	?>
 
 	   	<?php if ($this->testmode=='yes') : ?><p><?php _e('TEST MODE ENABLED', 'billmate'); ?></p><?php endif; ?>
-		<?php if ($this->description) : ?><p><?php echo $this->description; ?></p><?php endif; ?>
+		<?php if ($billmate_description) : ?><p><?php echo $billmate_description; ?></p><?php endif; ?>
 
 		<?php if ($this->invoice_fee>0): ?>
 

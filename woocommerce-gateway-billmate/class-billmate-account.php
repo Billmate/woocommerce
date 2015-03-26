@@ -33,8 +33,8 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 
 		// Define user set variables
 		$this->enabled							= ( isset( $this->settings['enabled'] ) ) ? $this->settings['enabled'] : '';
-		$this->title 							= ( isset( $this->settings['title'] ) ) ? $this->settings['title'] : '';
-		$this->description  					= ( isset( $this->settings['description'] ) && $this->settings['description'] != '') ? $this->settings['description'] : __('Billmate Partpayment');
+		$this->title 							= ( isset( $this->settings['title'] ) && $this->settings['title'] != '') ? $this->settings['title'] : __('Billmate Partpayment','billmate');
+		$this->description  					= ( isset( $this->settings['description'] )) ? $this->settings['description'] : '';
 		$this->eid	= $eid						= get_option('billmate_common_eid');//( isset( $this->settings['eid'] ) ) ? $this->settings['eid'] : '';
 		$this->secret							= get_option('billmate_common_secret');//( isset( $this->settings['secret'] ) ) ? $this->settings['secret'] : '';
 		$this->lower_threshold					= ( isset( $this->settings['lower_threshold'] ) ) ? $this->settings['lower_threshold'] : '';
@@ -552,7 +552,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 		// Description
 		if ($this->description) :
 			// apply_filters to the description so we can filter this if needed
-			$billmate_description = $this->description;
+			$billmate_description = strlen($this->description ) ? $this->description : '';
 			echo '<p>' . apply_filters( 'billmate_partpayment_description', $billmate_description ) . '</p>';
 		endif;
 

@@ -26,8 +26,8 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 
 		// Define user set variables
 		$this->enabled				= ( isset( $this->settings['enabled'] ) ) ? $this->settings['enabled'] : '';
-		$this->title 				= ( isset( $this->settings['title'] ) ) ? $this->settings['title'] : '';
-		$this->description  		= ( isset( $this->settings['description'] ) && $this->settings['description'] != '') ? $this->settings['description'] : __('Billmate Bankpay');
+		$this->title 				= ( isset( $this->settings['title'] )  && $this->settings['title'] != '' ) ? $this->settings['title'] : __('Billmate Bankpay','billmate');
+		$this->description  		= ( isset( $this->settings['description'] ) ) ? $this->settings['description'] : '';
 		$this->secret				= get_option('billmate_common_secret');//( isset( $this->settings['secret'] ) ) ? $this->settings['secret'] : '';
 		$this->eid					= get_option('billmate_common_eid');//( isset( $this->settings['eid'] ) ) ? $this->settings['eid'] : '';
 		$this->lower_threshold		= ( isset( $this->settings['lower_threshold'] ) ) ? $this->settings['lower_threshold'] : '';
@@ -351,7 +351,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 
 	function payment_fields() {
 	   	global $woocommerce;
-	   	?><p><?php echo strlen($this->description)? $this->description: 'Betala med banköverföring.'; ?></p><?php
+	   	?><p><?php echo strlen($this->description)? $this->description: __('Pay with Billmate Bankpay','billmate'); ?></p><?php
 	}
 	/**
 	 * Process the payment and return the result
