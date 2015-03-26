@@ -187,7 +187,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 			'upper_threshold' => array(
 							'title' => __( 'Upper threshold', 'billmate' ),
 							'type' => 'text',
-							'description' => __( 'Disable Billmate Part Payment if Cart Total is higher than the specified value. Leave blank to disable this feature.', 'billmate' ),
+							'description' => __( 'Disable Billmate Part Payment if Cart Total is lower than the specified value. Leave blank to disable this feature.', 'billmate' ),
 							'default' => ''
 						),
 			'show_monthly_cost' => array(

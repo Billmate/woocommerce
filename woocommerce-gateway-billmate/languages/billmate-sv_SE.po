@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Billmate Woocommerce plugin\n"
-"POT-Creation-Date: 2015-03-26 10:23+0100\n"
-"PO-Revision-Date: 2015-03-26 10:48+0100\n"
+"POT-Creation-Date: 2015-03-26 12:51+0100\n"
+"PO-Revision-Date: 2015-03-26 12:52+0100\n"
 "Last-Translator: \n"
 "Language-Team: Boxedsolutions <jesper@boxedsolutions.se>\n"
 "Language: sv_SE\n"
@@ -21,7 +21,7 @@ msgstr ""
 msgid "Billmate Part Payment"
 msgstr "Billmate Delbetalning"
 
-#: woocommerce-gateway-billmate/class-billmate-account.php:37
+#: woocommerce-gateway-billmate/class-billmate-account.php:36
 msgid "Billmate Partpayment"
 msgstr "Billmate Delbetalning"
 
@@ -98,13 +98,12 @@ msgid "Lower threshold"
 msgstr "Lägsta belopp"
 
 #: woocommerce-gateway-billmate/class-billmate-account.php:184
-#: woocommerce-gateway-billmate/class-billmate-account.php:190
 msgid ""
 "Disable Billmate Part Payment if Cart Total is higher than the specified "
 "value. Leave blank to disable this feature."
 msgstr ""
-"Inaktivare Billmate Delbetalning om varukorgens belopp är högre än "
-"specificerat värde. Lämna blankt för att inaktivare denna funktion."
+"Inaktivera Billmate Delbetalning om varukorgens belopp är högre än inställt "
+"värde. Lämna blankt för att inaktivera denna funktion."
 
 #: woocommerce-gateway-billmate/class-billmate-account.php:188
 #: woocommerce-gateway-billmate/class-billmate-bankpay.php:234
@@ -112,6 +111,14 @@ msgstr ""
 #: woocommerce-gateway-billmate/class-billmate-invoice.php:204
 msgid "Upper threshold"
 msgstr "Högsta belopp"
+
+#: woocommerce-gateway-billmate/class-billmate-account.php:190
+msgid ""
+"Disable Billmate Part Payment if Cart Total is lower than the specified "
+"value. Leave blank to disable this feature."
+msgstr ""
+"Inaktivera Billmate Delbetalning om varukorgens belopp är lägre än inställt "
+"värde. Lämna blankt för att inaktivera denna funktion."
 
 #: woocommerce-gateway-billmate/class-billmate-account.php:194
 msgid "Display monthly cost - product page"
@@ -490,7 +497,7 @@ msgstr ""
 
 #: woocommerce-gateway-billmate/class-billmate-account.php:776
 msgid "terms of partpayment."
-msgstr "köpvillkor för delbetalning"
+msgstr "köpvillkor för delbetalning."
 
 #: woocommerce-gateway-billmate/class-billmate-account.php:783
 #: woocommerce-gateway-billmate/class-billmate-invoice.php:549
@@ -645,7 +652,7 @@ msgstr "Visa mer."
 msgid "Billmate Bank"
 msgstr "Billmate Bankbetalning"
 
-#: woocommerce-gateway-billmate/class-billmate-bankpay.php:30
+#: woocommerce-gateway-billmate/class-billmate-bankpay.php:29
 msgid "Billmate Bankpay"
 msgstr "Billmate Bankbetalning"
 
@@ -714,6 +721,10 @@ msgstr ""
 "några extra informationsfält och skickar detta till Billmate för "
 "verifikation."
 
+#: woocommerce-gateway-billmate/class-billmate-bankpay.php:354
+msgid "Pay with Billmate Bankpay"
+msgstr ""
+
 #: woocommerce-gateway-billmate/class-billmate-bankpay.php:667
 #: woocommerce-gateway-billmate/class-billmate-cardpay.php:673
 #: woocommerce-gateway-billmate/class-billmate-invoice.php:1222
@@ -721,7 +732,7 @@ msgid "Terms for Invoice"
 msgstr "köpvillkor för fakturabetalning."
 
 #: woocommerce-gateway-billmate/class-billmate-cardpay.php:18
-#: woocommerce-gateway-billmate/class-billmate-cardpay.php:30
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:29
 #: woocommerce-gateway-billmate/class-billmate-cardpay.php:214
 #: woocommerce-gateway-billmate/class-billmate-cardpay.php:297
 msgid "Billmate Cardpay"
@@ -784,6 +795,10 @@ msgstr ""
 "Med Billmate kan dina kunder handla med kort. Billmate fungerar genom att "
 "lägga till några extra fält som skickas till Billmate för verifiering."
 
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:356
+msgid "Visa & Mastercard"
+msgstr ""
+
 #: woocommerce-gateway-billmate/class-billmate-common.php:33
 msgid "Common Billmate Settings"
 msgstr "Generella Billmate Inställningar"
@@ -809,7 +824,7 @@ msgid "Please, check your credentials"
 msgstr "Vänligen, kontrollera dina billmateuppgifter"
 
 #: woocommerce-gateway-billmate/class-billmate-invoice.php:17
-#: woocommerce-gateway-billmate/class-billmate-invoice.php:29
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:28
 #: woocommerce-gateway-billmate/class-billmate-invoice.php:264
 msgid "Billmate Invoice"
 msgstr "Billmate Faktura"
@@ -832,7 +847,7 @@ msgid ""
 "Leave blank to disable this feature."
 msgstr ""
 "Inaktivera Billmate Faktura om varukorgens summa är lägre än inställt värde. "
-"Lämna tomt för att inaktivare."
+"Lämna tomt för att inaktivera."
 
 #: woocommerce-gateway-billmate/class-billmate-invoice.php:206
 msgid ""
