@@ -197,7 +197,7 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 			'lower_threshold' => array(
 							'title' => __( 'Lower threshold', 'billmate' ),
 							'type' => 'text',
-							'description' => __( 'Disable Billmate Invoice if Cart Total is lower than the specified value. Leave blank to disable this feature.' ),
+							'description' => __( 'Disable Billmate Invoice if Cart Total is lower than the specified value. Leave blank to disable this feature.','billmate' ),
 							'default' => ''
 						),
 			'upper_threshold' => array(
@@ -209,13 +209,13 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 			'billmate_invoice_fee' => array(
 								'title' => __( 'Invoice fee', 'billmate'),
 								'type' => 'text',
-								'description' => __( 'Add an invoice fee cost without vat, leave empty to disable'),
+								'description' => __( 'Add an invoice fee cost without vat, leave empty to disable','billmate'),
 								'default' => ''
 			),
 			'billmate_invoice_fee_tax_class' => array(
 								'title' => __('Invoice fee tax class', 'billmate'),
 								'type' => 'select',
-								'description' => __('The tax class for Invoice fee'),
+								'description' => __('The tax class for Invoice fee','billmate'),
 								'default' => '',
 								'options' => $classes_options
 			),
@@ -240,7 +240,7 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 				'default' => 'no'
 			),
 		    'order_status' => array(
-			    'title' => __('Order status'),
+			    'title' => __('Order status','billmate'),
 			    'type' => 'select',
 			    'description' => __('Choose a special order status for Billmate Invoice, if you want to use a own status and not WooCommerce built in','billmate'),
 			    'default' => '',
@@ -538,7 +538,7 @@ parse_str($_POST['post_data'], $datatemp);
 		<div class="clear"></div>
 			<p class="form-row">
 				<input type="checkbox" class="input-checkbox" checked="checked" value="yes" name="valid_email_it_is_invoice" id="valid_email_it_is_invoice" style="float:left;margin-top:6px" />
-				<label><?php echo sprintf(__('My e-mail address ,%s, is correct and may be used for billing. I also confirm ', 'billmate'), $datatemp['billing_email']) ?>&nbsp;<a id="billmate_invoice" href="javascript://"><?php echo __('Terms of invoice.'); ?></a></label>
+				<label><?php echo sprintf(__('My e-mail address ,%s, is correct and may be used for billing. I also confirm ', 'billmate'), $datatemp['billing_email']) ?>&nbsp;<a id="billmate_invoice" href="javascript://"><?php echo __('Terms of invoice.','billmate'); ?></a></label>
 			</p>
 		<div class="clear"></div>
 
