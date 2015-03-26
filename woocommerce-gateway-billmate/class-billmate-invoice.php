@@ -26,7 +26,7 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 		// Define user set variables
 		$this->enabled				= ( isset( $this->settings['enabled'] ) ) ? $this->settings['enabled'] : '';
 		$this->title 				= ( isset( $this->settings['title'] ) ) ? $this->settings['title'] : '';
-		$this->description  		= ( isset( $this->settings['description'] ) ) ? $this->settings['description'] : '';
+		$this->description  		= ( isset( $this->settings['description'] ) && $this->settings['description'] != '') ? $this->settings['description'] : __('Billmate Invoice');
 		$this->eid					= get_option('billmate_common_eid');//( isset( $this->settings['eid'] ) ) ? $this->settings['eid'] : '';
 		$this->secret				= get_option('billmate_common_secret');//( isset( $this->settings['secret'] ) ) ? $this->settings['secret'] : '';
 		$this->lower_threshold		= ( isset( $this->settings['lower_threshold'] ) ) ? $this->settings['lower_threshold'] : '';
@@ -538,7 +538,7 @@ parse_str($_POST['post_data'], $datatemp);
 		<div class="clear"></div>
 			<p class="form-row">
 				<input type="checkbox" class="input-checkbox" checked="checked" value="yes" name="valid_email_it_is_invoice" id="valid_email_it_is_invoice" style="float:left;margin-top:6px" />
-				<label><?php echo sprintf(__('My e-mail address ,%s, is correct and may be used for billing. I also confirm ', 'billmate'), $datatemp['billing_email']) ?>&nbsp;<a id="billmate_invoice" href="javascript://"><?php echo __('Terms of invoice'); ?></a></label>
+				<label><?php echo sprintf(__('My e-mail address ,%s, is correct and may be used for billing. I also confirm ', 'billmate'), $datatemp['billing_email']) ?>&nbsp;<a id="billmate_invoice" href="javascript://"><?php echo __('Terms of invoice.'); ?></a></label>
 			</p>
 		<div class="clear"></div>
 
