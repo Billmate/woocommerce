@@ -252,7 +252,8 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 				'description' 	=> __( 'Billmate Bank activated for customers in these countries', 'billmate' ),
 				'class'			=> 'chosen_select',
 				'css' 			=> 'min-width:350px;',
-				'options'		=> $available
+				'options'		=> $available,
+				'default' => 'SE'
 			),
 			'testmode' => array(
 							'title' => __( 'Test Mode', 'billmate' ),

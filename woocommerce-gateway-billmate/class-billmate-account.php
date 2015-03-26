@@ -246,7 +246,8 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 				'description' 	=> __( 'Billmate Partpayment activated for customers in these countries', 'billmate' ),
 				'class'			=> 'chosen_select',
 				'css' 			=> 'min-width:350px;',
-				'options'		=> $available
+				'options'		=> $available,
+				'default' => 'SE'
 			),
 
 			'testmode' => array(
@@ -398,6 +399,8 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 		global $woocommerce;
 
 		if ($this->enabled=="yes") :
+			if (!in_array(get_option('woocommerce_currency'), array('SEK'))) return false;
+
 			if(is_array($this->allowed_countries) && !in_array($woocommerce->customer->get_country() , $this->allowed_countries)){
 				return false;
 			}
