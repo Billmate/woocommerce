@@ -33,7 +33,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 
 		// Define user set variables
 		$this->enabled							= ( isset( $this->settings['enabled'] ) ) ? $this->settings['enabled'] : '';
-		$this->title 							= ( isset( $this->settings['title'] ) && $this->settings['title'] != '') ? $this->settings['title'] : __('Billmate Partpayment','billmate');
+		$this->title 							= ( isset( $this->settings['title'] ) && strlen($this->settings['title'])) ? $this->settings['title'] : __('Billmate Partpayment','billmate');
 		$this->description  					= ( isset( $this->settings['description'] )) ? $this->settings['description'] : '';
 		$this->eid	= $eid						= get_option('billmate_common_eid');//( isset( $this->settings['eid'] ) ) ? $this->settings['eid'] : '';
 		$this->secret							= get_option('billmate_common_secret');//( isset( $this->settings['secret'] ) ) ? $this->settings['secret'] : '';
@@ -359,6 +359,32 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 	/**
 	 * Check if this gateway is enabled and available in the user's country
 	 */
+	function get_title(){
+		global $woocommerce;
+		$cart_total = $woocommerce->cart->total;
+		$pclasses = get_option('wc_gateway_billmate_partpayment_pclasses');
+		$flags = BillmateFlags::CHECKOUT_PAGE;
+		$pclass = BillmateCalc::getCheapestPClass($cart_total, $flags, $pclasses);
+		$billmate_partpayment_monthly_cost_message = false;
+		//Did we get a PClass? (it is false if we didn't)
+		if($pclass) {
+			//Here we reuse the same values as above:
+			$value = BillmateCalc::calc_monthly_cost(
+				$cart_total,
+				$pclass,
+				$flags
+			);
+
+			/* $value is now a rounded monthly cost amount to be displayed to the customer. */
+			// apply_filters to the monthly cost message so we can filter this if needed
+
+			$billmate_partpayment_monthly_cost_message = sprintf(__('From %s %s/month', 'billmate'), $value, $this->billmate_currency );
+
+
+		}
+		$title = ($billmate_partpayment_monthly_cost_message) ? $billmate_partpayment_monthly_cost_message : '';
+		return $this->title.' - '.$title;
+	}
 
     function correct_lang_billmate(&$item, $index){
 
@@ -583,6 +609,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 	    		// apply_filters to the monthly cost message so we can filter this if needed
 
 	    		$billmate_partpayment_monthly_cost_message = sprintf(__('From %s %s/month', 'billmate'), $value, $this->billmate_currency );
+
 	    		echo '<p class="form-row form-row-last billmate-monthly-cost">' . apply_filters( 'billmate_partpayment_monthly_cost_message', $billmate_partpayment_monthly_cost_message ) . '</p>';
 
 

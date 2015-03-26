@@ -25,7 +25,7 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 
 		// Define user set variables
 		$this->enabled				= ( isset( $this->settings['enabled'] ) ) ? $this->settings['enabled'] : '';
-		$this->title 				= ( isset( $this->settings['title'] )  && $this->settings['title'] != '') ? $this->settings['title'] : __('Billmate Invoice','billmate');
+		$this->title 				= ( isset( $this->settings['title'] )  && $this->settings['title'] != '') ? $this->settings['title'] : __('Billmate Invoice - Pay within 14-days','billmate');
 		$this->description  		= ( isset( $this->settings['description'] ) ) ? $this->settings['description'] : '';
 		$this->eid					= get_option('billmate_common_eid');//( isset( $this->settings['eid'] ) ) ? $this->settings['eid'] : '';
 		$this->secret				= get_option('billmate_common_secret');//( isset( $this->settings['secret'] ) ) ? $this->settings['secret'] : '';
