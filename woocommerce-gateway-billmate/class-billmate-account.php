@@ -1291,6 +1291,7 @@ parse_str($_POST['post_data'], $datatemp);
 		$total = 0;
 		$totalTax = 0;
 		$orderValues = array();
+		$prepareDiscount = array();
 		$lang = explode('_',get_locale());
 		$orderValues['PaymentData'] = array(
 			'method' => 4,
@@ -1353,6 +1354,11 @@ parse_str($_POST['post_data'], $datatemp);
 				$totalTemp = ((int)$item['qty'] * ($priceExcl*100));
 				$total += $totalTemp;
 				$totalTax += ($totalTemp * $item_tax_percentage/100);
+				if(isset($prepareDiscount[$item_tax_percentage])){
+					$prepareDiscount[$item_tax_percentage] += $totalTemp;
+				} else {
+					$prepareDiscount[$item_tax_percentage] = $totalTemp;
+				}
 
 			endif;
 		endforeach; endif;
@@ -1363,18 +1369,26 @@ parse_str($_POST['post_data'], $datatemp);
 			// apply_filters to order discount so we can filter this if needed
 			$billmate_order_discount = $order->order_discount;
 			$order_discount = apply_filters( 'billmate_order_discount', $billmate_order_discount );
+			$total_value = $total;
+			foreach($prepareDiscount as $key => $value){
+				$percent = $value/$total_value;
 
-			$orderValues['Articles'][] = array(
-				'quantity'   => (int)1,
-				'artnr'    => "",
-				'title'    => __('Discount', 'billmate'),
-				'aprice'    => -($order_discount*100), //+$item->unittax
-				'taxrate'      => 0,
-				'discount' => (float)0,
-				'withouttax' => -($order_discount*100)
+				$discountAmount = ($percent * $order_discount) * (1-($key/100)/(1+($key/100)));
+				$orderValues['Articles'][] = array(
+					'quantity'   => (int)1,
+					'artnr'    => "",
+					'title'    => sprintf(__('Discount %s%% tax', 'billmate'),round($key,0)),
+					'aprice'    => -($discountAmount*100), //+$item->unittax
+					'taxrate'      => $key,
+					'discount' => (float)0,
+					'withouttax' => -($discountAmount*100)
 
-			);
-			$total -= ($order_discount * 100);
+				);
+				$total -= ($discountAmount * 100);
+				$totalTax -= ($discountAmount * ($key/100))*100;
+
+			}
+
 		endif;
 
 		// Shipping

@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Billmate Woocommerce plugin\n"
-"POT-Creation-Date: 2015-03-27 14:02+0100\n"
-"PO-Revision-Date: 2015-03-27 14:03+0100\n"
+"POT-Creation-Date: 2015-03-27 19:12+0100\n"
+"PO-Revision-Date: 2015-03-27 19:12+0100\n"
 "Last-Translator: \n"
 "Language-Team: Boxedsolutions <jesper@boxedsolutions.se>\n"
 "Language: sv_SE\n"
@@ -528,8 +528,8 @@ msgstr ""
 #: woocommerce-gateway-billmate/class-billmate-account.php:1045
 #: woocommerce-gateway-billmate/class-billmate-account.php:1055
 #: woocommerce-gateway-billmate/class-billmate-account.php:1059
-#: woocommerce-gateway-billmate/class-billmate-invoice.php:1298
-#: woocommerce-gateway-billmate/class-billmate-invoice.php:1311
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:1312
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:1325
 msgid "Non Valid Person / Corporate number. Check the number."
 msgstr "Ej giltigt person / organisationsnummer. Kontrollera numret."
 
@@ -542,30 +542,30 @@ msgid "Shipping and billing address must be the same when paying via Billmate."
 msgstr "Leverans och faktura adress måste vara samma vid köp via Billmate"
 
 #: woocommerce-gateway-billmate/class-billmate-account.php:1084
-#: woocommerce-gateway-billmate/class-billmate-invoice.php:1336
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:1350
 msgid "You must accept the Billmate consent terms."
 msgstr "Du måste acceptera Billmate köpvillkor"
 
 #: woocommerce-gateway-billmate/class-billmate-account.php:1139
-#: woocommerce-gateway-billmate/class-billmate-account.php:1414
+#: woocommerce-gateway-billmate/class-billmate-account.php:1428
 #: woocommerce-gateway-billmate/class-billmate-invoice.php:607
 msgid "Unable to find address."
 msgstr "Kunde inte hitta adressen."
 
 #: woocommerce-gateway-billmate/class-billmate-account.php:1186
-#: woocommerce-gateway-billmate/class-billmate-account.php:1460
+#: woocommerce-gateway-billmate/class-billmate-account.php:1474
 #: woocommerce-gateway-billmate/class-billmate-invoice.php:654
 msgid "Yes, make purchase with this address"
 msgstr "Ja, köp med denna adressen."
 
 #: woocommerce-gateway-billmate/class-billmate-account.php:1186
-#: woocommerce-gateway-billmate/class-billmate-account.php:1460
+#: woocommerce-gateway-billmate/class-billmate-account.php:1474
 #: woocommerce-gateway-billmate/class-billmate-invoice.php:654
 msgid "No, I want to specify a different number or change payment method"
 msgstr "Nej jag vill ändra till ett annat nummer eller byta betalmetod."
 
 #: woocommerce-gateway-billmate/class-billmate-account.php:1194
-#: woocommerce-gateway-billmate/class-billmate-account.php:1468
+#: woocommerce-gateway-billmate/class-billmate-account.php:1482
 #: woocommerce-gateway-billmate/class-billmate-invoice.php:662
 msgid ""
 "Pay by invoice can be made only to the address listed in the National "
@@ -583,27 +583,28 @@ msgstr ""
 "Vänligen bekräfta att e-postadressen \"%s\" är korrekt. Denna kommer att "
 "användas för fakturering."
 
-#: woocommerce-gateway-billmate/class-billmate-account.php:1370
-#: woocommerce-gateway-billmate/class-billmate-bankpay.php:559
-#: woocommerce-gateway-billmate/class-billmate-cardpay.php:581
-#: woocommerce-gateway-billmate/class-billmate-invoice.php:854
-msgid "Discount"
-msgstr "Rabatt"
+#: woocommerce-gateway-billmate/class-billmate-account.php:1380
+#: woocommerce-gateway-billmate/class-billmate-bankpay.php:569
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:591
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:864
+#, php-format
+msgid "Discount %s%% tax"
+msgstr "Rabatt %s%% moms"
 
-#: woocommerce-gateway-billmate/class-billmate-account.php:1566
-#: woocommerce-gateway-billmate/class-billmate-account.php:1567
-#: woocommerce-gateway-billmate/class-billmate-invoice.php:1066
-#: woocommerce-gateway-billmate/class-billmate-invoice.php:1067
+#: woocommerce-gateway-billmate/class-billmate-account.php:1580
+#: woocommerce-gateway-billmate/class-billmate-account.php:1581
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:1080
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:1081
 msgid "Billmate payment denied."
 msgstr "Billmate betalning nekad"
 
-#: woocommerce-gateway-billmate/class-billmate-account.php:1582
-#: woocommerce-gateway-billmate/class-billmate-invoice.php:1083
+#: woocommerce-gateway-billmate/class-billmate-account.php:1596
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:1097
 msgid "Billmate payment completed. Billmate Invoice number:"
 msgstr "Billmate betalning färdig. Billmate fakturanummer:"
 
-#: woocommerce-gateway-billmate/class-billmate-account.php:1609
-#: woocommerce-gateway-billmate/class-billmate-invoice.php:1110
+#: woocommerce-gateway-billmate/class-billmate-account.php:1623
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:1124
 msgid ""
 "Order is PENDING APPROVAL by Billmate. Please visit Billmate Online for the "
 "latest status on this order. Billmate Invoice number: "
@@ -611,21 +612,21 @@ msgstr ""
 "Ordern är under granskning av Billmate. Vänligen besök Billmate Online för "
 "senaste status på denna order. Billmate fakturanummer: "
 
-#: woocommerce-gateway-billmate/class-billmate-account.php:1642
-#: woocommerce-gateway-billmate/class-billmate-account.php:1643
-#: woocommerce-gateway-billmate/class-billmate-invoice.php:1143
-#: woocommerce-gateway-billmate/class-billmate-invoice.php:1144
+#: woocommerce-gateway-billmate/class-billmate-account.php:1656
+#: woocommerce-gateway-billmate/class-billmate-account.php:1657
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:1157
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:1158
 msgid "Unknown response from Billmate."
 msgstr "Okänt svar från Billmate"
 
-#: woocommerce-gateway-billmate/class-billmate-account.php:1663
-#: woocommerce-gateway-billmate/class-billmate-bankpay.php:613
-#: woocommerce-gateway-billmate/class-billmate-cardpay.php:634
-#: woocommerce-gateway-billmate/class-billmate-invoice.php:1168
+#: woocommerce-gateway-billmate/class-billmate-account.php:1677
+#: woocommerce-gateway-billmate/class-billmate-bankpay.php:627
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:648
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:1182
 msgid "Thank you for your order."
 msgstr "Tack för din order"
 
-#: woocommerce-gateway-billmate/class-billmate-account.php:1934
+#: woocommerce-gateway-billmate/class-billmate-account.php:1948
 msgid "Read more"
 msgstr "Visa mer."
 
@@ -709,9 +710,9 @@ msgstr ""
 msgid "Pay with Billmate Bankpay"
 msgstr "Betala med Billmate bankbetalning"
 
-#: woocommerce-gateway-billmate/class-billmate-bankpay.php:665
-#: woocommerce-gateway-billmate/class-billmate-cardpay.php:686
-#: woocommerce-gateway-billmate/class-billmate-invoice.php:1220
+#: woocommerce-gateway-billmate/class-billmate-bankpay.php:679
+#: woocommerce-gateway-billmate/class-billmate-cardpay.php:700
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:1234
 msgid "Terms for Invoice"
 msgstr "köpvillkor för fakturabetalning."
 
@@ -853,7 +854,7 @@ msgstr ""
 "Lämna tomt för att inaktivera"
 
 #: woocommerce-gateway-billmate/class-billmate-invoice.php:207
-#: woocommerce-gateway-billmate/class-billmate-invoice.php:1274
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:1288
 msgid "Invoice fee"
 msgstr "Faktura avgift"
 
@@ -913,27 +914,30 @@ msgstr ""
 msgid "Terms of invoice."
 msgstr "köpvillkor för fakturabetalning."
 
-#: woocommerce-gateway-billmate/class-billmate-invoice.php:922
-#: woocommerce-gateway-billmate/class-billmate-invoice.php:965
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:936
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:979
 msgid "Invoice Fee"
 msgstr "Faktura avgift"
 
-#: woocommerce-gateway-billmate/class-billmate-invoice.php:1156
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:1170
 #, php-format
 msgid "%s (Error code: %s)"
 msgstr "%s (Felkod: %s)"
 
-#: woocommerce-gateway-billmate/class-billmate-invoice.php:1307
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:1321
 msgid "<strong>Gender</strong> is a required field"
 msgstr "<strong>Kön</strong> krävs för att gå vidare"
 
-#: woocommerce-gateway-billmate/class-billmate-invoice.php:1317
-#: woocommerce-gateway-billmate/class-billmate-invoice.php:1320
-#: woocommerce-gateway-billmate/class-billmate-invoice.php:1323
-#: woocommerce-gateway-billmate/class-billmate-invoice.php:1326
-#: woocommerce-gateway-billmate/class-billmate-invoice.php:1329
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:1331
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:1334
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:1337
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:1340
+#: woocommerce-gateway-billmate/class-billmate-invoice.php:1343
 msgid "Shipping and billing address must be the same when paying via Billmate"
 msgstr "Leverans och Faktura adress måste vara samma vid köp med Billmate"
+
+#~ msgid "Discount"
+#~ msgstr "Rabatt"
 
 #~ msgid "Finland"
 #~ msgstr "Finland"
