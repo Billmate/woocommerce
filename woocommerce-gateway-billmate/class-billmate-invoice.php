@@ -607,6 +607,10 @@ parse_str($_POST['post_data'], $datatemp);
 			wc_bm_errors( __('Unable to find address.'.$addr, 'billmate') );
 			return;
 		}
+		if(isset($addr['code'])){
+			wc_bm_errors(utf8_encode($addr['message']));
+			return;
+		}
 		foreach($addr as $key => $value){
 			$addr[$key] = mb_convert_encoding($value,'UTF-8','auto');
 		}
