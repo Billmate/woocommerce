@@ -158,10 +158,7 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 	 */
 	function init_form_fields() {
 		$available = array(
-			'SE' =>__( 'Sweden','woocommerce'),
-			'FI' =>__('Finland', 'woocommerce'),
-			'DK' =>__('Danmark', 'woocommerce'),
-			'NO' =>__( 'Norway' ,'woocommerce')
+			'SE' =>__( 'Sweden','woocommerce')
 		);
 
 		$tax_classes = array_filter( array_map( 'trim', explode( "\n", get_option( 'woocommerce_tax_classes' ) ) ) );

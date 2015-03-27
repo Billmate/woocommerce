@@ -33,7 +33,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		$this->lower_threshold		= ( isset( $this->settings['lower_threshold'] ) ) ? $this->settings['lower_threshold'] : '';
 		$this->upper_threshold		= ( isset( $this->settings['upper_threshold'] ) ) ? $this->settings['upper_threshold'] : '';
 		$this->invoice_fee_id		= ( isset( $this->settings['invoice_fee_id'] ) ) ? $this->settings['invoice_fee_id'] : '';
-
+		$this->allowed_countries = (isset($this->settings['billmatecard_allowed_countries'])) ? $this->settings['billmatecard_allowed_countries'] : array();
 		$this->testmode				= ( isset( $this->settings['testmode'] ) && $this->settings['testmode'] == 'yes' ) ? true : false;
 
 		$this->de_consent_terms		= ( isset( $this->settings['de_consent_terms'] ) ) ? $this->settings['de_consent_terms'] : '';
@@ -198,7 +198,8 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 	 * Initialise Gateway Settings Form Fields
 	 */
 	function init_form_fields() {
-
+		$countries = new WC_Countries();
+		$available = $countries->get_countries();
 		$order_statuses = wc_get_order_statuses();
 	   	$this->form_fields = apply_filters('billmate_invoice_form_fields', array(
 			'enabled' => array(
@@ -267,6 +268,15 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 							'label' => __( 'Enable Billmate Test Mode.', 'billmate' ),
 							'default' => 'no'
 						),
+			'billmatecard_allowed_countries' => array(
+				'title' 		=> __( 'Allowed Countries', 'woocommerce' ),
+				'type' 			=> 'multiselect',
+				'description' 	=> __( 'Billmate Card activated for customers in these countries, Leave blank to allow all', 'billmate' ),
+				'class'			=> 'chosen_select',
+				'css' 			=> 'min-width:350px;',
+				'options'		=> $available,
+				'default' => ''
+			),
 			'custom_order_status' => array(
 				'title' => __('Custom Order status','billmate'),
 				'type' => 'checkbox',
@@ -337,7 +347,10 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			if ( $this->upper_threshold !== '' ) {
 				if ( $woocommerce->cart->total > $this->upper_threshold ) return false;
 			}
-
+			if(!empty($this->allowed_countries)){
+				if(!in_array($woocommerce->customer->country,$this->allowed_countries))
+					return false;
+			}
 			// Only activate the payment gateway if the customers country is the same as the filtered shop country ($this->billmate_country)
 	   		//if ( $woocommerce->customer->get_country() == true && $woocommerce->customer->get_country() != $this->billmate_country ) return false;
 
@@ -518,7 +531,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 					$item_tax_percentage = 0;
 					foreach($rates as $row){
 						// Is it Compound Tax?
-						if($row['compund'] == 'yes')
+						if(isset($row['compund']) && $row['compund'] == 'yes')
 							$item_tax_percentage += $row['rate'];
 						else
 							$item_tax_percentage = $row['rate'];

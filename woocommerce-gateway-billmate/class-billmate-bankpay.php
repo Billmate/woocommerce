@@ -199,10 +199,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 	function init_form_fields() {
 
 		$available = array(
-			'SE' =>__( 'Sweden','woocommerce'),
-			'FI' =>__('Finland', 'woocommerce'),
-			'DK' =>__('Danmark', 'woocommerce'),
-			'NO' =>__( 'Norway' ,'woocommerce')
+			'SE' =>__( 'Sweden','woocommerce')
 		);
 		$order_statuses = wc_get_order_statuses();
 	   	$this->form_fields = apply_filters('billmate_invoice_form_fields', array(
@@ -514,7 +511,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 					$item_tax_percentage = 0;
 					foreach($rates as $row){
 						// Is it Compound Tax?
-						if($row['compund'] == 'yes')
+						if(isset($row['compund']) && $row['compound'] == 'yes')
 							$item_tax_percentage += $row['rate'];
 						else
 							$item_tax_percentage = $row['rate'];

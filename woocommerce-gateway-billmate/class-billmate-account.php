@@ -151,10 +151,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 		global $woocommerce;
 
 		$available = array(
-			'SE' =>__( 'Sweden','woocommerce'),
-			'FI' =>__( 'Finland', 'woocommerce'),
-			'DK' =>__( 'Danmark', 'woocommerce'),
-			'NO' =>__( 'Norway' ,'woocommerce')
+			'SE' =>__( 'Sweden','woocommerce')
 		);
 
 		$order_statuses = wc_get_order_statuses();
@@ -181,13 +178,13 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 			'lower_threshold' => array(
 							'title' => __( 'Lower threshold', 'billmate' ),
 							'type' => 'text',
-							'description' => __( 'Disable Billmate Part Payment if Cart Total is higher than the specified value. Leave blank to disable this feature.', 'billmate' ),
+							'description' => __( 'Disable Billmate Part Payment if Cart Total is lower than the specified value. Leave blank to disable this feature.', 'billmate' ),
 							'default' => ''
 						),
 			'upper_threshold' => array(
 							'title' => __( 'Upper threshold', 'billmate' ),
 							'type' => 'text',
-							'description' => __( 'Disable Billmate Part Payment if Cart Total is lower than the specified value. Leave blank to disable this feature.', 'billmate' ),
+							'description' => __( 'Disable Billmate Part Payment if Cart Total is higher than the specified value. Leave blank to disable this feature.', 'billmate' ),
 							'default' => ''
 						),
 			'show_monthly_cost' => array(
