@@ -359,29 +359,38 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 	 */
 	function get_title(){
 		global $woocommerce;
-		$cart_total = $woocommerce->cart->total;
-		$pclasses = get_option('wc_gateway_billmate_partpayment_pclasses');
-		$flags = BillmateFlags::CHECKOUT_PAGE;
-		$pclass = BillmateCalc::getCheapestPClass($cart_total, $flags, $pclasses);
-		$billmate_partpayment_monthly_cost_message = false;
-		//Did we get a PClass? (it is false if we didn't)
-		if($pclass) {
-			//Here we reuse the same values as above:
-			$value = BillmateCalc::calc_monthly_cost(
-				$cart_total,
-				$pclass,
-				$flags
-			);
+		if(is_object($woocommerce->cart))
+		{
+			$cart_total                                = $woocommerce->cart->total;
+			$pclasses                                  = get_option('wc_gateway_billmate_partpayment_pclasses');
+			$flags                                     = BillmateFlags::CHECKOUT_PAGE;
+			$pclass                                    = BillmateCalc::getCheapestPClass($cart_total, $flags, $pclasses);
+			$billmate_partpayment_monthly_cost_message = false;
+			//Did we get a PClass? (it is false if we didn't)
+			if ($pclass)
+			{
+				//Here we reuse the same values as above:
+				$value = BillmateCalc::calc_monthly_cost(
+					$cart_total,
+					$pclass,
+					$flags
+				);
 
-			/* $value is now a rounded monthly cost amount to be displayed to the customer. */
-			// apply_filters to the monthly cost message so we can filter this if needed
+				/* $value is now a rounded monthly cost amount to be displayed to the customer. */
+				// apply_filters to the monthly cost message so we can filter this if needed
 
-			$billmate_partpayment_monthly_cost_message = sprintf(__('From %s %s/month', 'billmate'), $value, $this->billmate_currency );
+				$billmate_partpayment_monthly_cost_message = sprintf(__('From %s %s/month', 'billmate'), $value, $this->billmate_currency);
 
 
+			}
+			$title = ($billmate_partpayment_monthly_cost_message) ? $billmate_partpayment_monthly_cost_message : '';
+
+			return $this->title.' - '.$title;
 		}
-		$title = ($billmate_partpayment_monthly_cost_message) ? $billmate_partpayment_monthly_cost_message : '';
-		return $this->title.' - '.$title;
+		else
+		{
+			return $this->title;
+		}
 	}
 
     function correct_lang_billmate(&$item, $index){
