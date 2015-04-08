@@ -1695,7 +1695,7 @@ parse_str($_POST['post_data'], $datatemp);
 		global $woocommerce, $product, $billmate_partpayment_shortcode_currency, $billmate_partpayment_shortcode_price, $billmate_shortcode_img, $billmate_partpayment_country,$billmate_partpayment_eid;
 
 		$pclasses = get_option('wc_gateway_billmate_partpayment_pclasses',false);
-		$billmate_partpayment_eid = $this->settings['eid'];
+		$billmate_partpayment_eid = $this->eid;
 
 	 	// Only execute this if the feature is activated in the gateway settings
 		if ( $this->show_monthly_cost == 'yes' && is_array($pclasses) ) {
@@ -1715,12 +1715,12 @@ parse_str($_POST['post_data'], $datatemp);
 				$billmate_mode = 'live';
 			endif;
 
-	   		if( empty( $this->settings['eid']) ){
+	   		if( empty( $this->eid) ){
 	   		    return false;
 	   		}
 
-			$eid = (int)$this->settings['eid'];
-			$secret = $this->settings['secret'];
+			$eid = (int)$this->eid;
+			$secret = $this->secret;
 			$country = $this->billmate_country;
 			$language = $this->billmate_language;
 			$currency = $this->billmate_currency;
@@ -1813,12 +1813,12 @@ parse_str($_POST['post_data'], $datatemp);
 				}
 				$billmate_mode = 'live';
 			endif;
-	   		if( empty( $this->settings['eid']) ){
+	   		if( empty( $this->eid) ){
 	   		    return false;
 	   		}
 
-			$eid = (int)$this->settings['eid'];
-			$secret = $this->settings['secret'];
+			$eid = (int)$this->eid;
+			$secret = $this->secret;
 			$country = $this->billmate_country;
 			$language = $this->billmate_language;
 			$currency = $this->billmate_currency;
