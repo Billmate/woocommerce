@@ -36,7 +36,7 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 		$this->de_consent_terms		= ( isset( $this->settings['de_consent_terms'] ) ) ? $this->settings['de_consent_terms'] : '';
 		$this->invoice_fee 			= ( isset( $this->settings['billmate_invoice_fee'] ) ) ? $this->settings['billmate_invoice_fee'] : 0;
 		$this->invoice_fee_tax_class = (isset( $this->settings['billmate_invoice_fee_tax_class'] ) ) ? $this->settings['billmate_invoice_fee_tax_class'] : '';
-		$this->allowed_countries 		= ( isset( $this->settings['billmateinvoice_allowed_countries'] ) ) ? $this->settings['billmateinvoice_allowed_countries'] : array();
+		$this->allowed_countries 		= ( isset( $this->settings['billmateinvoice_allowed_countries'] ) && !empty($this->settings['billmateinvoice_allowed_countries'])) ? $this->settings['billmateinvoice_allowed_countries'] : array('SE');
 		$this->custom_order_status = ( isset($this->settings['custom_order_status']) ) ? $this->settings['custom_order_status'] : false;
 		$this->order_status = (isset($this->settings['order_status'])) ? $this->settings['order_status'] : false;
 
@@ -297,8 +297,8 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 			// Required fields check
 
 			if (!$this->eid || !$this->secret) return false;
-
-			if(is_array($this->allowed_countries) && !in_array($woocommerce->customer->get_country() , $this->allowed_countries)){
+			$allowed_countries = array_intersect(array('SE'),$this->allowed_countries);
+			if(is_array($this->allowed_countries) && !in_array($woocommerce->customer->get_country() , $allowed_countries)){
 				return false;
 			}
 

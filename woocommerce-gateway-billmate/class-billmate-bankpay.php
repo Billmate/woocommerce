@@ -37,7 +37,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		$this->testmode				= ( isset( $this->settings['testmode'] ) && $this->settings['testmode'] == 'yes' ) ? true : false;
 
 		$this->de_consent_terms		= ( isset( $this->settings['de_consent_terms'] ) ) ? $this->settings['de_consent_terms'] : '';
-		$this->allowed_countries	= ( isset( $this->settings['billmatebank_allowed_countries'] ) ) ? $this->settings['billmatebank_allowed_countries'] : '';
+		$this->allowed_countries	= ( isset( $this->settings['billmatebank_allowed_countries'] ) && !empty($this->settings['billmatebank_allowed_countries'])) ? $this->settings['billmatebank_allowed_countries'] : array('SE');
 		$this->authentication_method= ( isset( $this->settings['authentication_method'] ) ) ? $this->settings['authentication_method'] : '';
 		$this->custom_order_status = ( isset($this->settings['custom_order_status']) ) ? $this->settings['custom_order_status'] : false;
 		$this->order_status = (isset($this->settings['order_status'])) ? $this->settings['order_status'] : false;
@@ -318,8 +318,8 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 
 			// Required fields check
 			if (!$this->eid || !$this->secret) return false;
-
-			if(!in_array($woocommerce->customer->get_country() , $this->allowed_countries)){
+			$allowed_countries = array_intersect(array('SE'),$this->allowed_countries);
+			if(!in_array($woocommerce->customer->get_country() , $allowed_countries)){
 				return false;
 			}
 

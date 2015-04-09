@@ -49,7 +49,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 		$this->de_consent_terms					= ( isset( $this->settings['de_consent_terms'] ) ) ? $this->settings['de_consent_terms'] : '';
 		$this->lower_threshold_monthly_cost		= ( isset( $this->settings['lower_threshold_monthly_cost'] ) ) ? $this->settings['lower_threshold_monthly_cost'] : '';
 		$this->upper_threshold_monthly_cost		= ( isset( $this->settings['upper_threshold_monthly_cost'] ) ) ? $this->settings['upper_threshold_monthly_cost'] : '';
-		$this->allowed_countries		= ( isset( $this->settings['billmateaccount_allowed_countries'] ) ) ? $this->settings['billmateaccount_allowed_countries'] : array();
+		$this->allowed_countries		= ( isset( $this->settings['billmateaccount_allowed_countries'] ) && !empty($this->settings['billmateaccount_allowed_countries'])) ? $this->settings['billmateaccount_allowed_countries'] : array('SE');
 		$this->shop_country				= strlen($this->shop_country) ? $this->shop_country: 'SE';
 		$this->custom_order_status = ( isset($this->settings['custom_order_status']) ) ? $this->settings['custom_order_status'] : false;
 		$this->order_status = (isset($this->settings['order_status'])) ? $this->settings['order_status'] : false;
@@ -406,8 +406,8 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 
 		if ($this->enabled=="yes") :
 			if (!in_array(get_option('woocommerce_currency'), array('SEK'))) return false;
-
-			if(is_array($this->allowed_countries) && !in_array($woocommerce->customer->get_country() , $this->allowed_countries)){
+			$allowed_countries = array_intersect(array('SE'),$this->allowed_countries);
+			if(is_array($this->allowed_countries) && !in_array($woocommerce->customer->get_country() , $allowed_countries)){
 				return false;
 			}
 			$pclasses_not_available = true;
