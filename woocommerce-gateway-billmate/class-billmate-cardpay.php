@@ -348,6 +348,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 				if ( $woocommerce->cart->total > $this->upper_threshold ) return false;
 			}
 			if(!empty($this->allowed_countries)){
+
 				if(!in_array($woocommerce->customer->country,$this->allowed_countries))
 					return false;
 			}

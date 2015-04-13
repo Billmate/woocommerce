@@ -318,7 +318,8 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 
 			// Required fields check
 			if (!$this->eid || !$this->secret) return false;
-			$allowed_countries = array_intersect(array('SE'),$this->allowed_countries);
+			$allowed_countries = array_intersect(array('SE'),is_array($this->allowed_countries) ? $this->allowed_countries : array($this->allowed_countries));
+
 			if(!in_array($woocommerce->customer->get_country() , $allowed_countries)){
 				return false;
 			}

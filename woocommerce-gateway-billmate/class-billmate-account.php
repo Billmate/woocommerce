@@ -406,7 +406,9 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 
 		if ($this->enabled=="yes") :
 			if (!in_array(get_option('woocommerce_currency'), array('SEK'))) return false;
-			$allowed_countries = array_intersect(array('SE'),$this->allowed_countries);
+			error_log('allowed_countries'.print_r($this->allowed_countries,true));
+
+			$allowed_countries = array_intersect(array('SE'),is_array($this->allowed_countries) ? $this->allowed_countries : array($this->allowed_countries));
 			if(is_array($this->allowed_countries) && !in_array($woocommerce->customer->get_country() , $allowed_countries)){
 				return false;
 			}
