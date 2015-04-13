@@ -406,7 +406,6 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 
 		if ($this->enabled=="yes") :
 			if (!in_array(get_option('woocommerce_currency'), array('SEK'))) return false;
-			error_log('allowed_countries'.print_r($this->allowed_countries,true));
 
 			$allowed_countries = array_intersect(array('SE'),is_array($this->allowed_countries) ? $this->allowed_countries : array($this->allowed_countries));
 			if(is_array($this->allowed_countries) && !in_array($woocommerce->customer->get_country() , $allowed_countries)){
@@ -973,7 +972,7 @@ parse_str($_POST['post_data'], $datatemp);
 
                 <?php
                 // Loop through the available PClasses stored in the file srv/billmatepclasses.json
-                if( in_array($this->shop_country, $this->allowed_countries) ) {
+                if( in_array($this->shop_country, is_array($this->allowed_countries) ? $this->allowed_countries : array($this->allowed_countries)) ) {
 
 					foreach ($pclasses as $pclass2) {
 
@@ -1001,22 +1000,22 @@ parse_str($_POST['post_data'], $datatemp);
 								$enabled_plcass = 'yes';
 								echo '<div>';
 								if ($this->billmate_country == 'NO') {
-									if ( $pclass['Type'] == 1 ) {
+									if ( $pclass['type'] == 1 ) {
 										//If Account - Do not show startfee. This is always 0.
 										echo sprintf(__('%s - %s %s/month', 'billmate'), $pclass['description'], $monthly_cost, $this->billmate_currency);
 										} else {
 											// Norway - Show total cost
-											echo sprintf(__('%s - %s %s/month - %s%s - Start %s - Tot %s %s', 'billmate'), $pclass['description'], $monthly_cost, $this->billmate_currency, $pclass['interest'], '%', $pclass['start_fee'], $total_credit_purchase_cost, $this->billmate_currency );
+											echo sprintf(__('%s - %s %s/month - %s%s - Start %s - Tot %s %s', 'billmate'), $pclass['description'], $monthly_cost, $this->billmate_currency, $pclass['interestrate'], '%', $pclass['startfee'], $total_credit_purchase_cost, $this->billmate_currency );
 										}
-									} else {
-										if ( $pclass['Type'] == 1 ) {
+								} else {
+										if ( $pclass['type'] == 1 ) {
 											//If Account - Do not show startfee. This is always 0.
 											echo sprintf(__('%s - %s %s/month', 'billmate'), $pclass['description'], $monthly_cost, $this->billmate_currency );
 										} else {
 											// Sweden, Denmark, Finland, Germany & Netherlands - Don't show total cost
-											echo sprintf(__('%s - %s %s/month - %s%s - Start %s', 'billmate'), $pclass['description'], $monthly_cost, $this->billmate_currency, $pclass['interest'], '%', $pclass['start_fee'] );
+											echo sprintf(__('%s - %s %s/month - %s%s - Start %s', 'billmate'), $pclass['description'], $monthly_cost, $this->billmate_currency, $pclass['interestrate'], '%', $pclass['startfee'] );
 										}
-									}
+								}
 								echo '</div>';
 
 							} // End if ($sum > $pclass->getMinAmount())
