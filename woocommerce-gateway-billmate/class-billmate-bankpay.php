@@ -263,7 +263,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 				'options' => $order_statuses
 			)
 		) );
-        if(count($available) > 0) {
+        if(count($available) > 1) {
             $this->form_fields['billmatebank_allowed_countries'] = array(
                 'title' => __('Allowed Countries', 'woocommerce'),
                 'type' => 'multiselect',
