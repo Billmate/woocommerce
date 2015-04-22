@@ -150,8 +150,9 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 	function init_form_fields() {
 		global $woocommerce;
 
+        // Todo Replace this array in future with an Api request
 		$available = array(
-			'SE' =>__( 'Sweden','woocommerce')
+			'SE' =>__( 'Sweden','woocommerce'),
 		);
 
 		$order_statuses = wc_get_order_statuses();
@@ -237,15 +238,6 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 							'description' => __( 'Disable the monthly cost feature if <i>Product price</i> is higher than the specified value. Leave blank to disable.', 'billmate' ),
 							'default' => ''
 						),
-			'billmateaccount_allowed_countries' => array(
-				'title' 		=> __( 'Allowed Countries', 'woocommerce' ),
-				'type' 			=> 'multiselect',
-				'description' 	=> __( 'Billmate Partpayment activated for customers in these countries', 'billmate' ),
-				'class'			=> 'chosen_select',
-				'css' 			=> 'min-width:350px;',
-				'options'		=> $available,
-				'default' => 'SE'
-			),
 
 			'testmode' => array(
 							'title' => __( 'Testmode', 'billmate' ),
@@ -267,7 +259,18 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 				'options' => $order_statuses
 			)
 		);
+        if(count($available) > 1){
+            $this->form_fields['billmateaccount_allowed_countries'] = array(
+                'title' => __( 'Allowed Countries', 'woocommerce'),
+                'type' => 'multiselect',
+                'description' =>  __( 'Billmate Partpayment activated for customers in these countries', 'billmate' ),
+                'class' => 'choosen_select',
+                'css' => 'min-width:350px;',
+                'options' => $available,
+                'default' => 'SE'
 
+            );
+        }
 	} // End init_form_fields()
 
 

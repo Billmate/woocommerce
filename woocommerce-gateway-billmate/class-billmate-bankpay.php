@@ -197,7 +197,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 	 * Initialise Gateway Settings Form Fields
 	 */
 	function init_form_fields() {
-
+        // TODO Update with api request in future
 		$available = array(
 			'SE' =>__( 'Sweden','woocommerce')
 		);
@@ -243,15 +243,6 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 				'label' => __( 'Authentication Method', 'billmate' ),
 				'default' => ''
 			),
-			'billmatebank_allowed_countries' => array(
-				'title' 		=> __( 'Allowed Countries', 'woocommerce' ),
-				'type' 			=> 'multiselect',
-				'description' 	=> __( 'Billmate Bank activated for customers in these countries', 'billmate' ),
-				'class'			=> 'chosen_select',
-				'css' 			=> 'min-width:350px;',
-				'options'		=> $available,
-				'default' => 'SE'
-			),
 			'testmode' => array(
 							'title' => __( 'Test Mode', 'billmate' ),
 							'type' => 'checkbox',
@@ -272,6 +263,17 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 				'options' => $order_statuses
 			)
 		) );
+        if(count($available) > 0) {
+            $this->form_fields['billmatebank_allowed_countries'] = array(
+                'title' => __('Allowed Countries', 'woocommerce'),
+                'type' => 'multiselect',
+                'description' => __('Billmate Bank activated for customers in these countries', 'billmate'),
+                'class' => 'chosen_select',
+                'css' => 'min-width:350px;',
+                'options' => $available,
+                'default' => 'SE'
+            );
+        }
 
 	} // End init_form_fields()
 

@@ -157,7 +157,10 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 	 * Initialise Gateway Settings Form Fields
 	 */
 	function init_form_fields() {
-		$available = array(
+
+        // TODO Update with api request in future
+
+        $available = array(
 			'SE' =>__( 'Sweden','woocommerce')
 		);
 
@@ -216,15 +219,6 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 								'default' => '',
 								'options' => $classes_options
 			),
-			'billmateinvoice_allowed_countries' => array(
-				'title' 		=> __( 'Allowed Countries', 'woocommerce' ),
-				'type' 			=> 'multiselect',
-				'description' 	=> __( 'Billmate Invoice activated for customers in these countries', 'billmate' ),
-				'class'			=> 'chosen_select',
-				'css' 			=> 'min-width:350px;',
-				'options'		=> $available,
-				'default' => 'SE'
-			),
 			'testmode' => array(
 							'title' => __( 'Test Mode', 'billmate' ),
 							'type' => 'checkbox',
@@ -245,6 +239,17 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 			    'options' => $order_statuses
 		    )
 		) );
+        if(count($available) > 1){
+            $this->form_fields['billmateinvoice_allowed_countries'] = array(
+                'title' 		=> __( 'Allowed Countries', 'woocommerce' ),
+                'type' 			=> 'multiselect',
+                'description' 	=> __( 'Billmate Invoice activated for customers in these countries', 'billmate' ),
+                'class'			=> 'chosen_select',
+                'css' 			=> 'min-width:350px;',
+                'options'		=> $available,
+                'default' => 'SE'
+            );
+        }
 
 	} // End init_form_fields()
 
