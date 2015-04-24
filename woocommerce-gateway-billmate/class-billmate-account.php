@@ -881,7 +881,7 @@ parse_str($_POST['post_data'], $datatemp);
 				$row['eid'] = $eid;
 				$output[]=$row;
 			}
-			$wpdb->update($wpdb->options,$output,array('option_name' => 'wc_gateway_billmate_partpayment_pclasses'));
+			$wpdb->update($wpdb->options,array('option_value' => maybe_serialize($output)),array('option_name' => 'wc_gateway_billmate_partpayment_pclasses'));
 
 		}
 		catch(Exception $e) {
