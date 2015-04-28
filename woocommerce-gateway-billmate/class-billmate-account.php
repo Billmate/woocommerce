@@ -1349,8 +1349,14 @@ parse_str($_POST['post_data'], $datatemp);
 					$item_tax_percentage = 0;
 
 				// apply_filters to item price so we can filter this if needed
+
 				$billmate_item_price_including_tax = $order->get_item_total( $item, true );
-				$item_price = apply_filters( 'billmate_item_price_including_tax', $billmate_item_price_including_tax );
+				$billmate_item_standard_price = $order->get_item_subtotal($item,true);
+				$discount = false;
+				if($billmate_item_price_including_tax != $billmate_item_standard_price){
+					$discount = true;
+				}
+ 				$item_price = apply_filters( 'billmate_item_price_including_tax', $billmate_item_price_including_tax );
 
 				if ( $_product->get_sku() ) {
 					$sku = $_product->get_sku();
@@ -1364,12 +1370,12 @@ parse_str($_POST['post_data'], $datatemp);
 					'quantity'   => (int)$item['qty'],
 					'artnr'    => $sku,
 					'title'    => $item['name'],
-					'aprice'    => ($priceExcl*100), //+$item->unittax
+					'aprice'    =>  ($discount) ? ($billmate_item_standard_price*100) : ($priceExcl*100), //+$item->unittax
 					'taxrate'      => (float)$item_tax_percentage,
-					'discount' => (float)0,
+					'discount' => ($discount) ? round((1 - ($billmate_item_price_including_tax/$billmate_item_standard_price)) * 100 ,0) : 0,
 					'withouttax' => $item['qty'] * ($priceExcl*100)
 				);
-				$totalTemp = ((int)$item['qty'] * ($priceExcl*100));
+				$totalTemp = ($item['qty'] * ($priceExcl*100));
 				$total += $totalTemp;
 				$totalTax += ($totalTemp * $item_tax_percentage/100);
 				if(isset($prepareDiscount[$item_tax_percentage])){
@@ -1520,7 +1526,7 @@ parse_str($_POST['post_data'], $datatemp);
 				'street2' => $order->billing_address_2,
 				'zip' => $order->billing_postcode,
 				'city' => $order->billing_city,
-				'country' => $countries[$order->billing_country],
+				'country' => $order->billing_country,
 				'phone' => $order->billing_phone,
 				'email' => $order->billing_email
 			)
@@ -1568,20 +1574,9 @@ parse_str($_POST['post_data'], $datatemp);
 			'street' => $street,
 			'zip' => $zip,
 			'city' => $city,
-			'country' => $countries[$order->billing_country],
+			'country' => $order->billing_country,
 			'phone' => $cellno
 		);
-
-		$languageCode = get_locale();
-
-		$lang = explode('_', strtoupper($languageCode));
-		$languageCode = $lang[0];
-		$languageCode = $languageCode == 'DA' ? 'DK' : $languageCode;
-		$languageCode = $languageCode == 'SV' ? 'SE' : $languageCode;
-		$languageCode = $languageCode == 'EN' ? 'GB' : $languageCode;
-
-
-
 
 		//Normal shipment is defaulted, delays the start of invoice expiration/due-date.
 		// $k->setShipmentInfo('delay_adjust', BillmateFlags::EXPRESS_SHIPMENT);

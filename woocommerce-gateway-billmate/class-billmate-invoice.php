@@ -832,7 +832,18 @@ parse_str($_POST['post_data'], $datatemp);
 
 			// apply_filters to item price so we can filter this if needed
 			$billmate_item_price_including_tax = $order->get_item_total( $item, true );
+			$billmate_item_standard_price = $order->get_item_subtotal($item,true);
+			$discount = false;
+			if($billmate_item_price_including_tax != $billmate_item_standard_price){
+				$discount = true;
+			}
 			$item_price = apply_filters( 'billmate_item_price_including_tax', $billmate_item_price_including_tax );
+
+			if ( $_product->get_sku() ) {
+				$sku = $_product->get_sku();
+			} else {
+				$sku = $_product->id;
+			}
 
 			$priceExcl = round($item_price-$order->get_item_tax($item,false),2);
 
@@ -840,12 +851,12 @@ parse_str($_POST['post_data'], $datatemp);
 				'quantity'   => (int)$item['qty'],
 				'artnr'    => $sku,
 				'title'    => $item['name'],
-				'aprice'    => ($priceExcl*100), //+$item->unittax
+				'aprice'    =>  ($discount) ? ($billmate_item_standard_price*100) : ($priceExcl*100), //+$item->unittax
 				'taxrate'      => (float)$item_tax_percentage,
-				'discount' => (float)0,
+				'discount' => ($discount) ? round((1 - ($billmate_item_price_including_tax/$billmate_item_standard_price)) * 100 ,1) : 0,
 				'withouttax' => $item['qty'] * ($priceExcl*100)
 			);
-			$totalTemp = ((int)$item['qty'] * ($priceExcl*100));
+			$totalTemp = ($item['qty'] * ($priceExcl*100));
 			$total += $totalTemp;
 			$totalTax += ($totalTemp * $item_tax_percentage/100);
 			if(isset($prepareDiscount[$item_tax_percentage])){
@@ -991,15 +1002,14 @@ parse_str($_POST['post_data'], $datatemp);
 			} // End version check
 
 		} // End invoice_fee_price > 0
-		$total = round($total,2);
-		$totalTax = round($totalTax,2);
+
 		$round = ($woocommerce->cart->total*100) - $total -$totalTax;
-		$round = round($round,2);
+
 		$orderValues['Cart']['Total'] = array(
 			'withouttax' => $total,
 			'tax' => $totalTax,
 			'rounding' => $round,
-			'withtax' => (float) $total + (float)$totalTax + (float)$round
+			'withtax' => $total + $totalTax + $round
 		);
 
 		$this->getAddress();
@@ -1019,7 +1029,7 @@ parse_str($_POST['post_data'], $datatemp);
 				'street2' => $order->billing_address_2,
 				'zip' => $order->billing_postcode,
 				'city' => $order->billing_city,
-				'country' => $countries[$order->billing_country],
+				'country' => $order->billing_country,
 				'phone' => $order->billing_phone,
 				'email' => $order->billing_email
 			)
@@ -1066,17 +1076,9 @@ parse_str($_POST['post_data'], $datatemp);
 			'street' => $street,
 			'zip' => $zip,
 			'city' => $city,
-			'country' => $countries[$order->billing_country],
+			'country' => $order->billing_country,
 			'phone' => $cellno
 		);
-
-		$languageCode = get_locale();
-
-		$lang = explode('_', strtoupper($languageCode));
-		$languageCode = $lang[0];
-		$languageCode = $languageCode == 'DA' ? 'DK' : $languageCode;
-		$languageCode = $languageCode == 'SV' ? 'SE' : $languageCode;
-		$languageCode = $languageCode == 'EN' ? 'GB' : $languageCode;
 
 
 		try {

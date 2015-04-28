@@ -525,6 +525,11 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 
 				// apply_filters to item price so we can filter this if needed
 				$billmate_item_price_including_tax = $order->get_item_total( $item, true );
+				$billmate_item_standard_price = $order->get_item_subtotal($item,true);
+				$discount = false;
+				if($billmate_item_price_including_tax != $billmate_item_standard_price){
+					$discount = true;
+				}
 				$item_price = apply_filters( 'billmate_item_price_including_tax', $billmate_item_price_including_tax );
 
 				if ( $_product->get_sku() ) {
@@ -532,18 +537,19 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 				} else {
 					$sku = $_product->id;
 				}
+
 				$priceExcl = round($item_price-$order->get_item_tax($item,false),2);
 
 				$orderValues['Articles'][] = array(
 					'quantity'   => (int)$item['qty'],
 					'artnr'    => $sku,
 					'title'    => $item['name'],
-					'aprice'    => ($priceExcl*100), //+$item->unittax
+					'aprice'    =>  ($discount) ? ($billmate_item_standard_price*100) : ($priceExcl*100), //+$item->unittax
 					'taxrate'      => (float)$item_tax_percentage,
-					'discount' => (float)0,
+					'discount' => ($discount) ? round((1 - ($billmate_item_price_including_tax/$billmate_item_standard_price)) * 100 ,0) : 0,
 					'withouttax' => $item['qty'] * ($priceExcl*100)
 				);
-				$totalTemp = ((int)$item['qty'] * ($priceExcl*100));
+				$totalTemp = ($item['qty'] * ($priceExcl*100));
 				$total += $totalTemp;
 				$totalTax += ($totalTemp * $item_tax_percentage/100);
 				if(isset($prepareDiscount[$item_tax_percentage])){
