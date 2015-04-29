@@ -769,13 +769,13 @@ parse_str($_POST['post_data'], $datatemp);
 		$totalTax = 0;
 		$orderValues = array();
 		$prepareDiscount = array();
-
+		$orderid = ltrim($order->get_order_number(),'#');
 		$orderValues['PaymentData'] = array(
 			'method' => 1,
 			'currency' => get_woocommerce_currency(),
 			'language' => $lang[0],
 			'country' => $country,
-			'orderid' => $order->id
+			'orderid' => $orderid
 		);
 
 		$orderValues['PaymentInfo'] = array(

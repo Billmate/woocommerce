@@ -1311,13 +1311,14 @@ parse_str($_POST['post_data'], $datatemp);
 		$orderValues = array();
 		$prepareDiscount = array();
 		$lang = explode('_',get_locale());
+		$orderid = ltrim($order->get_order_number(),'#');
 		$orderValues['PaymentData'] = array(
 			'method' => 4,
 			'paymentplanid' => $billmate_pclass,
 			'currency' => get_woocommerce_currency(),
 			'language' => $lang[0],
 			'country' => $country,
-			'orderid' => $order->id
+			'orderid' => $orderid
 		);
 
 		$orderValues['PaymentInfo'] = array(
