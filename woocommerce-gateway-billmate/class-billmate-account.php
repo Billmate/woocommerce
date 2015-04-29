@@ -329,8 +329,8 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 			<?php
 
 			} else {
-				if ($this->eid != '' && $this->secret != '')
-					echo 'You will need to update the Pclasses';
+				if (strlen($this->eid) > 0 && strlen($this->secret) > 0)
+					echo __('You will need to update the Pclasses','billmate');
 			}
 
 			if (isset($_GET['billmate_error_status']) && $_GET['billmate_error_status'] == '0') {
