@@ -113,6 +113,7 @@ class BillmateCommon {
 						},
 						success: function(response){
 							var result = JSON.parse(response);
+
 							if(result.success){
 								$(this).parent('form').submit();
 								credentialStatus = true;
@@ -149,7 +150,7 @@ class BillmateCommon {
 		);
 		$result = $billmate->getPaymentplans($values);
 		$response = array();
-		if(isset($result['code']) && $result['code'] == 9013 || $result['code'] == 9010){
+		if(isset($result['code']) && ($result['code'] == 9013 || $result['code'] == 9010 || $result['code'] == 9012)){
 			$response['success'] = false;
 		}
 		else{
