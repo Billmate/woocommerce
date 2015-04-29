@@ -74,7 +74,7 @@ class BillmateCommon {
 
 	public function print_section_info()
 	{
-		echo __('Here is the common settings for the Billmate Payment module');
+		echo __('Here is the common settings for the Billmate Payment module','billmate');
 	}
 
 	public function sanitize($input){
@@ -87,7 +87,7 @@ class BillmateCommon {
 		?>
 		<div class="wrap">
 			<?php screen_icon(); ?>
-			<h2><?php echo __('Billmate Settings'); ?></h2>
+			<h2><?php echo __('Billmate Settings','billmate'); ?></h2>
 			<form method="post" action="options.php">
 				<?php
 				// This prints out all hidden setting fields
@@ -117,7 +117,7 @@ class BillmateCommon {
 								$(this).parent('form').submit();
 								credentialStatus = true;
 							} else {
-								alert("<?php echo __('Please, check your credentials')?>");
+								alert("<?php echo __('Please, check your credentials','billmate')?>");
 								credentialStatus = false;
 
 
