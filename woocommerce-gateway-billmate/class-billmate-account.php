@@ -894,9 +894,9 @@ parse_str($_POST['post_data'], $datatemp);
 	/**
 	 * Payment field opttions
 	**/
-	function payment_fields_options( $sum, $label = true ){
+	function payment_fields_options( $sum, $label = true ,$flag = BillmateFlags::CHECKOUT_PAGE){
 
-		$flag = BillmateFlags::CHECKOUT_PAGE;
+
 		$pclasses_not_available = true;
 		$enabled_plcass = 'no';
 
@@ -907,6 +907,12 @@ parse_str($_POST['post_data'], $datatemp);
 		}
 		if($pclasses){
 			$pclasses_not_available = false;
+		}
+		if($flag != BillmateFlags::CHECKOUT_PAGE){
+
+			$pclasses = BillmateCalc::getCheapestPClass($sum,BillmateFlags::CHECKOUT_PAGE,$pclasses);
+			$pclasses = array($pclasses);
+			$flag = BillmateFlags::CHECKOUT_PAGE;
 		}
 		// Check if we have any PClasses
 		if(!$pclasses_not_available) {

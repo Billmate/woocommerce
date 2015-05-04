@@ -22,7 +22,9 @@ function return_billmate_price() {
 	$settings = get_option('woocommerce_billmate_partpayment_settings');
 	$eid = get_option('billmate_common_eid');;
 
+
 	if(!$pclasses_not_available) {
+
 		foreach ($pclasses as $pclass) {
 
 			if (strlen($pclass['description']) > 0 ) {
@@ -62,7 +64,7 @@ function return_billmate_partpayment_info_link() {
   	$price = $product->price;
 
 	ob_start();
-	$WC_Gateway_Billmate_Partpayment->payment_fields_options( $price, false );
+	$WC_Gateway_Billmate_Partpayment->payment_fields_options( $price, false , BillmateFlags::PRODUCT_PAGE);
 	echo '<a id="billmate_partpayment" href="#">' . $WC_Gateway_Billmate_Partpayment->get_account_terms_link_text($billmate_partpayment_country) . '</a>';
 	echo '<script type="text/javascript">jQuery.getScript("https://efinance.se/billmate/base.js", function(){
 		window.$ = jQuery;
