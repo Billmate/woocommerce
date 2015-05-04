@@ -407,7 +407,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			$cancel_url= get_permalink(get_option('woocommerce_checkout_page_id'));
 		}*/
 
-		$cancel_url = html_entity_decode($order->get_cancel_order_url());
+		$cancel_url = html_entity_decode($woocommerce->cart->get_checkout_url());
 		$accept_url= trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Cardpay&payment=success';
 		//$callback_url= 'http://api.billmate.se/callback.php';
 		$callback_url = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Cardpay';
