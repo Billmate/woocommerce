@@ -416,7 +416,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		$eid       = $this->settings['eid'];
 		$currency  = 'SEK';
 		$return_method = 'GET';
-
+        $url = parse_url($accept_url);
 
 		$pay_method= 'BANK';
 		$amount    = $woocommerce->cart->total*100;
@@ -425,7 +425,8 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			'callbackurl' => $callback_url,
 			'cancelurl' => $cancel_url,
 			'3dsecure' => ($this->do_3dsecure != 'NO') ? 1 : 0,
-			'promptname' => ($this->prompt_name_entry == 'YES') ? 1 : 0
+			'promptname' => ($this->prompt_name_entry == 'YES') ? 1 : 0,
+            'returnmethod' => ($url['scheme'] == 'https') ? 'POST' : 'GET'
 		);
 
 		$orderValues['Customer'] = array(

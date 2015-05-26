@@ -401,6 +401,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		$currency  = 'SEK';
 		$return_method = 'GET';
 
+        $url = parse_url($callback_url);
 
 		$pay_method= 'BANK';
 		$amount    = $woocommerce->cart->total*100;
@@ -408,6 +409,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			'accepturl' => $accept_url,
 			'callbackurl' => $callback_url,
 			'cancelurl' => $cancel_url,
+            'returnmethod' => ($url['scheme'] == 'https') ? 'POST' : 'GET'
 		);
 
 		$orderValues['Customer'] = array(
