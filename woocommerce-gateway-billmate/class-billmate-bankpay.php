@@ -218,7 +218,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			'description' => array(
 							'title' => __( 'Description', 'billmate' ),
 							'type' => 'textarea',
-							'description' => 'Direktbetalning med Handelsbanken, Nordea, SEB och Swedbank.',
+							'description' => __('Directpayment with Handelsbanken and Nordea.','billmate'),
 							'default' => ''
 						),
 			'lower_threshold' => array(
