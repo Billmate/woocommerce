@@ -352,7 +352,10 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 
 	function payment_fields() {
 	   	global $woocommerce;
-	   	?><p><?php echo strlen($this->description)? $this->description: __('Pay with Billmate Bankpay','billmate'); ?></p><?php
+
+	   	?><?php if ($this->testmode=='yes') : ?><p><?php _e('TEST MODE ENABLED', 'billmate'); ?></p><?php endif; ?>
+
+        <p><?php echo strlen($this->description)? $this->description: __('Pay with Billmate Bankpay','billmate'); ?></p><?php
 	}
 	/**
 	 * Process the payment and return the result

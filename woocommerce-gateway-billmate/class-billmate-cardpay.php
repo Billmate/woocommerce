@@ -37,7 +37,6 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		$this->testmode				= ( isset( $this->settings['testmode'] ) && $this->settings['testmode'] == 'yes' ) ? true : false;
 
 		$this->de_consent_terms		= ( isset( $this->settings['de_consent_terms'] ) ) ? $this->settings['de_consent_terms'] : '';
-		$this->authentication_method= ( isset( $this->settings['authentication_method'] ) ) ? $this->settings['authentication_method'] : '';
 		$this->prompt_name_entry	= ( isset( $this->settings['prompt_name_entry'] ) ) ? $this->settings['prompt_name_entry'] : 'YES';
 		$this->do_3dsecure			= ( isset( $this->settings['do_3dsecure'] ) ) ? $this->settings['do_3dsecure'] : 'NO';
 		$this->custom_order_status = ( isset($this->settings['custom_order_status']) ) ? $this->settings['custom_order_status'] : false;
@@ -232,16 +231,6 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 							'description' => __( 'Disable Billmate Cardpay if Cart Total is higher than the specified value. Leave blank to disable this feature.', 'billmate' ),
 							'default' => ''
 						),
-			'authentication_method' => array(
-							'title' => __( 'Authentication Method', 'billmate' ),
-							'type' => 'select',
-							'options' => array(
-								'authentication'  =>__( 'Authentication', 'billmate' ),
-								'sales' => __('Sales','billmate'),
-								),
-							'label' => __( 'Authentication Method', 'billmate' ),
-							'default' => ''
-						),
 			'do_3dsecure' => array(
 							'title' => __( 'Enable 3D Secure', 'billmate' ),
 							'type' => 'select',
@@ -367,7 +356,9 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 
 	function payment_fields() {
 	   	global $woocommerce;
-	   	?><p><?php echo strlen($this->description)? $this->description: __('Visa & Mastercard','billmate'); ?></p><?php
+	   	?>
+        <?php if ($this->testmode=='yes') : ?><p><?php _e('TEST MODE ENABLED', 'billmate'); ?></p><?php endif; ?>
+        <p><?php echo strlen($this->description)? $this->description: __('Visa & Mastercard','billmate'); ?></p><?php
 	}
 	/**
 	 * Process the payment and return the result
@@ -379,13 +370,12 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		if(!defined('BILLMATE_LANGUAGE')) define('BILLMATE_LANGUAGE',strtolower($language[0]));
 
 		$orderValues = array();
-		$capture_now   = $this->authentication_method == 'sales' ? 'YES' : 'NO';
 		$orderValues['PaymentData'] = array(
 			'method' => 8,
 			'currency' => get_woocommerce_currency(),
 			'language' => strtolower($language[0]),
 			'country' => $this->billmate_country,
-			'autoactivate' => ($capture_now == 'YES') ? 1 : 0,
+			'autoactivate' => 0,
 			'orderid' => preg_replace('/#/','',$order->get_order_number())
 		);
 		$orderValues['PaymentInfo'] = array(
