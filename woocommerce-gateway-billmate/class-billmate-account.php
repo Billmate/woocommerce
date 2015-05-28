@@ -600,7 +600,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 		?>
 
 		<fieldset>
-			<p class="form-row form-row-first">
+			<p class="form-row form-row-first" style="width:70%;">
 				<?php $return = $this->payment_fields_options( $sum );  extract($return); ?>
 			</p>
 			<?php
@@ -608,7 +608,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 			if( $enabled_plcass == 'no' ) return false;
 			$pclasses = get_option('wc_gateway_billmate_partpayment_pclasses');
 			if(!$pclasses) return false;
-			$pclass = BillmateCalc::getCheapestPClass($sum, $flag, $pclasses);
+			/*$pclass = BillmateCalc::getCheapestPClass($sum, $flag, $pclasses);
 
 			//Did we get a PClass? (it is false if we didn't)
 			if($pclass) {
@@ -622,19 +622,19 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 	    		/* $value is now a rounded monthly cost amount to be displayed to the customer. */
 	    		// apply_filters to the monthly cost message so we can filter this if needed
 
-	    		$billmate_partpayment_monthly_cost_message = sprintf(__('From %s %s/month', 'billmate'), $value, $this->billmate_currency );
+	    		/*$billmate_partpayment_monthly_cost_message = sprintf(__('From %s %s/month', 'billmate'), $value, $this->billmate_currency );
 
 	    		echo '<p class="form-row form-row-last billmate-monthly-cost">' . apply_filters( 'billmate_partpayment_monthly_cost_message', $billmate_partpayment_monthly_cost_message ) . '</p>';
 
 
-			}
+			}*/
 			?>
 			<div class="clear"></div>
 
 			<p class="form-row form-row-first">
 				<?php if ( $this->shop_country == 'NL' || $this->shop_country == 'DE' ) : ?>
 
-				<label for="billmate_pno"><?php echo __("Personal / Corporate ", 'billmate') ?> <span class="required">*</span></label>
+				<label for="billmate_pno"><?php echo __("Social Security No. / Org. No. ", 'billmate') ?> <span class="required">*</span></label>
                     <select class="dob_select dob_day" name="date_of_birth_day" style="width:60px;">
                         <option value="">
                         <?php echo __("Day", 'billmate') ?>
@@ -776,7 +776,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
                     </select>
 
 				<?php else : ?>
-					<label for="billmate_pno"><?php echo __("Personal / Corporate ", 'billmate') ?> <span class="required">*</span></label>
+					<label for="billmate_pno"><?php echo __("Social Security No. / Org. No.", 'billmate') ?> <span class="required">*</span></label>
 					<input type="text" class="input-text" name="billmate_pno" />
 				<?php endif; ?>
 			</p>

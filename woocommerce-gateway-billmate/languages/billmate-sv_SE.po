@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Billmate Woocommerce plugin\n"
-"POT-Creation-Date: 2015-05-27 15:03+0100\n"
-"PO-Revision-Date: 2015-05-27 15:04+0100\n"
+"POT-Creation-Date: 2015-05-28 08:35+0100\n"
+"PO-Revision-Date: 2015-05-28 08:36+0100\n"
 "Last-Translator: \n"
 "Language-Team: Boxedsolutions <jesper@boxedsolutions.se>\n"
 "Language: sv_SE\n"
@@ -30,7 +30,7 @@ msgid "Sweden"
 msgstr "Sverige"
 
 #: class-billmate-account.php:162 class-billmate-bankpay.php:207
-#: class-billmate-cardpay.php:206 class-billmate-invoice.php:180
+#: class-billmate-cardpay.php:205 class-billmate-invoice.php:180
 msgid "Enable/Disable"
 msgstr "Aktivera/Inaktivera"
 
@@ -39,11 +39,11 @@ msgid "Enable Billmate Part Payment"
 msgstr "Aktivera Billmate Delbetalning"
 
 #: class-billmate-account.php:168 class-billmate-bankpay.php:213
-#: class-billmate-cardpay.php:212 class-billmate-invoice.php:186
+#: class-billmate-cardpay.php:211 class-billmate-invoice.php:186
 msgid "Title"
 msgstr "Titel"
 
-#: class-billmate-account.php:170 class-billmate-cardpay.php:214
+#: class-billmate-account.php:170 class-billmate-cardpay.php:213
 #: class-billmate-invoice.php:188
 msgid "This controls the title which the user sees during checkout."
 msgstr "Detta är titeln på betalmetoden kunden ser i kassan"
@@ -53,17 +53,17 @@ msgid "Billmate - Part Payment"
 msgstr "Billmate - Delbetalning"
 
 #: class-billmate-account.php:174 class-billmate-bankpay.php:219
-#: class-billmate-cardpay.php:218 class-billmate-invoice.php:192
+#: class-billmate-cardpay.php:217 class-billmate-invoice.php:192
 msgid "Description"
 msgstr "Beskrivning"
 
-#: class-billmate-account.php:176 class-billmate-cardpay.php:220
+#: class-billmate-account.php:176 class-billmate-cardpay.php:219
 #: class-billmate-invoice.php:194
 msgid "This controls the description which the user sees during checkout."
 msgstr "Detta är beskrivningen kunden ser i kassan."
 
 #: class-billmate-account.php:180 class-billmate-bankpay.php:225
-#: class-billmate-cardpay.php:224 class-billmate-invoice.php:198
+#: class-billmate-cardpay.php:223 class-billmate-invoice.php:198
 msgid "Lower threshold"
 msgstr "Lägsta belopp"
 
@@ -76,7 +76,7 @@ msgstr ""
 "värde. Lämna blankt för att inaktivera denna funktion."
 
 #: class-billmate-account.php:186 class-billmate-bankpay.php:231
-#: class-billmate-cardpay.php:230 class-billmate-invoice.php:204
+#: class-billmate-cardpay.php:229 class-billmate-invoice.php:204
 msgid "Upper threshold"
 msgstr "Högsta belopp"
 
@@ -221,22 +221,22 @@ msgid "Testmode"
 msgstr "Testläge"
 
 #: class-billmate-account.php:245 class-billmate-bankpay.php:249
-#: class-billmate-cardpay.php:268 class-billmate-invoice.php:225
+#: class-billmate-cardpay.php:257 class-billmate-invoice.php:225
 msgid "Enable Billmate Test Mode."
 msgstr "Aktivera Billmate Testläge"
 
 #: class-billmate-account.php:249 class-billmate-bankpay.php:253
-#: class-billmate-cardpay.php:281 class-billmate-invoice.php:229
+#: class-billmate-cardpay.php:270 class-billmate-invoice.php:229
 msgid "Custom Order status"
 msgstr "Anpassad Order status"
 
 #: class-billmate-account.php:251 class-billmate-bankpay.php:255
-#: class-billmate-cardpay.php:283 class-billmate-invoice.php:231
+#: class-billmate-cardpay.php:272 class-billmate-invoice.php:231
 msgid "Enable custom order status"
 msgstr "Aktivera anpassad orderstatus"
 
 #: class-billmate-account.php:255 class-billmate-bankpay.php:259
-#: class-billmate-cardpay.php:287 class-billmate-invoice.php:235
+#: class-billmate-cardpay.php:276 class-billmate-invoice.php:235
 msgid "Order status"
 msgstr "Order status"
 
@@ -249,7 +249,7 @@ msgstr ""
 "en egen status och inte de som är inbyggda i WooCommerce."
 
 #: class-billmate-account.php:264 class-billmate-bankpay.php:268
-#: class-billmate-cardpay.php:272 class-billmate-invoice.php:244
+#: class-billmate-cardpay.php:261 class-billmate-invoice.php:244
 msgid "Allowed Countries"
 msgstr "Tillåtna Länder"
 
@@ -331,7 +331,7 @@ msgstr "Betalningsplanerna kunde inte uppdateras, Billmate fel meddelande "
 msgid "Update Paymentplans"
 msgstr "Uppdatera Betalplaner"
 
-#: class-billmate-account.php:386 class-billmate-account.php:625
+#: class-billmate-account.php:386
 #, php-format
 msgid "From %s %s/month"
 msgstr "Från %s %s/månad"
@@ -341,14 +341,14 @@ msgstr "Från %s %s/månad"
 msgid "Billmate PClass problem: %s. Error code: "
 msgstr "Billmate Betalningsplan problem %s. Felkod: "
 
-#: class-billmate-account.php:589 class-billmate-invoice.php:344
+#: class-billmate-account.php:589 class-billmate-bankpay.php:356
+#: class-billmate-cardpay.php:360 class-billmate-invoice.php:344
 msgid "TEST MODE ENABLED"
 msgstr "TESTLÄGE AKTIVERAT"
 
-#: class-billmate-account.php:637 class-billmate-account.php:779
-#: class-billmate-invoice.php:364 class-billmate-invoice.php:508
-msgid "Personal / Corporate "
-msgstr "Person / Organisationsnummer"
+#: class-billmate-account.php:637
+msgid "Social Security No. / Org. No. "
+msgstr "Person / Org. Nummer"
 
 #: class-billmate-account.php:640 class-billmate-invoice.php:368
 msgid "Day"
@@ -409,6 +409,10 @@ msgstr "Dec"
 #: class-billmate-account.php:693 class-billmate-invoice.php:421
 msgid "Year"
 msgstr "År"
+
+#: class-billmate-account.php:779
+msgid "Social Security No. / Org. No."
+msgstr "Person / Org. Nummer"
 
 #: class-billmate-account.php:786 class-billmate-invoice.php:515
 msgid "Gender"
@@ -523,8 +527,8 @@ msgstr ""
 "Vänligen bekräfta att e-postadressen \"%s\" är korrekt. Denna kommer att "
 "användas för fakturering."
 
-#: class-billmate-account.php:1412 class-billmate-bankpay.php:580
-#: class-billmate-cardpay.php:597 class-billmate-invoice.php:885
+#: class-billmate-account.php:1412 class-billmate-bankpay.php:583
+#: class-billmate-cardpay.php:587 class-billmate-invoice.php:885
 #, php-format
 msgid "Discount %s%% tax"
 msgstr "Rabatt %s%% moms"
@@ -551,8 +555,8 @@ msgstr ""
 msgid "Unknown response from Billmate."
 msgstr "Okänt svar från Billmate"
 
-#: class-billmate-account.php:1698 class-billmate-bankpay.php:638
-#: class-billmate-cardpay.php:654 class-billmate-invoice.php:1194
+#: class-billmate-account.php:1698 class-billmate-bankpay.php:641
+#: class-billmate-cardpay.php:644 class-billmate-invoice.php:1194
 msgid "Thank you for your order."
 msgstr "Tack för din order"
 
@@ -594,19 +598,18 @@ msgstr ""
 "värde. Lämna tomt för att inaktivera denna funktion."
 
 #: class-billmate-bankpay.php:237 class-billmate-bankpay.php:243
-#: class-billmate-cardpay.php:236 class-billmate-cardpay.php:242
 msgid "Authentication Method"
 msgstr "Betalningsåtgärd"
 
-#: class-billmate-bankpay.php:240 class-billmate-cardpay.php:239
+#: class-billmate-bankpay.php:240
 msgid "Authentication"
 msgstr "Reservera beloppet"
 
-#: class-billmate-bankpay.php:241 class-billmate-cardpay.php:240
+#: class-billmate-bankpay.php:241
 msgid "Sales"
 msgstr "Debitera beloppet direkt"
 
-#: class-billmate-bankpay.php:247 class-billmate-cardpay.php:266
+#: class-billmate-bankpay.php:247 class-billmate-cardpay.php:255
 #: class-billmate-invoice.php:223
 msgid "Test Mode"
 msgstr "Testläge"
@@ -633,25 +636,25 @@ msgstr ""
 "några extra informationsfält och skickar detta till Billmate för "
 "verifikation."
 
-#: class-billmate-bankpay.php:355
+#: class-billmate-bankpay.php:358
 msgid "Pay with Billmate Bankpay"
 msgstr "Betala med Billmate bankbetalning"
 
-#: class-billmate-bankpay.php:690 class-billmate-cardpay.php:706
+#: class-billmate-bankpay.php:693 class-billmate-cardpay.php:696
 #: class-billmate-invoice.php:1246
 msgid "Terms for Invoice"
 msgstr "köpvillkor för fakturabetalning."
 
 #: class-billmate-cardpay.php:18 class-billmate-cardpay.php:29
-#: class-billmate-cardpay.php:215 class-billmate-cardpay.php:307
+#: class-billmate-cardpay.php:214 class-billmate-cardpay.php:296
 msgid "Billmate Cardpay"
 msgstr "Billmate Kortbetalning"
 
-#: class-billmate-cardpay.php:208
+#: class-billmate-cardpay.php:207
 msgid "Enable Billmate Cardpay"
 msgstr "Aktivera Billmate Kortbetalning"
 
-#: class-billmate-cardpay.php:226
+#: class-billmate-cardpay.php:225
 msgid ""
 "Disable Billmate Cardpay if Cart Total is lower than the specified value. "
 "Leave blank to disable this feature."
@@ -659,7 +662,7 @@ msgstr ""
 "Inaktivera Billmate Kortbetalning om varukorgens summa är lägre än inställt "
 "värde. Lämna tomt för att inaktivera funktionen."
 
-#: class-billmate-cardpay.php:232
+#: class-billmate-cardpay.php:231
 msgid ""
 "Disable Billmate Cardpay if Cart Total is higher than the specified value. "
 "Leave blank to disable this feature."
@@ -667,23 +670,23 @@ msgstr ""
 "Inaktivera Billmate Kortbetalning om varukorgens summa är högre än inställt "
 "värde. Lämna tomt för att inaktivera funktionen."
 
-#: class-billmate-cardpay.php:246 class-billmate-cardpay.php:252
+#: class-billmate-cardpay.php:235 class-billmate-cardpay.php:241
 msgid "Enable 3D Secure"
 msgstr "Aktivera 3D Secure"
 
-#: class-billmate-cardpay.php:249 class-billmate-cardpay.php:259
+#: class-billmate-cardpay.php:238 class-billmate-cardpay.php:248
 msgid "Yes"
 msgstr "Ja"
 
-#: class-billmate-cardpay.php:250 class-billmate-cardpay.php:260
+#: class-billmate-cardpay.php:239 class-billmate-cardpay.php:249
 msgid "No"
 msgstr "Nej"
 
-#: class-billmate-cardpay.php:256 class-billmate-cardpay.php:262
+#: class-billmate-cardpay.php:245 class-billmate-cardpay.php:251
 msgid "Enable Name"
 msgstr "Visa namn i Betalfönstret"
 
-#: class-billmate-cardpay.php:274
+#: class-billmate-cardpay.php:263
 msgid ""
 "Billmate Card activated for customers in these countries, Leave blank to "
 "allow all"
@@ -691,7 +694,7 @@ msgstr ""
 "Billmate Kort aktiverat för kunder i dessa länder, lämna tomt för att "
 "tillåta alla länder."
 
-#: class-billmate-cardpay.php:289
+#: class-billmate-cardpay.php:278
 msgid ""
 "Choose a special order status for Billmate Cardpay, if you want to use a own "
 "status and not WooCommerce built in"
@@ -699,7 +702,7 @@ msgstr ""
 "Välj en speciell order status för Billmate Kortbetalning, om du vill använda "
 "en egen status och inte de som är inbyggda i WooCommerce."
 
-#: class-billmate-cardpay.php:309
+#: class-billmate-cardpay.php:298
 msgid ""
 "With Billmate your customers can pay by cardpay. Billmate works by adding "
 "extra personal information fields and then sending the details to Billmate "
@@ -708,7 +711,7 @@ msgstr ""
 "Med Billmate kan dina kunder handla med kort. Billmate fungerar genom att "
 "lägga till några extra fält som skickas till Billmate för verifiering."
 
-#: class-billmate-cardpay.php:370
+#: class-billmate-cardpay.php:361
 msgid "Visa & Mastercard"
 msgstr "Visa & Mastercard"
 
@@ -818,6 +821,10 @@ msgstr "Inaktivera eller ta bort fakturaavgiftsprodukten med id %s"
 #, php-format
 msgid "An invoice fee of %1$s will be added to your order."
 msgstr "En fakturaavgift på %1$s tillkommer på orderbeloppet."
+
+#: class-billmate-invoice.php:364 class-billmate-invoice.php:508
+msgid "Personal / Corporate "
+msgstr "Person / Organisationsnummer"
 
 #: class-billmate-invoice.php:545
 #, php-format
