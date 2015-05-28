@@ -127,6 +127,8 @@ function init_billmate_gateway() {
 				wp_enqueue_script( 'billmate-popup-js' );
 			}
 
+
+
 			// Account terms popup
 			if ( is_checkout() || is_product() || is_shop() || is_product_category() || is_product_tag() ) {
 				// Original file: https://static.billmate.com:444/external/js/billmatepart.js

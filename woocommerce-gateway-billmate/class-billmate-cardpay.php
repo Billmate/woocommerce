@@ -97,9 +97,20 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 
 		add_action('woocommerce_receipt_billmate', array(&$this, 'receipt_page'));
 
-		//add_action('wp_footer', array(&$this, 'billmate_invoice_terms_js'));
+
+        add_action('admin_enqueue_scripts',array(&$this,'injectscripts'));
+
+
+        //add_action('wp_footer', array(&$this, 'billmate_invoice_terms_js'));
 
 	}
+    public function injectscripts(){
+        if( is_admin()){
+            wp_enqueue_script( 'jquery' );
+            wp_register_script('billmateadmin.js',plugins_url('/js/billmateadmin.js',__FILE__),array('jquery'),'1.0',true);
+            wp_enqueue_script('billmateadmin.js');
+        }
+    }
 
 	function check_ipn_response() {
 		global $woocommerce;

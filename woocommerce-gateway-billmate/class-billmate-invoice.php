@@ -148,9 +148,18 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 
 		add_action('wp_footer', array(&$this, 'billmate_invoice_terms_js'));
 
+        add_action('admin_enqueue_scripts',array(&$this,'injectscripts'));
+
+
 	}
 
-
+    public function injectscripts(){
+        if( is_admin()){
+            wp_enqueue_script( 'jquery' );
+            wp_register_script('billmateadmin.js',plugins_url('/js/billmateadmin.js',__FILE__),array('jquery'),'1.0',true);
+            wp_enqueue_script('billmateadmin.js');
+        }
+    }
 
 
 	/**
@@ -1088,11 +1097,11 @@ parse_str($_POST['post_data'], $datatemp);
 			}
 			if(isset($result['code'])){
 				switch($result['code']){
-					case '1001':
+					/*case '1001':
 						$order->add_order_note( __('Billmate payment denied.', 'billmate') );
 						wc_bm_errors( __('Billmate payment denied.', 'billmate') );
 						return;
-						break;
+						break;*/
 
 					default:
 						wc_bm_errors( __($result['message'], 'billmate') );

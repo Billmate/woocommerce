@@ -99,7 +99,18 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 
 		//add_action('wp_footer', array(&$this, 'billmate_invoice_terms_js'));
 
-	}
+        add_action('admin_enqueue_scripts',array(&$this,'injectscripts'));
+
+
+    }
+
+    public function injectscripts(){
+        if( is_admin()){
+            wp_enqueue_script( 'jquery' );
+            wp_register_script('billmateadmin.js',plugins_url('/js/billmateadmin.js',__FILE__),array('jquery'),'1.0',true);
+            wp_enqueue_script('billmateadmin.js');
+        }
+    }
 
 	function check_ipn_response(){
 		global $woocommerce;
