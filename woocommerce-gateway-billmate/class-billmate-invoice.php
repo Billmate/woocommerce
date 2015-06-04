@@ -610,6 +610,8 @@ parse_str($_POST['post_data'], $datatemp);
 		$language = explode('_',get_locale());
 		if(!defined('BILLMATE_LANGUAGE')) define('BILLMATE_LANGUAGE',strtolower($language[0]));
 
+        if(!defined('BILLMATE_SERVER')) define('BILLMATE_SERVER','2.1.7');
+        if(!defined('BILLMATE_CLIENT')) define('BILLMATE_CLIENT','WooCommerce:Billmate:2.0');
 		$k = new Billmate($this->eid,$this->secret,true, $this->testmode == 'yes',false);
 		try{
 			$addr = $k->getAddress(array('pno' => $billmate_pno));
@@ -771,6 +773,8 @@ parse_str($_POST['post_data'], $datatemp);
 		$billmate_pclass_file = BILLMATE_DIR . 'srv/billmatepclasses.json';
 		if(!defined('BILLMATE_LANGUAGE')) define('BILLMATE_LANGUAGE',strtolower($lang[0]));
 
+        if(!defined('BILLMATE_SERVER')) define('BILLMATE_SERVER','2.1.7');
+        if(!defined('BILLMATE_CLIENT')) define('BILLMATE_CLIENT','WooCommerce:Billmate:2.0');
 
 		$k = new Billmate($eid,$secret,true, $this->testmode == 'yes',false);
 		$goods_list = array();
