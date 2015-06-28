@@ -804,17 +804,6 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 
 			<div class="clear"></div>
 
-
-
-<script type="text/javascript">
-jQuery( document).ready(function(){
-	window.$ = $ = jQuery;
-
-    $.getScript("https://efinance.se/billmate/base.js", function(){
-		    $("#billmate_partpayment").Terms("villkor_delbetalning",{eid: billmate_eid,effectiverate:34}, "#billmate_partpayment");
-    });
-});
-</script>
 <?php
 $datatemp = array('billing_email'=>' ');
 if(!empty($_POST['post_data'])){

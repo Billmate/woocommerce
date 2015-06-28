@@ -66,12 +66,7 @@ function return_billmate_partpayment_info_link() {
 	ob_start();
 	$WC_Gateway_Billmate_Partpayment->payment_fields_options( $price, false , BillmateFlags::PRODUCT_PAGE);
 	echo '<a id="billmate_partpayment" href="#">' . $WC_Gateway_Billmate_Partpayment->get_account_terms_link_text($billmate_partpayment_country) . '</a>';
-	echo '<script type="text/javascript">jQuery.getScript("https://efinance.se/billmate/base.js", function(){
-		window.$ = jQuery;
-		$ = jQuery;
-		jQuery("#terms").Terms("villkor",{invoicefee:29}, "#terms");
-		jQuery("#billmate_partpayment").Terms("villkor_delbetalning",{eid: '.$billmate_partpayment_eid.',effectiverate:34}); },"#billmate_partpayment");</script>';
-	echo '';
+
 	$output_string = ob_get_clean();
 	return $output_string;
 }

@@ -14,7 +14,50 @@ class BillmateCommon {
 		add_action( 'admin_menu', array( $this, 'add_plugin_page' ) );
 		add_action( 'admin_init', array( $this, 'page_init' ) );
 		add_action('wp_ajax_verify_credentials', array($this,'verify_credentials'));
+        add_action('wp_ajax_nopriv_getaddress',array($this,'getaddress'));
+        add_action('wp_ajax_getaddress',array($this,'getaddress'));
+        add_action('woocommerce_checkout_before_customer_details',array($this,'get_address_fields'));
 	}
+
+    public function get_address_fields()
+    {
+        if(get_option('billmate_common_getaddress') == 'active'){
+            ?>
+            <p class="form-row">
+                <label for="pno"><?php echo __('Social security No./Company registration No.','billmate'); ?></label>
+                <input type="text" name="pno" label="12345678-1235" class="form-row-wide"/>
+                <button id="getaddress"><?php echo __('Get Address','billmate'); ?></button>
+            </p>
+            <div id="getaddresserr"></div>
+            <div class="clear"></div>
+            <script type="text/javascript">
+                var ajaxurl = '<?php echo admin_url('admin-ajax.php'); ?>';
+            </script>
+
+            <?php
+        }
+    }
+
+    public function getaddress()
+    {
+        $billmate = new BillMate(get_option('billmate_common_eid'),get_option('billmate_common_secret'),true,false,false);
+        if(!defined('BILLMATE_CLIENT')) define('BILLMATE_CLIENT','WooCommerce:2.0');
+        if(!defined('BILLMATE_SERVER')) define('BILLMATE_SERVER','2.1.7');
+        $addr = $billmate->getAddress(array('pno' => $_POST['pno']));
+        if(isset($addr['code'])) {
+            $response['success'] = false;
+            $response['message'] = utf8_encode($addr['message']);
+        } else {
+            $data = array();
+            foreach($addr as $key => $value){
+                $data[$key] = mb_convert_encoding($value,'UTF-8','auto');
+            }
+            $response['success'] = true;
+            $response['data'] = $data;
+        }
+
+        die(json_encode($response));
+    }
 
 	public function page_init() {
 		register_setting(
@@ -27,17 +70,21 @@ class BillmateCommon {
 			'billmate_common_secret', // Option name
 			array( $this, 'sanitize' ) // Sanitize
 		);
-
+        register_setting(
+            'billmate_common',
+            'billmate_common_getaddress',
+            array($this,'sanitize')
+        );
 		add_settings_section(
 			'setting_credentials', // ID
-			__('Common Billmate Settings'), // Title
+			__('Common Billmate Settings','billmate'), // Title
 			array( $this, 'print_section_info' ), // Callback
 			'billmate-settings' // Page
 		);
 
 		add_settings_field(
 			'billmate_common_eid', // ID
-			__('Billmate ID'), // Title
+			__('Billmate ID','billmate'), // Title
 			array( $this, 'eid_callback' ), // Callback
 			'billmate-settings', // Page
 			'setting_credentials' // Section
@@ -45,17 +92,24 @@ class BillmateCommon {
 
 		add_settings_field(
 			'billmate_common_secret',
-			__('Secret'),
+			__('Secret','billmate'),
 			array( $this, 'secret_callback' ),
 			'billmate-settings',
 			'setting_credentials'
 		);
+        add_settings_field(
+            'billmate_common_getaddress',
+            __('Get Address','billmate'),
+            array($this,'getaddress_callback'),
+            'billmate-settings',
+            'setting_credentials'
+        );
 	}
 
 	public function add_plugin_page() {
 		add_options_page(
 			'Billmate Common',
-			'Billmate Settings',
+			__('Billmate Settings','billmate'),
 			'manage_options',
 			'billmate-settings',
 			array( $this, 'create_admin_page' )
@@ -71,6 +125,17 @@ class BillmateCommon {
 		$value = get_option('billmate_common_secret','');
 		echo '<input type="text" id="billmate_common_secret" name="billmate_common_secret" value="'.$value.'" />';
 	}
+
+    public function getaddress_callback()
+    {
+        $value = get_option('billmate_common_getaddress','');
+        $inactive = ($value == 'inactive') ? 'selected="selected"' : '';
+        $active = ($value == 'active') ? 'selected="selected"' : '';
+        echo '<select name="billmate_common_getaddress" id="billmate_common_getaddress">';
+        echo '<option value="inactive"'.$inactive.'>'.__('Inactive','billmate').'</option>';
+        echo '<option value="active"'.$active.'>'.__('Active','billmate').'</option>';
+        echo '</select>';
+    }
 
 	public function print_section_info()
 	{

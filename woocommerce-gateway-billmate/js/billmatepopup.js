@@ -180,6 +180,47 @@ AddEvent(window,'resize',function(){
 		}
 	}
 });
+AddEvent(window,'load',function(){
+    window.$ = $ = jQuery;
+    jQuery.getScript("https://efinance.se/billmate/base.js", function(){
+        jQuery("#billmate_invoice").Terms("villkor",{invoicefee: billmate_invoice_fee_price}, "#billmate_invoice");
+        jQuery("#billmate_partpayment").Terms("villkor_delbetalning",{eid: billmate_eid,effectiverate:34}, "#billmate_partpayment");
+    });
+    jQuery('#getaddress').on('click',function(e){
+        e.preventDefault();
+        if('#getaddresserror')
+            $('#getaddresserror').remove();
+        jQuery.ajax({
+            url: ajaxurl,
+            type: 'POST',
+            data: {action: 'getaddress',pno: $('[name="pno"]').val()},
+            success: function(response){
+                var result = JSON.parse(response);
+                if(result.success){
+                    if(typeof result.data.firstname != 'undefined') {
+                        $('#billing_first_name').val(result.data.firstname);
+                        $('#billing_last_name').val(result.data.lastname);
+                    } else {
+                        $('#billing_company').val(result.data.company);
+                    }
+                    $('#billing_address_1').val(result.data.street);
+                    $('#billing_postcode').val(result.data.zip);
+                    $('#billing_city').val(result.data.city);
+                    if(result.data.email != '')
+                        $('#billing_email').val(result.data.email);
+
+                    if(result.data.phone != ''){
+                        $('#billing_phone').val(result.data.phone);
+                    }
+                    $('#billing_country').val(result.data.country);
+                } else {
+                    var message = '<div id="getaddresserror" class="woocommerce-error">'+result.message+'</div>';
+                    $('#getaddresserr').html(message);
+                }
+            }
+        })
+    });
+});
  function ShowDivInCenter(divId)
 {
     try

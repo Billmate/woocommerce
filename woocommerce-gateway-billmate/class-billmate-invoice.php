@@ -532,16 +532,6 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 
 			<div class="clear"></div>
 
- <script type="text/javascript">
- jQuery(document).ready(function(){
-	window.$ = $ = jQuery;
-	$.getScript("https://efinance.se/billmate/base.js", function(){
-			$("#billmate_invoice").Terms("villkor",{invoicefee: billmate_invoice_fee_price}, "#billmate_invoice");
-	});
-
-});
-
-</script>
 <?php
 $datatemp = array('email'=>' ');
 if(!empty($_POST['post_data'])){
