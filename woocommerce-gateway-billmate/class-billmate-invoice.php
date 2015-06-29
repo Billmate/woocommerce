@@ -514,7 +514,7 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
                 </span><!-- .dob -->
 
 				<?php else : ?>
-					<label for="billmate_invo_pno"><?php echo __("Personal / Corporate ", 'billmate') ?> <span class="required">*</span></label>
+					<label for="billmate_invo_pno"><?php echo __("Social Security Number / Corporate Registration Number", 'billmate') ?> <span class="required">*</span></label>
 					<input type="text" class="input-text" name="billmate_invo_pno" id="billmate_invo_pno" />
 				<?php endif; ?>
 			</p>

@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Billmate Woocommerce plugin\n"
-"POT-Creation-Date: 2015-06-22 08:54+0100\n"
-"PO-Revision-Date: 2015-06-22 09:08+0100\n"
+"POT-Creation-Date: 2015-06-29 07:57+0100\n"
+"PO-Revision-Date: 2015-06-29 07:58+0100\n"
 "Last-Translator: \n"
 "Language-Team: Boxedsolutions <jesper@boxedsolutions.se>\n"
 "Language: sv_SE\n"
@@ -336,7 +336,7 @@ msgstr "Uppdatera Betalplaner"
 msgid "From %s %s/month"
 msgstr "Från %s %s/månad"
 
-#: class-billmate-account.php:542 class-billmate-account.php:900
+#: class-billmate-account.php:542 class-billmate-account.php:889
 #, php-format
 msgid "Billmate PClass problem: %s. Error code: "
 msgstr "Billmate Betalningsplan problem %s. Felkod: "
@@ -410,9 +410,10 @@ msgstr "Dec"
 msgid "Year"
 msgstr "År"
 
-#: class-billmate-account.php:789
-msgid "Social Security No. / Org. No."
-msgstr "Person / Org. Nummer"
+#: class-billmate-account.php:789 class-billmate-common.php:27
+#: class-billmate-invoice.php:517
+msgid "Social Security Number / Corporate Registration Number"
+msgstr "Personnummer / Organisationsnummer"
 
 #: class-billmate-account.php:796 class-billmate-invoice.php:524
 msgid "Gender"
@@ -430,7 +431,7 @@ msgstr "Kvinna"
 msgid "Male"
 msgstr "Man"
 
-#: class-billmate-account.php:827
+#: class-billmate-account.php:816
 #, php-format
 msgid ""
 "My e-mail ,%s, is correct och and may be used for billing. I confirm the "
@@ -438,15 +439,15 @@ msgstr ""
 "Min e-post, %s, är korrekt och får användas för fakturering. Jag bekräftar "
 "även "
 
-#: class-billmate-account.php:827
+#: class-billmate-account.php:816
 msgid "terms of partpayment."
 msgstr "köpvillkoren."
 
-#: class-billmate-account.php:827 class-billmate-invoice.php:554
+#: class-billmate-account.php:816 class-billmate-invoice.php:544
 msgid "and accept the liability."
 msgstr "och accepterar betalningsansvaret."
 
-#: class-billmate-account.php:834 class-billmate-invoice.php:562
+#: class-billmate-account.php:823 class-billmate-invoice.php:552
 #, php-format
 msgid ""
 "Mit der Übermittlung der für die Abwicklungdes Rechnungskaufes und einer "
@@ -456,66 +457,66 @@ msgid ""
 "Händlers."
 msgstr ""
 
-#: class-billmate-account.php:931
+#: class-billmate-account.php:920
 msgid "Payment plan"
 msgstr "Betalplan"
 
-#: class-billmate-account.php:965 class-billmate-account.php:973
-#: class-billmate-account.php:1025 class-billmate-account.php:1033
+#: class-billmate-account.php:954 class-billmate-account.php:962
+#: class-billmate-account.php:1014 class-billmate-account.php:1022
 #, php-format
 msgid "%s - %s %s/month"
 msgstr "%s - %s %s/månad"
 
-#: class-billmate-account.php:968 class-billmate-account.php:1028
+#: class-billmate-account.php:957 class-billmate-account.php:1017
 #, php-format
 msgid "%s - %s %s/month - %s%s - Start %s - Tot %s %s"
 msgstr "%s - %s %s/månad - %s%s - Start %s - Tot %s %s"
 
-#: class-billmate-account.php:976 class-billmate-account.php:1036
+#: class-billmate-account.php:965 class-billmate-account.php:1025
 #, php-format
 msgid "%s - %s %s/month - %s%s - Start %s"
 msgstr "%s - %s %s/månad - %s%s - Start %s"
 
-#: class-billmate-account.php:1053
+#: class-billmate-account.php:1042
 msgid ""
 "Billmate PClasses seem to be missing. Billmate Part Payment does not work."
 msgstr ""
 "Billmate Delbetalningsplaner verkar inte finnas, Billmate Delbetalning "
 "fungerar inte."
 
-#: class-billmate-account.php:1075 class-billmate-account.php:1085
-#: class-billmate-account.php:1089 class-billmate-invoice.php:1337
-#: class-billmate-invoice.php:1350
+#: class-billmate-account.php:1064 class-billmate-account.php:1074
+#: class-billmate-account.php:1078 class-billmate-invoice.php:1327
+#: class-billmate-invoice.php:1340
 msgid "Non Valid Person / Corporate number. Check the number."
 msgstr "Ej giltigt person / organisationsnummer. Kontrollera numret."
 
-#: class-billmate-account.php:1095 class-billmate-account.php:1098
-#: class-billmate-account.php:1101 class-billmate-account.php:1104
-#: class-billmate-account.php:1107
+#: class-billmate-account.php:1084 class-billmate-account.php:1087
+#: class-billmate-account.php:1090 class-billmate-account.php:1093
+#: class-billmate-account.php:1096
 msgid "Shipping and billing address must be the same when paying via Billmate."
 msgstr "Leverans och faktura adress måste vara samma vid köp via Billmate"
 
-#: class-billmate-account.php:1114 class-billmate-invoice.php:1375
+#: class-billmate-account.php:1103 class-billmate-invoice.php:1365
 msgid "You must accept the Billmate consent terms."
 msgstr "Du måste acceptera Billmate köpvillkor"
 
-#: class-billmate-account.php:1172 class-billmate-account.php:1476
-#: class-billmate-invoice.php:624
+#: class-billmate-account.php:1161 class-billmate-account.php:1465
+#: class-billmate-invoice.php:614
 msgid "Unable to find address."
 msgstr "Kunde inte hitta adressen."
 
-#: class-billmate-account.php:1224 class-billmate-account.php:1522
-#: class-billmate-invoice.php:675
+#: class-billmate-account.php:1213 class-billmate-account.php:1511
+#: class-billmate-invoice.php:665
 msgid "Yes, make purchase with this address"
 msgstr "Ja, köp med denna adressen."
 
-#: class-billmate-account.php:1224 class-billmate-account.php:1522
-#: class-billmate-invoice.php:675
+#: class-billmate-account.php:1213 class-billmate-account.php:1511
+#: class-billmate-invoice.php:665
 msgid "No, I want to specify a different number or change payment method"
 msgstr "Nej jag vill ändra till ett annat nummer eller byta betalmetod."
 
-#: class-billmate-account.php:1232 class-billmate-account.php:1530
-#: class-billmate-invoice.php:683
+#: class-billmate-account.php:1221 class-billmate-account.php:1519
+#: class-billmate-invoice.php:673
 msgid ""
 "Pay by invoice can be made only to the address listed in the National "
 "Register. Would you like to make the purchase with address:"
@@ -523,7 +524,7 @@ msgstr ""
 "Köp mot faktura kan bara göras till den adress som är angiven i "
 "folkbokföringen. Vill du genomföra köpet med adressen:"
 
-#: class-billmate-account.php:1248 class-billmate-invoice.php:700
+#: class-billmate-account.php:1237 class-billmate-invoice.php:690
 #, php-format
 msgid ""
 "Please confirm the email %s is correct. The email will be used for invoicing."
@@ -531,17 +532,17 @@ msgstr ""
 "Vänligen bekräfta att e-postadressen \"%s\" är korrekt. Denna kommer att "
 "användas för fakturering."
 
-#: class-billmate-account.php:1428 class-billmate-bankpay.php:596
-#: class-billmate-cardpay.php:600 class-billmate-invoice.php:898
+#: class-billmate-account.php:1417 class-billmate-bankpay.php:596
+#: class-billmate-cardpay.php:600 class-billmate-invoice.php:888
 #, php-format
 msgid "Discount %s%% tax"
 msgstr "Rabatt %s%% moms"
 
-#: class-billmate-account.php:1633 class-billmate-invoice.php:1122
+#: class-billmate-account.php:1622 class-billmate-invoice.php:1112
 msgid "Billmate payment completed. Billmate Invoice number:"
 msgstr "Billmate betalning färdig. Billmate fakturanummer:"
 
-#: class-billmate-account.php:1660 class-billmate-invoice.php:1149
+#: class-billmate-account.php:1649 class-billmate-invoice.php:1139
 msgid ""
 "Order is PENDING APPROVAL by Billmate. Please visit Billmate Online for the "
 "latest status on this order. Billmate Invoice number: "
@@ -549,17 +550,17 @@ msgstr ""
 "Ordern är under granskning av Billmate. Vänligen besök Billmate Online för "
 "senaste status på denna order. Billmate fakturanummer: "
 
-#: class-billmate-account.php:1693 class-billmate-account.php:1694
-#: class-billmate-invoice.php:1182 class-billmate-invoice.php:1183
+#: class-billmate-account.php:1682 class-billmate-account.php:1683
+#: class-billmate-invoice.php:1172 class-billmate-invoice.php:1173
 msgid "Unknown response from Billmate."
 msgstr "Okänt svar från Billmate"
 
-#: class-billmate-account.php:1714 class-billmate-bankpay.php:654
-#: class-billmate-cardpay.php:657 class-billmate-invoice.php:1207
+#: class-billmate-account.php:1703 class-billmate-bankpay.php:654
+#: class-billmate-cardpay.php:657 class-billmate-invoice.php:1197
 msgid "Thank you for your order."
 msgstr "Tack för din order"
 
-#: class-billmate-account.php:1986
+#: class-billmate-account.php:1975
 msgid "Read more"
 msgstr "Visa mer."
 
@@ -640,7 +641,7 @@ msgid "Pay with Billmate Bankpay"
 msgstr "Betala med Billmate bankbetalning"
 
 #: class-billmate-bankpay.php:706 class-billmate-cardpay.php:709
-#: class-billmate-invoice.php:1259
+#: class-billmate-invoice.php:1249
 msgid "Terms for Invoice"
 msgstr "köpvillkor för fakturabetalning."
 
@@ -714,27 +715,39 @@ msgstr ""
 msgid "Visa & Mastercard"
 msgstr "Visa & Mastercard"
 
-#: class-billmate-common.php:33
+#: class-billmate-common.php:29 class-billmate-common.php:102
+msgid "Get Address"
+msgstr "Hämta adress"
+
+#: class-billmate-common.php:80
 msgid "Common Billmate Settings"
 msgstr "Generella Billmate Inställningar"
 
-#: class-billmate-common.php:40
+#: class-billmate-common.php:87
 msgid "Billmate ID"
 msgstr "Billmate ID"
 
-#: class-billmate-common.php:48
+#: class-billmate-common.php:95
 msgid "Secret"
 msgstr "Lösenord"
 
-#: class-billmate-common.php:77
-msgid "Here is the common settings for the Billmate Payment module"
-msgstr "Här finns de generella inställningarna för Billmate betalmodul."
-
-#: class-billmate-common.php:90
+#: class-billmate-common.php:112 class-billmate-common.php:155
 msgid "Billmate Settings"
 msgstr "Billmate Inställningar"
 
-#: class-billmate-common.php:121
+#: class-billmate-common.php:135
+msgid "Inactive"
+msgstr "Inaktiv"
+
+#: class-billmate-common.php:136
+msgid "Active"
+msgstr "Aktiv"
+
+#: class-billmate-common.php:142
+msgid "Here is the common settings for the Billmate Payment module"
+msgstr "Här finns de generella inställningarna för Billmate betalmodul."
+
+#: class-billmate-common.php:186
 msgid "Please, check your credentials"
 msgstr "Vänligen, kontrollera dina billmateuppgifter"
 
@@ -774,7 +787,7 @@ msgstr ""
 "Inaktivera Billmate Faktura om varukorgens summa är högre än inställt värde. "
 "Lämna tomt för att inaktivera"
 
-#: class-billmate-invoice.php:219 class-billmate-invoice.php:1313
+#: class-billmate-invoice.php:219 class-billmate-invoice.php:1303
 msgid "Invoice fee"
 msgstr "Faktura avgift"
 
@@ -821,11 +834,11 @@ msgstr "Inaktivera eller ta bort fakturaavgiftsprodukten med id %s"
 msgid "An invoice fee of %1$s will be added to your order."
 msgstr "En fakturaavgift på %1$s tillkommer på orderbeloppet."
 
-#: class-billmate-invoice.php:373 class-billmate-invoice.php:517
+#: class-billmate-invoice.php:373
 msgid "Personal / Corporate "
 msgstr "Person / Organisationsnummer"
 
-#: class-billmate-invoice.php:554
+#: class-billmate-invoice.php:544
 #, php-format
 msgid ""
 "My e-mail address ,%s, is correct and may be used for billing. I also "
@@ -834,28 +847,31 @@ msgstr ""
 "Min e-post, %s, är korrekt och får användas för fakturering. Jag bekräftar "
 "även"
 
-#: class-billmate-invoice.php:554
+#: class-billmate-invoice.php:544
 msgid "Terms of invoice."
 msgstr "köpvillkor för fakturabetalning."
 
-#: class-billmate-invoice.php:970 class-billmate-invoice.php:1013
+#: class-billmate-invoice.php:960 class-billmate-invoice.php:1003
 msgid "Invoice Fee"
 msgstr "Faktura avgift"
 
-#: class-billmate-invoice.php:1195
+#: class-billmate-invoice.php:1185
 #, php-format
 msgid "%s (Error code: %s)"
 msgstr "%s (Felkod: %s)"
 
-#: class-billmate-invoice.php:1346
+#: class-billmate-invoice.php:1336
 msgid "<strong>Gender</strong> is a required field"
 msgstr "<strong>Kön</strong> krävs för att gå vidare"
 
-#: class-billmate-invoice.php:1356 class-billmate-invoice.php:1359
-#: class-billmate-invoice.php:1362 class-billmate-invoice.php:1365
-#: class-billmate-invoice.php:1368
+#: class-billmate-invoice.php:1346 class-billmate-invoice.php:1349
+#: class-billmate-invoice.php:1352 class-billmate-invoice.php:1355
+#: class-billmate-invoice.php:1358
 msgid "Shipping and billing address must be the same when paying via Billmate"
 msgstr "Leverans och Faktura adress måste vara samma vid köp med Billmate"
+
+#~ msgid "Social Security No. / Org. No."
+#~ msgstr "Person / Org. Nummer"
 
 #~ msgid "Billmate payment denied."
 #~ msgstr "Billmate betalning nekad"

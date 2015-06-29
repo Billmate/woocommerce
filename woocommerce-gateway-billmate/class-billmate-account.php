@@ -786,7 +786,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
                     </select>
 
 				<?php else : ?>
-					<label for="billmate_pno"><?php echo __("Social Security No. / Org. No.", 'billmate') ?> <span class="required">*</span></label>
+					<label for="billmate_pno"><?php echo __("Social Security Number / Corporate Registration Number", 'billmate') ?> <span class="required">*</span></label>
 					<input type="text" class="input-text" name="billmate_pno" />
 				<?php endif; ?>
 			</p>

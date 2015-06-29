@@ -24,7 +24,7 @@ class BillmateCommon {
         if(get_option('billmate_common_getaddress') == 'active'){
             ?>
             <p class="form-row">
-                <label for="pno"><?php echo __('Social security No./Company registration No.','billmate'); ?></label>
+                <label for="pno"><?php echo __('Social Security Number / Corporate Registration Number','billmate'); ?></label>
                 <input type="text" name="pno" label="12345678-1235" class="form-row-wide"/>
                 <button id="getaddress"><?php echo __('Get Address','billmate'); ?></button>
             </p>
