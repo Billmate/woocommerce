@@ -16,10 +16,6 @@ Billmate is a great payment alternative for merchants and customers in Sweden.
 The invoice and part payment plugin only works if the currency is set to Swedish Krona (SEK) and the Base country is set to Sweden.
 
 
-To create a Invoice fee product:
-1. Add a simple (hidden) product. Mark it as a taxable product.
-2. Go to the Billmate Gateway settings page and add the ID of the Invoice Fee product. The ID can be found by hovering the Invoice Fee product on the Products page in WooCommerce.
-
 ##Installation
 1. Download and unzip the latest release zip file.
 2. If you use the WordPress plugin uploader to install this plugin skip to step 4.
