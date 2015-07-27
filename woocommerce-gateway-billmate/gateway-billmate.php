@@ -26,6 +26,8 @@ add_action('plugins_loaded', 'init_billmate_gateway', 0);
 
 define('BILLMATE_DIR', dirname(__FILE__) . '/');
 define('BILLMATE_LIB', dirname(__FILE__) . '/library/');
+if(!defined('BILLMATE_SERVER')) define('BILLMATE_SERVER','2.1.7');
+if(!defined('BILLMATE_CLIENT')) define('BILLMATE_CLIENT','WooCommerce:Billmate:2.0');
 require_once 'commonfunctions.php';
 /** Change invoice fee to field instead of product. */
 function activate_billmate_gateway(){

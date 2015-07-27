@@ -646,7 +646,7 @@ parse_str($_POST['post_data'], $datatemp);
 		                      !isEqual($addr['street'], $billmate_billing_address ) ||
 		                      !isEqual($addr['zip'], $_POST['shipping_postcode']) ||
 		                      !isEqual($addr['city'], $_POST['shipping_city']) ||
-		                      !isEqual(BillmateCountry::getCode($addr['country']), $_POST['shipping_country']);
+		                      !isEqual(strtoupper($addr['country']), strtoupper($_POST['shipping_country']));
 
 		$addressNotMatched =  !isEqual($usership, $apiName) ||
 		                      !isEqual($_POST['billing_address_1'], $_POST['shipping_address_1'] ) ||

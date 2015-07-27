@@ -229,7 +229,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			'description' => array(
 							'title' => __( 'Description', 'billmate' ),
 							'type' => 'textarea',
-							'description' => __('Directpayment with Handelsbanken and Nordea.','billmate'),
+							'description' => __('This controls the description which the user sees during checkout.','billmate'),
 							'default' => ''
 						),
 			'lower_threshold' => array(

@@ -1194,7 +1194,7 @@ parse_str($_POST['post_data'], $datatemp);
 		                      !isEqual($addr['street'], $billmate_billing_address ) ||
 		                      !isEqual($addr['zip'], $_POST['shipping_postcode']) ||
 		                      !isEqual($addr['city'], $_POST['shipping_city']) ||
-		                      !isEqual(BillmateCountry::getCode($addr['country']), $_POST['shipping_country']);
+		                      !isEqual(strtoupper($addr['country']), strtoupper($_POST['shipping_country']));
 
 		$addressNotMatched =  !isEqual($usership, $apiName) ||
 		                      !isEqual($_POST['billing_address_1'], $_POST['shipping_address_1'] ) ||
@@ -1315,7 +1315,7 @@ parse_str($_POST['post_data'], $datatemp);
 
         if(!defined('BILLMATE_SERVER')) define('BILLMATE_SERVER','2.1.7');
         if(!defined('BILLMATE_CLIENT')) define('BILLMATE_CLIENT','WooCommerce:Billmate:2.0');
-		$billmate_pclass_file = BILLMATE_DIR . 'srv/billmatepclasses.json';
+
 
 		$k = new Billmate($eid,$secret,true, $this->testmode == 'yes',false);
 		$total = 0;
@@ -1492,7 +1492,7 @@ parse_str($_POST['post_data'], $datatemp);
 			!isEqual($addr['street'], $billmate_billing_address ) ||
 			!isEqual($addr['zip'], $order->shipping_postcode) ||
 			!isEqual($addr['city'], $order->shipping_city) ||
-			!isEqual(BillmateCountry::getCode($addr['country']), $order->shipping_country);
+			!isEqual(strtoupper($addr['country']), strtoupper($order->shipping_country));
 
 		$addressNotMatched =  !isEqual($usership, $apiName) ||
 			!isEqual($order->billing_address_1, $order->shipping_address_1 ) ||

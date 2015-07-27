@@ -25,7 +25,7 @@ class BillmateCommon {
             ?>
             <p class="form-row">
                 <label for="pno"><?php echo __('Social Security Number / Corporate Registration Number','billmate'); ?></label>
-                <input type="text" name="pno" label="12345678-1235" class="form-row-wide"/>
+                <input type="text" name="pno" label="12345678-1235" class="form-row-wide" style="width: 60%;" value="<?php echo isset($_SESSION['billmate_pno']) ? $_SESSION['billmate_pno'] : ''; ?>"/>
                 <button id="getaddress"><?php echo __('Get Address','billmate'); ?></button>
             </p>
             <div id="getaddresserr"></div>
@@ -40,9 +40,10 @@ class BillmateCommon {
 
     public function getaddress()
     {
+		if(!defined('BILLMATE_CLIENT')) define('BILLMATE_CLIENT','WooCommerce:2.0');
+		if(!defined('BILLMATE_SERVER')) define('BILLMATE_SERVER','2.1.7');
         $billmate = new BillMate(get_option('billmate_common_eid'),get_option('billmate_common_secret'),true,false,false);
-        if(!defined('BILLMATE_CLIENT')) define('BILLMATE_CLIENT','WooCommerce:2.0');
-        if(!defined('BILLMATE_SERVER')) define('BILLMATE_SERVER','2.1.7');
+		$_SESSION['billmate_pno'] = $_POST['pno'];
         $addr = $billmate->getAddress(array('pno' => $_POST['pno']));
         if(isset($addr['code'])) {
             $response['success'] = false;

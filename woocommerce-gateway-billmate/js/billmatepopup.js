@@ -186,6 +186,73 @@ AddEvent(window,'load',function(){
         jQuery("#billmate_invoice").Terms("villkor",{invoicefee: billmate_invoice_fee_price}, "#billmate_invoice");
         jQuery("#billmate_partpayment").Terms("villkor_delbetalning",{eid: billmate_eid,effectiverate:34}, "#billmate_partpayment");
     });
+    var method = $('[name="payment_method"]:checked').val();
+    switch (method){
+        case 'billmate_partpayment':
+            if($('[name="pno"]').length){
+                if(!$('[name="pno"]').parent('p').hasClass('validate-required')) {
+                    $('[name="pno"]').parent('p').addClass('validate-required');
+                    $('[name="pno"]').parent('p').children('label').append('<abbr class="required" title="required">*</abbr>');
+
+                }
+                $('#billmate_pno').val($('[name="pno"]').val())
+            }
+            break;
+        case 'billmate':
+            if($('[name="pno"]').length){
+                if(!$('[name="pno"]').parent('p').hasClass('validate-required')) {
+                    $('[name="pno"]').parent('p').addClass('validate-required');
+                    $('[name="pno"]').parent('p').children('label').append('<abbr class="required" title="required">*</abbr>');
+
+                }
+                $('#billmate_invo_pno').val($('[name="pno"]').val())
+            }
+            break;
+        default :
+            if($('[name="pno"]').length){
+                if($('[name="pno"]').parent('p').hasClass('validate-required')) {
+                    $('[name="pno"]').parent('p').removeClass('validate-required');
+                    $('[name="pno"]').parent('p').children('label').children('abbr').remove();
+                }
+                $('#billmate_invo_pno').val($('[name="pno"]').val())
+            }
+            break;
+    }
+    $(document).on('click','[name="payment_method"]',function(e){
+        switch (e.target.value){
+            case 'billmate_partpayment':
+                if($('[name="pno"]').length){
+                    if(!$('[name="pno"]').parent('p').hasClass('validate-required')) {
+                        $('[name="pno"]').parent('p').addClass('validate-required');
+                        $('[name="pno"]').parent('p').children('label').append('<abbr class="required" title="required">*</abbr>');
+
+                    }
+                    $('[name="billmate_pno"]').val($('[name="pno"]').val())
+                }
+                break;
+            case 'billmate':
+                if($('[name="pno"]').length){
+                    if(!$('[name="pno"]').parent('p').hasClass('validate-required')) {
+                        $('[name="pno"]').parent('p').addClass('validate-required');
+                        $('[name="pno"]').parent('p').children('label').append('<abbr class="required" title="required">*</abbr>');
+
+                    }
+                    $('#billmate_invo_pno').val($('[name="pno"]').val())
+                }
+                break;
+            default :
+                if($('[name="pno"]').length){
+                    if($('[name="pno"]').parent('p').hasClass('validate-required')) {
+                        $('[name="pno"]').parent('p').removeClass('validate-required');
+                        $('[name="pno"]').parent('p').children('label').children('abbr').remove();
+                    }
+                    $('[name="billmate_invo_pno"]').val($('[name="pno"]').val())
+                }
+                break;
+        }
+    });
+
+
     jQuery('#getaddress').on('click',function(e){
         e.preventDefault();
         if('#getaddresserror')
@@ -199,20 +266,31 @@ AddEvent(window,'load',function(){
                 if(result.success){
                     if(typeof result.data.firstname != 'undefined') {
                         $('#billing_first_name').val(result.data.firstname);
+                        $('#billing_first_name').trigger('change');
                         $('#billing_last_name').val(result.data.lastname);
+                        $('#billing_last_name').trigger('change');
+
                     } else {
                         $('#billing_company').val(result.data.company);
+                        $('#billing_company').trigger('change');
                     }
                     $('#billing_address_1').val(result.data.street);
+                    $('#billing_address_1').trigger('change');
                     $('#billing_postcode').val(result.data.zip);
+                    $('#billing_postcode').trigger('change');
                     $('#billing_city').val(result.data.city);
-                    if(result.data.email != '')
+                    $('#billing_city').trigger('change');
+                    if(result.data.email != '') {
                         $('#billing_email').val(result.data.email);
+                        $('#billing_email').trigger('change');
+                    }
 
                     if(result.data.phone != ''){
                         $('#billing_phone').val(result.data.phone);
+                        $('#billing_phone').trigger('change');
                     }
                     $('#billing_country').val(result.data.country);
+                    $('#billing_country').trigger('change');
                 } else {
                     var message = '<div id="getaddresserror" class="woocommerce-error">'+result.message+'</div>';
                     $('#getaddresserr').html(message);
