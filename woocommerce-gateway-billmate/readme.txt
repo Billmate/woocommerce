@@ -53,6 +53,7 @@ Copy the code below for the size that fits your needs.
 ##Changelog
 
 ###2.0 (2015-07-27)
+80 commits and 60 issues closed.
 
 * Enchancement - Get Address for customers in the Checkout.
 * Tweak - Layout improvements.
