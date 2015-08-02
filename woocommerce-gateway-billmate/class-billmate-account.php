@@ -610,7 +610,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 		?>
 
 		<fieldset>
-			<p class="form-row form-row-first" style="width:70%;">
+			<p class="form-row">
 				<?php $return = $this->payment_fields_options( $sum );  extract($return); ?>
 			</p>
 			<?php
@@ -641,7 +641,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 			?>
 			<div class="clear"></div>
 
-			<p class="form-row form-row-first">
+			<p class="form-row" id="partpay_pno">
 				<?php if ( $this->shop_country == 'NL' || $this->shop_country == 'DE' ) : ?>
 
 				<label for="billmate_pno"><?php echo __("Social Security No. / Org. No. ", 'billmate') ?> <span class="required">*</span></label>
@@ -813,7 +813,7 @@ parse_str($_POST['post_data'], $datatemp);
 		<div class="clear"></div>
 			<p class="form-row">
 				<input type="checkbox" class="input-checkbox" checked="checked" value="yes" name="valid_email_it_is" id="valid_email_it_is" style="float:left;margin-top:6px" />
-				<label><?php echo sprintf(__('My e-mail ,%s, is correct och and may be used for billing. I confirm the ', 'billmate'), $datatemp['billing_email']) ?>&nbsp;<a id="billmate_partpayment" href="javascript://"><?php echo __('terms of partpayment.','billmate'); ?></a> <?php echo __('and accept the liability.') ?></label>
+				<label><?php echo sprintf(__('My e-mail ,%s, is correct och and may be used for billing. I confirm the ', 'billmate'), $datatemp['billing_email']) ?><a id="billmate_partpayment" href="javascript://"><?php echo __('terms of partpayment','billmate'); ?></a> <?php echo __('and accept the liability.','billmate') ?></label>
 			</p>
 
 			<?php if ( $this->shop_country == 'DE' && $this->de_consent_terms == 'yes' ) : ?>

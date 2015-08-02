@@ -195,7 +195,8 @@ AddEvent(window,'load',function(){
                     $('[name="pno"]').parent('p').children('label').append('<abbr class="required" title="required">*</abbr>');
 
                 }
-                $('#billmate_pno').val($('[name="pno"]').val())
+                $('#partpay_pno').hide();
+                $('#invoice_pno').val($('[name="pno"]').val())
             }
             break;
         case 'billmate':
@@ -205,6 +206,7 @@ AddEvent(window,'load',function(){
                     $('[name="pno"]').parent('p').children('label').append('<abbr class="required" title="required">*</abbr>');
 
                 }
+                $('#invoice_pno').hide();
                 $('#billmate_invo_pno').val($('[name="pno"]').val())
             }
             break;
@@ -227,6 +229,7 @@ AddEvent(window,'load',function(){
                         $('[name="pno"]').parent('p').children('label').append('<abbr class="required" title="required">*</abbr>');
 
                     }
+                    $('#partpay_pno').hide();
                     $('[name="billmate_pno"]').val($('[name="pno"]').val())
                 }
                 break;
@@ -237,6 +240,7 @@ AddEvent(window,'load',function(){
                         $('[name="pno"]').parent('p').children('label').append('<abbr class="required" title="required">*</abbr>');
 
                     }
+                    $('#invoice_pno').hide();
                     $('#billmate_invo_pno').val($('[name="pno"]').val())
                 }
                 break;
@@ -251,8 +255,14 @@ AddEvent(window,'load',function(){
                 break;
         }
     });
+    if(jQuery('[name="pno"]').length) {
+        jQuery('[name="pno"]').on('change', function () {
 
-
+            var pno = jQuery('[name="pno"]').val();
+            $('[name="billmate_invo_pno"]').val(pno);
+            $('[name="billmate_pno"]').val(pno);
+        })
+    }
     jQuery('#getaddress').on('click',function(e){
         e.preventDefault();
         if('#getaddresserror')
