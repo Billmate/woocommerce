@@ -39,7 +39,6 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		$this->de_consent_terms		= ( isset( $this->settings['de_consent_terms'] ) ) ? $this->settings['de_consent_terms'] : '';
 		$this->prompt_name_entry	= ( isset( $this->settings['prompt_name_entry'] ) ) ? $this->settings['prompt_name_entry'] : 'YES';
 		$this->do_3dsecure			= ( isset( $this->settings['do_3dsecure'] ) ) ? $this->settings['do_3dsecure'] : 'NO';
-		$this->custom_order_status = ( isset($this->settings['custom_order_status']) ) ? $this->settings['custom_order_status'] : false;
 		$this->order_status = (isset($this->settings['order_status'])) ? $this->settings['order_status'] : false;
 		if ( $this->invoice_fee_id == "") $this->invoice_fee_id = 0;
 
@@ -169,7 +168,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		if( in_array($order_status, array('pending')) ){
 
 			//$order->update_status('completed', $payment_note);
-			if($this->custom_order_status == 'no')
+			if($this->order_status == 'default')
 			{
 				$order->payment_complete();
 			} else {
@@ -277,17 +276,11 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 				'options'		=> $available,
 				'default' => ''
 			),
-			'custom_order_status' => array(
-				'title' => __('Custom Order status','billmate'),
-				'type' => 'checkbox',
-				'label' => __('Enable custom order status','billmate'),
-				'default' => 'no'
-			),
 			'order_status' => array(
 				'title' => __('Order status'),
 				'type' => 'select',
 				'description' => __('Choose a special order status for Billmate Cardpay, if you want to use a own status and not WooCommerce built in','billmate'),
-				'default' => '',
+				'default' => 'default',
 				'options' => $order_statuses
 			)
 		) );

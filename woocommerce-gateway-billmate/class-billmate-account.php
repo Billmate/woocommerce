@@ -51,7 +51,6 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 		$this->upper_threshold_monthly_cost		= ( isset( $this->settings['upper_threshold_monthly_cost'] ) ) ? $this->settings['upper_threshold_monthly_cost'] : '';
 		$this->allowed_countries		= ( isset( $this->settings['billmateaccount_allowed_countries'] ) && !empty($this->settings['billmateaccount_allowed_countries'])) ? $this->settings['billmateaccount_allowed_countries'] : array('SE');
 		$this->shop_country				= strlen($this->shop_country) ? $this->shop_country: 'SE';
-		$this->custom_order_status = ( isset($this->settings['custom_order_status']) ) ? $this->settings['custom_order_status'] : false;
 		$this->order_status = (isset($this->settings['order_status'])) ? $this->settings['order_status'] : false;
 
 		if ($this->lower_threshold_monthly_cost == '') $this->lower_threshold_monthly_cost = 0;
@@ -165,8 +164,11 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 			'SE' =>__( 'Sweden','woocommerce'),
 		);
 
-		$order_statuses = wc_get_order_statuses();
-
+		$order_status = wc_get_order_statuses();
+		$order_statuses['default'] = __('Default','billmate');
+		foreach($order_status as $key => $value){
+			$order_statuses[$key] = $value;
+		}
 	   	$this->form_fields = array(
 			'enabled' => array(
 							'title' => __( 'Enable/Disable', 'billmate' ),
@@ -255,17 +257,11 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 							'label' => __( 'Enable Billmate Test Mode.', 'billmate' ),
 							'default' => 'no'
 						),
-			'custom_order_status' => array(
-				'title' => __('Custom Order status','billmate'),
-				'type' => 'checkbox',
-				'label' => __('Enable custom order status','billmate'),
-				'default' => 'no'
-			),
 			'order_status' => array(
 				'title' => __('Order status'),
 				'type' => 'select',
 				'description' => __('Choose a special order status for Billmate Partpayment, if you want to use a own status and not WooCommerce built in','billmate'),
-				'default' => '',
+				'default' => 'default',
 				'options' => $order_statuses
 			)
 		);
@@ -1650,7 +1646,7 @@ parse_str($_POST['post_data'], $datatemp);
 					$order->add_order_note( __('Order is PENDING APPROVAL by Billmate. Please visit Billmate Online for the latest status on this order. Billmate Invoice number: ', 'billmate') . $invno );
 
 					// Payment complete
-					if($this->custom_order_status == 'no')
+					if($this->order_status == 'default')
 					{
 						$order->payment_complete();
 					} else {

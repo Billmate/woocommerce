@@ -1,5 +1,5 @@
 jQuery(document).ready(function($){
-    console.log('test');
+  /*  console.log('test');
    if($('woocommerce_billmate_bankpay_custom_order_status')){
        console.log('tes3t');
        if($('#woocommerce_billmate_bankpay_custom_order_status').is(':checked')){
@@ -84,4 +84,5 @@ jQuery(document).ready(function($){
         })
 
     }
+    */
 });

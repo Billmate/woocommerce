@@ -37,7 +37,6 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 		$this->invoice_fee 			= ( isset( $this->settings['billmate_invoice_fee'] ) ) ? $this->settings['billmate_invoice_fee'] : 0;
 		$this->invoice_fee_tax_class = (isset( $this->settings['billmate_invoice_fee_tax_class'] ) ) ? $this->settings['billmate_invoice_fee_tax_class'] : '';
 		$this->allowed_countries 		= ( isset( $this->settings['billmateinvoice_allowed_countries'] ) && !empty($this->settings['billmateinvoice_allowed_countries'])) ? $this->settings['billmateinvoice_allowed_countries'] : array('SE');
-		$this->custom_order_status = ( isset($this->settings['custom_order_status']) ) ? $this->settings['custom_order_status'] : false;
 		$this->order_status = (isset($this->settings['order_status'])) ? $this->settings['order_status'] : false;
 
 		//if ( $this->handlingfee == "") $this->handlingfee = 0;
@@ -180,7 +179,11 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 			foreach ( $tax_classes as $class )
 				$classes_options[ sanitize_title( $class ) ] = esc_html( $class );
 
-		$order_statuses = wc_get_order_statuses();
+		$order_status = wc_get_order_statuses();
+		$order_statuses['default'] = __('Default','billmate');
+		foreach($order_status as $key => $value){
+			$order_statuses[$key] = $value;
+		}
 
 
 
@@ -234,17 +237,11 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 							'label' => __( 'Enable Billmate Test Mode.', 'billmate' ),
 							'default' => 'no'
 						),
-			'custom_order_status' => array(
-				'title' => __('Custom Order status','billmate'),
-				'type' => 'checkbox',
-				'label' => __('Enable custom order status','billmate'),
-				'default' => 'no'
-			),
 		    'order_status' => array(
 			    'title' => __('Order status','billmate'),
 			    'type' => 'select',
 			    'description' => __('Choose a special order status for Billmate Invoice, if you want to use a own status and not WooCommerce built in','billmate'),
-			    'default' => '',
+			    'default' => 'default',
 			    'options' => $order_statuses
 		    )
 		) );
@@ -1112,7 +1109,7 @@ parse_str($_POST['post_data'], $datatemp);
 					$order->add_order_note( __('Billmate payment completed. Billmate Invoice number:', 'billmate') . $invno );
 
 					// Payment complete
-					if($this->custom_order_status == 'no')
+					if($this->order_status == 'default')
 					{
 						$order->payment_complete();
 					} else {

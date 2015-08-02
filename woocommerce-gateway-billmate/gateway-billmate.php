@@ -6,7 +6,6 @@ Description: Receive payments on your WooCommerce store via Billmate. Invoice, p
 Version: 2.00
 Author: Billmate
 Text Domain: billmate
-Domain Path: /languages
 Author URI: http://billmate.se
 */
 
@@ -81,7 +80,7 @@ function init_billmate_gateway() {
 	 * Localisation
 	 */
 	load_plugin_textdomain('billmate', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/');
-	$dummy = __('Receive payments on your WooCommerce store via Billmate. Invoice, partpayment, credit/debit card and direct bank transfers. Secure and 100% free plugin','billmate');
+	//$dummy = __('Receive payments on your WooCommerce store via Billmate. Invoice, partpayment, credit/debit card and direct bank transfers. Secure and 100% free plugin','billmate');
 	class WC_Gateway_Billmate extends WC_Payment_Gateway {
 
 		public function __construct() {
