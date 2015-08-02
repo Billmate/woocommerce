@@ -1127,7 +1127,7 @@ parse_str($_POST['post_data'], $datatemp);
 					} else {
 						$redirect = $this->get_return_url($order);
 					}
-
+					unset($_SESSION['billmate_pno']);
 					// Return thank you redirect
 					return array(
 						'result' 	=> 'success',
@@ -1153,6 +1153,7 @@ parse_str($_POST['post_data'], $datatemp);
 					} else {
 						$redirect = $this->get_return_url($order);
 					}
+					unset($_SESSION['billmate_pno']);
 
 					// Return thank you redirect
 					return array(
