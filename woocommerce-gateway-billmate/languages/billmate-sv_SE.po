@@ -2,15 +2,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Billmate Woocommerce plugin\n"
 "POT-Creation-Date: 2015-06-29 07:57+0100\n"
-"PO-Revision-Date: 2015-06-29 07:58+0100\n"
+"PO-Revision-Date: 2015-08-02 11:15+0200\n"
 "Last-Translator: \n"
 "Language-Team: Boxedsolutions <jesper@boxedsolutions.se>\n"
 "Language: sv_SE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.8.1\n"
-"X-Poedit-Basepath: ../\n"
+"X-Generator: Poedit 1.8.3\n"
+"X-Poedit-Basepath: ..\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -329,7 +329,7 @@ msgstr "Betalningsplanerna kunde inte uppdateras, Billmate fel meddelande "
 
 #: class-billmate-account.php:357
 msgid "Update Paymentplans"
-msgstr "Uppdatera Betalplaner"
+msgstr "Uppdatera betalplaner"
 
 #: class-billmate-account.php:396
 #, php-format
@@ -459,7 +459,7 @@ msgstr ""
 
 #: class-billmate-account.php:920
 msgid "Payment plan"
-msgstr "Betalplan"
+msgstr "Delbetalningsalternativ"
 
 #: class-billmate-account.php:954 class-billmate-account.php:962
 #: class-billmate-account.php:1014 class-billmate-account.php:1022
@@ -579,7 +579,7 @@ msgstr "Aktivera Billmate Bankbetalning"
 
 #: class-billmate-bankpay.php:232
 msgid "Directpayment with Handelsbanken and Nordea."
-msgstr "Direktbetalning med Handelsbanken och Nordea"
+msgstr "Direktbetalning med internetbank."
 
 #: class-billmate-bankpay.php:238
 msgid ""
@@ -638,7 +638,7 @@ msgstr ""
 
 #: class-billmate-bankpay.php:369
 msgid "Pay with Billmate Bankpay"
-msgstr "Betala med Billmate bankbetalning"
+msgstr "Betala med Billmate Bankbetalning"
 
 #: class-billmate-bankpay.php:706 class-billmate-cardpay.php:709
 #: class-billmate-invoice.php:1249
@@ -684,7 +684,7 @@ msgstr "Nej"
 
 #: class-billmate-cardpay.php:256 class-billmate-cardpay.php:262
 msgid "Enable Name"
-msgstr "Visa namn i Betalfönstret"
+msgstr "Visa namn i betalfönstret"
 
 #: class-billmate-cardpay.php:274
 msgid ""
@@ -793,7 +793,7 @@ msgstr "Faktura avgift"
 
 #: class-billmate-invoice.php:221
 msgid "Add an invoice fee cost without vat, leave empty to disable"
-msgstr "Lägg till en fakturaavgift utan moms, lämna tomt för att inaktivera"
+msgstr "Lägg till en fakturaavgift ex. moms, lämna tomt för att inaktivera"
 
 #: class-billmate-invoice.php:225
 msgid "Invoice fee tax class"
