@@ -185,6 +185,9 @@ AddEvent(window,'load',function(){
     jQuery.getScript("https://efinance.se/billmate/base.js", function(){
         jQuery("#billmate_invoice").Terms("villkor",{invoicefee: billmate_invoice_fee_price}, "#billmate_invoice");
         jQuery("#billmate_partpayment").Terms("villkor_delbetalning",{eid: billmate_eid,effectiverate:0}, "#billmate_partpayment");
+        jQuery(document).on('afterReveal.facebox',function(){
+            $('#facebox').css({'left':'10%','right': '10%'});
+        })
     });
     var method = $('[name="payment_method"]:checked').val();
     switch (method){
