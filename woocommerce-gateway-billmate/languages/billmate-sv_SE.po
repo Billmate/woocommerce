@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Billmate Woocommerce plugin\n"
-"POT-Creation-Date: 2015-08-02 15:04+0200\n"
-"PO-Revision-Date: 2015-08-02 15:04+0200\n"
+"POT-Creation-Date: 2015-08-03 09:50+0200\n"
+"PO-Revision-Date: 2015-08-03 09:50+0200\n"
 "Last-Translator: \n"
 "Language-Team: Boxedsolutions <jesper@boxedsolutions.se>\n"
 "Language: sv_SE\n"
@@ -119,10 +119,8 @@ msgstr ""
 #: ../class-billmate-account.php:213
 msgid ""
 "[billmate_img]<br/>Part pay from [billmate_price] [billmate_currency]/month."
-"<br/>[billmate_partpayment_info_link]"
 msgstr ""
-"[billmate_img]<br/>Delbetala från [billmate_price] [billmate_currency]/månad."
-"<br/>[billmate_partpayment_info_link]"
+"[billmate_img]<br/>Delbetala från [billmate_price] [billmate_currency]/month."
 
 #: ../class-billmate-account.php:216
 msgid "Placement of monthly cost - product page"
@@ -186,7 +184,7 @@ msgstr ""
 
 #: ../class-billmate-account.php:232
 msgid "From [billmate_price] [billmate_currency]/month"
-msgstr "Från [billmate_price] [billmate_currency]/månad"
+msgstr "Delbetala från [billmate_price] [billmate_currency]/månad"
 
 #: ../class-billmate-account.php:235
 msgid "Placement of monthly cost - shop page"
@@ -210,17 +208,25 @@ msgstr "Välj var på butiksidan månadskostnaden ska visas"
 msgid "Lower threshold for monthly cost"
 msgstr "Lägsta belopp för månadskostnad"
 
-#: ../class-billmate-account.php:244 ../class-billmate-account.php:250
+#: ../class-billmate-account.php:244
 msgid ""
-"Disable the monthly cost feature if <i>Product price</i> is higher than the "
+"Disable the monthly cost feature if <i>product price</i> is lower than the "
 "specified value. Leave blank to disable."
 msgstr ""
-"Inaktiverar månadskostnads funktionen om <i>Produktens pris</i> är högre än "
-"specificerat belopp. Lämna tomt för att inaktiverar."
+"Inaktiverar månadskostnadsfunktionen om <i>produktens pris</i> är lägre än "
+"specificerat belopp. Lämna tomt för att inaktivera."
 
 #: ../class-billmate-account.php:248
 msgid "Upper threshold for monthly cost"
 msgstr "Högsta belopp för månadskostnad"
+
+#: ../class-billmate-account.php:250
+msgid ""
+"Disable the monthly cost feature if <i>product price</i> is higher than the "
+"specified value. Leave blank to disable."
+msgstr ""
+"Inaktiverar månadskostnadsfunktionen om <i>produktens pris</i> är högre än "
+"specificerat belopp. Lämna tomt för att inaktivera."
 
 #: ../class-billmate-account.php:255
 msgid "Testmode"
@@ -849,6 +855,20 @@ msgstr "<strong>Kön</strong> krävs för att gå vidare"
 #: ../class-billmate-invoice.php:1356
 msgid "Shipping and billing address must be the same when paying via Billmate"
 msgstr "Leverans och Faktura adress måste vara samma vid köp med Billmate"
+
+#~ msgid ""
+#~ "[billmate_img]<br/>Part pay from [billmate_price] [billmate_currency]/"
+#~ "month.<br/>[billmate_partpayment_info_link]"
+#~ msgstr ""
+#~ "[billmate_img]<br/>Delbetala från [billmate_price] [billmate_currency]/"
+#~ "månad.<br/>[billmate_partpayment_info_link]"
+
+#~ msgid ""
+#~ "Disable the monthly cost feature if <i>Product price</i> is higher than "
+#~ "the specified value. Leave blank to disable."
+#~ msgstr ""
+#~ "Inaktiverar månadskostnads funktionen om <i>Produktens pris</i> är högre "
+#~ "än specificerat belopp. Lämna tomt för att inaktiverar."
 
 #~ msgid "Custom Order status"
 #~ msgstr "Anpassad Order status"

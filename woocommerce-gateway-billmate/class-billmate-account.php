@@ -210,7 +210,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 							'title' => __( 'Text for Monthly cost - product page', 'billmate' ),
 							'type' => 'textarea',
 							'description' => __( 'This controls the Monthly cost text displayed on the single product page. You can use the following shortcodes: [billmate_img] [billmate_price] [billmate_currency] & [billmate_partpayment_info_link].', 'billmate' ),
-							'default' => __('[billmate_img]<br/>Part pay from [billmate_price] [billmate_currency]/month.<br/>[billmate_partpayment_info_link]', 'billmate')
+							'default' => __('[billmate_img]<br/>Part pay from [billmate_price] [billmate_currency]/month.', 'billmate')
 						),
 			'show_monthly_cost_prio' => array(
 								'title' => __( 'Placement of monthly cost - product page', 'billmate' ),
@@ -241,13 +241,13 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 			'lower_threshold_monthly_cost' => array(
 							'title' => __( 'Lower threshold for monthly cost', 'billmate' ),
 							'type' => 'text',
-							'description' => __( 'Disable the monthly cost feature if <i>Product price</i> is higher than the specified value. Leave blank to disable.', 'billmate' ),
+							'description' => __( 'Disable the monthly cost feature if <i>product price</i> is lower than the specified value. Leave blank to disable.', 'billmate' ),
 							'default' => ''
 						),
 			'upper_threshold_monthly_cost' => array(
 							'title' => __( 'Upper threshold for monthly cost', 'billmate' ),
 							'type' => 'text',
-							'description' => __( 'Disable the monthly cost feature if <i>Product price</i> is higher than the specified value. Leave blank to disable.', 'billmate' ),
+							'description' => __( 'Disable the monthly cost feature if <i>product price</i> is higher than the specified value. Leave blank to disable.', 'billmate' ),
 							'default' => ''
 						),
 
