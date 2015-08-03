@@ -25,13 +25,14 @@ class BillmateCommon {
             ?>
             <p class="form-row">
                 <label for="pno"><?php echo __('Social Security Number / Corporate Registration Number','billmate'); ?></label>
-                <input type="text" name="pno" label="12345678-1235" class="form-row-wide" style="width: 60%;" value="<?php echo isset($_SESSION['billmate_pno']) ? $_SESSION['billmate_pno'] : ''; ?>"/>
+                <input type="text" name="pno" label="12345678-1235" class="form-row-wide input-text" style="width: 60%;" value="<?php echo isset($_SESSION['billmate_pno']) ? $_SESSION['billmate_pno'] : ''; ?>"/>
                 <button id="getaddress"><?php echo __('Get Address','billmate'); ?></button>
             </p>
             <div id="getaddresserr"></div>
             <div class="clear"></div>
             <script type="text/javascript">
                 var ajaxurl = '<?php echo admin_url('admin-ajax.php'); ?>';
+				var nopno = '<?php echo __('You have to type in Social Security number/Corporate number','billmate'); ?>';
             </script>
 
             <?php

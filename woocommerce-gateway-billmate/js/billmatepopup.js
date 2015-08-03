@@ -270,6 +270,12 @@ AddEvent(window,'load',function(){
         e.preventDefault();
         if('#getaddresserror')
             $('#getaddresserror').remove();
+        if($('[name="pno"]').val() == ''){
+            var message = '<div id="getaddresserror" class="woocommerce-error">'+nopno+'</div>';
+            $('#getaddresserr').html(message);
+            return false;
+        }
+
         jQuery.ajax({
             url: ajaxurl,
             type: 'POST',

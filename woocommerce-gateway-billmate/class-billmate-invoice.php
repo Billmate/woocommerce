@@ -571,6 +571,9 @@ parse_str($_POST['post_data'], $datatemp);
 		else :
 			$billmate_pno 				= isset($_POST['billmate_invo_pno']) ? woocommerce_clean($_POST['billmate_invo_pno']) : '';
 		endif;
+		if($billmate_pno == ''){
+			return;
+		}
 		$billmate_gender 					= isset($_POST['billmate_invo_gender']) ? woocommerce_clean($_POST['billmate_invo_gender']) : '';
 		$billmate_de_consent_terms		= isset($_POST['billmate_invo_de_consent_terms']) ? woocommerce_clean($_POST['billmate_invo_de_consent_terms']) : '';
 		// Split address into House number and House extension for NL & DE customers
@@ -697,7 +700,9 @@ parse_str($_POST['post_data'], $datatemp);
 		else :
 			$billmate_pno 				= isset($_POST['billmate_invo_pno']) ? woocommerce_clean($_POST['billmate_invo_pno']) : '';
 		endif;
-
+		if($billmate_pno == ''){
+			return;
+		}
 		$billmate_gender 					= isset($_POST['billmate_invo_gender']) ? woocommerce_clean($_POST['billmate_invo_gender']) : '';
 		$billmate_de_consent_terms		= isset($_POST['billmate_invo_de_consent_terms']) ? woocommerce_clean($_POST['billmate_invo_de_consent_terms']) : '';
 
