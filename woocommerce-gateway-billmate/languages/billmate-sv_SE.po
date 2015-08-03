@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Billmate Woocommerce plugin\n"
-"POT-Creation-Date: 2015-08-03 09:50+0200\n"
-"PO-Revision-Date: 2015-08-03 09:50+0200\n"
+"POT-Creation-Date: 2015-08-03 10:04+0200\n"
+"PO-Revision-Date: 2015-08-03 10:26+0200\n"
 "Last-Translator: \n"
 "Language-Team: Boxedsolutions <jesper@boxedsolutions.se>\n"
 "Language: sv_SE\n"
@@ -239,15 +239,15 @@ msgstr "Aktivera Billmate Testläge"
 
 #: ../class-billmate-account.php:261 ../class-billmate-bankpay.php:258
 #: ../class-billmate-cardpay.php:280 ../class-billmate-invoice.php:241
-msgid "Order status"
-msgstr "Order status"
+msgid "Custom approved order status"
+msgstr "Anpassad godkänd orderstatus"
 
 #: ../class-billmate-account.php:263
 msgid ""
 "Choose a special order status for Billmate Partpayment, if you want to use a "
-"own status and not WooCommerce built in"
+"own status and not WooCommerce built in."
 msgstr ""
-"Välj en speciell order status för Billmate Delbetalning, om du vill använda "
+"Välj en speciell orderstatus för Billmate Delbetalning, om du vill använda "
 "en egen status och inte de som är inbyggda i WooCommerce."
 
 #: ../class-billmate-account.php:270 ../class-billmate-bankpay.php:267
@@ -256,8 +256,8 @@ msgid "Allowed Countries"
 msgstr "Tillåtna Länder"
 
 #: ../class-billmate-account.php:272
-msgid "Billmate Partpayment activated for customers in these countries"
-msgstr "Billmate Delbetalning aktiverat för kunder i dessa länder"
+msgid "Billmate Partpayment activated for customers in these countries."
+msgstr "Billmate Delbetalning aktiverad för kunder i dessa länder."
 
 #: ../class-billmate-account.php:293
 msgid ""
@@ -603,14 +603,14 @@ msgstr "Testläge"
 #: ../class-billmate-bankpay.php:260
 msgid ""
 "Choose a special order status for Billmate Bankpay, if you want to use a own "
-"status and not WooCommerce built in"
+"status and not WooCommerce built in."
 msgstr ""
-"Välj en speciell order status för Billmate Bankbetalning, om du vill använda "
+"Välj en speciell orderstatus för Billmate Bankbetalning, om du vill använda "
 "en egen status och inte de som är inbyggda i WooCommerce."
 
 #: ../class-billmate-bankpay.php:269
-msgid "Billmate Bank activated for customers in these countries"
-msgstr "Billmate Bankbetalning aktiverat för dessa länder"
+msgid "Billmate Bank activated for customers in these countries."
+msgstr "Billmate Bankbetalning aktiverad för kunder i dessa länder."
 
 #: ../class-billmate-bankpay.php:291
 msgid ""
@@ -675,17 +675,17 @@ msgstr "Visa namn i betalfönstret"
 #: ../class-billmate-cardpay.php:273
 msgid ""
 "Billmate Card activated for customers in these countries, Leave blank to "
-"allow all"
+"allow all."
 msgstr ""
-"Billmate Kort aktiverat för kunder i dessa länder, lämna tomt för att "
-"tillåta alla länder."
+"Billmate Kortbetalning aktiverad för kunder i dessa länder, lämna tomt för "
+"att tillåta alla."
 
 #: ../class-billmate-cardpay.php:282
 msgid ""
 "Choose a special order status for Billmate Cardpay, if you want to use a own "
-"status and not WooCommerce built in"
+"status and not WooCommerce built in."
 msgstr ""
-"Välj en speciell order status för Billmate Kortbetalning, om du vill använda "
+"Välj en speciell orderstatus för Billmate Kortbetalning, om du vill använda "
 "en egen status och inte de som är inbyggda i WooCommerce."
 
 #: ../class-billmate-cardpay.php:302
@@ -778,16 +778,16 @@ msgid "Invoice fee"
 msgstr "Faktura avgift"
 
 #: ../class-billmate-invoice.php:224
-msgid "Add an invoice fee cost without vat, leave empty to disable"
-msgstr "Lägg till en fakturaavgift ex. moms, lämna tomt för att inaktivera"
+msgid "Add an invoice fee cost without vat, leave empty to disable."
+msgstr "Lägg till en fakturaavgift ex. moms, lämna tomt för att inaktivera."
 
 #: ../class-billmate-invoice.php:228
 msgid "Invoice fee tax class"
 msgstr "Moms klass för faktura avgift"
 
 #: ../class-billmate-invoice.php:230
-msgid "The tax class for Invoice fee"
-msgstr "Momsklassen för fakturaavgiften"
+msgid "The tax class for Invoice fee."
+msgstr "Momsklass för fakturaavgiften."
 
 #: ../class-billmate-invoice.php:243
 msgid ""
@@ -798,8 +798,8 @@ msgstr ""
 "egen status och inte de som är inbyggda i WooCommerce."
 
 #: ../class-billmate-invoice.php:252
-msgid "Billmate Invoice activated for customers in these countries"
-msgstr "Billmate faktura aktiverat för dessa länder"
+msgid "Billmate Invoice activated for customers in these countries."
+msgstr "Billmate Faktura aktiverad för kunder i dessa länder."
 
 #: ../class-billmate-invoice.php:275
 msgid ""
@@ -839,7 +839,7 @@ msgstr "köpvillkoren"
 
 #: ../class-billmate-invoice.php:957 ../class-billmate-invoice.php:1000
 msgid "Invoice Fee"
-msgstr "Faktura avgift"
+msgstr "Fakturaavgift"
 
 #: ../class-billmate-invoice.php:1183
 #, php-format
@@ -855,6 +855,52 @@ msgstr "<strong>Kön</strong> krävs för att gå vidare"
 #: ../class-billmate-invoice.php:1356
 msgid "Shipping and billing address must be the same when paying via Billmate"
 msgstr "Leverans och Faktura adress måste vara samma vid köp med Billmate"
+
+#~ msgid "Order status"
+#~ msgstr "Order status"
+
+#~ msgid ""
+#~ "Choose a special order status for Billmate Partpayment, if you want to "
+#~ "use a own status and not WooCommerce built in"
+#~ msgstr ""
+#~ "Välj en speciell order status för Billmate Delbetalning, om du vill "
+#~ "använda en egen status och inte de som är inbyggda i WooCommerce."
+
+#~ msgid "Billmate Partpayment activated for customers in these countries"
+#~ msgstr "Billmate Delbetalning aktiverat för kunder i dessa länder"
+
+#~ msgid ""
+#~ "Choose a special order status for Billmate Bankpay, if you want to use a "
+#~ "own status and not WooCommerce built in"
+#~ msgstr ""
+#~ "Välj en speciell order status för Billmate Bankbetalning, om du vill "
+#~ "använda en egen status och inte de som är inbyggda i WooCommerce."
+
+#~ msgid "Billmate Bank activated for customers in these countries"
+#~ msgstr "Billmate Bankbetalning aktiverat för dessa länder"
+
+#~ msgid ""
+#~ "Billmate Card activated for customers in these countries, Leave blank to "
+#~ "allow all"
+#~ msgstr ""
+#~ "Billmate Kort aktiverat för kunder i dessa länder, lämna tomt för att "
+#~ "tillåta alla länder."
+
+#~ msgid ""
+#~ "Choose a special order status for Billmate Cardpay, if you want to use a "
+#~ "own status and not WooCommerce built in"
+#~ msgstr ""
+#~ "Välj en speciell order status för Billmate Kortbetalning, om du vill "
+#~ "använda en egen status och inte de som är inbyggda i WooCommerce."
+
+#~ msgid "Add an invoice fee cost without vat, leave empty to disable"
+#~ msgstr "Lägg till en fakturaavgift ex. moms, lämna tomt för att inaktivera"
+
+#~ msgid "The tax class for Invoice fee"
+#~ msgstr "Momsklassen för fakturaavgiften"
+
+#~ msgid "Billmate Invoice activated for customers in these countries"
+#~ msgstr "Billmate faktura aktiverat för dessa länder"
 
 #~ msgid ""
 #~ "[billmate_img]<br/>Part pay from [billmate_price] [billmate_currency]/"

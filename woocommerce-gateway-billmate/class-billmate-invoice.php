@@ -221,13 +221,13 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 			'billmate_invoice_fee' => array(
 								'title' => __( 'Invoice fee', 'billmate'),
 								'type' => 'text',
-								'description' => __( 'Add an invoice fee cost without vat, leave empty to disable','billmate'),
+								'description' => __( 'Add an invoice fee cost without vat, leave empty to disable.','billmate'),
 								'default' => ''
 			),
 			'billmate_invoice_fee_tax_class' => array(
 								'title' => __('Invoice fee tax class', 'billmate'),
 								'type' => 'select',
-								'description' => __('The tax class for Invoice fee','billmate'),
+								'description' => __('The tax class for Invoice fee.','billmate'),
 								'default' => '',
 								'options' => $classes_options
 			),
@@ -238,7 +238,7 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 							'default' => 'no'
 						),
 		    'order_status' => array(
-			    'title' => __('Order status','billmate'),
+			    'title' => __('Custom approved order status','billmate'),
 			    'type' => 'select',
 			    'description' => __('Choose a special order status for Billmate Invoice, if you want to use a own status and not WooCommerce built in','billmate'),
 			    'default' => 'default',
@@ -249,7 +249,7 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
             $this->form_fields['billmateinvoice_allowed_countries'] = array(
                 'title' 		=> __( 'Allowed Countries', 'woocommerce' ),
                 'type' 			=> 'multiselect',
-                'description' 	=> __( 'Billmate Invoice activated for customers in these countries', 'billmate' ),
+                'description' 	=> __( 'Billmate Invoice activated for customers in these countries.', 'billmate' ),
                 'class'			=> 'chosen_select',
                 'css' 			=> 'min-width:350px;',
                 'options'		=> $available,

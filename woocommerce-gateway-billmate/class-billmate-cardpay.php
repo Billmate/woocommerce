@@ -270,16 +270,16 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			'billmatecard_allowed_countries' => array(
 				'title' 		=> __( 'Allowed Countries', 'woocommerce' ),
 				'type' 			=> 'multiselect',
-				'description' 	=> __( 'Billmate Card activated for customers in these countries, Leave blank to allow all', 'billmate' ),
+				'description' 	=> __( 'Billmate Card activated for customers in these countries, Leave blank to allow all.', 'billmate' ),
 				'class'			=> 'chosen_select',
 				'css' 			=> 'min-width:350px;',
 				'options'		=> $available,
 				'default' => ''
 			),
 			'order_status' => array(
-				'title' => __('Order status'),
+				'title' => __('Custom approved order status'),
 				'type' => 'select',
-				'description' => __('Choose a special order status for Billmate Cardpay, if you want to use a own status and not WooCommerce built in','billmate'),
+				'description' => __('Choose a special order status for Billmate Cardpay, if you want to use a own status and not WooCommerce built in.','billmate'),
 				'default' => 'default',
 				'options' => $order_statuses
 			)

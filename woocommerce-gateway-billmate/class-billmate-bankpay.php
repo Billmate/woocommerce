@@ -255,9 +255,9 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 							'default' => 'no'
 						),
 			'order_status' => array(
-				'title' => __('Order status'),
+				'title' => __('Custom approved order status'),
 				'type' => 'select',
-				'description' => __('Choose a special order status for Billmate Bankpay, if you want to use a own status and not WooCommerce built in','billmate'),
+				'description' => __('Choose a special order status for Billmate Bankpay, if you want to use a own status and not WooCommerce built in.','billmate'),
 				'default' => 'default',
 				'options' => $order_statuses
 			)
@@ -266,7 +266,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
             $this->form_fields['billmatebank_allowed_countries'] = array(
                 'title' => __('Allowed Countries', 'woocommerce'),
                 'type' => 'multiselect',
-                'description' => __('Billmate Bank activated for customers in these countries', 'billmate'),
+                'description' => __('Billmate Bank activated for customers in these countries.', 'billmate'),
                 'class' => 'chosen_select',
                 'css' => 'min-width:350px;',
                 'options' => $available,
