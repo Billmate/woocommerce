@@ -997,7 +997,7 @@ parse_str($_POST['post_data'], $datatemp);
 
 				$total += $this->invoice_fee * 100;
 				$totalTax += (($rate/100) * $this->invoice_fee)*100;
-				$woocommerce->cart->add_fee(__('Invoice Fee'),$this->invoice_fee,true,$this->invoice_fee_tax_class);
+				$woocommerce->cart->add_fee(__('Invoice fee'),$this->invoice_fee,true,$this->invoice_fee_tax_class);
 
 			} // End version check
 
@@ -1290,7 +1290,7 @@ class WC_Gateway_Billmate_Invoice_Extra {
 		 global $woocommerce;
 
 		 // Only run this if Billmate Invoice is the choosen payment method and this is WC +2.0
-		 if (isset($_POST['payment_method']) && $_POST['payment_method'] == 'billmate' && version_compare( WOOCOMMERCE_VERSION, '2.0', '>=' )) {
+		 if (isset($_POST['payment_method']) && $_POST['payment_method'] == 'billmate_invoice' && version_compare( WOOCOMMERCE_VERSION, '2.0', '>=' )) {
 
 		 	$invoice_fee = new WC_Gateway_Billmate_Invoice;
 			 $tax = new WC_Tax();
@@ -1315,7 +1315,7 @@ class WC_Gateway_Billmate_Invoice_Extra {
 		$this->shop_country = $data->get_billmate_shop_country();
 
  		// Only run this if Billmate Invoice is the choosen payment method
- 		if (isset($_POST['payment_method']) && $_POST['payment_method'] == 'billmate') {
+ 		if (isset($_POST['payment_method']) && $_POST['payment_method'] == 'billmate_invoice') {
 
  			// SE, NO, DK & FI
 	 		if ( $this->shop_country == 'SE' || $this->shop_country == 'NO' || $this->shop_country == 'DK' || $this->shop_country == 'FI' ){

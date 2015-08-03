@@ -199,7 +199,7 @@ AddEvent(window,'load',function(){
                 $('#invoice_pno').val($('[name="pno"]').val())
             }
             break;
-        case 'billmate':
+        case 'billmate_invoice':
             if($('[name="pno"]').length){
                 if(!$('[name="pno"]').parent('p').hasClass('validate-required')) {
                     $('[name="pno"]').parent('p').addClass('validate-required');
@@ -233,7 +233,7 @@ AddEvent(window,'load',function(){
                     $('[name="billmate_pno"]').val($('[name="pno"]').val())
                 }
                 break;
-            case 'billmate':
+            case 'billmate_invoice':
                 if($('[name="pno"]').length){
                     if(!$('[name="pno"]').parent('p').hasClass('validate-required')) {
                         $('[name="pno"]').parent('p').addClass('validate-required');

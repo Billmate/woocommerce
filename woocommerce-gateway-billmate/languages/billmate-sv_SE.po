@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Billmate Woocommerce plugin\n"
 "POT-Creation-Date: 2015-08-03 10:04+0200\n"
-"PO-Revision-Date: 2015-08-03 10:26+0200\n"
+"PO-Revision-Date: 2015-08-03 10:45+0200\n"
 "Last-Translator: \n"
 "Language-Team: Boxedsolutions <jesper@boxedsolutions.se>\n"
 "Language: sv_SE\n"
@@ -775,7 +775,7 @@ msgstr ""
 
 #: ../class-billmate-invoice.php:222 ../class-billmate-invoice.php:1301
 msgid "Invoice fee"
-msgstr "Faktura avgift"
+msgstr "Fakturaavgift"
 
 #: ../class-billmate-invoice.php:224
 msgid "Add an invoice fee cost without vat, leave empty to disable."
