@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Billmate Woocommerce plugin\n"
 "POT-Creation-Date: 2015-08-03 10:04+0200\n"
-"PO-Revision-Date: 2015-08-03 11:41+0200\n"
+"PO-Revision-Date: 2015-08-03 13:36+0200\n"
 "Last-Translator: \n"
 "Language-Team: Boxedsolutions <jesper@boxedsolutions.se>\n"
 "Language: sv_SE\n"
@@ -52,7 +52,7 @@ msgstr "Titel"
 #: ../class-billmate-account.php:182 ../class-billmate-cardpay.php:223
 #: ../class-billmate-invoice.php:200
 msgid "This controls the title which the user sees during checkout."
-msgstr "Detta är titeln på betalmetoden kunden ser i kassan"
+msgstr "Detta är titeln på betalmetoden kunden ser i kassan."
 
 #: ../class-billmate-account.php:183
 msgid "Billmate - Part Payment"
@@ -158,7 +158,7 @@ msgstr "Efter produktens delning via sociala nätverk-knappar"
 msgid ""
 "Select where on the products page the Monthly cost information should be "
 "displayed."
-msgstr "Välj var på produkt sidan månadskostnads informationen ska visas"
+msgstr "Välj var på produkt sidan månadskostnads informationen ska visas."
 
 #: ../class-billmate-account.php:223
 msgid "Display monthly cost - shop page"
@@ -202,7 +202,7 @@ msgstr "Under \"Lägg i varukorg\"-knappen"
 msgid ""
 "Select where on the shop page the Monthly cost information should be "
 "displayed."
-msgstr "Välj var på butiksidan månadskostnaden ska visas"
+msgstr "Välj var på butiksidan månadskostnaden ska visas."
 
 #: ../class-billmate-account.php:242
 msgid "Lower threshold for monthly cost"
@@ -808,7 +808,7 @@ msgid ""
 "for verification."
 msgstr ""
 "Med Billmate kan dina kunder handla med faktura. Billmate fungerar genom att "
-"lägga till extra informationsfält som skickas till Billmate för verifiering"
+"lägga till extra informationsfält som skickas till Billmate för verifiering."
 
 #: ../class-billmate-invoice.php:278
 #, php-format

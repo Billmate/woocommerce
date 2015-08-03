@@ -226,7 +226,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			'title' => array(
 							'title' => __( 'Title', 'billmate' ),
 							'type' => 'text',
-							'description' => __( 'Billmate Bank', 'billmate' ),
+							'description' => __( 'This controls the title which the user sees during checkout.', 'billmate' ),
 							'default' => __( 'Billmate Bank', 'billmate' )
 						),
 			'description' => array(
