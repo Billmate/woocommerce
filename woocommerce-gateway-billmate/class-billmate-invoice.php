@@ -992,7 +992,7 @@ parse_str($_POST['post_data'], $datatemp);
 				$rate = $rate['rate'];
 				$orderValues['Cart']['Handling'] = array(
 					'withouttax'    => round($this->invoice_fee*100,0),
-					'taxrate'      => $rate,
+					'taxrate'      => (float)$rate,
 				);
 
 				$total += $this->invoice_fee * 100;
