@@ -121,7 +121,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			$accept_url_hit = true;
 			$payment_note = 'Note: Payment Completed Accept Url.';
 		} else {
-			$_POST = $_GET = file_get_contents("php://input");
+			$_POST = (is_array($_GET)) ? $_GET : file_get_contents("php://input");
 			$accept_url_hit = false;
 			$payment_note = 'Note: Payment Completed (callback success).';
 		}
@@ -133,6 +133,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 				$_POST[$key] = stripslashes($value);
 		}
 		$data = $k->verify_hash($_POST);
+		error_log(print_r($data,true));
 		$order_id = $data['orderid'];
 		$order = new WC_Order( $order_id );
 		// Check if transient is set(Success url is processing)
@@ -166,13 +167,17 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		}
 
 		if( in_array($order_status, array('pending')) ){
+			if($data['status'] == 'Paid') {
 
-			if($this->order_status == 'default')
-			{
-				$order->payment_complete();
-			} else {
-				$order->update_status($this->order_status);
+				if ($this->order_status == 'default') {
+					$order->add_order_note(__($payment_note,'billmate'));
+					$order->payment_complete();
+				} else {
+					$order->add_order_note(__($payment_note,'billmate'));
+					$order->update_status($this->order_status);
+				}
 			}
+
 			if( $accept_url_hit ){
 				$redirect = '';
 				$woocommerce->cart->empty_cart();

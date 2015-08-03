@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Billmate Woocommerce plugin\n"
-"POT-Creation-Date: 2015-08-03 10:04+0200\n"
-"PO-Revision-Date: 2015-08-03 13:36+0200\n"
+"POT-Creation-Date: 2015-08-03 14:09+0200\n"
+"PO-Revision-Date: 2015-08-03 14:09+0200\n"
 "Last-Translator: \n"
 "Language-Team: Boxedsolutions <jesper@boxedsolutions.se>\n"
 "Language: sv_SE\n"
@@ -21,7 +21,7 @@ msgstr ""
 msgid "Billmate Part Payment"
 msgstr "Billmate Delbetalning"
 
-#: ../class-billmate-account.php:36
+#: ../class-billmate-account.php:36 ../class-billmate-account.php:183
 msgid "Billmate Partpayment"
 msgstr "Billmate Delbetalning"
 
@@ -49,14 +49,10 @@ msgstr "Aktivera Billmate Delbetalning"
 msgid "Title"
 msgstr "Titel"
 
-#: ../class-billmate-account.php:182 ../class-billmate-cardpay.php:223
-#: ../class-billmate-invoice.php:200
+#: ../class-billmate-account.php:182 ../class-billmate-bankpay.php:229
+#: ../class-billmate-cardpay.php:223 ../class-billmate-invoice.php:200
 msgid "This controls the title which the user sees during checkout."
 msgstr "Detta är titeln på betalmetoden kunden ser i kassan."
-
-#: ../class-billmate-account.php:183
-msgid "Billmate - Part Payment"
-msgstr "Billmate - Delbetalning"
 
 #: ../class-billmate-account.php:186 ../class-billmate-bankpay.php:233
 #: ../class-billmate-cardpay.php:227 ../class-billmate-invoice.php:204
@@ -566,8 +562,8 @@ msgstr "Tack för din order"
 msgid "Read more"
 msgstr "Visa mer."
 
-#: ../class-billmate-bankpay.php:18 ../class-billmate-bankpay.php:229
-#: ../class-billmate-bankpay.php:230 ../class-billmate-bankpay.php:289
+#: ../class-billmate-bankpay.php:18 ../class-billmate-bankpay.php:230
+#: ../class-billmate-bankpay.php:289
 msgid "Billmate Bank"
 msgstr "Billmate Bankbetalning"
 
@@ -773,7 +769,8 @@ msgstr ""
 "Inaktivera Billmate Faktura om varukorgens summa är högre än inställt värde. "
 "Lämna tomt för att inaktivera."
 
-#: ../class-billmate-invoice.php:222 ../class-billmate-invoice.php:1301
+#: ../class-billmate-invoice.php:222 ../class-billmate-invoice.php:957
+#: ../class-billmate-invoice.php:1000 ../class-billmate-invoice.php:1301
 msgid "Invoice fee"
 msgstr "Fakturaavgift"
 
@@ -837,10 +834,6 @@ msgstr ""
 msgid "Terms of invoice"
 msgstr "köpvillkoren"
 
-#: ../class-billmate-invoice.php:957 ../class-billmate-invoice.php:1000
-msgid "Invoice Fee"
-msgstr "Fakturaavgift"
-
 #: ../class-billmate-invoice.php:1183
 #, php-format
 msgid "%s (Error code: %s)"
@@ -855,6 +848,30 @@ msgstr "<strong>Kön</strong> krävs för att gå vidare"
 #: ../class-billmate-invoice.php:1356
 msgid "Shipping and billing address must be the same when paying via Billmate"
 msgstr "Leverans och Faktura adress måste vara samma vid köp med Billmate"
+
+#: ../gateway-billmate.php:84
+msgid ""
+"Receive payments on your WooCommerce store via Billmate. Invoice, "
+"partpayment, credit/debit card and direct bank transfers. Secure and "
+"100&#37; free plugin"
+msgstr ""
+"Ta betalt i din WooCommerce butik med Billmate. Faktura, delbetalning, "
+"kredit/debit kort och direkt bankbetalning. Säkert och 100&#37; gratis "
+"plugin."
+
+#~ msgid ""
+#~ "Receive payments on your WooCommerce store via Billmate. Invoice, "
+#~ "partpayment, credit/debit card and direct bank transfers. Secure and 100% "
+#~ "free plugin"
+#~ msgstr ""
+#~ "Ta betalt i din WooCommerce butik med Billmate. Faktura, delbetalning, "
+#~ "kredit/debit kort och direkt bankbetalning. Säkert och 100% gratis plugin."
+
+#~ msgid "Billmate - Part Payment"
+#~ msgstr "Billmate - Delbetalning"
+
+#~ msgid "Invoice Fee"
+#~ msgstr "Fakturaavgift"
 
 #~ msgid "Order status"
 #~ msgstr "Order status"
@@ -921,14 +938,6 @@ msgstr "Leverans och Faktura adress måste vara samma vid köp med Billmate"
 
 #~ msgid "Enable custom order status"
 #~ msgstr "Aktivera anpassad orderstatus"
-
-#~ msgid ""
-#~ "Receive payments on your WooCommerce store via Billmate. Invoice, "
-#~ "partpayment, credit/debit card and direct bank transfers. Secure and 100% "
-#~ "free plugin"
-#~ msgstr ""
-#~ "Ta betalt i din WooCommerce butik med Billmate. Faktura, delbetalning, "
-#~ "kredit/debit kort och direkt bankbetalning. Säkert och 100% gratis plugin."
 
 #~ msgid "Terms of invoice."
 #~ msgstr "köpvillkor för fakturabetalning."
