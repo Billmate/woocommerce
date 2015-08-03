@@ -374,7 +374,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			'currency' => get_woocommerce_currency(),
 			'language' => strtolower($language[0]),
 			'country' => $this->billmate_country,
-			'autoactivate' => ($capture_now == 'YES') ? 1 : 0,
+			'autoactivate' => 0,
 			'orderid' => preg_replace('/#/','',$order->get_order_number())
 		);
 		$orderValues['PaymentInfo'] = array(
@@ -608,7 +608,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 
 			$orderValues['Cart']['Shipping'] = array(
 				'withouttax'    => round(($shipping_price-$order->order_shipping_tax)*100,0),
-				'taxrate'      => $calculated_shipping_tax_percentage,
+				'taxrate'      => (float)$calculated_shipping_tax_percentage,
 
 			);
 			$total += ($shipping_price-$order->order_shipping_tax) * 100;
