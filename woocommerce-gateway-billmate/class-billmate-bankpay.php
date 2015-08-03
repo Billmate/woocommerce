@@ -255,7 +255,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 							'default' => 'no'
 						),
 			'order_status' => array(
-				'title' => __('Custom approved order status'),
+				'title' => __('Custom approved order status','billmate'),
 				'type' => 'select',
 				'description' => __('Choose a special order status for Billmate Bankpay, if you want to use a own status and not WooCommerce built in.','billmate'),
 				'default' => 'default',
