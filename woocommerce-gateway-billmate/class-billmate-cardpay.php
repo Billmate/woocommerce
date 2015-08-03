@@ -409,7 +409,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		$callback_url = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Cardpay';
 		$actionurl = $this->testmode ? $this->tst_url : $this->prod_url;
 		$secret    = substr($this->secret,0,12);
-		$eid       = $this->settings['eid'];
+		$eid       = $this->eid;
 		$currency  = 'SEK';
 		$return_method = 'GET';
         $url = parse_url($accept_url);

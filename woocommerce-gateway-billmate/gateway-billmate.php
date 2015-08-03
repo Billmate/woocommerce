@@ -24,6 +24,7 @@ if ( ! function_exists( 'woothemes_queue_update' ) )
 
 // Init Billmate Gateway after WooCommerce has loaded
 add_action('plugins_loaded', 'init_billmate_gateway', 0);
+
 //echo $cssfile = plugins_url( '/colorbox.css', __FILE__ );
 
 define('BILLMATE_DIR', dirname(__FILE__) . '/');

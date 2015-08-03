@@ -17,8 +17,18 @@ class BillmateCommon {
         add_action('wp_ajax_nopriv_getaddress',array($this,'getaddress'));
         add_action('wp_ajax_getaddress',array($this,'getaddress'));
         add_action('woocommerce_checkout_before_customer_details',array($this,'get_address_fields'));
+		add_filter('woocommerce_payment_successful_result',array($this,'clear_pno'));
+
+
 	}
 
+	public function clear_pno($result,$order_id)
+	{
+		if(isset($_SESSION['billmate_pno']))
+			unset($_SESSION['billmate_pno']);
+		return $result;
+
+	}
     public function get_address_fields()
     {
         if(get_option('billmate_common_getaddress') == 'active'){
