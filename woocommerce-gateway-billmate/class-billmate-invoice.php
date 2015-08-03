@@ -13,7 +13,7 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 
 		parent::__construct();
 
-		$this->id			= 'billmate';
+		$this->id			= 'billmate_invoice';
 		$this->method_title = __('Billmate Invoice', 'billmate');
 		$this->has_fields 	= true;
 
@@ -954,7 +954,7 @@ parse_str($_POST['post_data'], $datatemp);
 				$addfee[] = array (
 					'id' => $this->invoice_fee_id,
 					'variation_id' => '',
-					'name' => __('Invoice Fee','billmate'),
+					'name' => __('Invoice fee','billmate'),
 					'qty' => '1',
 					'item_meta' =>
 						array (

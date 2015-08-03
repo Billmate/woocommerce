@@ -180,7 +180,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 							'title' => __( 'Title', 'billmate' ),
 							'type' => 'text',
 							'description' => __( 'This controls the title which the user sees during checkout.', 'billmate' ),
-							'default' => __( 'Billmate - Part Payment', 'billmate' )
+							'default' => __( 'Billmate Partpayment', 'billmate' )
 						),
 			'description' => array(
 							'title' => __( 'Description', 'billmate' ),
