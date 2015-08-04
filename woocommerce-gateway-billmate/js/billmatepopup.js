@@ -223,6 +223,36 @@ AddEvent(window,'load',function(){
             }
             break;
     }
+    $('body').on('checkout_error',function(e){
+        var errors = $('.woocommerce-error').children('li');
+        errors.each(function(index, error){
+
+            error = $(error).html();
+            var re = /(9015|9016|1001|2207)/;
+
+            if(re.test(error)){
+                if($('[name="pno"]').length)
+                    $('[name="pno"]').parent('p').addClass('woocommerce-invalid invalid-woocommerce-required-field');
+                else{
+                    if($('[name="billmate_pno"]').length) {
+                        $('[name="billmate_pno"]').parent('p').removeClass('woocommerce-validated').addClass('woocommerce-invalid woocommerce-invalid-required-field');
+                        $('[name="billmate_invo_pno"]').css('border-color','red');
+                    }
+                    if($('[name="billmate_invo_pno"]')) {
+
+                        $('[name="billmate_invo_pno"]').parent('p').removeClass('woocommerce-validated').addClass('woocommerce-invalid woocommerce-invalid-required-field');
+                        $('[name="billmate_invo_pno"]').css('border-color','red');
+
+                    }
+
+
+                }
+
+            }
+        });
+        console.log(e);
+
+    })
     $(document).on('click','[name="payment_method"]',function(e){
         switch (e.target.value){
             case 'billmate_partpayment':
@@ -273,6 +303,7 @@ AddEvent(window,'load',function(){
         if($('[name="pno"]').val() == ''){
             var message = '<div id="getaddresserror" class="woocommerce-error">'+nopno+'</div>';
             $('#getaddresserr').html(message);
+            $('[name="pno"]').parent.('p').removeClass('woocommerce-validated').addClass('woocommerce-invalid woocommerce-invalid-required-field');
             return false;
         }
 
@@ -313,6 +344,7 @@ AddEvent(window,'load',function(){
                 } else {
                     var message = '<div id="getaddresserror" class="woocommerce-error">'+result.message+'</div>';
                     $('#getaddresserr').html(message);
+                    $('[name="pno"]').parent.('p').removeClass('woocommerce-validated').addClass('woocommerce-invalid woocommerce-invalid-required-field');
                 }
             }
         })

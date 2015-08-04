@@ -1327,7 +1327,7 @@ class WC_Gateway_Billmate_Invoice_Extra {
 
     			// Check if set, if its not set add an error.
     			if (isset($_POST['billmate_invo_pno']) && !$_POST['billmate_invo_pno'])
-    	    	 	wc_bm_errors( __('Non Valid Person / Corporate number. Check the number.', 'billmate') );
+    	    	 	wc_bm_errors( '9015 '.__('Non Valid Person / Corporate number. Check the number.', 'billmate') );
 
 			}
 			// NL & DE
