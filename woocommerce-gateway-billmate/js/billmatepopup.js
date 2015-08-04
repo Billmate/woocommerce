@@ -344,7 +344,7 @@ AddEvent(window,'load',function(){
                 } else {
                     var message = '<div id="getaddresserror" class="woocommerce-error">'+result.message+'</div>';
                     $('#getaddresserr').html(message);
-                    $('[name="pno"]').parent.('p').removeClass('woocommerce-validated').addClass('woocommerce-invalid woocommerce-invalid-required-field');
+                    $('[name="pno"]').parent('p').removeClass('woocommerce-validated').addClass('woocommerce-invalid woocommerce-invalid-required-field');
                 }
             }
         })
