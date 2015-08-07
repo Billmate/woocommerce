@@ -615,7 +615,7 @@ parse_str($_POST['post_data'], $datatemp);
 			return;
 		}
 		if(isset($addr['code'])){
-			wc_bm_errors(utf8_encode($addr['message']));
+			wc_bm_errors('<span data-error-code="'.$addr['code'].'"></span>'.utf8_encode($addr['message']));
 			return;
 		}
 		foreach($addr as $key => $value){
@@ -1085,7 +1085,6 @@ parse_str($_POST['post_data'], $datatemp);
 			'phone' => $cellno
 		);
 
-
 		try {
 			$result = $k->addPayment($orderValues);
 			if( !is_array($result)){
@@ -1100,7 +1099,7 @@ parse_str($_POST['post_data'], $datatemp);
 						break;*/
 
 					default:
-						wc_bm_errors( __($result['message'], 'billmate') );
+						wc_bm_errors( '<i data-error-code="'.$result['code'].'"></i>'.__($result['message'], 'billmate') );
 						return;
 						break;
 				}
@@ -1327,7 +1326,7 @@ class WC_Gateway_Billmate_Invoice_Extra {
 
     			// Check if set, if its not set add an error.
     			if (isset($_POST['billmate_invo_pno']) && !$_POST['billmate_invo_pno'])
-    	    	 	wc_bm_errors( '9015 '.__('Non Valid Person / Corporate number. Check the number.', 'billmate') );
+    	    	 	wc_bm_errors( '<span data-error-code="9015"></span>'.__('Non Valid Person / Corporate number. Check the number.', 'billmate') );
 
 			}
 			// NL & DE

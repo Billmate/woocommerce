@@ -226,31 +226,37 @@ AddEvent(window,'load',function(){
     $('body').on('checkout_error',function(e){
         var errors = $('.woocommerce-error').children('li');
         errors.each(function(index, error){
+            if((error = $(error).children('i'))) {
+                error = $(error).attr('data-error-code');
+                console.log(error);
+            }
 
-            error = $(error).html();
-            var re = /(9015|9016|1001|2207)/;
+            if(typeof error != 'undefined') {
+                switch(error) {
+                    case '2207':
+                    case '9015':
+                    case '9016':
+                    case '1001':
+                        if ($('[name="pno"]').length)
+                            $('[name="pno"]').parent('p').removeClass('woocommerce-validated').addClass('woocommerce-invalid invalid-woocommerce-required-field');
+                        else {
+                            if ($('[name="billmate_pno"]').length) {
+                                $('[name="billmate_pno"]').parent('p').removeClass('woocommerce-validated').addClass('woocommerce-invalid woocommerce-invalid-required-field');
+                                $('[name="billmate_invo_pno"]').css('border-color', 'red');
+                            }
+                            if ($('[name="billmate_invo_pno"]')) {
 
-            if(re.test(error)){
-                if($('[name="pno"]').length)
-                    $('[name="pno"]').parent('p').addClass('woocommerce-invalid invalid-woocommerce-required-field');
-                else{
-                    if($('[name="billmate_pno"]').length) {
-                        $('[name="billmate_pno"]').parent('p').removeClass('woocommerce-validated').addClass('woocommerce-invalid woocommerce-invalid-required-field');
-                        $('[name="billmate_invo_pno"]').css('border-color','red');
-                    }
-                    if($('[name="billmate_invo_pno"]')) {
+                                $('[name="billmate_invo_pno"]').parent('p').removeClass('woocommerce-validated').addClass('woocommerce-invalid woocommerce-invalid-required-field');
+                                $('[name="billmate_invo_pno"]').css('border-color', 'red');
 
-                        $('[name="billmate_invo_pno"]').parent('p').removeClass('woocommerce-validated').addClass('woocommerce-invalid woocommerce-invalid-required-field');
-                        $('[name="billmate_invo_pno"]').css('border-color','red');
-
-                    }
+                            }
 
 
+                        }
+                    break;
                 }
-
             }
         });
-        console.log(e);
 
     })
     $(document).on('click','[name="payment_method"]',function(e){

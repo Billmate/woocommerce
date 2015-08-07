@@ -5,9 +5,9 @@ Plugin URI: http://woothemes.com/woocommerce
 Description: Receive payments on your WooCommerce store via Billmate. Invoice, partpayment, credit/debit card and direct bank transfers. Secure and 100&#37; free plugin.
 Version: 2.00
 Author: Billmate
-TextDomain: billmate
+Text Domain: billmate
 Author URI: http://billmate.se
-DomainPath: /languages/
+Domain Path: /languages/
 */
 
 
@@ -97,13 +97,23 @@ function init_billmate_gateway() {
     	else :
     		$this->shop_country = $this->shop_country;
     	endif;
-
+		add_filter('wp_kses_allowed_html',array($this,'add_data_attribute_filter'),10,2);
     	add_action( 'wp_enqueue_scripts', array(&$this, 'billmate_load_scripts_styles'), 6 );
 
     	// Loads the billmatecustom.css if it exists, loads with prio 999 so it loads at the end
     	add_action( 'wp_enqueue_scripts', array(&$this, 'billmate_load_custom_css'), 999 );
     }
 
+
+		function add_data_attribute_filter($tags,$context){
+			error_log('context'.$context);
+
+			if($context == 'post') {
+				$tags['i']['data-error-code'] = true;
+				return $tags;
+			}
+			return $tags;
+		}
     /**
      * Includes a billmatecustom.css if it exists, in case you need to make any special css edits on the css for Billmate regarding the shop.
 		 * It could take a minute or two before it shows up withhour cache depending on server. Clear cache on server if it does not show up.

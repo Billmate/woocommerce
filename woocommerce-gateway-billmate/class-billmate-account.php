@@ -1057,7 +1057,7 @@ parse_str($_POST['post_data'], $datatemp);
 
     			// Check if set, if its not set add an error.
     			if (!$_POST['billmate_pno'])
-        		 	wc_bm_errors( __('Non Valid Person / Corporate number. Check the number.', 'billmate') );
+        		 	wc_bm_errors( '<i data-error-code="9015"></i>'.__('Non Valid Person / Corporate number. Check the number.', 'billmate') );
 
 			}
 
@@ -1161,7 +1161,7 @@ parse_str($_POST['post_data'], $datatemp);
 			return;
 		}
 		if(isset($addr['code'])){
-			wc_bm_errors(utf8_encode($addr['message']));
+			wc_bm_errors('<i data-error-code="'.$addr['code'].'"></i>'.utf8_encode($addr['message']));
 			return;
 		}
 
@@ -1611,7 +1611,7 @@ parse_str($_POST['post_data'], $datatemp);
 						return;
 						break;*/
 					default:
-						wc_bm_errors( __($result['message'], 'billmate') );
+						wc_bm_errors('<i data-error-code="'.$result['code'].'"></i>'. __($result['message'], 'billmate') );
 						return;
 						break;
 				}
