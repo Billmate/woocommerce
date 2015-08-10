@@ -49,8 +49,9 @@ Copy the code below for the size that fits your needs.
 ##Changelog
 
 ###2.0 (2015-08-05)
-107 commits and 79 issues closed.
+110 commits and 79 issues closed.
 
+* Compatibility - WooCommerce 2.0 and above.
 * Enchancement - Get Address for customers in the Checkout.
 * Tweak - Layout improvements.
 * Tweak - Automatic update of paymentplans.
