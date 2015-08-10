@@ -131,10 +131,9 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			foreach($_POST as $key => $value)
 				$_POST[$key] = stripslashes($value);
 		}
-
-		$order_id = $_POST['order_id'];
+		$data = $k->verify_hash($_POST);
+		$order_id = $data['orderid'];
 		$order = new WC_Order( $order_id );
-
 		if(false !== get_transient('billmate_cardpay_order_id_'.$order_id)){
 			if(version_compare(WC_VERSION, '2.0.0', '<')) {
 				$redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))));
@@ -145,7 +144,6 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		}
 		// Set Transient if not exists to prevent multiple callbacks
 		set_transient('billmate_cardpay_order_id_'.$order_id,true,3600);
-
 		if(isset($data['code']) || isset($data['error'])){
 			if($data['error_message'] == 'Invalid credit bank number') {
 				$error_message = 'Tyvärr kunde inte din betalning genomföras';
@@ -157,15 +155,12 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			wp_safe_redirect(add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_checkout_page_id')))));
 			return false;
 		}
-
 		if( method_exists($order, 'get_status') ) {
 			$order_status = $order->get_status();
 		} else {
 			$order_status_terms = wp_get_object_terms( $order_id, 'shop_order_status', array('fields' => 'slugs') ); $order_status = $order_status_terms[0];
 		}
-
 		if( in_array($order_status, array('pending')) ){
-
 			//$order->update_status('completed', $payment_note);
 			if($this->order_status == 'default')
 			{
@@ -186,7 +181,6 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			}
 			exit;
 		}
-
 		if( $accept_url_hit ) {
 			// Remove cart
 			$woocommerce->cart->empty_cart();
@@ -197,7 +191,6 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			}
 			wp_safe_redirect($redirect);
 		}
-
 		exit;
 		return true;
 	}

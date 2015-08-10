@@ -44,36 +44,7 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 		if ( $this->invoice_fee_id == "") $this->invoice_fee_id = 0;
 
 
-		/*
-		if ( $this->invoice_fee_id > 0 ) :
 
-			// Version check - 1.6.6 or 2.0
-			if ( function_exists( 'get_product' ) ) {
-				$product = get_product($this->invoice_fee_id);
-			} else {
-				$product = new WC_Product( $this->invoice_fee_id );
-			}
-
-      if ((is_object($product) && $product->exists())) :
-
-				// We manually calculate the tax percentage here
-				@$this->invoice_fee_tax_percentage = number_format( (( $product->get_price() / $product->get_price_excluding_tax() )-1)*100, 2, '.', '');
-
-				// apply_filters to invoice fee price so we can filter this if needed
-				$billmate_invoice_fee_price_including_tax = $product->get_price();
-				$this->invoice_fee_price = apply_filters( 'billmate_invoice_fee_price_including_tax', $billmate_invoice_fee_price_including_tax );
-			else :
-
-				$this->invoice_fee_price = 0;
-
-			endif;
-
-		else :
-
-		$this->invoice_fee_price = 0;
-
-		endif;
-		*/
 		// Country and language
 		switch ( $this->shop_country )
 		{

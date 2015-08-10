@@ -126,7 +126,6 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			$payment_note = 'Note: Payment Completed (callback success).';
 		}
 		$k = new Billmate($this->eid,$this->secret,true,$this->testmode,false);
-
 		if(is_array($_POST))
 		{
 			foreach($_POST as $key => $value)
@@ -147,8 +146,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		}
 		// Set Transient if not exists to prevent multiple callbacks
 		set_transient('billmate_bankpay_order_id_'.$order_id,true,3600);
-
-    if( $_POST['status'] != 0 ){
+		if(isset($data['code']) || isset($data['error'])){
 			if($_POST['error_message'] == 'Invalid credit bank number') {
 				$error_message = 'Tyvärr kunde inte din betalning genomföras';
 			} else {
@@ -158,17 +156,14 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			$woocommerce->add_error( __($error_message, 'billmate') );
 			wp_safe_redirect(add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_checkout_page_id')))));
 			return false;
-	    }
-
+		}
 		if( method_exists($order, 'get_status') ) {
 			$order_status = $order->get_status();
 		} else {
 			$order_status_terms = wp_get_object_terms( $order_id, 'shop_order_status', array('fields' => 'slugs') ); $order_status = $order_status_terms[0];
 		}
-
 		if( in_array($order_status, array('pending')) ){
 			if($data['status'] == 'Paid') {
-
 				if ($this->order_status == 'default') {
 					$order->add_order_note(__($payment_note,'billmate'));
 					$order->payment_complete();
@@ -177,7 +172,6 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 					$order->update_status($this->order_status);
 				}
 			}
-
 			if( $accept_url_hit ){
 				$redirect = '';
 				$woocommerce->cart->empty_cart();
@@ -191,7 +185,6 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			}
 			exit;
 		}
-
 		if( $accept_url_hit ) {
 			// Remove cart
 			$woocommerce->cart->empty_cart();
@@ -202,10 +195,8 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			}
 			wp_safe_redirect($redirect);
 		}
-
-    exit;
+		exit;
 		return true;
-
 	}
 
 	/**
