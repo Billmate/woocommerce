@@ -191,7 +191,7 @@ class BillmateCalc {
         $bal = $pval;
         $payarray = array();
         while(($months != 0) && ($bal > self::$accuracy)) {
-            $interest = $bal * $rate / (100.0 * 12);
+            $interest = $bal * $rate /  12;
             $newbal = $bal + $interest + $fee;
 
             if($minpay >= $newbal || $payment >= $newbal) {
@@ -235,7 +235,7 @@ class BillmateCalc {
             return $pval/$months;
         }
 
-        $p = $rate / (100.0*12);
+        $p = $rate / 12;
         return $pval * $p / (1 - pow((1+$p), -$months));
     }
 
@@ -263,7 +263,7 @@ class BillmateCalc {
      * @return float  months it takes (round it up)
      */
     private static function fixed($pval, $monthly, $rate, $fromdayone) {
-        $p = $rate / (100.0*12);
+        $p = $rate / 12;
         $f = 1 + $p;
         if($fromdayone == 0) {
             if( $f < $pval * $p / $monthly ) {
@@ -388,28 +388,28 @@ class BillmateCalc {
      * @return array  An array of monthly payments.
      */
     private static function get_payarr($sum, $pclass, $flags) {
-        $monthsfee = (($flags === BillmateFlags::CHECKOUT_PAGE) ? $pclass['invoice_fee'] : 0);
-        $startfee = (($flags === BillmateFlags::CHECKOUT_PAGE) ? $pclass['start_fee'] : 0);
+        $monthsfee = (($flags === BillmateFlags::CHECKOUT_PAGE) ? $pclass['handlingfee'] : 0);
+        $startfee = (($flags === BillmateFlags::CHECKOUT_PAGE) ? $pclass['startfee'] : 0);
 
         //Include start fee in sum
         $sum += $startfee;
 
-        $base = ($pclass['Type'] === 1);
+        $base = ($pclass['type'] === 1);
 
         $lowest = self::get_lowest_payment_for_account($pclass['country']);
         if($flags == BillmateFlags::CHECKOUT_PAGE) {
-            $minpay = ($pclass['Type'] === 1) ? $lowest : 0;
+            $minpay = ($pclass['type'] === 1) ? $lowest : 0;
         }
         else {
             $minpay = 0;
         }
 
-        $payment = self::annuity($sum, $pclass['months'], $pclass['interest']);
+        $payment = self::annuity($sum, $pclass['nbrofmonths'], $pclass['interestrate']);
 
         //Add monthly fee
         $payment += $monthsfee;
 
-        return  self::fulpacc($sum, $pclass['interest'], $monthsfee, $minpay, $payment, $pclass['months'], $base);
+        return  self::fulpacc($sum, $pclass['interestrate'], $monthsfee, $minpay, $payment, $pclass['nbrofmonths'], $base);
     }
 
     /**
@@ -451,35 +451,35 @@ class BillmateCalc {
             throw new Exception('Error in ' . __METHOD__ . ': Flags argument invalid!');
         }
 
-        $monthsfee = (($flags === BillmateFlags::CHECKOUT_PAGE) ? $pclass->getInvoiceFee() : 0);
-        $startfee = (($flags === BillmateFlags::CHECKOUT_PAGE) ? $pclass->getStartFee() : 0);
+        $monthsfee = (($flags === BillmateFlags::CHECKOUT_PAGE) ? $pclass['handlingfee'] : 0);
+        $startfee = (($flags === BillmateFlags::CHECKOUT_PAGE) ? $pclass['startfee'] : 0);
 
         //Include start fee in sum
         $sum += $startfee;
 
-        $lowest = self::get_lowest_payment_for_account($pclass->getCountry());
+        $lowest = self::get_lowest_payment_for_account($pclass['country']);
         if($flags == BillmateFlags::CHECKOUT_PAGE) {
-            $minpay = ($pclass->getType() === 1) ? $lowest : 0;
+            $minpay = ($pclass['type'] === 1) ? $lowest : 0;
         }
         else {
             $minpay = 0;
         }
 
         //add monthly fee
-        $payment = self::annuity($sum, $pclass->getMonths(), $pclass->getInterestRate()) + $monthsfee;
+        $payment = self::annuity($sum, $pclass['nbrofmonths'], $pclass['interestrate']) + $monthsfee;
         //echo "annuity $payment, $sum " . $pclass->getMonths() . " " . $pclass->getInterestRate() . "\n";
 
-        $type = $pclass->getType();
+        $type = $pclass['type'];
         switch($type) {
             case BillmatePClass::CAMPAIGN:
             case 1:
-                $apr = self::apr_annuity($sum, $pclass->getMonths(), $pclass->getInterestRate(), $pclass->getInvoiceFee(), $minpay);
+                $apr = self::apr_annuity($sum, $pclass['nbrofmonths'], $pclass['interestrate'], $pclass['handlingfee'], $minpay);
                 break;
             case BillmatePClass::SPECIAL:
-                $apr = self::apr_payin_X_months($sum, $payment, $pclass->getInterestRate(), $pclass->getInvoiceFee(), $minpay, $free);
+                $apr = self::apr_payin_X_months($sum, $payment, $pclass['interestrate'], $pclass['handlingfee'], $minpay, $free);
                 break;
             case BillmatePClass::FIXED:
-                $apr = self::apr_fixed($sum, $payment, $pclass->getInterestRate(), $pclass->getInvoiceFee(), $minpay);
+                $apr = self::apr_fixed($sum, $payment, $pclass['interestrate'], $pclass['handlingfee'], $minpay);
                 break;
             default:
                 throw new Exception('Error in ' . __METHOD__ . ': Unknown PClass type! ('.$type.')');
@@ -541,16 +541,15 @@ class BillmateCalc {
 
         $lowest_pp = $lowest = false;
         foreach($pclasses as $pclass) {
-            $pclass = (array)$pclass;
             // Lowest for SE is 50
-            $lowest_payment = BillmateCalc::get_lowest_payment_for_account($pclass['country']);
+            $lowest_payment = BillmateCalc::get_lowest_payment_for_account(strtoupper($pclass['country']));
 
             // Check if sum is over mintotal. And Type is 1 or less.
-            if($pclass['Type'] < 2 && $sum >= $pclass['mintotal']) {
+            if($pclass['type'] < 2 && $sum >= $pclass['minamount']) {
                 $minpay = BillmateCalc::calc_monthly_cost($sum, $pclass, $flags);
 
                 if($minpay < $lowest_pp || $lowest_pp === false) {
-                    if($pclass['Type'] == 1 || $minpay >= $lowest_payment) {
+                    if($pclass['type'] == 1 || $minpay >= $lowest_payment) {
                         $lowest_pp = $minpay;
                         $lowest = $pclass;
                     }
@@ -607,7 +606,7 @@ class BillmateCalc {
 
         $payarr = self::get_payarr($sum, $pclass, $flags);
         $value = isset($payarr[0]) ? ($payarr[0]) : 0;
-        return (BillmateFlags::CHECKOUT_PAGE == $flags) ? round($value, 2) : self::pRound($value, $pclass['country']);
+        return (BillmateFlags::CHECKOUT_PAGE == $flags) ? round($value, 0) : self::pRound($value, $pclass['country']);
     }
 
     /**
@@ -618,21 +617,21 @@ class BillmateCalc {
      * @return int|float      Lowest monthly payment.
      */
     public static function get_lowest_payment_for_account($country) {
-        switch ($country) {
-            case BillmateCountry::SE:
+        switch (strtoupper($country)) {
+            case 'SE':
                 $lowest_monthly_payment = 50.0;
                 break;
-            case BillmateCountry::NO:
+            case 'NO':
                 $lowest_monthly_payment = 95.0;
                 break;
-            case BillmateCountry::FI:
+            case 'FI':
                 $lowest_monthly_payment = 8.95;
                 break;
-            case BillmateCountry::DK:
+            case 'DK':
                 $lowest_monthly_payment = 89.0;
                 break;
-            case BillmateCountry::DE:
-            case BillmateCountry::NL:
+            case 'DE':
+            case 'NL':
                 $lowest_monthly_payment = 6.95;
                 break;
             default:
@@ -651,10 +650,10 @@ class BillmateCalc {
      */
     public static function pRound($value, $country) {
         $multiply = 1; //Round to closest integer
-        switch($country) {
-            case BillmateCountry::FI:
-            case BillmateCountry::DE:
-            case BillmateCountry::NL:
+        switch(strtoupper($country)) {
+            case 'FI':
+            case 'DE':
+            case 'NL':
                 $multiply = 10; //Round to closest decimal
                 break;
         }

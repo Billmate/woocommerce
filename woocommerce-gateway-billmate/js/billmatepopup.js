@@ -180,6 +180,182 @@ AddEvent(window,'resize',function(){
 		}
 	}
 });
+AddEvent(window,'load',function(){
+    window.$ = $ = jQuery;
+    jQuery.getScript("https://efinance.se/billmate/base.js", function(){
+        jQuery("#billmate_invoice").Terms("villkor",{invoicefee: billmate_invoice_fee_price}, "#billmate_invoice");
+        jQuery("#billmate_partpayment").Terms("villkor_delbetalning",{eid: billmate_eid,effectiverate:0}, "#billmate_partpayment");
+        jQuery(document).on('afterReveal.facebox',function(){
+            $('#facebox').css({'left':'10%','right': '10%'});
+        })
+    });
+    var method = $('[name="payment_method"]:checked').val();
+    switch (method){
+        case 'billmate_partpayment':
+            if($('[name="pno"]').length){
+                if(!$('[name="pno"]').parent('p').hasClass('validate-required')) {
+                    $('[name="pno"]').parent('p').addClass('validate-required');
+                    $('[name="pno"]').parent('p').children('label').append('<abbr class="required" title="required">*</abbr>');
+
+                }
+                $('#partpay_pno').hide();
+                $('#invoice_pno').val($('[name="pno"]').val())
+            }
+            break;
+        case 'billmate_invoice':
+            if($('[name="pno"]').length){
+                if(!$('[name="pno"]').parent('p').hasClass('validate-required')) {
+                    $('[name="pno"]').parent('p').addClass('validate-required');
+                    $('[name="pno"]').parent('p').children('label').append('<abbr class="required" title="required">*</abbr>');
+
+                }
+                $('#invoice_pno').hide();
+                $('#billmate_invo_pno').val($('[name="pno"]').val())
+            }
+            break;
+        default :
+            if($('[name="pno"]').length){
+                if($('[name="pno"]').parent('p').hasClass('validate-required')) {
+                    $('[name="pno"]').parent('p').removeClass('validate-required');
+                    $('[name="pno"]').parent('p').children('label').children('abbr').remove();
+                }
+                $('#billmate_invo_pno').val($('[name="pno"]').val())
+            }
+            break;
+    }
+    $('body').on('checkout_error',function(e){
+        var errors = $('.woocommerce-error').children('li');
+        errors.each(function(index, error){
+            if((error = $(error).children('i'))) {
+                error = $(error).attr('data-error-code');
+                console.log(error);
+            }
+
+            if(typeof error != 'undefined') {
+                switch(error) {
+                    case '2207':
+                    case '9015':
+                    case '9016':
+                    case '1001':
+                        if ($('[name="pno"]').length)
+                            $('[name="pno"]').parent('p').removeClass('woocommerce-validated').addClass('woocommerce-invalid invalid-woocommerce-required-field');
+                        else {
+                            if ($('[name="billmate_pno"]').length) {
+                                $('[name="billmate_pno"]').parent('p').removeClass('woocommerce-validated').addClass('woocommerce-invalid woocommerce-invalid-required-field');
+                                $('[name="billmate_invo_pno"]').css('border-color', 'red');
+                            }
+                            if ($('[name="billmate_invo_pno"]')) {
+
+                                $('[name="billmate_invo_pno"]').parent('p').removeClass('woocommerce-validated').addClass('woocommerce-invalid woocommerce-invalid-required-field');
+                                $('[name="billmate_invo_pno"]').css('border-color', 'red');
+
+                            }
+
+
+                        }
+                    break;
+                }
+            }
+        });
+
+    })
+    $(document).on('click','[name="payment_method"]',function(e){
+        switch (e.target.value){
+            case 'billmate_partpayment':
+                if($('[name="pno"]').length){
+                    if(!$('[name="pno"]').parent('p').hasClass('validate-required')) {
+                        $('[name="pno"]').parent('p').addClass('validate-required');
+                        $('[name="pno"]').parent('p').children('label').append('<abbr class="required" title="required">*</abbr>');
+
+                    }
+                    $('#partpay_pno').hide();
+                    $('[name="billmate_pno"]').val($('[name="pno"]').val())
+                }
+                break;
+            case 'billmate_invoice':
+                if($('[name="pno"]').length){
+                    if(!$('[name="pno"]').parent('p').hasClass('validate-required')) {
+                        $('[name="pno"]').parent('p').addClass('validate-required');
+                        $('[name="pno"]').parent('p').children('label').append('<abbr class="required" title="required">*</abbr>');
+
+                    }
+                    $('#invoice_pno').hide();
+                    $('#billmate_invo_pno').val($('[name="pno"]').val())
+                }
+                break;
+            default :
+                if($('[name="pno"]').length){
+                    if($('[name="pno"]').parent('p').hasClass('validate-required')) {
+                        $('[name="pno"]').parent('p').removeClass('validate-required');
+                        $('[name="pno"]').parent('p').children('label').children('abbr').remove();
+                    }
+                    $('[name="billmate_invo_pno"]').val($('[name="pno"]').val())
+                }
+                break;
+        }
+    });
+    if(jQuery('[name="pno"]').length) {
+        jQuery('[name="pno"]').on('change', function () {
+
+            var pno = jQuery('[name="pno"]').val();
+            $('[name="billmate_invo_pno"]').val(pno);
+            $('[name="billmate_pno"]').val(pno);
+        })
+    }
+    jQuery('#getaddress').on('click',function(e){
+        e.preventDefault();
+        if('#getaddresserror')
+            $('#getaddresserror').remove();
+        if($('[name="pno"]').val() == ''){
+            var message = '<div id="getaddresserror" class="woocommerce-error">'+nopno+'</div>';
+            $('#getaddresserr').html(message);
+            $('[name="pno"]').parent('p').removeClass('woocommerce-validated').addClass('woocommerce-invalid woocommerce-invalid-required-field');
+            return false;
+        }
+
+        jQuery.ajax({
+            url: ajaxurl,
+            type: 'POST',
+            data: {action: 'getaddress',pno: $('[name="pno"]').val()},
+            success: function(response){
+                var result = JSON.parse(response);
+                if(result.success){
+                    if(typeof result.data.firstname != 'undefined') {
+                        $('#billing_first_name').val(result.data.firstname);
+                        $('#billing_first_name').trigger('change');
+                        $('#billing_last_name').val(result.data.lastname);
+                        $('#billing_last_name').trigger('change');
+
+                    } else {
+                        $('#billing_company').val(result.data.company);
+                        $('#billing_company').trigger('change');
+                    }
+                    $('#billing_address_1').val(result.data.street);
+                    $('#billing_address_1').trigger('change');
+                    $('#billing_postcode').val(result.data.zip);
+                    $('#billing_postcode').trigger('change');
+                    $('#billing_city').val(result.data.city);
+                    $('#billing_city').trigger('change');
+                    if(result.data.email != '') {
+                        $('#billing_email').val(result.data.email);
+                        $('#billing_email').trigger('change');
+                    }
+
+                    if(result.data.phone != ''){
+                        $('#billing_phone').val(result.data.phone);
+                        $('#billing_phone').trigger('change');
+                    }
+                    $('#billing_country').val(result.data.country);
+                    $('#billing_country').trigger('change');
+                } else {
+                    var message = '<div id="getaddresserror" class="woocommerce-error">'+result.message+'</div>';
+                    $('#getaddresserr').html(message);
+                    $('[name="pno"]').parent('p').removeClass('woocommerce-validated').addClass('woocommerce-invalid woocommerce-invalid-required-field');
+                }
+            }
+        })
+    });
+});
  function ShowDivInCenter(divId)
 {
     try

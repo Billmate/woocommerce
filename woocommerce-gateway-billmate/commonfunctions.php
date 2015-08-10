@@ -1,8 +1,8 @@
 <?php
-define('BILLPLUGIN_VERSION','1.23.1');
+define('BILLPLUGIN_VERSION','2.00');
 define('BILLMATE_VERSION','PHP:Woocommerce:'.BILLPLUGIN_VERSION);
 
-require_once(BILLMATE_LIB . 'BillMate.php');
+require_once(BILLMATE_LIB . 'Billmate.php');
 require_once(BILLMATE_LIB . 'billmatecalc.php');
 require_once(BILLMATE_LIB . '/transport/xmlrpc-3.0.0.beta/lib/xmlrpc.inc');
 require_once(BILLMATE_LIB . '/transport/xmlrpc-3.0.0.beta/lib/xmlrpc_wrappers.inc');

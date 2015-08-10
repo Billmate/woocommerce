@@ -15,16 +15,6 @@ Billmate is a great payment alternative for merchants and customers in Sweden.
 ##Important note
 The invoice and part payment plugin only works if the currency is set to Swedish Krona (SEK) and the Base country is set to Sweden.
 
-##PClasses and Billmate Part Payment
-To enable Billmate Part Payment you need to store your available billmatepclasses in the file billmatepclasses.json located in woocommerce-gateway-billmate/srv/. Make sure that read and write permissions for the directory "srv" is set to 777 in order to fetch the available PClasses from Billmate. To retrieve your PClasses from Billmate go to --> WooCommerce --> Settings --> Payment Gateways --> Billmate Part Payment and click the button "Update the PClass file billmatepclasses.json".
-If you want to, you can also manually upload your billmatepclasses.json file via ftp.
-
-##Invoice fee handling
-Since of version 1.9 the Invoice Fee for Billmate Invoice are added as a simple (hidden) product. This is to match order total in WooCommerce and your billmate part payment (in earlier versions the invoice fee only were added to Billmate).
-
-To create a Invoice fee product:
-1. Add a simple (hidden) product. Mark it as a taxable product.
-2. Go to the Billmate Gateway settings page and add the ID of the Invoice Fee product. The ID can be found by hovering the Invoice Fee product on the Products page in WooCommerce.
 
 ##Installation
 1. Download and unzip the latest release zip file.
@@ -32,8 +22,7 @@ To create a Invoice fee product:
 3. Upload the entire plugin directory to your /wp-content/plugins/ directory.
 4. Activate the plugin through the 'Plugins' menu in WordPress Administration.
 5. Go to --> WooCommerce --> Settings --> Payment Gateways and configure your Billmate settings.
-6. Billmate Part Payment: Make sure that read and write permissions for the directory "srv" (located in woocommerce-gateway-billmate) and the containing file "billmatepclasses.json" is set to 777 in order to fetch the available PClasses from Billmate.
-7. Billmate Part Payment: Click the button "Update the PClass file billmatepclasses.json" on the settings page to fetch your shops PClasses and store them in the billmatepclasses.json file (or upload your billmatepclasses.json file manually via ftp).
+6. Billmate Part Payment: Click the button "Update paymentplans" on the settings page to fetch your shops PClasses and store them in the database.
 
 
 ##How to place Billmate logo on your site.
@@ -58,6 +47,23 @@ Copy the code below for the size that fits your needs.
 `<a href="http://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_s.png" alt="Billmate Payment Gateway" /></a>`
 
 ##Changelog
+
+###2.0 (2015-08-05)
+110 commits and 79 issues closed.
+
+* Compatibility - WooCommerce 2.0 and above.
+* Enchancement - Get Address for customers in the Checkout.
+* Tweak - Layout improvements.
+* Tweak - Automatic update of paymentplans.
+* Tweak - Clearify Invoice fee in Invoice payment title.
+* Tweak - Validation of Billmate Credentials.
+* Tweak - Can choose status of payment.
+* Tweak - Remove need of product for the Invoice Fee.
+* Fix - Consequent display of testmode.
+* Fix - Added better support for plugin dynamic pricing.
+* Fix - Discount is now divided per Vat rate.
+* Fix - Can now order when create account on checkout.
+
 
 ###1.23.2 (2015-01-30)
 * Fix - Fixed a bug that if you entered a matching adress, the verification of the adress popup still appeared.
