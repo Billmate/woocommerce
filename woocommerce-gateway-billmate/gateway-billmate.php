@@ -87,9 +87,9 @@ function init_billmate_gateway() {
 
 		public function __construct() {
 			global $woocommerce;
+			if(!defined('WC_VERSION')) define('WC_VERSION',$woocommerce->version);
 
-
-			$this->shop_country	= get_option('woocommerce_default_country');
+				$this->shop_country	= get_option('woocommerce_default_country');
 
 			// Check if woocommerce_default_country includes state as well. If it does, remove state
     	if (strstr($this->shop_country, ':')) :

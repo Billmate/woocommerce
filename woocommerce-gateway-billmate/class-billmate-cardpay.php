@@ -208,8 +208,27 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 	 */
 	function init_form_fields() {
 		$countries = new WC_Countries();
-		$available = $countries->get_countries();
-		$order_statuses = wc_get_order_statuses();
+		if(version_compare(WC_VERSION, '2.2.0', '<')){
+			$available = $countries->countries;
+		}else {
+			$available = $countries->get_countries();
+		}
+
+		if(version_compare(WC_VERSION, '2.2.0', '<')){
+			$order_statuses['default'] = __('Default','billmate');
+
+			foreach(get_terms('shop_order_status',array( 'hide_empty' => 0 ) ) as $status ){
+				if(is_object($status)) {
+					$order_statuses[$status->slug] = $status->name;
+				}
+			}
+		} else {
+			$order_status = wc_get_order_statuses();
+			$order_statuses['default'] = __('Default', 'billmate');
+			foreach ($order_status as $key => $value) {
+				$order_statuses[$key] = $value;
+			}
+		}
 	   	$this->form_fields = apply_filters('billmate_invoice_form_fields', array(
 			'enabled' => array(
 							'title' => __( 'Enable/Disable', 'billmate' ),

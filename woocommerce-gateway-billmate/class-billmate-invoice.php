@@ -179,10 +179,20 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 			foreach ( $tax_classes as $class )
 				$classes_options[ sanitize_title( $class ) ] = esc_html( $class );
 
-		$order_status = wc_get_order_statuses();
-		$order_statuses['default'] = __('Default','billmate');
-		foreach($order_status as $key => $value){
-			$order_statuses[$key] = $value;
+		if(version_compare(WC_VERSION, '2.2.0', '<')){
+			$order_statuses['default'] = __('Default','billmate');
+
+			foreach(get_terms('shop_order_status',array( 'hide_empty' => 0 ) ) as $status ){
+				if(is_object($status)) {
+					$order_statuses[$status->slug] = $status->name;
+				}
+			}
+		} else {
+			$order_status = wc_get_order_statuses();
+			$order_statuses['default'] = __('Default', 'billmate');
+			foreach ($order_status as $key => $value) {
+				$order_statuses[$key] = $value;
+			}
 		}
 
 
