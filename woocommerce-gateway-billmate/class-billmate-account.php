@@ -1226,9 +1226,15 @@ parse_str($_POST['post_data'], $datatemp);
 				$html.= '<input type="hidden" id="_postcode" value="'.$addr['zip'].'" />';
 				$html.= '<input type="hidden" id="_city" value="'.$addr['city'].'" /></span>';
 
-				echo $code = '<script type="text/javascript">setTimeout(function(){modalWin.ShowMessage(\''.$html.'\',350,500,\''.__('Pay by invoice can be made only to the address listed in the National Register. Would you like to make the purchase with address:','billmate').'\');},1000);</script>';
-				//wc_bm_errors($code);
-				die;
+				if(version_compare(WC_VERSION,'2.4.0','<')) {
+					echo $code = '<script type="text/javascript">setTimeout(function(){modalWin.ShowMessage(\'' . $html . '\',350,500,\'' . __('Pay by invoice can be made only to the address listed in the National Register. Would you like to make the purchase with address:', 'billmate') . '\');},1000);</script>';
+					//wc_bm_errors($code);
+					die;
+				} else {
+					$code['messages'] = '<script type="text/javascript">setTimeout(function(){modalWin.ShowMessage(\''.$html.'\',350,500,\''.__('Pay by invoice can be made only to the address listed in the National Register. Would you like to make the purchase with address:','billmate').'\');},1000);</script>';
+					echo json_encode($code);
+					die;
+				}
 			}
 		}
 	}
@@ -1530,9 +1536,15 @@ parse_str($_POST['post_data'], $datatemp);
 				$html.= '<input type="hidden" id="_postcode" value="'.$addr['zip'].'" />';
 				$html.= '<input type="hidden" id="_city" value="'.$addr['city'].'" /></span>';
 
-				echo $code = '<script type="text/javascript">setTimeout(function(){modalWin.ShowMessage(\''.$html.'\',350,500,\''.__('Pay by invoice can be made only to the address listed in the National Register. Would you like to make the purchase with address:','billmate').'\');},1000);</script>';
-				//wc_bm_errors($code);
-				die;
+				if(version_compare(WC_VERSION,'2.4.0','<')) {
+					echo $code = '<script type="text/javascript">setTimeout(function(){modalWin.ShowMessage(\'' . $html . '\',350,500,\'' . __('Pay by invoice can be made only to the address listed in the National Register. Would you like to make the purchase with address:', 'billmate') . '\');},1000);</script>';
+					//wc_bm_errors($code);
+					die;
+				} else {
+					$code['messages'] = '<script type="text/javascript">setTimeout(function(){modalWin.ShowMessage(\''.$html.'\',350,500,\''.__('Pay by invoice can be made only to the address listed in the National Register. Would you like to make the purchase with address:','billmate').'\');},1000);</script>';
+					echo json_encode($code);
+					die;
+				}
 			}
 		}
 
