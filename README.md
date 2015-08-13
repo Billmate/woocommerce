@@ -48,6 +48,10 @@ Copy the code below for the size that fits your needs.
 
 ##Changelog
 
+###2.0.1 (2015-08-13)
+1 commit
+* Compatibility - WooCommerce above 2.4
+
 ###2.0 (2015-08-05)
 110 commits and 79 issues closed.
 
