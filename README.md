@@ -21,8 +21,9 @@ The invoice and part payment plugin only works if the currency is set to Swedish
 2. If you use the WordPress plugin uploader to install this plugin skip to step 4.
 3. Upload the entire plugin directory to your /wp-content/plugins/ directory.
 4. Activate the plugin through the 'Plugins' menu in WordPress Administration.
-5. Go to --> WooCommerce --> Settings --> Payment Gateways and configure your Billmate settings.
-6. Billmate Part Payment: Click the button "Update paymentplans" on the settings page to fetch your shops PClasses and store them in the database.
+5. Go to --> Settings --> Billmate Settings and configure your Billmate ID and Secret.
+6. Go to --> WooCommerce --> Settings --> Payment Gateways and configure your Billmate settings.
+7. Billmate Part Payment: Click the button "Update paymentplans" on the settings page to fetch your shops PClasses and store them in the database.
 
 
 ##How to place Billmate logo on your site.
@@ -47,6 +48,11 @@ Copy the code below for the size that fits your needs.
 `<a href="http://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_s.png" alt="Billmate Payment Gateway" /></a>`
 
 ##Changelog
+
+###2.0.2 (2015-08-14)
+1 commit
+
+* Fix - Corrected a typo.
 
 ###2.0.1 (2015-08-13)
 1 commit
