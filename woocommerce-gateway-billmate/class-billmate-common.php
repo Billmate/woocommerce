@@ -22,7 +22,7 @@ class BillmateCommon {
 
 	}
 
-	public function clear_pno($result,$order_id)
+	public function clear_pno($result,$order_id = null)
 	{
 		if(isset($_SESSION['billmate_pno']))
 			unset($_SESSION['billmate_pno']);
