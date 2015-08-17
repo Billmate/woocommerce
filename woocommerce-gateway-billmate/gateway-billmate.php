@@ -106,7 +106,6 @@ function init_billmate_gateway() {
 
 
 		function add_data_attribute_filter($tags,$context){
-			error_log('context'.$context);
 
 			if($context == 'post') {
 				$tags['i']['data-error-code'] = true;

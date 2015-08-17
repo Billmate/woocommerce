@@ -49,6 +49,12 @@ Copy the code below for the size that fits your needs.
 
 ##Changelog
 
+###2.0.3 (2015-08-17)
+1 commit 2 issues closed.
+
+* Enchangement - Clean up logging.
+* Fix - Same encoding on all error messages.
+
 ###2.0.2 (2015-08-14)
 1 commit
 

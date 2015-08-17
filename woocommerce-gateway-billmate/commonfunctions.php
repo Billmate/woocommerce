@@ -1,5 +1,5 @@
 <?php
-define('BILLPLUGIN_VERSION','2.00');
+define('BILLPLUGIN_VERSION','2.0.3');
 define('BILLMATE_VERSION','PHP:Woocommerce:'.BILLPLUGIN_VERSION);
 
 require_once(BILLMATE_LIB . 'Billmate.php');
@@ -8,10 +8,18 @@ require_once(BILLMATE_LIB . '/transport/xmlrpc-3.0.0.beta/lib/xmlrpc.inc');
 require_once(BILLMATE_LIB . '/transport/xmlrpc-3.0.0.beta/lib/xmlrpc_wrappers.inc');
 require_once dirname( __FILE__ ) .'/utf8.php';
 
+function convertToUTF8($str) {
+    $enc = mb_detect_encoding($str);
 
+    if ($enc && $enc != 'UTF-8') {
+        return iconv($enc, 'UTF-8', $str);
+    } else {
+        return $str;
+    }
+}
 function wc_bm_errors($message){
 	global $woocommerce;
-	$message = utf8_encode($message);
+	$message = convertToUTF8($message);
 	if(version_compare(WC_VERSION, '2.0.0', '<')){
 		$woocommerce->add_error( $message );
 	} else {
