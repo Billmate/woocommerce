@@ -1126,7 +1126,7 @@ parse_str($_POST['post_data'], $datatemp);
 					$order->add_order_note( __('Order is PENDING APPROVAL by Billmate. Please visit Billmate Online for the latest status on this order. Billmate Invoice number: ', 'billmate') . $invno );
 
 					// Payment complete
-					if($this->custom_order_status == 'no')
+					if($this->order_status == 'default')
 					{
 						$order->payment_complete();
 					} else {

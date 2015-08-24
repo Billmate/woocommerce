@@ -1648,7 +1648,7 @@ parse_str($_POST['post_data'], $datatemp);
 					$order->add_order_note( __('Billmate payment completed. Billmate Invoice number:', 'billmate') . $invno );
 
 					// Payment complete
-					if($this->custom_order_status == 'no')
+					if($this->order_status == 'default')
 					{
 						$order->payment_complete();
 					} else {
