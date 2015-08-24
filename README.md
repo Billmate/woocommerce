@@ -7,7 +7,7 @@ Documentation with instructions on how to setup the plugin can be found at http:
 ##Description
 Billmate Gateway is a plugin that extends WooCommerce, allowing your customers to get their products first and pay by invoice to Billmate later (https://www.billmate.se/). This plugin utilizes Billmate Invoice, Billmate Card, Billmate Bank and Billmate Part Payment (Standard Integration type).
 
-When the order is passed to Billmate a credit record of the customer is made. If the check turns out all right, Billmate creates an invoice in their system. After you (as the merchant) completes the order in Prestashop, you need to log in to Billmate to approve/send the invoice.
+When the order is passed to Billmate a credit record of the customer is made. If the check turns out all right, Billmate creates an invoice in their system. After you (as the merchant) completes the order in WooCommerce, you need to log in to Billmate to approve/send the invoice.
 
 Billmate is a great payment alternative for merchants and customers in Sweden.
 
@@ -48,6 +48,11 @@ Copy the code below for the size that fits your needs.
 `<a href="http://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_s.png" alt="Billmate Payment Gateway" /></a>`
 
 ##Changelog
+
+###2.0.4 (2015-08-24)
+2 commits
+* Enchancement - Prettified if no email is input in invoice and partpayment.
+* Fix - Order status Issue with partpayment and invoice.
 
 ###2.0.3 (2015-08-17)
 1 commit 2 issues closed.
