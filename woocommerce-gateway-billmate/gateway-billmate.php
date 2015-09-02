@@ -129,12 +129,11 @@ function init_billmate_gateway() {
 	 	 * Register and Enqueue Billmate scripts & styles
 	 	 */
 		function billmate_load_scripts_styles() {
-
 			wp_enqueue_script( 'jquery' );
 			wp_enqueue_style( 'billmate-colorbox', plugins_url( '/colorbox.css', __FILE__ ), array(), '1.0', 'all');
 
 			// Invoice terms popup
-			if ( is_checkout() ) {
+			if ( is_checkout()) {
 				wp_register_script( 'billmate-invoice-js', plugins_url( '/js/billmateinvoice.js', __FILE__ ), array('jquery'), '1.0', false );
 				wp_enqueue_script( 'billmate-invoice-js' );
 				wp_register_script( 'billmate-popup-js', plugins_url( '/js/billmatepopup.js', __FILE__ ),array(),false, true );

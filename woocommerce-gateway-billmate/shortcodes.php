@@ -5,7 +5,7 @@ add_shortcode( 'billmate_price', 'return_billmate_price' );
 add_shortcode( 'billmate_currency', 'return_billmate_currency' );
 add_shortcode( 'billmate_img', 'return_billmate_basic_img' );
 add_shortcode( 'billmate_partpayment_info_link', 'return_billmate_partpayment_info_link' );
-
+add_action('wp_enqueue_scripts','add_billmate_popup');
 // Return Monthly price
 function return_billmate_price() {
 	global $billmate_partpayment_shortcode_price, $eid;
@@ -55,7 +55,8 @@ function return_billmate_basic_img() {
 
 // Return Account info popup link
 function return_billmate_partpayment_info_link() {
-	global $billmate_partpayment_country, $billmate_partpayment_eid;
+	global $billmate_partpayment_country, $billmate_partpayment_eid,$billmate_shortcode;
+	$billmate_shortcode = true;
 	//global $billmate_partpayment_shortcode_info_link;
 	//return '<a id="billmate_partpayment" onclick="ShowBillmatePartPaymentPopup();return false;" href="javascript://">' . __('Read more', 'billmate') . '</a>';
 
@@ -69,5 +70,14 @@ function return_billmate_partpayment_info_link() {
 
 	$output_string = ob_get_clean();
 	return $output_string;
+}
+
+function add_billmate_popup(){
+	global $billmate_shortcode;
+	if($billmate_shortcode) {
+		wp_register_script('billmate-popup-js', plugins_url('/js/billmatepopup.js', __FILE__), array(), false, true);
+		wp_enqueue_script('billmate-popup-js');
+
+	}
 }
 ?>

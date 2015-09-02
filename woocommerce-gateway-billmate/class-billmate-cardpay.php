@@ -39,6 +39,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		$this->de_consent_terms		= ( isset( $this->settings['de_consent_terms'] ) ) ? $this->settings['de_consent_terms'] : '';
 		$this->prompt_name_entry	= ( isset( $this->settings['prompt_name_entry'] ) ) ? $this->settings['prompt_name_entry'] : 'YES';
 		$this->do_3dsecure			= ( isset( $this->settings['do_3dsecure'] ) ) ? $this->settings['do_3dsecure'] : 'NO';
+		$this->authentication_method= ( isset( $this->settings['authentication_method'] ) ) ? $this->settings['authentication_method'] : '';
 		$this->order_status = (isset($this->settings['order_status'])) ? $this->settings['order_status'] : false;
 		if ( $this->invoice_fee_id == "") $this->invoice_fee_id = 0;
 
@@ -252,6 +253,16 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 							'description' => __( 'Disable Billmate Cardpay if Cart Total is higher than the specified value. Leave blank to disable this feature.', 'billmate' ),
 							'default' => ''
 						),
+			'authentication_method' => array(
+				'title' => __( 'Authentication Method', 'billmate' ),
+				'type' => 'select',
+				'options' => array(
+					'authentication'  =>__( 'Authentication', 'billmate' ),
+					'sales' => __('Sales','billmate'),
+				),
+				'label' => __( 'Authentication Method', 'billmate' ),
+				'default' => ''
+			),
 			'do_3dsecure' => array(
 							'title' => __( 'Enable 3D Secure', 'billmate' ),
 							'type' => 'select',
@@ -392,7 +403,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			'currency' => get_woocommerce_currency(),
 			'language' => strtolower($language[0]),
 			'country' => $this->billmate_country,
-			'autoactivate' => 0,
+			'autoactivate' => ( $this->authentication_method == 'sales') ? 1 : 0,
 			'orderid' => preg_replace('/#/','',$order->get_order_number())
 		);
 		$orderValues['PaymentInfo'] = array(

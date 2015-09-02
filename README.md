@@ -49,6 +49,10 @@ Copy the code below for the size that fits your needs.
 
 ##Changelog
 
+###2.0.5
+
+* Fix - Added transaction method on card again.
+
 ###2.0.4 (2015-08-24)
 2 commits
 * Enchancement - Prettified if no email is input in invoice and partpayment.
