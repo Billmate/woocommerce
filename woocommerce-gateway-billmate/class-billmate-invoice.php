@@ -977,7 +977,8 @@ parse_str($_POST['post_data'], $datatemp);
 			} else {
 				$tax = new WC_Tax();
 
-				$rate = array_pop($tax->get_rates($this->invoice_fee_tax_class));
+				$invoicetax = $tax->get_rates($this->invoice_fee_tax_class);
+				$rate = array_pop($invoicetax);
 
 
 				$rate = $rate['rate'];
@@ -1084,9 +1085,22 @@ parse_str($_POST['post_data'], $datatemp);
 						return;
 						break;*/
 
-					default:
+					//case '1001':
+					//case '2207':
+					case '9015':
+					case '9016':
 						wc_bm_errors( '<i data-error-code="'.$result['code'].'"></i>'.__($result['message'], 'billmate') );
 						return;
+						break;
+					case '1001':
+					case '2207':
+					case '2103':
+						$order->update_status('failed',$result['message']);
+						$order->add_order_note('Billmate: '.$result['code'].' '.utf8_encode($result['message']));
+						throw new Exception($result['message'],$result['code']);
+						break;
+					default:
+						throw new Exception($result['message'],$result['code']);
 						break;
 				}
 			}
@@ -1168,11 +1182,20 @@ parse_str($_POST['post_data'], $datatemp);
 
 		catch(Exception $e) {
     		//The purchase was denied or something went wrong, print the message:
+			switch($e->getCode()){
+				//case '2207':
+				case '9015':
+				case '9016':
+					echo '<ul class="woocommerce-error"><li>';
+					echo sprintf(__('%s (Error code: %s)', 'billmate'), utf8_encode($e->getMessage()), $e->getCode() );
+					echo '<script type="text/javascript">jQuery("#billmategeturl").remove();</script></li></ul>';
+					die;
+					break;
+				default:
+					throw new Exception(utf8_encode($e->getMessage()),$e->getCode());
+					break;
+			}
 
-			echo '<ul class="woocommerce-error"><li>';
-			echo sprintf(__('%s (Error code: %s)', 'billmate'), utf8_encode($e->getMessage()), $e->getCode() );
-			echo '<script type="text/javascript">jQuery("#billmategeturl").remove();</script></li></ul>';
-			die;
 		}
 
 	}
