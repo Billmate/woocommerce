@@ -49,8 +49,8 @@ Copy the code below for the size that fits your needs.
 
 ##Changelog
 
-###2.0.5
-
+###2.0.5 (2015-09-05)
+2 commits
 * Fix - Added transaction method on card again.
 
 ###2.0.4 (2015-08-24)
