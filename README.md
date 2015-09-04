@@ -48,8 +48,13 @@ Copy the code below for the size that fits your needs.
 `<a href="http://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_s.png" alt="Billmate Payment Gateway" /></a>`
 
 ##Changelog
+###2.0.6 (2015-09-04)
+2 commits
 
-###2.0.5 (2015-09-05)
+* Fix - Order status when order is denied.
+* Fix - Order note when order is denied.
+
+###2.0.5 (2015-09-04)
 2 commits
 * Fix - Added transaction method on card again.
 
