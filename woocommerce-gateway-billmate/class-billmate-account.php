@@ -1628,14 +1628,28 @@ parse_str($_POST['post_data'], $datatemp);
 			// If there are any errors
 			if(isset($result['code'])){
 				switch($result['code']){
-					/*case 1001:
+					/*case '1001':
 						$order->add_order_note( __('Billmate payment denied.', 'billmate') );
 						wc_bm_errors( __('Billmate payment denied.', 'billmate') );
 						return;
 						break;*/
-					default:
-						wc_bm_errors('<i data-error-code="'.$result['code'].'"></i>'. __($result['message'], 'billmate') );
+
+					//case '1001':
+					//case '2207':
+					case '9015':
+					case '9016':
+						wc_bm_errors( '<i data-error-code="'.$result['code'].'"></i>'.__($result['message'], 'billmate') );
 						return;
+						break;
+					case '1001':
+					case '2207':
+					case '2103':
+						$order->update_status('failed',$result['message']);
+						$order->add_order_note('Billmate: '.$result['code'].' '.utf8_encode($result['message']));
+						throw new Exception($result['message'],$result['code']);
+						break;
+					default:
+						throw new Exception($result['message'],$result['code']);
 						break;
 				}
 			}
@@ -1716,8 +1730,19 @@ parse_str($_POST['post_data'], $datatemp);
 
 			}catch(Exception $e) {
     		//The purchase was denied or something went wrong, print the message:
-			$order->add_order_note( utf8_encode($e->getMessage()) );
-			wc_bm_errors( ($e->getMessage()) );
+			switch($e->getCode()){
+				//case '2207':
+				case '9015':
+				case '9016':
+					echo '<ul class="woocommerce-error"><li>';
+					echo sprintf(__('%s (Error code: %s)', 'billmate'), utf8_encode($e->getMessage()), $e->getCode() );
+					echo '<script type="text/javascript">jQuery("#billmategeturl").remove();</script></li></ul>';
+					die;
+					break;
+				default:
+					throw new Exception(utf8_encode($e->getMessage()),$e->getCode());
+					break;
+			}
 		}
 
 
