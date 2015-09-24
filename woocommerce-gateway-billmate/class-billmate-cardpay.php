@@ -123,8 +123,8 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			$accept_url_hit = true;
 			$payment_note = 'Note: Payment Completed Accept Url.';
 		} else {
-			$_POST = $_GET = file_get_contents("php://input");
-			$accept_url_hit = false;
+            $_POST = (is_array($_GET)) ? $_GET : file_get_contents("php://input");
+            $accept_url_hit = false;
 			$payment_note = 'Note: Payment Completed (callback success).';
 		}
 		if(is_array($_POST))
