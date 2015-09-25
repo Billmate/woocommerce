@@ -1,5 +1,5 @@
 <?php
-define('BILLPLUGIN_VERSION','2.0.3');
+define('BILLPLUGIN_VERSION','2.0.6.2');
 define('BILLMATE_VERSION','PHP:Woocommerce:'.BILLPLUGIN_VERSION);
 
 require_once(BILLMATE_LIB . 'Billmate.php');

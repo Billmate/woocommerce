@@ -132,8 +132,12 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 				$_POST[$key] = stripslashes($value);
 		}
 		$data = $k->verify_hash($_POST);
-		error_log(print_r($data,true));
+
 		$order_id = $data['orderid'];
+		if(function_exists('wc_seq_order_number_pro')){
+			$order_id = wc_seq_order_number_pro()->find_order_by_order_number( $data['orderid'] );
+
+		}
 		$order = new WC_Order( $order_id );
 		// Check if transient is set(Success url is processing)
 		if(false === get_transient('billmate_bankpay_order_id_'.$order_id)){
