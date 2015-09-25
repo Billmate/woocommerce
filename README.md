@@ -48,6 +48,11 @@ Copy the code below for the size that fits your needs.
 `<a href="http://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_s.png" alt="Billmate Payment Gateway" /></a>`
 
 ##Changelog
+###2.0.6.2 (2015-09-25)
+* Fix - Callback issue with GET setting
+* Fix - Terms for invoice
+* Fix - Sequential Order number compatibility
+
 ###2.0.6 (2015-09-04)
 2 commits
 
