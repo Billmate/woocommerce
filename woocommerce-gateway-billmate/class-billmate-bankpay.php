@@ -176,6 +176,10 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 					$order->update_status($this->order_status);
 				}
 			}
+			if($data['status'] == 'Cancelled'){
+				$order->cancel_order('Cancelled Order');
+				wp_safe_redirect($order->get_cancel_order_url());
+			}
 			if( $accept_url_hit ){
 				$redirect = '';
 				$woocommerce->cart->empty_cart();
@@ -376,7 +380,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		if(!defined('BILLMATE_LANGUAGE')) define('BILLMATE_LANGUAGE',strtolower($language[0]));
 
         if(!defined('BILLMATE_SERVER')) define('BILLMATE_SERVER','2.1.7');
-        if(!defined('BILLMATE_CLIENT')) define('BILLMATE_CLIENT','WooCommerce:Billmate:2.0');
+        if(!defined('BILLMATE_CLIENT')) define('BILLMATE_CLIENT','WooCommerce:Billmate:2.1');
 		$orderValues = array();
 		$capture_now   = $this->authentication_method == 'sales' ? 'YES' : 'NO';
 		$orderValues['PaymentData'] = array(

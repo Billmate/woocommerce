@@ -167,11 +167,16 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		}
 		if( in_array($order_status, array('pending')) ){
 			//$order->update_status('completed', $payment_note);
-			if($this->order_status == 'default')
-			{
-				$order->payment_complete();
-			} else {
-				$order->update_status($this->order_status);
+			if($data['status'] == 'Paid') {
+				if ($this->order_status == 'default') {
+					$order->payment_complete();
+				} else {
+					$order->update_status($this->order_status);
+				}
+			}
+			if($data['status'] == 'Cancelled'){
+				$order->cancel_order('Cancelled Order');
+				wp_safe_redirect($order->get_cancel_order_url());
 			}
 			if( $accept_url_hit ){
 				$redirect = '';
@@ -400,7 +405,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		if(!defined('BILLMATE_LANGUAGE')) define('BILLMATE_LANGUAGE',strtolower($language[0]));
 
         if(!defined('BILLMATE_SERVER')) define('BILLMATE_SERVER','2.1.7');
-        if(!defined('BILLMATE_CLIENT')) define('BILLMATE_CLIENT','WooCommerce:Billmate:2.0');
+        if(!defined('BILLMATE_CLIENT')) define('BILLMATE_CLIENT','WooCommerce:Billmate:2.1');
 		$orderValues = array();
 		$orderValues['PaymentData'] = array(
 			'method' => 8,

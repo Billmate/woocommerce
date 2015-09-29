@@ -51,7 +51,7 @@ class BillmateCommon {
 
     public function getaddress()
     {
-		if(!defined('BILLMATE_CLIENT')) define('BILLMATE_CLIENT','WooCommerce:2.0');
+		if(!defined('BILLMATE_CLIENT')) define('BILLMATE_CLIENT','WooCommerce:Billmate:2.1');
 		if(!defined('BILLMATE_SERVER')) define('BILLMATE_SERVER','2.1.7');
         $billmate = new BillMate(get_option('billmate_common_eid'),get_option('billmate_common_secret'),true,false,false);
 		$_SESSION['billmate_pno'] = $_POST['pno'];

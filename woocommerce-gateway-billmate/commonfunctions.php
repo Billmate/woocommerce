@@ -1,11 +1,9 @@
 <?php
-define('BILLPLUGIN_VERSION','2.0.6.2');
+define('BILLPLUGIN_VERSION','2.1');
 define('BILLMATE_VERSION','PHP:Woocommerce:'.BILLPLUGIN_VERSION);
 
 require_once(BILLMATE_LIB . 'Billmate.php');
 require_once(BILLMATE_LIB . 'billmatecalc.php');
-require_once(BILLMATE_LIB . '/transport/xmlrpc-3.0.0.beta/lib/xmlrpc.inc');
-require_once(BILLMATE_LIB . '/transport/xmlrpc-3.0.0.beta/lib/xmlrpc_wrappers.inc');
 require_once dirname( __FILE__ ) .'/utf8.php';
 
 function convertToUTF8($str) {
