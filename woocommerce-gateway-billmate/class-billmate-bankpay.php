@@ -33,6 +33,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		$this->lower_threshold		= ( isset( $this->settings['lower_threshold'] ) ) ? $this->settings['lower_threshold'] : '';
 		$this->upper_threshold		= ( isset( $this->settings['upper_threshold'] ) ) ? $this->settings['upper_threshold'] : '';
 		$this->invoice_fee_id		= ( isset( $this->settings['invoice_fee_id'] ) ) ? $this->settings['invoice_fee_id'] : '';
+		$this->logo 				= get_option('billmate_common_logo');
 
 		$this->testmode				= ( isset( $this->settings['testmode'] ) && $this->settings['testmode'] == 'yes' ) ? true : false;
 
@@ -389,7 +390,9 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			'language' => strtolower($language[0]),
 			'country' => $this->billmate_country,
 			'autoactivate' => 0,
-			'orderid' => preg_replace('/#/','',$order->get_order_number())
+			'orderid' => preg_replace('/#/','',$order->get_order_number()),
+			'logo' => (strlen($this->logo)> 0) ? $this->logo : ''
+
 		);
 		$orderValues['PaymentInfo'] = array(
 			'paymentdate' => (string)date('Y-m-d'),

@@ -35,7 +35,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		$this->invoice_fee_id		= ( isset( $this->settings['invoice_fee_id'] ) ) ? $this->settings['invoice_fee_id'] : '';
 		$this->allowed_countries = (isset($this->settings['billmatecard_allowed_countries'])) ? $this->settings['billmatecard_allowed_countries'] : array();
 		$this->testmode				= ( isset( $this->settings['testmode'] ) && $this->settings['testmode'] == 'yes' ) ? true : false;
-
+		$this->logo 				= get_option('billmate_common_logo');
 		$this->de_consent_terms		= ( isset( $this->settings['de_consent_terms'] ) ) ? $this->settings['de_consent_terms'] : '';
 		$this->prompt_name_entry	= ( isset( $this->settings['prompt_name_entry'] ) ) ? $this->settings['prompt_name_entry'] : 'YES';
 		$this->do_3dsecure			= ( isset( $this->settings['do_3dsecure'] ) ) ? $this->settings['do_3dsecure'] : 'NO';
@@ -413,7 +413,9 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			'language' => strtolower($language[0]),
 			'country' => $this->billmate_country,
 			'autoactivate' => ( $this->authentication_method == 'sales') ? 1 : 0,
-			'orderid' => preg_replace('/#/','',$order->get_order_number())
+			'orderid' => preg_replace('/#/','',$order->get_order_number()),
+			'logo' => (strlen($this->logo)> 0) ? $this->logo : ''
+
 		);
 		$orderValues['PaymentInfo'] = array(
 			'paymentdate' => (string)date('Y-m-d'),

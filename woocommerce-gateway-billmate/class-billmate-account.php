@@ -37,6 +37,8 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 		$this->description  					= ( isset( $this->settings['description'] )) ? $this->settings['description'] : '';
 		$this->eid	= $eid						= get_option('billmate_common_eid');//( isset( $this->settings['eid'] ) ) ? $this->settings['eid'] : '';
 		$this->secret							= get_option('billmate_common_secret');//( isset( $this->settings['secret'] ) ) ? $this->settings['secret'] : '';
+		$this->logo 				= get_option('billmate_common_logo');
+
 		$this->lower_threshold					= ( isset( $this->settings['lower_threshold'] ) ) ? $this->settings['lower_threshold'] : '';
 		$this->upper_threshold					= ( isset( $this->settings['upper_threshold'] ) ) ? $this->settings['upper_threshold'] : '';
 		$this->show_monthly_cost				= ( isset( $this->settings['show_monthly_cost'] ) ) ? $this->settings['show_monthly_cost'] : '';
@@ -1350,7 +1352,9 @@ parse_str($_POST['post_data'], $datatemp);
 			'currency' => get_woocommerce_currency(),
 			'language' => $lang[0],
 			'country' => $country,
-			'orderid' => $orderid
+			'orderid' => $orderid,
+			'logo' => (strlen($this->logo)> 0) ? $this->logo : ''
+
 		);
 
 		$orderValues['PaymentInfo'] = array(
