@@ -99,6 +99,8 @@ class BillMate{
 		curl_setopt($ch, CURLOPT_URL, "http".($this->SSL?"s":"")."://".$this->URL);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $this->SSL);
+		// Add connect timout for generate error if it not connect within 10 seconds
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT,10);
 		$vh = $this->SSL?((function_exists("phpversion") && function_exists("version_compare") && version_compare(phpversion(),'5.4','>=')) ? 2 : true):false;
 		if($this->SSL){
 			if(function_exists("phpversion") && function_exists("version_compare")){
@@ -121,7 +123,8 @@ class BillMate{
 		$data = curl_exec($ch);
 		if (curl_errno($ch)){
 	        $curlerror = curl_error($ch);
-	        return json_encode(array("error"=>9510,"message"=>htmlentities($curlerror)));
+			// Change from error to code to make our plugins compatible with the error message.
+	        return json_encode(array("code"=>9510,"message"=>htmlentities($curlerror)));
 		}else curl_close($ch);
 	    return $data;
 	}
