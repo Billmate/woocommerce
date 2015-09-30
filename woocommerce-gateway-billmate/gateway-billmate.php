@@ -147,6 +147,8 @@ function init_billmate_gateway() {
 				// Original file: https://static.billmate.com:444/external/js/billmatepart.js
 				// wp_register_script( 'billmate-part-js', plugins_url( '/js/billmatepart.js', __FILE__ ), array('jquery'), '1.0', false );
 				// wp_enqueue_script( 'billmate-part-js' );
+				wp_register_script( 'billmate-popup-js', plugins_url( '/js/billmatepopup.js', __FILE__ ),array(),false, true );
+				wp_enqueue_script( 'billmate-popup-js' );
 			}
 
 		}
@@ -183,12 +185,4 @@ function add_billmate_gateway( $methods ) {
 }
 
 add_filter('woocommerce_payment_gateways', 'add_billmate_gateway' );
-add_action('wp_footer','get_billmate_woocomm_version');
-function get_billmate_woocomm_version(){
-	echo '<!-- billmate version '.BILLPLUGIN_VERSION.' -->';
-	if(!empty($_GET['debug-bill'])){
-		echo '<h1>billmate version '.BILLPLUGIN_VERSION.' </h1>';
-		phpinfo();
-		die;
-	}
-}
+

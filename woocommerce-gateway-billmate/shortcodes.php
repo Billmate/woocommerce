@@ -12,10 +12,10 @@ function return_billmate_price() {
 	$pclasses = get_option('wc_gateway_billmate_partpayment_pclasses');
 	$flag = BillmateFlags::CHECKOUT_PAGE;
 	$pclasses_not_available = true;
-	$enabled_plcass = 'no';
+
 	if($pclasses)
 		$pclasses_not_available = false;
-	$WC_Gateway_Billmate_Partpayment = new WC_Gateway_Billmate_Partpayment;
+	//$WC_Gateway_Billmate_Partpayment = new WC_Gateway_Billmate_Partpayment;
 	$product = new WC_Product( get_the_ID() );
   	$price = $product->price;
 
@@ -57,16 +57,14 @@ function return_billmate_basic_img() {
 function return_billmate_partpayment_info_link() {
 	global $billmate_partpayment_country, $billmate_partpayment_eid,$billmate_shortcode;
 	$billmate_shortcode = true;
-	//global $billmate_partpayment_shortcode_info_link;
-	//return '<a id="billmate_partpayment" onclick="ShowBillmatePartPaymentPopup();return false;" href="javascript://">' . __('Read more', 'billmate') . '</a>';
 
-	$WC_Gateway_Billmate_Partpayment = new WC_Gateway_Billmate_Partpayment;
 	$product = new WC_Product( get_the_ID() );
   	$price = $product->price;
 
 	ob_start();
-	$WC_Gateway_Billmate_Partpayment->payment_fields_options( $price, false , BillmateFlags::PRODUCT_PAGE);
-	echo '<a id="billmate_partpayment" href="#">' . $WC_Gateway_Billmate_Partpayment->get_account_terms_link_text($billmate_partpayment_country) . '</a>';
+	WC_Gateway_Billmate_Partpayment::payment_fields_options( $price, false , BillmateFlags::PRODUCT_PAGE);
+	echo '<script>var billmate_eid = "'.get_option('billmate_common_eid').'"; var billmate_invoice_fee_price = 0;</script>';
+	echo '<a id="billmate_partpayment" href="#">' . WC_Gateway_Billmate_Partpayment::get_account_terms_link_text($billmate_partpayment_country) . '</a>';
 
 	$output_string = ob_get_clean();
 	return $output_string;
