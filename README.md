@@ -48,6 +48,12 @@ Copy the code below for the size that fits your needs.
 `<a href="http://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_s.png" alt="Billmate Payment Gateway" /></a>`
 
 ##Changelog
+###2.1(2015-10-01)
+* Enhancement - Possibility to Choose logo on the invoice created in Billmate Online.
+* Optimization - Less load time when show partpayment from on product/shop page.
+* Enhancement - Communication error messages.
+* Fix - Cancel callback.
+
 ###2.0.6.2 (2015-09-25)
 * Fix - Callback issue with GET setting
 * Fix - Terms for invoice
