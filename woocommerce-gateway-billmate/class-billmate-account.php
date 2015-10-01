@@ -1,4 +1,6 @@
 <?php
+require_once "commonfunctions.php";
+
 
 class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 
@@ -6,6 +8,8 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
      * Class for Billmate Part Payment payment.
      *
      */
+	static $country = 'SE';
+	static $allowed_countries_static = array('se');
 
 	public function __construct() {
 		global $woocommerce, $eid;
@@ -37,6 +41,8 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 		$this->description  					= ( isset( $this->settings['description'] )) ? $this->settings['description'] : '';
 		$this->eid	= $eid						= get_option('billmate_common_eid');//( isset( $this->settings['eid'] ) ) ? $this->settings['eid'] : '';
 		$this->secret							= get_option('billmate_common_secret');//( isset( $this->settings['secret'] ) ) ? $this->settings['secret'] : '';
+		$this->logo 				= get_option('billmate_common_logo');
+
 		$this->lower_threshold					= ( isset( $this->settings['lower_threshold'] ) ) ? $this->settings['lower_threshold'] : '';
 		$this->upper_threshold					= ( isset( $this->settings['upper_threshold'] ) ) ? $this->settings['upper_threshold'] : '';
 		$this->show_monthly_cost				= ( isset( $this->settings['show_monthly_cost'] ) ) ? $this->settings['show_monthly_cost'] : '';
@@ -818,7 +824,7 @@ parse_str($_POST['post_data'], $datatemp);
 		<div class="clear"></div>
 			<p class="form-row">
 				<input type="checkbox" class="input-checkbox" checked="checked" value="yes" name="valid_email_it_is" id="valid_email_it_is" style="float:left;margin-top:6px" />
-				<label><?php echo sprintf(__('My e-mail%s is correct och and may be used for billing. I confirm the ', 'billmate'), (strlen($datatemp['billing_email']) > 0) ? ', '.$datatemp['billing_email'].',' : ' '); ?><a id="billmate_partpayment" href="javascript://"><?php echo __('terms of partpayment','billmate'); ?></a> <?php echo __('and accept the liability.','billmate') ?></label>
+				<label><?php echo sprintf(__('My e-mail%s is correct och and may be used for billing. I confirm the ', 'billmate'), (strlen($datatemp['billing_email']) > 0) ? ', '.$datatemp['billing_email'].',' : ' '); ?><a href="https://billmate.se/billmate/?cmd=villkor_delbetalning" onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=650');return false;"><?php echo __('terms of partpayment','billmate'); ?></a> <?php echo __('and accept the liability.','billmate') ?></label>
 			</p>
 
 			<?php if ( $this->shop_country == 'DE' && $this->de_consent_terms == 'yes' ) : ?>
@@ -834,9 +840,10 @@ parse_str($_POST['post_data'], $datatemp);
 		</fieldset>
 		<?php
 	}
-	public function update_billmatepclasses_from_frontend(){
+	public static function update_billmatepclasses_from_frontend(){
 		global $wpdb;
-		if ( $this->testmode == 'yes' ):
+		$settings = get_option('woocommerce_billmate_partpayment_settings');
+		if ( $settings['testmode'] == 'yes' ):
 			// Disable SSL if in testmode
 			$billmate_ssl = 'false';
 			$billmate_mode = 'test';
@@ -849,19 +856,18 @@ parse_str($_POST['post_data'], $datatemp);
 			}
 			$billmate_mode = 'live';
 		endif;
-		if( empty( $this->eid) ){
+		if( empty( get_option('billmate_common_eid'))){
 			return false;
 		}
 
-		$eid = (int)$this->eid;
-		$secret = $this->secret;
-		$country = $this->billmate_country;
-		$language = $this->billmate_language;
-		$currency = $this->billmate_currency;
+		$eid = (int)get_option('billmate_common_eid');
+		$secret = get_option('billmate_common_secret');
+		$country = self::$country;
+		$currency = get_woocommerce_currency();
 		$language = explode('_',get_locale());
 		if(!defined('BILLMATE_LANGUAGE')) define('BILLMATE_LANGUAGE',strtolower($language[0]));
 
-		$k = new BillMate($eid,$secret,true, $this->testmode == 'yes',false);
+		$k = new BillMate($eid,$secret,true, $settings['testmode'] == 'yes',false);
 
 
 		try {
@@ -881,7 +887,15 @@ parse_str($_POST['post_data'], $datatemp);
 				throw new Exception($data);
 			}
 			$output = array();
-			array_walk($data, array($this,'correct_lang_billmate'));
+			$i = 0;
+			foreach($data as $item){
+				$data[$i]['startfee'] = $item['startfee'] / 100;
+				$data[$i]['handlingfee'] = $item['handlingfee'] / 100;
+				$data[$i]['interestrate'] = $item['interestrate'] / 100;
+				$data[$i]['minamount'] = $item['minamount'] / 100;
+				$data[$i]['maxamount'] = $item['maxamount'] / 100;
+				$i++;
+			}
 			foreach( $data as $row ){
 				$row['eid'] = $eid;
 				$output[]=$row;
@@ -898,7 +912,7 @@ parse_str($_POST['post_data'], $datatemp);
 	/**
 	 * Payment field opttions
 	**/
-	function payment_fields_options( $sum, $label = true ,$flag = BillmateFlags::CHECKOUT_PAGE){
+	public static function payment_fields_options( $sum, $label = true ,$flag = BillmateFlags::CHECKOUT_PAGE){
 
 
 		$pclasses_not_available = true;
@@ -907,7 +921,7 @@ parse_str($_POST['post_data'], $datatemp);
 		$pclasses = get_option('wc_gateway_billmate_partpayment_pclasses',false);
 		if(date('Y-m-d',strtotime('+1 week')) >= $pclasses[0]['expirydate']){
 			$_GET['billmatePclassListener'] = 1;
-			$this->update_billmatepclasses_from_frontend();
+			self::update_billmatepclasses_from_frontend();
 		}
 		if($pclasses){
 			$pclasses_not_available = false;
@@ -953,21 +967,21 @@ parse_str($_POST['post_data'], $datatemp);
                         if($sum >= $pclass['minamount'] && ($sum <= $pclass['maxamount'] || $pclass['maxamount'] == 0) ) {
                             $enabled_plcass = 'yes';
                             echo '<option value="' . $pclass['paymentplanid'] . '">';
-                            if ($this->billmate_country == 'NO') {
+                            if (self::$country == 'NO') {
                                 if ( $pclass['type'] == 1 ) {
                                     //If Account - Do not show startfee. This is always 0.
-                                    echo sprintf(__('%s - %s %s/month', 'billmate'), $pclass['description'], $monthly_cost, $this->billmate_currency);
+                                    echo sprintf(__('%s - %s %s/month', 'billmate'), $pclass['description'], $monthly_cost, get_woocommerce_currency());
                                     } else {
                                         // Norway - Show total cost
-                                        echo sprintf(__('%s - %s %s/month - %s%s - Start %s - Tot %s %s', 'billmate'), $pclass['description'], $monthly_cost, $this->billmate_currency, $pclass['interestrate'], '%', $pclass['startfee'], $total_credit_purchase_cost, $this->billmate_currency );
+                                        echo sprintf(__('%s - %s %s/month - %s%s - Start %s - Tot %s %s', 'billmate'), $pclass['description'], $monthly_cost, get_woocommerce_currency(), $pclass['interestrate'], '%', $pclass['startfee'], $total_credit_purchase_cost, get_woocommerce_currency() );
                                     }
                                 } else {
                                     if ( $pclass['type'] == 1 ) {
                                         //If Account - Do not show startfee. This is always 0.
-                                        echo sprintf(__('%s - %s %s/month', 'billmate'), $pclass['description'], $monthly_cost, $this->billmate_currency );
+                                        echo sprintf(__('%s - %s %s/month', 'billmate'), $pclass['description'], $monthly_cost, get_woocommerce_currency() );
                                     } else {
                                         // Sweden, Denmark, Finland, Germany & Netherlands - Don't show total cost
-                                        echo sprintf(__('%s - %s %s/month - %s%s - Start %s', 'billmate'), $pclass['description'], $monthly_cost, $this->billmate_currency, $pclass['interestrate'], '%', $pclass['startfee'] );
+                                        echo sprintf(__('%s - %s %s/month - %s%s - Start %s', 'billmate'), $pclass['description'], $monthly_cost, get_woocommerce_currency(), $pclass['interestrate'], '%', $pclass['startfee'] );
                                     }
                                 }
                             echo '</option>';
@@ -986,7 +1000,7 @@ parse_str($_POST['post_data'], $datatemp);
 
                 <?php
                 // Loop through the available PClasses stored in the file srv/billmatepclasses.json
-                if( in_array($this->shop_country, is_array($this->allowed_countries) ? $this->allowed_countries : array($this->allowed_countries)) ) {
+                if( in_array(self::$country, is_array(self::$allowed_countries_static) ? self::$allowed_countries_static : array(self::$allowed_countries_static)) ) {
 
 					foreach ($pclasses as $pclass2) {
 
@@ -1013,21 +1027,21 @@ parse_str($_POST['post_data'], $datatemp);
 							if($sum >= $pclass['minamount'] && ($sum <= $pclass['maxamount'] || $pclass['maxamount'] == 0) ) {
 								$enabled_plcass = 'yes';
 								echo '<div>';
-								if ($this->billmate_country == 'NO') {
+								if (self::$country == 'NO') {
 									if ( $pclass['type'] == 1 ) {
 										//If Account - Do not show startfee. This is always 0.
-										echo sprintf(__('%s - %s %s/month', 'billmate'), $pclass['description'], $monthly_cost, $this->billmate_currency);
+										echo sprintf(__('%s - %s %s/month', 'billmate'), $pclass['description'], $monthly_cost, get_woocommerce_currency());
 										} else {
 											// Norway - Show total cost
-											echo sprintf(__('%s - %s %s/month - %s%s - Start %s - Tot %s %s', 'billmate'), $pclass['description'], $monthly_cost, $this->billmate_currency, $pclass['interestrate'], '%', $pclass['startfee'], $total_credit_purchase_cost, $this->billmate_currency );
+											echo sprintf(__('%s - %s %s/month - %s%s - Start %s - Tot %s %s', 'billmate'), $pclass['description'], $monthly_cost, get_woocommerce_currency(), $pclass['interestrate'], '%', $pclass['startfee'], $total_credit_purchase_cost, get_woocommerce_currency() );
 										}
 								} else {
 										if ( $pclass['type'] == 1 ) {
 											//If Account - Do not show startfee. This is always 0.
-											echo sprintf(__('%s - %s %s/month', 'billmate'), $pclass['description'], $monthly_cost, $this->billmate_currency );
+											echo sprintf(__('%s - %s %s/month', 'billmate'), $pclass['description'], $monthly_cost, get_woocommerce_currency() );
 										} else {
 											// Sweden, Denmark, Finland, Germany & Netherlands - Don't show total cost
-											echo sprintf(__('%s - %s %s/month - %s%s - Start %s', 'billmate'), $pclass['description'], $monthly_cost, $this->billmate_currency, $pclass['interestrate'], '%', $pclass['startfee'] );
+											echo sprintf(__('%s - %s %s/month - %s%s - Start %s', 'billmate'), $pclass['description'], $monthly_cost, get_woocommerce_currency(), $pclass['interestrate'], '%', $pclass['startfee'] );
 										}
 								}
 								echo '</div>';
@@ -1155,8 +1169,6 @@ parse_str($_POST['post_data'], $datatemp);
 		$language = explode('_',get_locale());
 		if(!defined('BILLMATE_LANGUAGE')) define('BILLMATE_LANGUAGE',strtolower($language[0]));
 
-        if(!defined('BILLMATE_SERVER')) define('BILLMATE_SERVER','2.1.7');
-        if(!defined('BILLMATE_CLIENT')) define('BILLMATE_CLIENT','WooCommerce:Billmate:2.0');
 		$k = new Billmate($this->eid,$this->secret,true, $this->testmode == 'yes',false);
 		try{
 			$addr = $k->getAddress(array('pno' => $billmate_pno));
@@ -1333,8 +1345,7 @@ parse_str($_POST['post_data'], $datatemp);
 		$language = explode('_',get_locale());
 		if(!defined('BILLMATE_LANGUAGE')) define('BILLMATE_LANGUAGE',strtolower($language[0]));
 
-        if(!defined('BILLMATE_SERVER')) define('BILLMATE_SERVER','2.1.7');
-        if(!defined('BILLMATE_CLIENT')) define('BILLMATE_CLIENT','WooCommerce:Billmate:2.0');
+
 
 
 		$k = new Billmate($eid,$secret,true, $this->testmode == 'yes',false);
@@ -1350,7 +1361,9 @@ parse_str($_POST['post_data'], $datatemp);
 			'currency' => get_woocommerce_currency(),
 			'language' => $lang[0],
 			'country' => $country,
-			'orderid' => $orderid
+			'orderid' => $orderid,
+			'logo' => (strlen($this->logo)> 0) ? $this->logo : ''
+
 		);
 
 		$orderValues['PaymentInfo'] = array(
@@ -2002,7 +2015,7 @@ parse_str($_POST['post_data'], $datatemp);
 	 * At the moment $this->billmate_country is allways returned. This will change in the next update.
 	 **/
 
-	function get_account_terms_link_text($country) {
+	static function get_account_terms_link_text($country) {
 
 		switch ( $country )
 		{

@@ -1,4 +1,6 @@
 <?php
+require_once "commonfunctions.php";
+
 class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 
 	/**
@@ -33,6 +35,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		$this->lower_threshold		= ( isset( $this->settings['lower_threshold'] ) ) ? $this->settings['lower_threshold'] : '';
 		$this->upper_threshold		= ( isset( $this->settings['upper_threshold'] ) ) ? $this->settings['upper_threshold'] : '';
 		$this->invoice_fee_id		= ( isset( $this->settings['invoice_fee_id'] ) ) ? $this->settings['invoice_fee_id'] : '';
+		$this->logo 				= get_option('billmate_common_logo');
 
 		$this->testmode				= ( isset( $this->settings['testmode'] ) && $this->settings['testmode'] == 'yes' ) ? true : false;
 
@@ -175,6 +178,10 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 					$order->add_order_note(__($payment_note,'billmate'));
 					$order->update_status($this->order_status);
 				}
+			}
+			if($data['status'] == 'Cancelled'){
+				$order->cancel_order('Cancelled Order');
+				wp_safe_redirect($order->get_cancel_order_url());
 			}
 			if( $accept_url_hit ){
 				$redirect = '';
@@ -375,8 +382,6 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		$language = explode('_',get_locale());
 		if(!defined('BILLMATE_LANGUAGE')) define('BILLMATE_LANGUAGE',strtolower($language[0]));
 
-        if(!defined('BILLMATE_SERVER')) define('BILLMATE_SERVER','2.1.7');
-        if(!defined('BILLMATE_CLIENT')) define('BILLMATE_CLIENT','WooCommerce:Billmate:2.0');
 		$orderValues = array();
 		$capture_now   = $this->authentication_method == 'sales' ? 'YES' : 'NO';
 		$orderValues['PaymentData'] = array(
@@ -385,7 +390,9 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			'language' => strtolower($language[0]),
 			'country' => $this->billmate_country,
 			'autoactivate' => 0,
-			'orderid' => preg_replace('/#/','',$order->get_order_number())
+			'orderid' => preg_replace('/#/','',$order->get_order_number()),
+			'logo' => (strlen($this->logo)> 0) ? $this->logo : ''
+
 		);
 		$orderValues['PaymentInfo'] = array(
 			'paymentdate' => (string)date('Y-m-d'),

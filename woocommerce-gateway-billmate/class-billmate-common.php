@@ -5,7 +5,7 @@
  * Date: 15-03-02
  * Time: 16:29
  */
-
+require_once "commonfunctions.php";
 class BillmateCommon {
 
 	private $options;
@@ -51,8 +51,7 @@ class BillmateCommon {
 
     public function getaddress()
     {
-		if(!defined('BILLMATE_CLIENT')) define('BILLMATE_CLIENT','WooCommerce:2.0');
-		if(!defined('BILLMATE_SERVER')) define('BILLMATE_SERVER','2.1.7');
+
         $billmate = new BillMate(get_option('billmate_common_eid'),get_option('billmate_common_secret'),true,false,false);
 		$_SESSION['billmate_pno'] = $_POST['pno'];
         $addr = $billmate->getAddress(array('pno' => $_POST['pno']));
@@ -87,6 +86,11 @@ class BillmateCommon {
             'billmate_common_getaddress',
             array($this,'sanitize')
         );
+		register_setting(
+			'billmate_common',
+			'billmate_common_logo',
+			array($this,'sanitize')
+		);
 		add_settings_section(
 			'setting_credentials', // ID
 			__('Common Billmate Settings','billmate'), // Title
@@ -116,6 +120,13 @@ class BillmateCommon {
             'billmate-settings',
             'setting_credentials'
         );
+		add_settings_field(
+			'billmate_common_logo',
+			__('Logo to be displayed in the invoice'),
+			array($this,'logo_callback'),
+			'billmate-settings',
+			'setting_credentials'
+		);
 	}
 
 	public function add_plugin_page() {
@@ -149,6 +160,11 @@ class BillmateCommon {
         echo '</select>';
     }
 
+	public function logo_callback()
+	{
+		$value = get_option('billmate_common_logo','');
+		echo '<input type="text" id="billmate_common_logo" name="billmate_common_logo" value="'.$value.'" />';
+	}
 	public function print_section_info()
 	{
 		echo __('Here is the common settings for the Billmate Payment module','billmate');

@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce Billmate Gateway
 Plugin URI: http://woothemes.com/woocommerce
 Description: Receive payments on your WooCommerce store via Billmate. Invoice, partpayment, credit/debit card and direct bank transfers. Secure and 100&#37; free plugin.
-Version: 2.00
+Version: 2.1
 Author: Billmate
 Text Domain: billmate
 Author URI: http://billmate.se
@@ -29,8 +29,6 @@ add_action('plugins_loaded', 'init_billmate_gateway', 0);
 
 define('BILLMATE_DIR', dirname(__FILE__) . '/');
 define('BILLMATE_LIB', dirname(__FILE__) . '/library/');
-if(!defined('BILLMATE_SERVER')) define('BILLMATE_SERVER','2.1.7');
-if(!defined('BILLMATE_CLIENT')) define('BILLMATE_CLIENT','WooCommerce:Billmate:2.0');
 require_once 'commonfunctions.php';
 /** Change invoice fee to field instead of product. */
 function activate_billmate_gateway(){
@@ -147,6 +145,8 @@ function init_billmate_gateway() {
 				// Original file: https://static.billmate.com:444/external/js/billmatepart.js
 				// wp_register_script( 'billmate-part-js', plugins_url( '/js/billmatepart.js', __FILE__ ), array('jquery'), '1.0', false );
 				// wp_enqueue_script( 'billmate-part-js' );
+				wp_register_script( 'billmate-popup-js', plugins_url( '/js/billmatepopup.js', __FILE__ ),array(),false, true );
+				wp_enqueue_script( 'billmate-popup-js' );
 			}
 
 		}
@@ -183,12 +183,4 @@ function add_billmate_gateway( $methods ) {
 }
 
 add_filter('woocommerce_payment_gateways', 'add_billmate_gateway' );
-add_action('wp_footer','get_billmate_woocomm_version');
-function get_billmate_woocomm_version(){
-	echo '<!-- billmate version '.BILLPLUGIN_VERSION.' -->';
-	if(!empty($_GET['debug-bill'])){
-		echo '<h1>billmate version '.BILLPLUGIN_VERSION.' </h1>';
-		phpinfo();
-		die;
-	}
-}
+
