@@ -1410,7 +1410,7 @@ parse_str($_POST['post_data'], $datatemp);
 					$sku = $_product->id;
 				}
 
-				$priceExcl = round($item_price-$order->get_item_tax($item,false),2);
+				$priceExcl = $item_price-$order->get_item_tax($item,false);
 
 				$orderValues['Articles'][] = array(
 					'quantity'   => (int)$item['qty'],
@@ -1444,6 +1444,7 @@ parse_str($_POST['post_data'], $datatemp);
 				$percent = $value/$total_value;
 
 				$discountAmount = ($percent * $order_discount) * (1-($key/100)/(1+($key/100)));
+
 				$orderValues['Articles'][] = array(
 					'quantity'   => (int)1,
 					'artnr'    => "",
@@ -1473,20 +1474,20 @@ parse_str($_POST['post_data'], $datatemp);
 			$shipping_price = apply_filters( 'billmate_shipping_price_including_tax', $billmate_shipping_price_including_tax );
 
 			$orderValues['Cart']['Shipping'] = array(
-				'withouttax'    => round(($shipping_price-$order->order_shipping_tax)*100,0),
+				'withouttax'    => ($shipping_price-$order->order_shipping_tax*100),
 				'taxrate'      => (float)$calculated_shipping_tax_percentage,
 
 			);
 			$total += ($shipping_price-$order->order_shipping_tax) * 100;
 			$totalTax += (($shipping_price-$order->order_shipping_tax) * ($calculated_shipping_tax_percentage/100))*100;
 		endif;
-		$round = ($woocommerce->cart->total * 100) - $total - $totalTax;
+		$round = (round($woocommerce->cart->total,2) * 100) - round($total + $totalTax,0);
 
 		$orderValues['Cart']['Total'] = array(
 			'withouttax' => $total,
-			'tax' => $totalTax,
+			'tax' => round($totalTax,0),
 			'rounding' => $round,
-			'withtax' => $total + $totalTax + $round
+			'withtax' => $total + round($totalTax,0) + $round
 		);
 		try{
 			$addr = $k->GetAddress(array('pno' => $billmate_pno));
@@ -1744,13 +1745,18 @@ parse_str($_POST['post_data'], $datatemp);
 			}catch(Exception $e) {
     		//The purchase was denied or something went wrong, print the message:
 			switch($e->getCode()){
-				//case '2207':
 				case '9015':
 				case '9016':
-					echo '<ul class="woocommerce-error"><li>';
-					echo sprintf(__('%s (Error code: %s)', 'billmate'), utf8_encode($e->getMessage()), $e->getCode() );
-					echo '<script type="text/javascript">jQuery("#billmategeturl").remove();</script></li></ul>';
-					die;
+					if(version_compare(WC_VERSION,'2.4.0','<')) {
+						echo '<ul class="woocommerce-error"><li>'.sprintf(__('%s (Error code: %s)', 'billmate'), utf8_encode($e->getMessage()), $e->getCode() ).'<script type="text/javascript">jQuery("#billmategeturl").remove();</script></li></ul>';
+
+						die;
+					} else {
+						$code['messages'] =  '<ul class="woocommerce-error"><li>'.sprintf(__('%s (Error code: %s)', 'billmate'), utf8_encode($e->getMessage()), $e->getCode() ).'<script type="text/javascript">jQuery("#billmategeturl").remove();</script></li></ul>';
+
+						echo json_encode($code);
+						die;
+					}
 					break;
 				default:
 					throw new Exception(utf8_encode($e->getMessage()),$e->getCode());
