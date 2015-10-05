@@ -406,26 +406,16 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		$languageCode = $languageCode == 'SV' ? 'SE' : $languageCode;
 		$languageCode = $languageCode == 'EN' ? 'GB' : $languageCode;
 
-		/*if(version_compare(WC_VERSION, '2.0.0', '<')){
-			$cancel_url= add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_checkout_page_id'))));
-		} else {
-			$cancel_url= get_permalink(get_option('woocommerce_checkout_page_id'));
-		}*/
+
 
 		$cancel_url = html_entity_decode($woocommerce->cart->get_checkout_url());
 		$accept_url= trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Bankpay&payment=success';
 		//$callback_url= 'http://api.billmate.se/callback.php';
 		$callback_url = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Bankpay';
-		$actionurl = $this->testmode ? $this->tst_url : $this->prod_url;
-		$secret    = substr($this->secret,0,12);
-		$eid       = $this->eid;
-		$currency  = 'SEK';
-		$return_method = 'GET';
+
 
         $url = parse_url($callback_url);
 
-		$pay_method= 'BANK';
-		$amount    = $woocommerce->cart->total*100;
 		$orderValues['Card'] = array(
 			'accepturl' => $accept_url,
 			'callbackurl' => $callback_url,
@@ -467,13 +457,13 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		endif;
 		$countries = $woocommerce->countries->get_allowed_countries();
 		$orderValues['Customer']['Billing'] = array(
-			'firstname' => utf8_encode($order->billing_first_name),
-			'lastname' => utf8_encode($order->billing_last_name),
-			'company' => utf8_encode($order->billing_company),
-			'street' => utf8_encode($billmate_billing_address),
-			'street2' => utf8_encode($order->billing_address_2),
+			'firstname' => mb_convert_encoding($order->billing_first_name,'UTF-8','auto'),
+			'lastname' => mb_convert_encoding($order->billing_last_name,'UTF-8','auto'),
+			'company' => mb_convert_encoding($order->billing_company,'UTF-8','auto'),
+			'street' => mb_convert_encoding($billmate_billing_address,'UTF-8','auto'),
+			'street2' => mb_convert_encoding($order->billing_address_2,'UTF-8','auto'),
 			'zip' => $order->billing_postcode,
-			'city' => utf8_encode($order->billing_city),
+			'city' => mb_convert_encoding($order->billing_city,'UTF-8','auto'),
 			'country' => $countries[$order->billing_country],
 			'phone' => $order->billing_phone,
 			'email' => $order->billing_email
@@ -483,33 +473,26 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			$email = $order->billing_email;
 			$telno = ''; //We skip the normal land line phone, only one is needed.
 			$cellno = $order->billing_phone;
-			$company = utf8_encode ($order->billing_company);
-			$fname = utf8_encode ($order->billing_first_name);
-			$lname = utf8_encode ($order->billing_last_name);
-			$careof = utf8_encode ($order->billing_address_2);  //No care of; C/O.
-			$street = utf8_encode ($billmate_billing_address); //For DE and NL specify street number in houseNo.
-			$zip = utf8_encode ($order->billing_postcode);
-			$city = utf8_encode ($order->billing_city);
-			$country = utf8_encode ($countries[$order->billing_country]);
-			$houseNo = utf8_encode ($billmate_billing_house_number); //For DE and NL we need to specify houseNo.
-			$houseExt = utf8_encode ($billmate_billing_house_extension); //Only required for NL.
-			$countryCode = $order->billing_country;
+			$company = mb_convert_encoding( $order->billing_company,'UTF-8','auto');
+			$fname = mb_convert_encoding( $order->billing_first_name,'UTF-8','auto');
+			$lname = mb_convert_encoding( $order->billing_last_name,'UTF-8','auto');
+			$careof = mb_convert_encoding( $order->billing_address_2,'UTF-8','auto');  //No care of; C/O.
+			$street = mb_convert_encoding( $billmate_billing_address,'UTF-8','auto'); //For DE and NL specify street number in houseNo.
+			$zip = mb_convert_encoding( $order->billing_postcode,'UTF-8','auto');
+			$city = mb_convert_encoding( $order->billing_city,'UTF-8','auto');
 
 		} else {
 			$email = $order->billing_email;
 			$telno = ''; //We skip the normal land line phone; only one is needed.
 			$cellno = $order->billing_phone;
-			$company = utf8_encode ($order->shipping_company);
-			$fname = utf8_encode ($order->shipping_first_name);
-			$lname = utf8_encode ($order->shipping_last_name);
-			$careof = utf8_encode ($order->shipping_address_2);  //No care of; C/O.
-			$street = utf8_encode ($billmate_shipping_address); //For DE and NL specify street number in houseNo.
-			$zip = utf8_encode ($order->shipping_postcode);
-			$city = utf8_encode ($order->shipping_city);
-			$country = utf8_encode ($countries[$order->shipping_country]);
-			$houseNo = utf8_encode ($billmate_shipping_house_number); //For DE and NL we need to specify houseNo.
-			$houseExt = utf8_encode ($billmate_shipping_house_extension); //Only required for NL.
-			$countryCode = $order->shipping_country;
+			$company = mb_convert_encoding( $order->shipping_company,'UTF-8','auto');
+			$fname = mb_convert_encoding( $order->shipping_first_name,'UTF-8','auto');
+			$lname = mb_convert_encoding( $order->shipping_last_name,'UTF-8','auto');
+			$careof = mb_convert_encoding( $order->shipping_address_2,'UTF-8','auto');  //No care of; C/O.
+			$street = mb_convert_encoding( $billmate_shipping_address,'UTF-8','auto'); //For DE and NL specify street number in houseNo.
+			$zip = mb_convert_encoding( $order->shipping_postcode,'UTF-8','auto');
+			$city = mb_convert_encoding( $order->shipping_city,'UTF-8','auto');
+
 
 		}
 		$orderValues['Customer']['Shipping'] = array(
@@ -561,7 +544,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 					$sku = $_product->id;
 				}
 
-				$priceExcl = round($item_price-$order->get_item_tax($item,false),2);
+				$priceExcl = $item_price-$order->get_item_tax($item,false);
 
 				$orderValues['Articles'][] = array(
 					'quantity'   => (int)$item['qty'],
@@ -595,6 +578,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 				$percent = $value/$total_value;
 
 				$discountAmount = ($percent * $order_discount) * (1-($key/100)/(1+($key/100)));
+
 				$orderValues['Articles'][] = array(
 					'quantity'   => (int)1,
 					'artnr'    => "",
@@ -624,20 +608,20 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			$shipping_price = apply_filters( 'billmate_shipping_price_including_tax', $billmate_shipping_price_including_tax );
 
 			$orderValues['Cart']['Shipping'] = array(
-				'withouttax'    => round(($shipping_price-$order->order_shipping_tax)*100,0),
+				'withouttax'    => ($shipping_price-$order->order_shipping_tax*100),
 				'taxrate'      => (float)$calculated_shipping_tax_percentage,
 
 			);
 			$total += ($shipping_price-$order->order_shipping_tax) * 100;
 			$totalTax += (($shipping_price-$order->order_shipping_tax) * ($calculated_shipping_tax_percentage/100))*100;
 		endif;
-		$round = ($woocommerce->cart->total * 100) - $total - $totalTax;
+		$round = (round($woocommerce->cart->total,2) * 100) - round($total + $totalTax,0);
 
 		$orderValues['Cart']['Total'] = array(
 			'withouttax' => $total,
-			'tax' => $totalTax,
+			'tax' => round($totalTax,0),
 			'rounding' => $round,
-			'withtax' => $total + $totalTax + $round
+			'withtax' => $total + round($totalTax,0) + $round
 		);
 		$k = new Billmate($this->eid,$this->secret,true,$this->testmode,false);
         $result = $k->addPayment($orderValues);
