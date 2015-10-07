@@ -51,21 +51,22 @@ function activate_billmate_gateway(){
 			$product = new WC_Product( $invoiceSettings['invoice_fee_id']);
 
 		}
-
-		$fee = $product->get_price_excluding_tax();
-		$taxClass = $product->get_tax_class();
-		$invoiceSettings['billmate_invoice_fee'] = $fee;
-		$invoiceSettings['billmate_invoice_fee_tax_class'] = $taxClass;
-		$invoiceSettings['plugin_version'] = BILLMATE_VERSION;
-
+		if($product) {
+			$fee = $product->get_price_excluding_tax();
+			$taxClass = $product->get_tax_class();
+			$invoiceSettings['billmate_invoice_fee'] = $fee;
+			$invoiceSettings['billmate_invoice_fee_tax_class'] = $taxClass;
+		}
+		$invoiceSettings['plugin_version'] = BILLPLUGIN_VERSION;
+		unset($invoiceSettings['invoice_fee_id']);
 		update_option('billmate_common_eid',$invoiceSettings['eid']);
 		update_option('billmate_common_secret',$invoiceSettings['secret']);
 		update_option('woocommerce_billmate_settings',$invoiceSettings);
 
 	// Else Plugin version in DB differs from Billmate Version.
-	}elseif(BILLMATE_VERSION != $invoiceSettings['plugin_version']){
+	}elseif(BILLPLUGIN_VERSION != $invoiceSettings['plugin_version']){
 		// Plugin update after Billmate gateway 2.0.0
-		$invoiceSettings['plugin_version'] = BILLMATE_VERSION;
+		$invoiceSettings['plugin_version'] = BILLPLUGIN_VERSION;
 		update_option('woocommerce_billmate_settings',$invoiceSettings);
 	}
 }
