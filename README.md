@@ -49,6 +49,9 @@ Copy the code below for the size that fits your needs.
 
 ##Changelog
 
+###2.1.2(2015-10-07)
+* Fix - Activate plugin issue.
+
 ###2.1.1(2015-10-05)
 * Fix - UTF-8 encoding, payment denied message and Card and Bank payment addresses.
 * Fix - Rounding calculations.
