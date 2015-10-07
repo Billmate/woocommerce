@@ -85,7 +85,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		$this->billmate_country 		= apply_filters( 'billmate_country', $billmate_country );
 		$this->billmate_language 		= apply_filters( 'billmate_language', $billmate_language );
 		$this->billmate_currency 		= apply_filters( 'billmate_currency', $billmate_currency );
-		$this->icon 				= apply_filters( 'billmate_invoice_icon', $billmate_invoice_icon );
+		$this->icon 				= apply_filters( 'billmate_bankpay_icon', $billmate_invoice_icon );
 
 
 		// Actions
