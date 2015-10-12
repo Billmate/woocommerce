@@ -856,11 +856,12 @@ parse_str($_POST['post_data'], $datatemp);
 			}
 			$billmate_mode = 'live';
 		endif;
-		if( empty( get_option('billmate_common_eid'))){
+		$eid = (int)get_option('billmate_common_eid');
+
+		if( empty( $eid)){
 			return false;
 		}
 
-		$eid = (int)get_option('billmate_common_eid');
 		$secret = get_option('billmate_common_secret');
 		$country = self::$country;
 		$currency = get_woocommerce_currency();
