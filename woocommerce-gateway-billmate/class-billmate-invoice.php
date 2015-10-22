@@ -767,7 +767,7 @@ parse_str($_POST['post_data'], $datatemp);
 			'language' => $lang[0],
 			'country' => $country,
 			'orderid' => $orderid,
-			'logo' => (strlen($this->logo)> 0) ? $this->logo : ''
+			'logo' => ($this->logo && strlen($this->logo)> 0) ? $this->logo : ''
 		);
 
 		$orderValues['PaymentInfo'] = array(
