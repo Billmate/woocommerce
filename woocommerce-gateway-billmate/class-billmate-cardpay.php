@@ -108,7 +108,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 
 		add_action('woocommerce_receipt_billmate', array(&$this, 'receipt_page'));
 
-		add_action('scheduled_subscription_payment_'.$this->id,array($this,'process_scheduled_payment'));
+		add_action('scheduled_subscription_payment_'.$this->id,array($this,'process_scheduled_payment'),10,3);
         add_action('admin_enqueue_scripts',array(&$this,'injectscripts'));
 		$this->subscription_active = false;
 		if(!is_admin()){
@@ -161,12 +161,17 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			$order_id = wc_seq_order_number_pro()->find_order_by_order_number( $data['orderid'] );
 
 		}
+
+		$order = new WC_Order( $order_id );
 		if($recurring) {
 			//Todo: Verify it is saved
 			update_post_meta($order_id, '_billmate_card_token', $data['number']);
 			update_post_meta($order_id, 'billmate_card_token', $data['number']);
+			if($order->get_total() == 0) {
+				$result = $k->creditPayment(array('PaymentData' => array('number' => $data['number'], 'partcredit' => false)));
+				$activateResult = $k->activatePayment(array('PaymentData' => array('number' => $result['number'])));
+			}
 		}
-		$order = new WC_Order( $order_id );
 		if(false !== get_transient('billmate_cardpay_order_id_'.$order_id)){
 			if(version_compare(WC_VERSION, '2.0.0', '<')) {
 				$redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))));
@@ -434,7 +439,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		$total = 0;
 		$totalTax = 0;
 		$prepareDiscount = array();
-		$cancel_url = html_entity_decode($woocommerce->cart->get_checkout_url());
+		$cancel_url = html_entity_decode(get_site_url());
 		$accept_url= trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Cardpay&payment=success&recurring=1';
 
 		$callback_url = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Cardpay&recurring=1';
@@ -446,7 +451,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			'currency' => get_woocommerce_currency(),
 			'language' => strtolower($language[0]),
 			'country' => $this->billmate_country,
-			'autoactivate' => ( $this->authentication_method == 'sales') ? 1 : 0,
+			'autoactivate' => 1,
 			'orderid' => preg_replace('/#/','',$order->get_order_number()),
 			'logo' => (strlen($this->logo)> 0) ? $this->logo : ''
 
@@ -586,8 +591,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 					$sku = $_product->id;
 				}
 
-				$priceExcl = $item_price*(1-($item_tax_percentage/100)/(1+($item_tax_percentage/100)));//$item_price-$order->get_item_tax($item,false);
-
+				$priceExcl = $amount_to_charge*(1-($item_tax_percentage/100)/(1+($item_tax_percentage/100)));//$item_price-$order->get_item_tax($item,false);
 
 				$orderValues['Articles'][] = array(
 					'quantity'   => (int)$item['qty'],
@@ -654,24 +658,9 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			$total += ($shipping_price-$order->order_shipping_tax) * 100;
 			$totalTax += (($shipping_price-$order->order_shipping_tax) * ($calculated_shipping_tax_percentage/100))*100;
 		endif;
-		$signup_fee = WC_Subscriptions_Order::get_sign_up_fee($order);
 
-		if($signup_fee > 0 && $signup_fee != WC_Subscriptions_Order::get_recurring_total($order)):
-			$orderValues['Articles'][] = array(
-				'quantity'   => (int)1,
-				'artnr'    => "",
-				'title'    => __('Signup Fee', 'billmate'),
-				'aprice'    => ($signup_fee*100), //+$item->unittax
-				'taxrate'      => 0,
-				'discount' => (float)0,
-				'withouttax' => ($signup_fee*100)
-
-			);
-			$total += $signup_fee * 100;
-			$totalTax += ($signup_fee * 100);
-
-		endif;
-		$round = (round($order->order_total,2)*100) - round($total + $totalTax,0);
+		error_log('subscription_total',WC_Subscriptions_Order::get_recurring_total($order));
+		$round = 0;//(round($order->order_total,2)*100) - round($total + $totalTax,0);
 
 
 		$orderValues['Cart']['Total'] = array(
@@ -679,6 +668,22 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			'tax' => round($totalTax,0),
 			'rounding' => $round,
 			'withtax' => round($total) + round($totalTax,0) + $round
+		);
+
+		$k = new Billmate($this->eid,$this->secret,true,$this->testmode,false);
+		$result = $k->addPayment($orderValues);
+		if(isset($result['code'])){
+			wc_bm_errors(__($result['message']));
+			$order->add_order_note(__("Subscription Payment Failed: " . $result['message'] . ". Invoice ID: None" , WC_Subscriptions::$text_domain));
+			WC_Subscriptions_Manager::process_subscription_payment_failure_on_order($order, $product_id);
+			return;
+		}else{
+			$order->add_order_note(__("Subscription Payment Successful. Invoice ID: " . $result["number"], WC_Subscriptions::$text_domain));
+			WC_Subscriptions_Manager::process_subscription_payments_on_order($order);
+		}
+
+		return array(
+			'result' => 'success'
 		);
 
 	}
@@ -694,6 +699,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 				$total = 0;
 				$totalTax = 0;
 				$prepareDiscount = array();
+				$productTax = 0;
 				$cancel_url = html_entity_decode($woocommerce->cart->get_checkout_url());
 				$accept_url= trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Cardpay&payment=success&recurring=1';
 
@@ -706,7 +712,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 					'currency' => get_woocommerce_currency(),
 					'language' => strtolower($language[0]),
 					'country' => $this->billmate_country,
-					'autoactivate' => ( $this->authentication_method == 'sales') ? 1 : 0,
+					'autoactivate' => 1,
 					'orderid' => preg_replace('/#/','',$order->get_order_number()),
 					'logo' => (strlen($this->logo)> 0) ? $this->logo : ''
 
@@ -845,9 +851,12 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 						} else {
 							$sku = $_product->id;
 						}
+						$productTax = $item_tax_percentage;
 
 						$priceExcl = $item_price*(1-($item_tax_percentage/100)/(1+($item_tax_percentage/100)));//$item_price-$order->get_item_tax($item,false);
-
+						if($signup_fee =  WC_Subscriptions_Order::get_sign_up_fee($order)){
+							$priceExcl -= $signup_fee;
+						}
 						$orderValues['Articles'][] = array(
 							'quantity'   => (int)$item['qty'],
 							'artnr'    => $sku,
@@ -920,19 +929,34 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 						'quantity'   => (int)1,
 						'artnr'    => "",
 						'title'    => __('Signup Fee', 'billmate'),
-						'aprice'    => ($signup_fee*100), //+$item->unittax
-						'taxrate'      => 0,
+						'aprice'    => ($signup_fee*(1-($productTax/100))*100), //+$item->unittax
+						'taxrate'      => $productTax,
 						'discount' => (float)0,
-						'withouttax' => ($signup_fee*100)
+						'withouttax' => ($signup_fee*(1-($productTax/100))*100)
 
 					);
-				$total += $signup_fee * 100;
-				$totalTax += ($signup_fee * 100);
+				$total += $signup_fee *(1-($productTax/100))* 100;
+				$totalTax += (($signup_fee *(1-($productTax/100))) * ($productTax/100)) * 100;
 
 				endif;
+
+				if($order->get_total() == 0){
+					$orderValues['Articles'][] = array(
+						'quantity'   => (int)1,
+						'artnr'    => "",
+						'title'    => __('Transaction to be credited', 'billmate'),
+						'aprice'    => 100, //+$item->unittax
+						'taxrate'      => 0,
+						'discount' => (float)0,
+						'withouttax' => 100
+
+					);
+					$total += 100;
+				}
+
 				$round = (round($woocommerce->cart->total,2)*100) - round($total + $totalTax,0);
-				error_log('recurring_total'.WC_Subscriptions_Order::get_recurring_total($order));
-				error_log('carttotal'.$woocommerce->cart->total);
+				$round += ($woocommerce->cart->total == 0) ? 100 : 0;
+
 				$orderValues['Cart']['Total'] = array(
 					'withouttax' => round($total),
 					'tax' => round($totalTax,0),
