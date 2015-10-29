@@ -1,7 +1,7 @@
 <?php
 function match_usernamevp( $str1, $str2 ){
-	$name1 = explode(' ', utf8_strtolower( Encoding::fixUTF8( $str1 ) ) );
-	$name2 = explode(' ', utf8_strtolower( Encoding::fixUTF8( $str2 ) ) );
+	$name1 = explode(' ', utf8_strtolower( BillmateStringEncoding::fixUTF8( $str1 ) ) );
+	$name2 = explode(' ', utf8_strtolower( BillmateStringEncoding::fixUTF8( $str2 ) ) );
 	$foundName = array_intersect($name1, $name2);
 	return count($foundName ) > 0;                        
 }
@@ -9,8 +9,8 @@ function match_usernamevp( $str1, $str2 ){
 function isEqual($string1, $string2 ){
 //		$string1 = utf8_strtolower( preg_replace('/([\s+])/', '', Encoding::fixUTF8($string1) ));
 	//$string2 = utf8_strtolower( preg_replace('/([\s+])/', '', Encoding::fixUTF8($string2 )));
-	$string1 = explode(" ", utf8_strtolower(Encoding::fixUTF8($string1)) );
-	$string2 = explode(" ", utf8_strtolower(Encoding::fixUTF8($string2)) );
+	$string1 = explode(" ", utf8_strtolower(BillmateStringEncoding::fixUTF8($string1)) );
+	$string2 = explode(" ", utf8_strtolower(BillmateStringEncoding::fixUTF8($string2)) );
 	
 	$filterStr1 = array();
 	foreach( $string1 as $str1 ){
@@ -843,7 +843,7 @@ function utf8_from_unicode($data) {
 
 
 
-class Encoding {
+class BillmateStringEncoding {
     
   protected static $win1252ToUtf8 = array(
         128 => "\xe2\x82\xac",
@@ -1122,8 +1122,8 @@ class Encoding {
   public static function encode($encodingLabel, $text)
   {
     $encodingLabel = self::normalizeEncoding($encodingLabel);
-    if($encodingLabel == 'UTF-8') return Encoding::toUTF8($text);
-    if($encodingLabel == 'ISO-8859-1') return Encoding::toLatin1($text);
+    if($encodingLabel == 'UTF-8') return BillmateStringEncoding::toUTF8($text);
+    if($encodingLabel == 'ISO-8859-1') return BillmateStringEncoding::toLatin1($text);
   }
 
 }
