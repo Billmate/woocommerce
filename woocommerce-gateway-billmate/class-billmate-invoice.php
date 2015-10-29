@@ -991,7 +991,7 @@ parse_str($_POST['post_data'], $datatemp);
 
 				$total += $this->invoice_fee * 100;
 				$totalTax += (($rate/100) * $this->invoice_fee)*100;
-				$woocommerce->cart->add_fee(__('Invoice fee'),$this->invoice_fee,true,$this->invoice_fee_tax_class);
+				$woocommerce->cart->add_fee(__('Invoice fee','billmate'),$this->invoice_fee,true,$this->invoice_fee_tax_class);
 
 			} // End version check
 

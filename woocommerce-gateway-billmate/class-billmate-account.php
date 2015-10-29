@@ -443,7 +443,24 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 			if($pclasses){
 				$billmate_cart_total = $woocommerce->cart->total;
 				$sum = apply_filters( 'billmate_cart_total', $billmate_cart_total ); // Cart total.
+                $fees = $woocommerce->cart->get_fees();
+                $availableFees = array();
+                foreach($fees as $fee){
+                    $availableFees[$fee->id]['amount'] = $fee->amount;
+                    $tax = new WC_Tax();
 
+                    $invoicetax = $tax->get_rates($fee->tax_class);
+                    $rate = array_pop($invoicetax);
+
+
+                    $rate = $rate['rate'];
+                    $availableFees[$fee->id]['tax'] = (($rate/100) * $fee->amount);
+                }
+
+                if(array_key_exists(sanitize_title(__('Invoice fee','billmate')),$availableFees)){
+
+                    $sum -= ($availableFees[sanitize_title(__('Invoice fee','billmate'))]['amount'] + $availableFees[sanitize_title(__('Invoice fee','billmate'))]['tax']);
+                }
 
 				foreach ($pclasses as $pclass) {
 					if (strlen($pclass['description']) > 0 ) {
