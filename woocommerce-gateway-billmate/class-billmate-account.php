@@ -1475,7 +1475,7 @@ parse_str($_POST['post_data'], $datatemp);
 			$shipping_price = apply_filters( 'billmate_shipping_price_including_tax', $billmate_shipping_price_including_tax );
 
 			$orderValues['Cart']['Shipping'] = array(
-				'withouttax'    => ($shipping_price-$order->order_shipping_tax*100),
+				'withouttax'    => ($shipping_price-$order->order_shipping_tax)*100,
 				'taxrate'      => (float)$calculated_shipping_tax_percentage,
 
 			);
