@@ -94,6 +94,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			'subscription_suspension',
 			'subscription_reactivation',
 			'subscription_amount_changes',
+			'subscription_payment_method_change_admin',
 			'subscription_date_changes'
 		);
 
@@ -108,7 +109,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 
 		add_action('woocommerce_receipt_billmate', array(&$this, 'receipt_page'));
 
-		add_action('scheduled_subscription_payment_'.$this->id,array($this,'process_scheduled_payment'),10,3);
+		add_action('woocommerce_scheduled_subscription_payment_'.$this->id,array($this,'process_scheduled_payment'),10,3);
         add_action('admin_enqueue_scripts',array(&$this,'injectscripts'));
 		$this->subscription_active = false;
 		if(!is_admin()){
@@ -550,7 +551,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			'cancelurl' => $cancel_url,
 			'3dsecure' => ($this->do_3dsecure != 'NO') ? 1 : 0,
 			'promptname' => ($this->prompt_name_entry == 'YES') ? 1 : 0,
-			'recurring' => $billmateToken,
+			'recurringnr' => $billmateToken,
 			'returnmethod' => ($url['scheme'] == 'https') ? 'POST' : 'GET'
 		);
 		if (sizeof($order->get_items())>0) : foreach ($order->get_items() as $item) :
@@ -680,11 +681,12 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		}else{
 			$order->add_order_note(__("Subscription Payment Successful. Invoice ID: " . $result["number"], WC_Subscriptions::$text_domain));
 			WC_Subscriptions_Manager::process_subscription_payments_on_order($order);
+			return array(
+				'result' => 'success'
+			);
 		}
 
-		return array(
-			'result' => 'success'
-		);
+
 
 	}
 	/**
