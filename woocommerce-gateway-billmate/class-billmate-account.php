@@ -1498,7 +1498,7 @@ parse_str($_POST['post_data'], $datatemp);
 			$total += ($shipping_price-$order->order_shipping_tax) * 100;
 			$totalTax += (($shipping_price-$order->order_shipping_tax) * ($calculated_shipping_tax_percentage/100))*100;
 		endif;
-		$round = (round($woocommerce->cart->total,2) * 100) - round($total + $totalTax,0);
+		$round = (round($woocommerce->cart->total*100,2)) - round($total + $totalTax,0);
 
 		$orderValues['Cart']['Total'] = array(
 			'withouttax' => $total,

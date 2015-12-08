@@ -121,6 +121,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			if( empty( $_POST ) ){
 				$_POST = $_GET;
 			}
+			array_merge($_POST,file_get_contents('php://input'));
 			$accept_url_hit = true;
 			$payment_note = 'Note: Payment Completed Accept Url.';
 		} else {
@@ -160,7 +161,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 				$error_message = $data['message'];
 			}
 			$order->add_order_note( __($error_message, 'billmate') );
-			$woocommerce->add_error( __($error_message, 'billmate') );
+			wc_bm_errors($error_message);
 			wp_safe_redirect(add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_checkout_page_id')))));
 			return false;
 		}
@@ -615,7 +616,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			$total += ($shipping_price-$order->order_shipping_tax) * 100;
 			$totalTax += (($shipping_price-$order->order_shipping_tax) * ($calculated_shipping_tax_percentage/100))*100;
 		endif;
-		$round = (round($woocommerce->cart->total,2) * 100) - round($total + $totalTax,0);
+		$round = (round($woocommerce->cart->total*100,2)) - round($total + $totalTax,0);
 
 		$orderValues['Cart']['Total'] = array(
 			'withouttax' => $total,
