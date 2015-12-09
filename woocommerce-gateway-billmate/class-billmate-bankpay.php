@@ -121,6 +121,10 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			if( empty( $_POST ) ){
 				$_POST = $_GET;
 			}
+			$input = file_get_contents('php://input');
+			if(is_array($input))
+				$_POST = array_merge($_POST, $input);
+
 			$accept_url_hit = true;
 			$payment_note = 'Note: Payment Completed Accept Url.';
 		} else {
@@ -149,7 +153,10 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			} else {
 				$redirect = $this->get_return_url($order);
 			}
-			wp_safe_redirect($redirect);
+			if($accept_url_hit)
+				wp_safe_redirect($redirect);
+			else
+				wp_die('OK','ok',array('response' => 200));
 		}
 		// Set Transient if not exists to prevent multiple callbacks
 		set_transient('billmate_bankpay_order_id_'.$order_id,true,3600);
@@ -160,9 +167,14 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 				$error_message = $data['message'];
 			}
 			$order->add_order_note( __($error_message, 'billmate') );
-			$woocommerce->add_error( __($error_message, 'billmate') );
-			wp_safe_redirect(add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_checkout_page_id')))));
-			return false;
+			wc_bm_errors($error_message);
+			if($accept_url_hit) {
+				wp_safe_redirect(add_query_arg('key', $order->order_key,
+						add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_checkout_page_id')))));
+				return false;
+			}else{
+				wp_die('OK','ok',array('response' => 200));
+			}
 		}
 		if( method_exists($order, 'get_status') ) {
 			$order_status = $order->get_status();
@@ -181,7 +193,10 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			}
 			if($data['status'] == 'Cancelled'){
 				$order->cancel_order('Cancelled Order');
-				wp_safe_redirect($order->get_cancel_order_url());
+				if($accept_url_hit)
+					wp_safe_redirect($order->get_cancel_order_url());
+				else
+					wp_die('OK','ok',array('response' => 200));
 			}
 			if( $accept_url_hit ){
 				$redirect = '';
@@ -194,7 +209,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 				}
 				wp_safe_redirect($redirect);
 			}
-			exit;
+			wp_die('OK','ok',array('response' => 200));
 		}
 		if( $accept_url_hit ) {
 			// Remove cart
@@ -206,8 +221,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			}
 			wp_safe_redirect($redirect);
 		}
-		exit;
-		return true;
+		wp_die('OK','ok',array('response' => 200));
 	}
 
 	/**
@@ -615,7 +629,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			$total += ($shipping_price-$order->order_shipping_tax) * 100;
 			$totalTax += (($shipping_price-$order->order_shipping_tax) * ($calculated_shipping_tax_percentage/100))*100;
 		endif;
-		$round = (round($woocommerce->cart->total,2) * 100) - round($total + $totalTax,0);
+		$round = (round($woocommerce->cart->total * 100,2)) - round($total + $totalTax,0);
 
 		$orderValues['Cart']['Total'] = array(
 			'withouttax' => $total,
