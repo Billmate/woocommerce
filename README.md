@@ -49,6 +49,10 @@ Copy the code below for the size that fits your needs.
 
 ##Changelog
 
+### 2.1.5(2015-12-09)
+* Fix - Rounding.
+* Fix - Callback issue.
+
 ###2.1.4(2015-10-29)
 * Fix - Fix bank and partpayment calculations.
 * Enhancement - Change classname from Encoding to BillmateStringEncoding, compatibility with Duplicator Pro plugin.
