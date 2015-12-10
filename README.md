@@ -49,6 +49,10 @@ Copy the code below for the size that fits your needs.
 
 ##Changelog
 
+### 2.1.6(2015-12-10)
+* Fix - Customer Nr.
+* Fix - Compatibility wc_seq_order_number.
+
 ### 2.1.5(2015-12-09)
 * Fix - Rounding.
 * Fix - Callback issue.
