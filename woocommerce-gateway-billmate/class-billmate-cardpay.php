@@ -144,6 +144,9 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			$order_id = wc_seq_order_number_pro()->find_order_by_order_number( $data['orderid'] );
 
 		}
+		if(isset($GLOBALS['wc_seq_order_number'])){
+			$order_id = $GLOBALS['wc_seq_order_number']->find_order_by_order_number($order_id);
+		}
 		$order = new WC_Order( $order_id );
 		if(false !== get_transient('billmate_cardpay_order_id_'.$order_id)){
 			if(version_compare(WC_VERSION, '2.0.0', '<')) {
@@ -465,7 +468,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		);
 
 		$orderValues['Customer'] = array(
-			'nr' => empty($order->user_id ) || $order->user_id<= 0 ? time(): $order->user_id
+			'nr' => empty($order->user_id ) || $order->user_id<= 0 ? '': $order->user_id
 		);
 		if ( $this->shop_country == 'NL' || $this->shop_country == 'DE' ) :
 
