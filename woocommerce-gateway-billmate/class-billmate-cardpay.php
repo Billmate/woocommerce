@@ -438,7 +438,9 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 	 */
 	function process_scheduled_payment($amount_to_charge,$order,$product_id){
 		global $woocommerce;
-		$billmateToken = get_post_meta($order->id,'billmate_card_token',true);
+		$billmateToken = get_post_meta($order->id,'_billmate_card_token',true);
+		if(empty($billmateToken))
+			$billmateToken = get_post_meta($order->id,'billmate_card_token',true);
 		error_log('billmate_token'.$billmateToken);
 		$total = 0;
 		$totalTax = 0;
@@ -683,7 +685,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			return;
 		}else{
 			$order->add_order_note(__("Subscription Payment Successful. Invoice ID: " . $result["number"], WC_Subscriptions::$text_domain));
-			$order->payment_complete($result['number']);
+			//$order->payment_complete($result['number']);
 			WC_Subscriptions_Manager::process_subscription_payments_on_order($order);
 			return array(
 				'result' => 'success'
