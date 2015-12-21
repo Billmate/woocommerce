@@ -436,11 +436,12 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 	/**
 	 * Process scheduled payment
 	 */
-	function process_scheduled_payment($amount_to_charge,$order,$product_id){
+	function process_scheduled_payment($amount_to_charge,$order){
 		global $woocommerce;
-		$billmateToken = get_post_meta($order->id,'_billmate_card_token',true);
+		$parent_id = wcs_get_subscriptions_for_renewal_order( $order );
+		$billmateToken = get_post_meta($parent_id,'_billmate_card_token',true);
 		if(empty($billmateToken))
-			$billmateToken = get_post_meta($order->id,'billmate_card_token',true);
+			$billmateToken = get_post_meta($parent_id,'billmate_card_token',true);
 		error_log('billmate_token'.$billmateToken);
 		$total = 0;
 		$totalTax = 0;
@@ -679,12 +680,12 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		$k = new Billmate($this->eid,$this->secret,true,$this->testmode,false);
 		$result = $k->addPayment($orderValues);
 		if(isset($result['code'])){
-			wc_bm_errors(__($result['message']));
-			$order->add_order_note(__("Subscription Payment Failed: " . $result['message'] . ". Invoice ID: None" , WC_Subscriptions::$text_domain));
+			wc_bm_errors(__($result['message'],'billmate'));
+			$order->add_order_note(__("Subscription Payment Failed: " . $result['message'] . ". Invoice ID: None" , 'billmate'));
 			WC_Subscriptions_Manager::process_subscription_payment_failure_on_order($order, $product_id);
 			return;
 		}else{
-			$order->add_order_note(__("Subscription Payment Successful. Invoice ID: " . $result["number"], WC_Subscriptions::$text_domain));
+			$order->add_order_note(__("Subscription Payment Successful. Invoice ID: " . $result["number"], 'billmate'));
 			//$order->payment_complete($result['number']);
 			WC_Subscriptions_Manager::process_subscription_payments_on_order($order);
 			return array(
