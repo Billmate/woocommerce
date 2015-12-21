@@ -681,12 +681,13 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		$result = $k->addPayment($orderValues);
 		if(isset($result['code'])){
 			wc_bm_errors(__($result['message'],'billmate'));
+			$order->update_status('failed',__("Subscription Payment Failed: " . $result['message'] . ". Invoice ID: None" , 'billmate'));
 			$order->add_order_note(__("Subscription Payment Failed: " . $result['message'] . ". Invoice ID: None" , 'billmate'));
-			WC_Subscriptions_Manager::process_subscription_payment_failure_on_order($order, $product_id);
+			WC_Subscriptions_Manager::process_subscription_payment_failure_on_order($order);
 			return;
 		}else{
 			$order->add_order_note(__("Subscription Payment Successful. Invoice ID: " . $result["number"], 'billmate'));
-			//$order->payment_complete($result['number']);
+			$order->payment_complete($result['number']);
 			WC_Subscriptions_Manager::process_subscription_payments_on_order($order);
 			return array(
 				'result' => 'success'
