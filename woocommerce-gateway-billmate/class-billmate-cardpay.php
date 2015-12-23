@@ -939,14 +939,14 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 						'quantity'   => (int)1,
 						'artnr'    => "",
 						'title'    => __('Signup Fee', 'billmate'),
-						'aprice'    => ($signup_fee*(1-($productTax/100))*100), //+$item->unittax
+						'aprice'    => round($signup_fee*(1-($productTax/100)),2)*100, //+$item->unittax
 						'taxrate'      => $productTax,
 						'discount' => (float)0,
-						'withouttax' => ($signup_fee*(1-($productTax/100))*100)
+						'withouttax' => round($signup_fee*(1-($productTax/100)),2)*100
 
 					);
-				$total += $signup_fee *(1-($productTax/100))* 100;
-				$totalTax += (($signup_fee *(1-($productTax/100))) * ($productTax/100)) * 100;
+				$total += round($signup_fee *(1-($productTax/100)),2)* 100;
+				$totalTax += round($signup_fee *(1-($productTax/100)),2) * (($productTax/100) * 100);
 
 				endif;
 
