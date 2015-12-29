@@ -206,7 +206,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			//$order->update_status('completed', $payment_note);
 			if($data['status'] == 'Paid') {
 				add_post_meta($order->id,'billmate_invoice_id',$data['number']);
-
+				$order->add_order_note(printf(_('Billmate Invoice id: %s','billmate'),$data['number']));
 				if ($this->order_status == 'default') {
 					$order->payment_complete();
 				} else {
