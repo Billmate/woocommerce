@@ -32,9 +32,9 @@ class BillmateCommon {
 			if($paymentInfo['PaymentData']['status'] == 'Created'){
 				$result = $billmate->activatePayment(array('PaymentData' => array('number' => $billmateInvoiceId)));
 				if(isset($result['code'])){
-					$order->add_order_note(printf(_('The order payment couldnt be activated, error code: %s error message: %s','billmate'),$result['code'],$result['message']));
+					$order->add_order_note(printf(__('The order payment couldnt be activated, error code: %s error message: %s','billmate'),$result['code'],$result['message']));
 				} else {
-					$order->add_order_note(_('The order payment activated successfully','billmate'));
+					$order->add_order_note(__('The order payment activated successfully','billmate'));
 				}
 			}
 		}
@@ -139,7 +139,7 @@ class BillmateCommon {
         );
 		add_settings_field(
 			'billmate_common_logo',
-			__('Logo to be displayed in the invoice'),
+			__('Logo to be displayed in the invoice','billmate'),
 			array($this,'logo_callback'),
 			'billmate-settings',
 			'setting_credentials'

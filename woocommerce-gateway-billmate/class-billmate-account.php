@@ -282,7 +282,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 		);
         if(count($available) > 1){
             $this->form_fields['billmateaccount_allowed_countries'] = array(
-                'title' => __( 'Allowed Countries', 'woocommerce'),
+                'title' => __( 'Allowed Countries', 'billmate'),
                 'type' => 'multiselect',
                 'description' =>  __( 'Billmate Partpayment activated for customers in these countries.', 'billmate' ),
                 'class' => 'choosen_select',

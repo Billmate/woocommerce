@@ -231,7 +231,7 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 		) );
         if(count($available) > 1){
             $this->form_fields['billmateinvoice_allowed_countries'] = array(
-                'title' 		=> __( 'Allowed Countries', 'woocommerce' ),
+                'title' 		=> __( 'Allowed Countries', 'billmate' ),
                 'type' 			=> 'multiselect',
                 'description' 	=> __( 'Billmate Invoice activated for customers in these countries.', 'billmate' ),
                 'class'			=> 'chosen_select',
