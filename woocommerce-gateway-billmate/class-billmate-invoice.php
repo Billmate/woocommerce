@@ -1113,6 +1113,7 @@ parse_str($_POST['post_data'], $datatemp);
 				case 'OK':
 				case 'Created':
 					$order->add_order_note( __('Billmate payment completed. Billmate Invoice number:', 'billmate') . $invno );
+					add_post_meta($order_id,'billmate_invoice_id',$invno);
 
 					// Payment complete
 					if($this->order_status == 'default')
@@ -1140,7 +1141,7 @@ parse_str($_POST['post_data'], $datatemp);
 					break;
 				case 'Pending':
 					$order->add_order_note( __('Order is PENDING APPROVAL by Billmate. Please visit Billmate Online for the latest status on this order. Billmate Invoice number: ', 'billmate') . $invno );
-
+					add_post_meta($order_id,'billmate_invoice_id',$invno);
 					// Payment complete
 					if($this->order_status == 'default')
 					{

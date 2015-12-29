@@ -17,11 +17,28 @@ class BillmateCommon {
         add_action('wp_ajax_nopriv_getaddress',array($this,'getaddress'));
         add_action('wp_ajax_getaddress',array($this,'getaddress'));
         add_action('woocommerce_checkout_before_customer_details',array($this,'get_address_fields'));
+		add_action( 'woocommerce_order_status_completed',array($this,'activate_invoice'));
 		add_filter('woocommerce_payment_successful_result',array($this,'clear_pno'));
 
 
 	}
 
+	public function activate_invoice($order_id)
+	{
+		$billmate = new BillMate(get_option('billmate_common_eid'),get_option('billmate_common_secret'),true,false,false);
+		$order = new WC_Order($order_id);
+		if($billmateInvoiceId = get_post_data($order_id,'billmate_invoice_id',true)){
+			$paymentInfo = $billmate->getPaymentinfo(array('number' => $billmateInvoiceId));
+			if($paymentInfo['PaymentData']['status'] == 'Created'){
+				$result = $billmate->activatePayment(array('PaymentData' => array('number' => $billmateInvoiceId)));
+				if(isset($result['code'])){
+					$order->add_order_note(printf(_('The order payment couldnt be activated, error code: %s error message: %s','billmate'),$result['code'],$result['message']));
+				} else {
+					$order->add_order_note(_('The order payment activated successfully','billmate'));
+				}
+			}
+		}
+	}
 	public function clear_pno($result,$order_id = null)
 	{
 		if(isset($_SESSION['billmate_pno']))
@@ -36,7 +53,7 @@ class BillmateCommon {
             <p class="form-row">
                 <label for="pno"><?php echo __('Social Security Number / Corporate Registration Number','billmate'); ?></label>
                 <input type="text" name="pno" label="12345678-1235" class="form-row-wide input-text" style="width: 60%;" value="<?php echo isset($_SESSION['billmate_pno']) ? $_SESSION['billmate_pno'] : ''; ?>"/>
-                <button id="getaddress"><?php echo __('Get Address','billmate'); ?></button>
+                <button id="getaddress" class="billmate-getaddress-button"><?php echo __('Get Address','billmate'); ?></button>
             </p>
             <div id="getaddresserr"></div>
             <div class="clear"></div>

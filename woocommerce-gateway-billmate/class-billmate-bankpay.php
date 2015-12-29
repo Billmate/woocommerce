@@ -172,6 +172,8 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		}
 		if( in_array($order_status, array('pending')) ){
 			if($data['status'] == 'Paid') {
+				add_post_meta($order->id,'billmate_invoice_id',$data['number']);
+
 				if ($this->order_status == 'default') {
 					$order->add_order_note(__($payment_note,'billmate'));
 					$order->payment_complete();

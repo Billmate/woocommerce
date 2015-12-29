@@ -205,6 +205,8 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		if( in_array($order_status, array('pending')) ){
 			//$order->update_status('completed', $payment_note);
 			if($data['status'] == 'Paid') {
+				add_post_meta($order->id,'billmate_invoice_id',$data['number']);
+
 				if ($this->order_status == 'default') {
 					$order->payment_complete();
 				} else {
@@ -686,6 +688,8 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			WC_Subscriptions_Manager::process_subscription_payment_failure_on_order($order);
 			return;
 		}else{
+			add_post_meta($order->id,'billmate_invoice_id',$result['number']);
+
 			$order->add_order_note(__("Subscription Payment Successful. Invoice ID: " . $result["number"], 'billmate'));
 			$order->payment_complete($result['number']);
 			WC_Subscriptions_Manager::process_subscription_payments_on_order($order);
@@ -979,6 +983,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 					wc_bm_errors(__($result['message']));
 					return;
 				}
+
 				return array(
 					'result' => 'success',
 					'redirect' => $result['url']
@@ -987,7 +992,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 
 			// Reqular payment
 		} else {
-			error_log('test');
+
 			$language = explode('_',get_locale());
 			if(!defined('BILLMATE_LANGUAGE')) define('BILLMATE_LANGUAGE',strtolower($language[0]));
 
