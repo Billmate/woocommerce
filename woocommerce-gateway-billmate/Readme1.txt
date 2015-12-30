@@ -4,11 +4,11 @@ Donate link:
 Tags: woocomerce, billmate, payments, cardpayments, invoice, partpayment, recurring, bankpayment
 Requires at least: 4.0
 Tested up to: 4.4
-Stable tag: 4.4
+Stable tag: 2.1.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Billmate offers a complete paymentsolution to your webshop.  
+Billmate offers a complete paymentsolution to your webshop.
 
 == Description ==
 
@@ -30,7 +30,7 @@ If you have any questions please visit http://billmate.se/kontakt to make contac
 
 = Installation in Wordpress =
 
-Navigate to Plugins-Add New. Search for Billmate and then install the plugin. 
+Navigate to Plugins-Add New. Search for Billmate and then install the plugin.
 
 = Manual Installation =
 Quickinstallation
@@ -41,16 +41,16 @@ Quickinstallation
 5. Navigate to Settings under Wordpress, then "Billmate Settings" and enter your Billmate ID and Secret
 6. Navigate to Woocomerce-Settings-Checkout and setup the payment methods.
 
-Link to full documentation: http://billmate.se/plugins/manual/Installation_Manual_Woocommerce_Billmate.pdf 
+Link to full documentation: http://billmate.se/plugins/manual/Installation_Manual_Woocommerce_Billmate.pdf
 
 = Update =
-Before updating the plugin, please save your settings and make a backup of your store. If you have a teststore, then do the update on the teststore before updating the real store. 
+Before updating the plugin, please save your settings and make a backup of your store. If you have a teststore, then do the update on the teststore before updating the real store.
 
 == Frequently Asked Questions ==
 
 = How do I get started? =
 
-The first thing you have to do is to get an account at Billmate.se. Yo can create an account at http://billmate.se/anslut-webbshop/. Then you download the plugin and install it. If you like to make test purchases please contact Billmate, and we will help you. 
+The first thing you have to do is to get an account at Billmate.se. Yo can create an account at http://billmate.se/anslut-webbshop/. Then you download the plugin and install it. If you like to make test purchases please contact Billmate, and we will help you.
 
 
 = How do I make contact with Billmate? =
@@ -65,20 +65,22 @@ I depends on what payment methods you will use. If you use cardpayment you need 
 
 We have different prices depending on what you choose. You can read more about it at http://billmate.se/priser
 
+
+
 == Screenshots ==
 
-1. Checkout - https://billmate.se/plugins/images/woocommerce/checkout.png
-2. Billmate Settings - https://billmate.se/plugins/images/woocommerce/billmate_settings.png
-3. Billmate Invoice - https://billmate.se/plugins/images/woocommerce/invoice.png
-4. Billmate Cardpayment - https://billmate.se/plugins/images/woocommerce/card.png 
-5. Billmate BankPayment - https://billmate.se/plugins/images/woocommerce/bank.png
-6. Billmate Partpayment - https://billmate.se/plugins/images/woocommerce/partpayment.png
+1. This is how the checkout looks like
+2. Billmate Settings
+3. Billmate Invoice
+4. Billmate Cardpayment
+5. Billmate BankPayment
+6. Billmate Partpayment
 
 If you would like to use our logo on your site then choose following:
 
-1. Large - https://billmate.se/billmate/logos/billmate_cloud_l.png
-2. Medium - https://billmate.se/billmate/logos/billmate_cloud_m.png
-3. Small - https://billmate.se/billmate/logos/billmate_cloud_s.png
+7. Large - https://billmate.se/billmate/logos/billmate_cloud_l.png
+8. Medium - https://billmate.se/billmate/logos/billmate_cloud_m.png
+9. Small - https://billmate.se/billmate/logos/billmate_cloud_s.png
 
 
 == Changelog ==
@@ -112,7 +114,7 @@ If you would like to use our logo on your site then choose following:
 * Fix - UTF-8 encoding, payment denied message and Card and Bank payment addresses.
 * Fix - Rounding calculations.
 
-= 2.1 = 
+= 2.1 =
 * Release date: 2015-10-01
 * Enhancement - Possibility to Choose logo on the invoice created in Billmate Online.
 * Optimization - Less load time when show partpayment from on product/shop page.
@@ -148,11 +150,11 @@ If you would like to use our logo on your site then choose following:
 * Release date: 2015-08-14
 * Fix - Corrected a typo.
 
-= 2.0.1 = 
+= 2.0.1 =
 * Release date: 2015-08-13
 * Compatibility - WooCommerce above 2.4
 
-= 2.0 = 
+= 2.0 =
 * Release date: 2015-08-05
 * Compatibility - WooCommerce 2.0 and above.
 * Enchancement - Get Address for customers in the Checkout.
@@ -183,5 +185,6 @@ If you would like to use our logo on your site then choose following:
 * Fix - Removed references to WPLANG and now uses get_locale function instead. According to Wordpres coding standard.
 * Tweak - Updated to new company name : Billmate AB.
 * Tweak - Change to correct include of colorbox.css to follow Wordpress coding standard
+* Tweak - Fixed so that partpayment prices is shown as 12 months instead of 3ndard
 * Tweak - Fixed so that partpayment prices is shown as 12 mounths instead of 3
 
