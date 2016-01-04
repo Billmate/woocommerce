@@ -997,7 +997,7 @@ parse_str($_POST['post_data'], $datatemp);
 
 		} // End invoice_fee_price > 0
 
-		$round = (round($woocommerce->cart->total*100,2)) - round($total + $totalTax,0);
+		$round = (round($woocommerce->cart->total * 100,2)) - round($total + $totalTax,0);
 
 		$orderValues['Cart']['Total'] = array(
 			'withouttax' => $total,
@@ -1014,7 +1014,7 @@ parse_str($_POST['post_data'], $datatemp);
 
 		$orderValues['Customer'] = array(
 			'pno' => $billmate_pno,
-			'nr' => empty($order->user_id ) || $order->user_id<= 0 ? time(): $order->user_id,
+			'nr' => empty($order->user_id ) || $order->user_id<= 0 ? '': $order->user_id,
 			'Billing' => array(
 				'firstname' => mb_convert_encoding($order->billing_first_name,'UTF-8','auto'),
 				'lastname' => mb_convert_encoding($order->billing_last_name,'UTF-8','auto'),

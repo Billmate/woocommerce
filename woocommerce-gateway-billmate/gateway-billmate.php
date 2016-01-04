@@ -69,6 +69,16 @@ function activate_billmate_gateway(){
 		$invoiceSettings['plugin_version'] = BILLPLUGIN_VERSION;
 		update_option('woocommerce_billmate_settings',$invoiceSettings);
 	}
+
+	if(is_plugin_active('wordfence/wordfence.php')){
+		add_action('admin_notices','wordfence_notice');
+	}
+
+}
+function wordfence_notice(){
+	echo '<div id="message" class="warning">';
+	echo '<p>'.__("To make Wordfence and Billmate Gateway work toghether you have to add the Callback IP to the whitelist. To do so navigate to Wordfence->Options and then scroll down to \"Other Options\". Find \"Whitelisted IP addresses that bypass all rules\" and add the IP 54.194.217.63.",'billmate').'</p>';
+	echo '</div>';
 }
 register_activation_hook(__FILE__,'activate_billmate_gateway');
 function init_billmate_gateway() {

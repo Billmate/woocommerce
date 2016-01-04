@@ -53,7 +53,7 @@ class BillmateCommon {
             <p class="form-row">
                 <label for="pno"><?php echo __('Social Security Number / Corporate Registration Number','billmate'); ?></label>
                 <input type="text" name="pno" label="12345678-1235" class="form-row-wide input-text" style="width: 60%;" value="<?php echo isset($_SESSION['billmate_pno']) ? $_SESSION['billmate_pno'] : ''; ?>"/>
-                <button id="getaddress" class="billmate-getaddress-button"><?php echo __('Get Address','billmate'); ?></button>
+                <button id="getaddress" class="'getaddress-button"><?php echo __('Get Address','billmate'); ?></button>
             </p>
             <div id="getaddresserr"></div>
             <div class="clear"></div>
