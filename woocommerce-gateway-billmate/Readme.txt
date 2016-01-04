@@ -84,6 +84,10 @@ If you would like to use our logo on your site then choose following:
 
 
 == Changelog ==
+= 2.2 =
+* Release date: 2016-01
+* Enhancement - Recurring payment.
+* Enhancement - Translations.
 
 = 2.1.6 =
 * Release date:2015-12-10
