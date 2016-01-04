@@ -552,7 +552,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 					throw new Exception($data);
 				}
 				if(isset($data['code'])){
-					throw new Exception($data);
+					throw new Exception($data['message']);
 				}
 				$output = array();
 				array_walk($data, array($this,'correct_lang_billmate'));
