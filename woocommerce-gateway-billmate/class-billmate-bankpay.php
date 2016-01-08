@@ -79,7 +79,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		$billmate_language = 'SV';
 		$billmate_currency = 'SEK';
 		$billmate_invoice_terms = '';
-		$billmate_invoice_icon = plugins_url( '/images/billmate_bank_s.png', __FILE__ );
+		$billmate_invoice_icon = plugins_url( '/images/billmate-trustly.png', __FILE__ );
 
 		// Apply filters to Country and language
 		$this->billmate_country 		= apply_filters( 'billmate_country', $billmate_country );
