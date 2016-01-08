@@ -958,14 +958,14 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 						'quantity'   => (int)1,
 						'artnr'    => "",
 						'title'    => __('Signup Fee', 'billmate'),
-						'aprice'    => round($signup_fee*(1-($productTax/100)),2)*100, //+$item->unittax
+						'aprice'    => round($signup_fee*(1-($productTax/100)))*100, //+$item->unittax
 						'taxrate'      => $productTax,
 						'discount' => (float)0,
-						'withouttax' => round($signup_fee*(1-($productTax/100)),2)*100
+						'withouttax' => round($signup_fee*(1-($productTax/100)))*100
 
 					);
-				$total += round($signup_fee *(1-($productTax/100)),2)* 100;
-				$totalTax += round($signup_fee *(1-($productTax/100)),2) * (($productTax/100) * 100);
+				$total += round($signup_fee *(1-($productTax/100)))* 100;
+				$totalTax += round($signup_fee *(1-($productTax/100))) * (($productTax/100) * 100);
 
 				endif;
 
@@ -983,7 +983,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 					$total += 100;
 				}
 
-				$round = (round($woocommerce->cart->total*100,2)) - round($total + $totalTax,0);
+				$round = (round($woocommerce->cart->total*100)) - round($total + $totalTax,0);
 				$round += ($woocommerce->cart->total == 0) ? 100 : 0;
 
 				$orderValues['Cart']['Total'] = array(

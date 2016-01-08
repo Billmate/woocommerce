@@ -845,7 +845,7 @@ parse_str($_POST['post_data'], $datatemp);
 				'title'    => $item['name'],
 				'aprice'    =>  ($discount) ? ($billmate_item_standard_price*100) : ($priceExcl*100), //+$item->unittax
 				'taxrate'      => (float)$item_tax_percentage,
-				'discount' => ($discount) ? round((1 - ($billmate_item_price_including_tax/$billmate_item_standard_price)) * 100 ,1) : 0,
+				'discount' => ($discount) ? round((1 - ($billmate_item_price_including_tax/$billmate_item_standard_price)) * 100) : 0,
 				'withouttax' => $item['qty'] * ($priceExcl*100)
 			);
 			$totalTemp = ($item['qty'] * ($priceExcl*100));
@@ -997,7 +997,7 @@ parse_str($_POST['post_data'], $datatemp);
 
 		} // End invoice_fee_price > 0
 
-		$round = (round($woocommerce->cart->total * 100,2)) - round($total + $totalTax,0);
+		$round = (round($woocommerce->cart->total * 100)) - round($total + $totalTax,0);
 
 		$orderValues['Cart']['Total'] = array(
 			'withouttax' => $total,
