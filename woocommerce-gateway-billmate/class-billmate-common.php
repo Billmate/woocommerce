@@ -27,7 +27,7 @@ class BillmateCommon {
 	{
 		$billmate = new BillMate(get_option('billmate_common_eid'),get_option('billmate_common_secret'),true,false,false);
 		$order = new WC_Order($order_id);
-		if($billmateInvoiceId = get_post_data($order_id,'billmate_invoice_id',true)){
+		if($billmateInvoiceId = get_post_meta($order_id,'billmate_invoice_id',true)){
 			$paymentInfo = $billmate->getPaymentinfo(array('number' => $billmateInvoiceId));
 			if($paymentInfo['PaymentData']['status'] == 'Created'){
 				$result = $billmate->activatePayment(array('PaymentData' => array('number' => $billmateInvoiceId)));

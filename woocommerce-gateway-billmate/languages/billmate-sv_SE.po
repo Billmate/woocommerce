@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Billmate Woocommerce plugin\n"
 "POT-Creation-Date: 2015-12-21 18:59+0100\n"
-"PO-Revision-Date: 2015-12-21 18:59+0100\n"
+"PO-Revision-Date: 2016-01-08 10:26+0100\n"
 "Last-Translator: \n"
 "Language-Team: Boxedsolutions <jesper@boxedsolutions.se>\n"
 "Language: sv_SE\n"
@@ -725,19 +725,19 @@ msgstr "Visa & Mastercard"
 
 #: ../class-billmate-cardpay.php:684 ../class-billmate-cardpay.php:685
 msgid "Subscription Payment Failed: "
-msgstr ""
+msgstr "Prenumerationsbetalning misslyckades:"
 
 #: ../class-billmate-cardpay.php:689
 msgid "Subscription Payment Successful. Invoice ID: "
-msgstr ""
+msgstr "Prenumerationsbetalning lyckades: Faktura ID: "
 
 #: ../class-billmate-cardpay.php:941
 msgid "Signup Fee"
-msgstr ""
+msgstr "Startkostnad"
 
 #: ../class-billmate-cardpay.php:957
 msgid "Transaction to be credited"
-msgstr ""
+msgstr "Transaktion som ska krediteras"
 
 #: ../class-billmate-common.php:39 ../class-billmate-common.php:118
 msgid "Get Address"
@@ -825,7 +825,7 @@ msgstr "Lägg till en fakturaavgift ex. moms, lämna tomt för att inaktivera."
 
 #: ../class-billmate-invoice.php:212
 msgid "Invoice fee tax class"
-msgstr "Moms klass för faktura avgift"
+msgstr "Momsklass för fakturaavgiften"
 
 #: ../class-billmate-invoice.php:214
 msgid "The tax class for Invoice fee."
@@ -878,7 +878,7 @@ msgstr "Leverans och Faktura adress måste vara samma vid köp med Billmate"
 
 #: ../commonfunctions.php:33
 msgid "There has been an error with the payment!"
-msgstr ""
+msgstr "Något gick fel vid betalningen!"
 
 #: ../gateway-billmate.php:84
 msgid ""
