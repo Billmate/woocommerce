@@ -49,6 +49,13 @@ Copy the code below for the size that fits your needs.
 
 ##Changelog
 
+### 2.2 (2016-01-08)
+* Enhancement - Autoactivate invoices on complete.
+* Enhancement - Compatibility with Woocommerce Subscription. Recurring payment.
+* Translation - Improved the translations.
+* Enhancement - Update totals on getAddress click.
+* Engancement - Better tracking of invoices in order history.
+
 ### 2.1.6 (2015-12-10)
 * Fix - Customer Nr.
 * Fix - Compatibility wc_seq_order_number.
