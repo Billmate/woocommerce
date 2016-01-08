@@ -218,7 +218,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			//$order->update_status('completed', $payment_note);
 			if($data['status'] == 'Paid') {
 				add_post_meta($order->id,'billmate_invoice_id',$data['number']);
-				$order->add_order_note(printf(__('Billmate Invoice id: %s','billmate'),$data['number']));
+				$order->add_order_note(sprintf(__('Billmate Invoice id: %s','billmate'),$data['number']));
 				if ($this->order_status == 'default') {
 					$order->payment_complete();
 				} else {
@@ -698,14 +698,14 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		$result = $k->addPayment($orderValues);
 		if(isset($result['code'])){
 			wc_bm_errors(__($result['message'],'billmate'));
-			$order->update_status('failed',printf(__("Subscription Payment Failed: Invoice ID: None" , 'billmate'),$result['message']));
-			$order->add_order_note(printf(__("Subscription Payment Failed: Invoice ID: None" , 'billmate'),$result['message']));
+			$order->update_status('failed',sprintf(__("Subscription Payment Failed: Invoice ID: None" , 'billmate'),$result['message']));
+			$order->add_order_note(sprintf(__("Subscription Payment Failed: Invoice ID: None" , 'billmate'),$result['message']));
 			WC_Subscriptions_Manager::process_subscription_payment_failure_on_order($order);
 			return;
 		}else{
 			add_post_meta($order->id,'billmate_invoice_id',$result['number']);
 
-			$order->add_order_note(printf(__("Subscription Payment Successful. Invoice ID: %s ",'billmate'), $result['number']));
+			$order->add_order_note(sprintf(__("Subscription Payment Successful. Invoice ID: %s ",'billmate'), $result['number']));
 			$order->payment_complete($result['number']);
 			WC_Subscriptions_Manager::process_subscription_payments_on_order($order);
 			return array(
