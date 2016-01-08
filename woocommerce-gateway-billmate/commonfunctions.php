@@ -1,6 +1,7 @@
 <?php
 define('BILLPLUGIN_VERSION','2.2');
 define('BILLMATE_CLIENT','PHP:Woocommerce:'.BILLPLUGIN_VERSION);
+define('BILLMATE_SERVER','2.1.7');
 
 require_once(BILLMATE_LIB . 'Billmate.php');
 require_once(BILLMATE_LIB . 'billmatecalc.php');
