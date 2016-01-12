@@ -572,7 +572,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 					'artnr'    => $sku,
 					'title'    => $item['name'],
 					'aprice'    =>  ($discount) ? ($billmate_item_standard_price*100) : ($priceExcl*100), //+$item->unittax
-					'taxrate'      => (float)$item_tax_percentage,
+					'taxrate'      => (int)$item_tax_percentage,
 					'discount' => ($discount) ? round((1 - ($billmate_item_price_including_tax/$billmate_item_standard_price)) * 100 ,0) : 0,
 					'withouttax' => $item['qty'] * ($priceExcl*100)
 				);
@@ -605,7 +605,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 					'artnr'    => "",
 					'title'    => sprintf(__('Discount %s%% tax', 'billmate'),round($key,0)),
 					'aprice'    => -($discountAmount*100), //+$item->unittax
-					'taxrate'      => $key,
+					'taxrate'      =>(int) $key,
 					'discount' => (float)0,
 					'withouttax' => -($discountAmount*100)
 
@@ -630,7 +630,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 
 			$orderValues['Cart']['Shipping'] = array(
 				'withouttax'    => ($shipping_price-$order->order_shipping_tax)*100,
-				'taxrate'      => (float)$calculated_shipping_tax_percentage,
+				'taxrate'      => (int)$calculated_shipping_tax_percentage,
 
 			);
 			$total += ($shipping_price-$order->order_shipping_tax) * 100;
