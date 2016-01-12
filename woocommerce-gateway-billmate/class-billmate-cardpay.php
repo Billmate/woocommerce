@@ -1162,7 +1162,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 
 					// apply_filters to item price so we can filter this if needed
 					$billmate_item_price_including_tax = $order->get_item_total( $item, true );
-					$billmate_item_standard_price = $order->get_item_subtotal($item,true);
+					$billmate_item_standard_price = round($order->get_item_subtotal($item,true));
 					$discount = false;
 					if($billmate_item_price_including_tax != $billmate_item_standard_price){
 						$discount = true;
@@ -1175,7 +1175,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 						$sku = $_product->id;
 					}
 
-					$priceExcl = $item_price-$order->get_item_tax($item,false);
+					$priceExcl = round($item_price-$order->get_item_tax($item,false));
 
 					$orderValues['Articles'][] = array(
 						'quantity'   => (int)$item['qty'],
