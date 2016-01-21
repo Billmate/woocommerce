@@ -1482,13 +1482,13 @@ parse_str($_POST['post_data'], $datatemp);
 			$total += ($shipping_price-$order->order_shipping_tax) * 100;
 			$totalTax += (($shipping_price-$order->order_shipping_tax) * ($calculated_shipping_tax_percentage/100))*100;
 		endif;
-		$round = (round($woocommerce->cart->total * 100,2)) - round($total + $totalTax,0);
+		$round = round($woocommerce->cart->total * 100) - round($total + $totalTax,0);
 
 		$orderValues['Cart']['Total'] = array(
-			'withouttax' => $total,
+			'withouttax' => round($total),
 			'tax' => round($totalTax,0),
-			'rounding' => $round,
-			'withtax' => $total + round($totalTax,0) + $round
+			'rounding' => round($round),
+			'withtax' => round($total + $totalTax+ $round)
 		);
 		try{
 			$addr = $k->GetAddress(array('pno' => $billmate_pno));

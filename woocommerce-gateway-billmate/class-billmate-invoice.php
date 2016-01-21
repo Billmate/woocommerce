@@ -997,13 +997,13 @@ parse_str($_POST['post_data'], $datatemp);
 
 		} // End invoice_fee_price > 0
 
-		$round = (round($woocommerce->cart->total * 100,2)) - round($total + $totalTax,0);
+		$round = round($woocommerce->cart->total*100) - round($total + $totalTax,0);
 
 		$orderValues['Cart']['Total'] = array(
-			'withouttax' => $total,
+			'withouttax' => round($total),
 			'tax' => round($totalTax,0),
-			'rounding' => $round,
-			'withtax' => $total + round($totalTax,0) + $round
+			'rounding' => round($round),
+			'withtax' => round($total + $totalTax + $round)
 		);
 
 		$this->getAddress();
