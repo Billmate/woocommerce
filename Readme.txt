@@ -83,6 +83,9 @@ If you would like to use our logo on your site then choose following:
 
 == Changelog ==
 
+= 2.1.7(2016-01-21) =
+* Fix - Rounding totals.
+
 = 2.1.6 =
 * Release date:2015-12-10
 * Fix - Customer Nr.

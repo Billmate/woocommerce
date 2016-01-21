@@ -1397,13 +1397,13 @@ parse_str($_POST['post_data'], $datatemp);
 
 				// apply_filters to item price so we can filter this if needed
 
-				$billmate_item_price_including_tax = $order->get_item_total( $item, true );
-				$billmate_item_standard_price = $order->get_item_subtotal($item,true);
+				$billmate_item_price_including_tax = round($order->get_item_total( $item, true ));
+				$billmate_item_standard_price = round($order->get_item_subtotal($item,true));
 				$discount = false;
 				if($billmate_item_price_including_tax != $billmate_item_standard_price){
 					$discount = true;
 				}
- 				$item_price = apply_filters( 'billmate_item_price_including_tax', $billmate_item_price_including_tax );
+ 				$item_price = round( apply_filters( 'billmate_item_price_including_tax', $billmate_item_price_including_tax ));
 
 				if ( $_product->get_sku() ) {
 					$sku = $_product->get_sku();
@@ -1411,7 +1411,7 @@ parse_str($_POST['post_data'], $datatemp);
 					$sku = $_product->id;
 				}
 
-				$priceExcl = $item_price-$order->get_item_tax($item,false);
+				$priceExcl = round($item_price-$order->get_item_tax($item,false));
 
 				$orderValues['Articles'][] = array(
 					'quantity'   => (int)$item['qty'],
@@ -1482,13 +1482,13 @@ parse_str($_POST['post_data'], $datatemp);
 			$total += ($shipping_price-$order->order_shipping_tax) * 100;
 			$totalTax += (($shipping_price-$order->order_shipping_tax) * ($calculated_shipping_tax_percentage/100))*100;
 		endif;
-		$round = (round($woocommerce->cart->total * 100,2)) - round($total + $totalTax,0);
+		$round = round($woocommerce->cart->total * 100) - round($total + $totalTax,0);
 
 		$orderValues['Cart']['Total'] = array(
-			'withouttax' => $total,
+			'withouttax' => round($total),
 			'tax' => round($totalTax,0),
-			'rounding' => $round,
-			'withtax' => $total + round($totalTax,0) + $round
+			'rounding' => round($round),
+			'withtax' => round($total + $totalTax+ $round)
 		);
 		try{
 			$addr = $k->GetAddress(array('pno' => $billmate_pno));
