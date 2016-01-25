@@ -112,6 +112,11 @@ class BillmateCommon {
 			'billmate_common_logo',
 			array($this,'sanitize')
 		);
+		register_setting(
+			'billmate_common',
+			'billmate_common_activateonstatus',
+			array($this,'sanitize')
+		);
 		add_settings_section(
 			'setting_credentials', // ID
 			__('Common Billmate Settings','billmate'), // Title
@@ -159,7 +164,7 @@ class BillmateCommon {
 
 	public function add_plugin_page() {
 		add_options_page(
-			__('Billmate Common','billmate'),
+			__('Billmate Settings','billmate'),
 			__('Billmate Settings','billmate'),
 			'manage_options',
 			'billmate-settings',
