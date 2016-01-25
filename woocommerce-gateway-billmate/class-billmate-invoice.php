@@ -821,6 +821,7 @@ parse_str($_POST['post_data'], $datatemp);
 			} else
 				$item_tax_percentage = 0;
 
+
 			// apply_filters to item price so we can filter this if needed
 			$billmate_item_price_including_tax = round($order->get_item_total( $item, true )*100);
 			$billmate_item_standard_price = round($order->get_item_subtotal($item,true)*100);
@@ -999,10 +1000,10 @@ parse_str($_POST['post_data'], $datatemp);
 		$round = (round($woocommerce->cart->total * 100)) - round($total + $totalTax,0);
 
 		$orderValues['Cart']['Total'] = array(
-			'withouttax' => $total,
+			'withouttax' => round($total),
 			'tax' => round($totalTax,0),
-			'rounding' => $round,
-			'withtax' => $total + round($totalTax,0) + $round
+			'rounding' => round($round),
+			'withtax' => round($total + $totalTax + $round)
 		);
 
 		$this->getAddress();

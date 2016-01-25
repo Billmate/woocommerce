@@ -56,7 +56,10 @@ Copy the code below for the size that fits your needs.
 * Enhancement - Update totals on getAddress click.
 * Engancement - Better tracking of invoices in order history.
 
-### 2.1.6 (2015-12-10)
+### 2.1.7(2016-01-21)
+* Fix - Rounding totals.
+
+### 2.1.6(2015-12-10)
 * Fix - Customer Nr.
 * Fix - Compatibility wc_seq_order_number.
 

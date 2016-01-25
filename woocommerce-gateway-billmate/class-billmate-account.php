@@ -1520,10 +1520,10 @@ parse_str($_POST['post_data'], $datatemp);
 		$round = (round($woocommerce->cart->total * 100)) - round($total + $totalTax,0);
 
 		$orderValues['Cart']['Total'] = array(
-			'withouttax' => $total,
+			'withouttax' => round($total),
 			'tax' => round($totalTax,0),
-			'rounding' => $round,
-			'withtax' => $total + round($totalTax,0) + $round
+			'rounding' => round($round),
+			'withtax' => round($total + $totalTax+ $round)
 		);
 		try{
 			$addr = $k->GetAddress(array('pno' => $billmate_pno));
@@ -1712,7 +1712,7 @@ parse_str($_POST['post_data'], $datatemp);
 					$order->add_order_note( __('Billmate payment completed. Billmate Invoice number:', 'billmate') . $invno );
 					add_post_meta($order_id,'billmate_invoice_id',$invno);
 
-				// Payment complete
+					// Payment complete
 					if($this->order_status == 'default')
 					{
 						$order->payment_complete();

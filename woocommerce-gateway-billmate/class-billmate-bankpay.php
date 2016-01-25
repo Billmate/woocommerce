@@ -660,10 +660,10 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		$round = (round($woocommerce->cart->total * 100)) - round($total + $totalTax,0);
 
 		$orderValues['Cart']['Total'] = array(
-			'withouttax' => $total,
+			'withouttax' => round($total),
 			'tax' => round($totalTax,0),
-			'rounding' => $round,
-			'withtax' => $total + round($totalTax,0) + $round
+			'rounding' => round($round),
+			'withtax' => round($total + $totalTax + $round)
 		);
 		$k = new Billmate($this->eid,$this->secret,true,$this->testmode,false);
         $result = $k->addPayment($orderValues);

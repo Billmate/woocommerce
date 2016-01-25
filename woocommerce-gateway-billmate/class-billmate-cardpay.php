@@ -722,7 +722,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		$order = new WC_order( $order_id );
 
 		if($this->subscription_active && class_exists('WC_Subscriptions_Order') && WC_Subscriptions_Order::order_contains_subscription($order_id)){
-				error_log('sub');
+
 				$total = 0;
 				$totalTax = 0;
 				$prepareDiscount = array();
@@ -1225,26 +1225,26 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			$total += ($shipping_price-$order->order_shipping_tax) * 100;
 			$totalTax += (($shipping_price-$order->order_shipping_tax) * ($calculated_shipping_tax_percentage/100))*100;
 		endif;
-		$round = (round($woocommerce->cart->total * 100,2)) - round($total + $totalTax,0);
+		$round = round($woocommerce->cart->total*100) - round($total + $totalTax,0);
 
 
-			$orderValues['Cart']['Total'] = array(
-				'withouttax' => $total,
-				'tax' => round($totalTax,0),
-				'rounding' => $round,
-				'withtax' => $total + round($totalTax,0) + $round
-			);
-			$k = new Billmate($this->eid,$this->secret,true,$this->testmode,false);
-			$result = $k->addPayment($orderValues);
-			if(isset($result['code'])){
-				wc_bm_errors(__($result['message']));
-				return;
-			}
-			return array(
-				'result' => 'success',
-				'redirect' => $result['url']
-			);
+		$orderValues['Cart']['Total'] = array(
+			'withouttax' => round($total),
+			'tax' => round($totalTax,0),
+			'rounding' => round($round),
+			'withtax' => round($total + $totalTax + $round)
+		);
+		$k = new Billmate($this->eid,$this->secret,true,$this->testmode,false);
+		$result = $k->addPayment($orderValues);
+		if(isset($result['code'])){
+			wc_bm_errors(__($result['message']));
+			return;
 		}
+		return array(
+			'result' => 'success',
+			'redirect' => $result['url']
+		);
+	}
 
 	}
 
