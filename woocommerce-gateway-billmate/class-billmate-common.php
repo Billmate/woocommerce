@@ -148,7 +148,7 @@ class BillmateCommon {
 
 	public function add_plugin_page() {
 		add_options_page(
-			'Billmate Common',
+			__('Billmate Common','billmate'),
 			__('Billmate Settings','billmate'),
 			'manage_options',
 			'billmate-settings',

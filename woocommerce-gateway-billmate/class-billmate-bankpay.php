@@ -197,6 +197,8 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 					$order->add_order_note(__($payment_note,'billmate'));
 					$order->update_status($this->order_status);
 				}
+				delete_transient('billmate_bankpay_order_id_'.$order_id);
+
 			}
 			if($data['status'] == 'Cancelled'){
 				$order->cancel_order('Cancelled Order');
@@ -228,6 +230,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			}
 			wp_safe_redirect($redirect);
 		}
+		delete_transient('billmate_bankpay_order_id_'.$order_id);
 		wp_die('OK','ok',array('response' => 200));
 	}
 
