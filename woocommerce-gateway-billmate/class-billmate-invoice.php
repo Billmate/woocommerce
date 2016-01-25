@@ -821,15 +821,14 @@ parse_str($_POST['post_data'], $datatemp);
 			} else
 				$item_tax_percentage = 0;
 
-
 			// apply_filters to item price so we can filter this if needed
 			$billmate_item_price_including_tax = $order->get_item_total( $item, true );
-			$billmate_item_standard_price = round($order->get_item_subtotal($item,true));
+			$billmate_item_standard_price = round($order->get_item_subtotal($item,true))*100;
 			$discount = false;
 			if($billmate_item_price_including_tax != $billmate_item_standard_price){
 				$discount = true;
 			}
-			$item_price = apply_filters( 'billmate_item_price_including_tax', $billmate_item_price_including_tax );
+			$item_price = apply_filters( 'billmate_item_price_including_tax', $billmate_item_price_including_tax * 100 );
 
 			if ( $_product->get_sku() ) {
 				$sku = $_product->get_sku();
@@ -837,18 +836,18 @@ parse_str($_POST['post_data'], $datatemp);
 				$sku = $_product->id;
 			}
 
-			$priceExcl = round($item_price-$order->get_item_tax($item,false));
+			$priceExcl = round($item_price - (100 * $order->get_item_tax($item,false)));
 
 			$orderValues['Articles'][] = array(
 				'quantity'   => (int)$item['qty'],
 				'artnr'    => $sku,
 				'title'    => $item['name'],
-				'aprice'    =>  ($discount) ? ($billmate_item_standard_price*100) : ($priceExcl*100), //+$item->unittax
+				'aprice'    =>  ($discount) ? ($billmate_item_standard_price) : ($priceExcl), //+$item->unittax
 				'taxrate'      => (int)$item_tax_percentage,
-				'discount' => ($discount) ? round((1 - ($billmate_item_price_including_tax/$billmate_item_standard_price)) * 100) : 0,
-				'withouttax' => $item['qty'] * ($priceExcl*100)
+				'discount' => ($discount) ? round((1 - ($billmate_item_price_including_tax/$billmate_item_standard_price)) * 100 ,0) : 0,
+				'withouttax' => $item['qty'] * ($priceExcl)
 			);
-			$totalTemp = ($item['qty'] * ($priceExcl*100));
+			$totalTemp = ($item['qty'] * ($priceExcl));
 			$total += $totalTemp;
 			$totalTax += ($totalTemp * $item_tax_percentage/100);
 			if(isset($prepareDiscount[$item_tax_percentage])){
