@@ -1244,7 +1244,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			'result' => 'success',
 			'redirect' => $result['url']
 		);
-	}
+		}
 
 	}
 
