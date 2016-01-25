@@ -27,7 +27,7 @@ class BillmateCommon {
 	{
 		if(get_option('billmate_common_activateonstatus') == 'active') {
 
-			error_log('payment_method'.print_r(get_post_meta($order_id,'_payment_method'),true));
+
 			$paymentMethod = get_post_meta($order_id,'_payment_method');
 			$method = false;
 			switch($paymentMethod[0]){
