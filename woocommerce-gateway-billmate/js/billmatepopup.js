@@ -341,6 +341,7 @@ AddEvent(window,'load',function(){
                     }
                     $('#billing_country').val(result.data.country);
                     $('#billing_country').trigger('change');
+                    $('body').trigger('update_checkout');
                 } else {
                     var message = '<div id="getaddresserror" class="woocommerce-error">'+result.message+'</div>';
                     $('#getaddresserr').html(message);

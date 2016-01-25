@@ -282,7 +282,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 		);
         if(count($available) > 1){
             $this->form_fields['billmateaccount_allowed_countries'] = array(
-                'title' => __( 'Allowed Countries', 'woocommerce'),
+                'title' => __( 'Allowed Countries', 'billmate'),
                 'type' => 'multiselect',
                 'description' =>  __( 'Billmate Partpayment activated for customers in these countries.', 'billmate' ),
                 'class' => 'choosen_select',
@@ -443,7 +443,24 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 			if($pclasses){
 				$billmate_cart_total = $woocommerce->cart->total;
 				$sum = apply_filters( 'billmate_cart_total', $billmate_cart_total ); // Cart total.
+                $fees = $woocommerce->cart->get_fees();
+                $availableFees = array();
+                foreach($fees as $fee){
+                    $availableFees[$fee->id]['amount'] = $fee->amount;
+                    $tax = new WC_Tax();
 
+                    $invoicetax = $tax->get_rates($fee->tax_class);
+                    $rate = array_pop($invoicetax);
+
+
+                    $rate = $rate['rate'];
+                    $availableFees[$fee->id]['tax'] = (($rate/100) * $fee->amount);
+                }
+
+                if(array_key_exists(sanitize_title(__('Invoice fee','billmate')),$availableFees)){
+
+                    $sum -= ($availableFees[sanitize_title(__('Invoice fee','billmate'))]['amount'] + $availableFees[sanitize_title(__('Invoice fee','billmate'))]['tax']);
+                }
 
 				foreach ($pclasses as $pclass) {
 					if (strlen($pclass['description']) > 0 ) {
@@ -462,9 +479,29 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 			// Required fields check
 			if (!$this->eid || !$this->secret) return false;
 
+			$billmate_cart_total = $woocommerce->cart->total;
+			$sum = apply_filters( 'billmate_cart_total', $billmate_cart_total ); // Cart total.
+			$fees = $woocommerce->cart->get_fees();
+			$availableFees = array();
+			foreach($fees as $fee){
+				$availableFees[$fee->id]['amount'] = $fee->amount;
+				$tax = new WC_Tax();
+
+				$invoicetax = $tax->get_rates($fee->tax_class);
+				$rate = array_pop($invoicetax);
+
+
+				$rate = $rate['rate'];
+				$availableFees[$fee->id]['tax'] = (($rate/100) * $fee->amount);
+			}
+
+			if(array_key_exists(sanitize_title(__('Invoice fee','billmate')),$availableFees)){
+
+				$sum -= ($availableFees[sanitize_title(__('Invoice fee','billmate'))]['amount'] + $availableFees[sanitize_title(__('Invoice fee','billmate'))]['tax']);
+			}
 			// Cart totals check - Lower threshold
 			if ( $this->lower_threshold !== '' ) {
-				if ( $woocommerce->cart->total < $this->lower_threshold ) return false;
+				if ( $sum < $this->lower_threshold ) return false;
 			}
 
 			// Cart totals check - Upper threshold
@@ -535,7 +572,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 					throw new Exception($data);
 				}
 				if(isset($data['code'])){
-					throw new Exception($data);
+					throw new Exception($data['message']);
 				}
 				$output = array();
 				array_walk($data, array($this,'correct_lang_billmate'));
@@ -1316,8 +1353,7 @@ parse_str($_POST['post_data'], $datatemp);
 
 		endif;
 
-		// Store Billmate specific form values in order as post meta
-		update_post_meta( $order_id, 'billmate_pno', $billmate_pno);
+
 
 
 		// Test mode or Live mode
@@ -1396,14 +1432,13 @@ parse_str($_POST['post_data'], $datatemp);
 					$item_tax_percentage = 0;
 
 				// apply_filters to item price so we can filter this if needed
-
-				$billmate_item_price_including_tax = round($order->get_item_total( $item, true ));
-				$billmate_item_standard_price = round($order->get_item_subtotal($item,true));
+				$billmate_item_price_including_tax = round($order->get_item_total( $item, true )*100);
+				$billmate_item_standard_price = round($order->get_item_subtotal($item,true)*100);
 				$discount = false;
 				if($billmate_item_price_including_tax != $billmate_item_standard_price){
 					$discount = true;
 				}
- 				$item_price = round( apply_filters( 'billmate_item_price_including_tax', $billmate_item_price_including_tax ));
+				$item_price = apply_filters( 'billmate_item_price_including_tax', $billmate_item_price_including_tax);
 
 				if ( $_product->get_sku() ) {
 					$sku = $_product->get_sku();
@@ -1411,18 +1446,18 @@ parse_str($_POST['post_data'], $datatemp);
 					$sku = $_product->id;
 				}
 
-				$priceExcl = round($item_price-$order->get_item_tax($item,false));
+				$priceExcl = round($item_price - (100 * $order->get_item_tax($item,false)));
 
 				$orderValues['Articles'][] = array(
 					'quantity'   => (int)$item['qty'],
 					'artnr'    => $sku,
 					'title'    => $item['name'],
-					'aprice'    =>  ($discount) ? ($billmate_item_standard_price*100) : ($priceExcl*100), //+$item->unittax
-					'taxrate'      => (float)$item_tax_percentage,
+					'aprice'    =>  ($discount) ? ($billmate_item_standard_price) : ($priceExcl), //+$item->unittax
+					'taxrate'      => (int)$item_tax_percentage,
 					'discount' => ($discount) ? round((1 - ($billmate_item_price_including_tax/$billmate_item_standard_price)) * 100 ,0) : 0,
-					'withouttax' => $item['qty'] * ($priceExcl*100)
+					'withouttax' => $item['qty'] * ($priceExcl)
 				);
-				$totalTemp = ($item['qty'] * ($priceExcl*100));
+				$totalTemp = ($item['qty'] * ($priceExcl));
 				$total += $totalTemp;
 				$totalTax += ($totalTemp * $item_tax_percentage/100);
 				if(isset($prepareDiscount[$item_tax_percentage])){
@@ -1451,7 +1486,7 @@ parse_str($_POST['post_data'], $datatemp);
 					'artnr'    => "",
 					'title'    => sprintf(__('Discount %s%% tax', 'billmate'),round($key,0)),
 					'aprice'    => -($discountAmount*100), //+$item->unittax
-					'taxrate'      => $key,
+					'taxrate'      => (int)$key,
 					'discount' => (float)0,
 					'withouttax' => -($discountAmount*100)
 
@@ -1476,13 +1511,13 @@ parse_str($_POST['post_data'], $datatemp);
 
 			$orderValues['Cart']['Shipping'] = array(
 				'withouttax'    => ($shipping_price-$order->order_shipping_tax)*100,
-				'taxrate'      => (float)$calculated_shipping_tax_percentage,
+				'taxrate'      => (int)$calculated_shipping_tax_percentage,
 
 			);
 			$total += ($shipping_price-$order->order_shipping_tax) * 100;
 			$totalTax += (($shipping_price-$order->order_shipping_tax) * ($calculated_shipping_tax_percentage/100))*100;
 		endif;
-		$round = round($woocommerce->cart->total * 100) - round($total + $totalTax,0);
+		$round = (round($woocommerce->cart->total * 100)) - round($total + $totalTax,0);
 
 		$orderValues['Cart']['Total'] = array(
 			'withouttax' => round($total),
@@ -1675,6 +1710,7 @@ parse_str($_POST['post_data'], $datatemp);
 				case 'OK':
 				case 'Created':
 					$order->add_order_note( __('Billmate payment completed. Billmate Invoice number:', 'billmate') . $invno );
+					add_post_meta($order_id,'billmate_invoice_id',$invno);
 
 					// Payment complete
 					if($this->order_status == 'default')
@@ -1703,6 +1739,7 @@ parse_str($_POST['post_data'], $datatemp);
 					break;
 				case 'Pending':
 					$order->add_order_note( __('Order is PENDING APPROVAL by Billmate. Please visit Billmate Online for the latest status on this order. Billmate Invoice number: ', 'billmate') . $invno );
+					add_post_meta($order_id,'billmate_invoice_id',$invno);
 
 					// Payment complete
 					if($this->order_status == 'default')

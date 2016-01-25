@@ -48,3 +48,7 @@
 .billmate_button:hover{
 	background-color:#444444!important;
 }
+.payment_method_billmate_bankpay img {
+	width: 145px;
+	height: 50px;
+}

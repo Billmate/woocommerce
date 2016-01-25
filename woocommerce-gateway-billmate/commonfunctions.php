@@ -1,5 +1,5 @@
 <?php
-define('BILLPLUGIN_VERSION','2.1.7');
+define('BILLPLUGIN_VERSION','2.2');
 define('BILLMATE_CLIENT','PHP:Woocommerce:'.BILLPLUGIN_VERSION);
 define('BILLMATE_SERVER','2.1.7');
 
@@ -19,11 +19,22 @@ function convertToUTF8($str) {
 function wc_bm_errors($message){
 	global $woocommerce;
 	$message = convertToUTF8($message);
-	if(version_compare(WC_VERSION, '2.0.0', '<')){
-		$woocommerce->add_error( $message );
-	} else {
-		wc_add_notice( $message, 'error' );
-	}
+    if(!is_admin()){
+        if(version_compare(WC_VERSION, '2.0.0', '<')){
+            $woocommerce->add_error( $message );
+        } else {
+            wc_add_notice( $message, 'error' );
+        }
+    } else {
+        add_action('admin_notices','billmate_admin_notice');
+        function billmate_admin_notice() {
+            ?>
+            <div class="error notice">
+                <p><?php _e( 'There has been an error with the payment!', 'billmate' ); ?></p>
+            </div>
+            <?php
+        }
+    }
 }
 /**
  * Provides encoding constants.

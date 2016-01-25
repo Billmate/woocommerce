@@ -49,6 +49,13 @@ Copy the code below for the size that fits your needs.
 
 ##Changelog
 
+### 2.2 (2016-01-08)
+* Enhancement - Autoactivate invoices on complete.
+* Enhancement - Compatibility with Woocommerce Subscription. Recurring payment.
+* Translation - Improved the translations.
+* Enhancement - Update totals on getAddress click.
+* Engancement - Better tracking of invoices in order history.
+
 ### 2.1.7(2016-01-21)
 * Fix - Rounding totals.
 
@@ -56,27 +63,26 @@ Copy the code below for the size that fits your needs.
 * Fix - Customer Nr.
 * Fix - Compatibility wc_seq_order_number.
 
-### 2.1.5(2015-12-09)
+### 2.1.5 (2015-12-09)
 * Fix - Rounding.
 * Fix - Callback issue.
 
-###2.1.4(2015-10-29)
+###2.1.4 (2015-10-29)
 * Fix - Fix bank and partpayment calculations.
 * Enhancement - Change classname from Encoding to BillmateStringEncoding, compatibility with Duplicator Pro plugin.
 
-###2.1.3(2015-10-12)
+###2.1.3 (2015-10-12)
 * Fix - Php 5.4 compatibility, activate plugin issue.
 
-
-###2.1.2(2015-10-07)
+###2.1.2 (2015-10-07)
 * Fix - Activate plugin issue.
 * Enhancement - Added filters for our icons.
 
-###2.1.1(2015-10-05)
+###2.1.1 (2015-10-05)
 * Fix - UTF-8 encoding, payment denied message and Card and Bank payment addresses.
 * Fix - Rounding calculations.
 
-###2.1(2015-10-01)
+###2.1 (2015-10-01)
 * Enhancement - Possibility to Choose logo on the invoice created in Billmate Online.
 * Optimization - Less load time when show partpayment from on product/shop page.
 * Enhancement - Communication error messages.
