@@ -571,13 +571,14 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 					$item_tax_percentage = 0;
 
 				// apply_filters to item price so we can filter this if needed
-				$billmate_item_price_including_tax = $order->get_item_total( $item, true );
-				$billmate_item_standard_price = round($order->get_item_subtotal($item,true))*100;
+				// apply_filters to item price so we can filter this if needed
+				$billmate_item_price_including_tax = round($order->get_item_total( $item, true )*100);
+				$billmate_item_standard_price = round($order->get_item_subtotal($item,true)*100);
 				$discount = false;
 				if($billmate_item_price_including_tax != $billmate_item_standard_price){
 					$discount = true;
 				}
-				$item_price = apply_filters( 'billmate_item_price_including_tax', $billmate_item_price_including_tax * 100 );
+				$item_price = apply_filters( 'billmate_item_price_including_tax', $billmate_item_price_including_tax);
 
 				if ( $_product->get_sku() ) {
 					$sku = $_product->get_sku();

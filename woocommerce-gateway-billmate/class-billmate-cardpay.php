@@ -599,13 +599,13 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 					$item_tax_percentage = 0;
 
 				// apply_filters to item price so we can filter this if needed
-				$billmate_item_price_including_tax = $order->get_item_total( $item, true );
-				$billmate_item_standard_price = round($order->get_item_subtotal($item,true))*100;
+				$billmate_item_price_including_tax = round($order->get_item_total( $item, true )*100);
+				$billmate_item_standard_price = round($order->get_item_subtotal($item,true)*100);
 				$discount = false;
 				if($billmate_item_price_including_tax != $billmate_item_standard_price){
 					$discount = true;
 				}
-				$item_price = apply_filters( 'billmate_item_price_including_tax', $billmate_item_price_including_tax * 100 );
+				$item_price = apply_filters( 'billmate_item_price_including_tax', $billmate_item_price_including_tax);
 
 				if ( $_product->get_sku() ) {
 					$sku = $_product->get_sku();
@@ -863,22 +863,21 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 							$item_tax_percentage = 0;
 
 						// apply_filters to item price so we can filter this if needed
-						$billmate_item_price_including_tax = $order->get_item_total( $item, true ) * 100;//
-						//
-						error_log('it'.$order->get_item_total( $item, true ));
-						$billmate_item_standard_price = $order->get_item_subtotal($item,true) * 100;
+						$billmate_item_price_including_tax = round($order->get_item_total( $item, true )*100);
+						$billmate_item_standard_price = round($order->get_item_subtotal($item,true)*100);
 						$discount = false;
-						/*if($billmate_item_price_including_tax != $billmate_item_standard_price){
+						if($billmate_item_price_including_tax != $billmate_item_standard_price){
 							$discount = true;
-						}*/
-						$item_price = apply_filters( 'billmate_item_price_including_tax', $billmate_item_price_including_tax );
+						}
+						$item_price = apply_filters( 'billmate_item_price_including_tax', $billmate_item_price_including_tax);
 
 						if ( $_product->get_sku() ) {
 							$sku = $_product->get_sku();
 						} else {
 							$sku = $_product->id;
 						}
-						$productTax = $item_tax_percentage;
+
+						$priceExcl = round($item_price - (100 * $order->get_item_tax($item,false)));
 
 						$priceExcl = $item_price*(1-($item_tax_percentage/100)/(1+($item_tax_percentage/100)));//$item_price-$order->get_item_tax($item,false);
 
@@ -1141,13 +1140,13 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 						$item_tax_percentage = 0;
 
 					// apply_filters to item price so we can filter this if needed
-					$billmate_item_price_including_tax = $order->get_item_total( $item, true );
-					$billmate_item_standard_price = round($order->get_item_subtotal($item,true))*100;
+					$billmate_item_price_including_tax = round($order->get_item_total( $item, true )*100);
+					$billmate_item_standard_price = round($order->get_item_subtotal($item,true)*100);
 					$discount = false;
 					if($billmate_item_price_including_tax != $billmate_item_standard_price){
 						$discount = true;
 					}
-					$item_price = apply_filters( 'billmate_item_price_including_tax', $billmate_item_price_including_tax * 100 );
+					$item_price = apply_filters( 'billmate_item_price_including_tax', $billmate_item_price_including_tax);
 
 					if ( $_product->get_sku() ) {
 						$sku = $_product->get_sku();
