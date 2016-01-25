@@ -881,9 +881,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 						$productTax = $item_tax_percentage;
 
 						$priceExcl = $item_price*(1-($item_tax_percentage/100)/(1+($item_tax_percentage/100)));//$item_price-$order->get_item_tax($item,false);
-						if($signup_fee = 100 * WC_Subscriptions_Order::get_sign_up_fee($order)){
-							$priceExcl -= $signup_fee;
-						}
+
 						$orderValues['Articles'][] = array(
 							'quantity'   => (int)$item['qty'],
 							'artnr'    => $sku,
@@ -949,23 +947,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 					$total += ($shipping_price-$order->order_shipping_tax) * 100;
 					$totalTax += (($shipping_price-$order->order_shipping_tax) * ($calculated_shipping_tax_percentage/100))*100;
 				endif;
-				$signup_fee = WC_Subscriptions_Order::get_sign_up_fee($order);
 
-				if($signup_fee > 0 && $signup_fee != WC_Subscriptions_Order::get_recurring_total($order)):
-					$orderValues['Articles'][] = array(
-						'quantity'   => (int)1,
-						'artnr'    => "",
-						'title'    => __('Signup Fee', 'billmate'),
-						'aprice'    => round($signup_fee*(1-($productTax/100))*100), //+$item->unittax
-						'taxrate'      => (int)$productTax,
-						'discount' => (float)0,
-						'withouttax' => round($signup_fee*(1-($productTax/100))*100)
-
-					);
-				$total += round($signup_fee *(1-($productTax/100))* 100);
-				$totalTax += round($signup_fee *(1-($productTax/100))) * (($productTax/100) * 100);
-
-				endif;
 
 				if($order->get_total() == 0){
 					$orderValues['Articles'][] = array(
