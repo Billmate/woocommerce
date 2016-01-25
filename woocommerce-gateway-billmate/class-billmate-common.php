@@ -26,18 +26,38 @@ class BillmateCommon {
 	public function activate_invoice($order_id)
 	{
 		if(get_option('billmate_common_activateonstatus') == 'active') {
-			$billmate = new BillMate(get_option('billmate_common_eid'), get_option('billmate_common_secret'), true,
-				false, false);
-			$order = new WC_Order($order_id);
-			if ($billmateInvoiceId = get_post_meta($order_id, 'billmate_invoice_id', true)) {
-				$paymentInfo = $billmate->getPaymentinfo(array('number' => $billmateInvoiceId));
-				if ($paymentInfo['PaymentData']['status'] == 'Created') {
-					$result = $billmate->activatePayment(array('PaymentData' => array('number' => $billmateInvoiceId)));
-					if (isset($result['code'])) {
-						$order->add_order_note(printf(__('The order payment couldnt be activated, error code: %s error message: %s',
-							'billmate'), $result['code'], $result['message']));
-					} else {
-						$order->add_order_note(__('The order payment activated successfully', 'billmate'));
+
+			error_log('payment_method'.print_r(get_post_meta($order_id,'_payment_method'),true));
+			$paymentMethod = get_post_meta($order_id,'_payment_method');
+			$method = false;
+			switch($paymentMethod[0]){
+				case 'billmate_partpayment':
+					$method = new WC_Gateway_Billmate_Partpayment();
+					break;
+				case 'billmate_invoice':
+					$method = new WC_Gateway_Billmate_Invoice();
+					break;
+				case 'billmate_bankpay':
+					$method = new WC_Gateway_Billmate_Bankpay();
+					break;
+				case 'billmate_cardpay':
+					$method = WC_Gateway_Billmate_Cardpay();
+					break;
+			}
+			if($method !== false) {
+				$billmate = new BillMate(get_option('billmate_common_eid'), get_option('billmate_common_secret'), true,
+					$method->testmode == 'yes', false);
+				$order = new WC_Order($order_id);
+				if ($billmateInvoiceId = get_post_meta($order_id, 'billmate_invoice_id', true)) {
+					$paymentInfo = $billmate->getPaymentinfo(array('number' => $billmateInvoiceId));
+					if ($paymentInfo['PaymentData']['status'] == 'Created') {
+						$result = $billmate->activatePayment(array('PaymentData' => array('number' => $billmateInvoiceId)));
+						if (isset($result['code'])) {
+							$order->add_order_note(printf(__('The order payment couldnt be activated, error code: %s error message: %s',
+								'billmate'), $result['code'], $result['message']));
+						} else {
+							$order->add_order_note(__('The order payment activated successfully', 'billmate'));
+						}
 					}
 				}
 			}
