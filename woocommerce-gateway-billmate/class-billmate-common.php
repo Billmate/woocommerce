@@ -25,16 +25,20 @@ class BillmateCommon {
 
 	public function activate_invoice($order_id)
 	{
-		$billmate = new BillMate(get_option('billmate_common_eid'),get_option('billmate_common_secret'),true,false,false);
-		$order = new WC_Order($order_id);
-		if($billmateInvoiceId = get_post_meta($order_id,'billmate_invoice_id',true)){
-			$paymentInfo = $billmate->getPaymentinfo(array('number' => $billmateInvoiceId));
-			if($paymentInfo['PaymentData']['status'] == 'Created'){
-				$result = $billmate->activatePayment(array('PaymentData' => array('number' => $billmateInvoiceId)));
-				if(isset($result['code'])){
-					$order->add_order_note(printf(__('The order payment couldnt be activated, error code: %s error message: %s','billmate'),$result['code'],$result['message']));
-				} else {
-					$order->add_order_note(__('The order payment activated successfully','billmate'));
+		if(get_option('billmate_common_activateonstatus') == 'active') {
+			$billmate = new BillMate(get_option('billmate_common_eid'), get_option('billmate_common_secret'), true,
+				false, false);
+			$order = new WC_Order($order_id);
+			if ($billmateInvoiceId = get_post_meta($order_id, 'billmate_invoice_id', true)) {
+				$paymentInfo = $billmate->getPaymentinfo(array('number' => $billmateInvoiceId));
+				if ($paymentInfo['PaymentData']['status'] == 'Created') {
+					$result = $billmate->activatePayment(array('PaymentData' => array('number' => $billmateInvoiceId)));
+					if (isset($result['code'])) {
+						$order->add_order_note(printf(__('The order payment couldnt be activated, error code: %s error message: %s',
+							'billmate'), $result['code'], $result['message']));
+					} else {
+						$order->add_order_note(__('The order payment activated successfully', 'billmate'));
+					}
 				}
 			}
 		}
@@ -138,6 +142,13 @@ class BillmateCommon {
             'setting_credentials'
         );
 		add_settings_field(
+			'billmate_common_activateonstatus',
+			__('Activate Orders in Billmate Online when completed','billmate'),
+			array($this,'activateonstatus_callback'),
+			'billmate-settings',
+			'setting_credentials'
+		);
+		add_settings_field(
 			'billmate_common_logo',
 			__('Logo to be displayed in the invoice','billmate'),
 			array($this,'logo_callback'),
@@ -166,6 +177,16 @@ class BillmateCommon {
 		echo '<input type="text" id="billmate_common_secret" name="billmate_common_secret" value="'.$value.'" />';
 	}
 
+	public function activateonstatus_callback()
+	{
+		$value = get_option('billmate_common_activateonstatus','');
+		$inactive = ($value == 'inactive') ? 'selected="selected"' : '';
+		$active = ($value == 'active') ? 'selected="selected"' : '';
+		echo '<select name="billmate_common_activateonstatus" id="billmate_common_activateonstatus">';
+		echo '<option value="inactive"'.$inactive.'>'.__('Inactive','billmate').'</option>';
+		echo '<option value="active"'.$active.'>'.__('Active','billmate').'</option>';
+		echo '</select>';
+	}
     public function getaddress_callback()
     {
         $value = get_option('billmate_common_getaddress','');
