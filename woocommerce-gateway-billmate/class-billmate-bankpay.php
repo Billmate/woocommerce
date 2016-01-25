@@ -151,7 +151,24 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		}
 		$order = new WC_Order( $order_id );
 		// Check if transient is set(Success url is processing)
-		if(false === get_transient('billmate_bankpay_order_id_'.$order_id)){
+		if(false !== get_transient('billmate_bankpay_order_id_'.$order_id)){
+			if(!$accept_url_hit){
+				if($data['status'] == 'Paid') {
+					add_post_meta($order->id,'billmate_invoice_id',$data['number']);
+					$order->add_order_note(sprintf(__('Billmate Invoice id: %s','billmate'),$data['number']));
+
+					if ($this->order_status == 'default') {
+						$order->add_order_note(__($payment_note,'billmate'));
+						$order->payment_complete();
+					} else {
+						$order->add_order_note(__($payment_note,'billmate'));
+						$order->update_status($this->order_status);
+					}
+					delete_transient('billmate_bankpay_order_id_'.$order_id);
+					wp_die('OK','ok',array('response' => 200));
+
+				}
+			}
 			if(version_compare(WC_VERSION, '2.0.0', '<')) {
 				$redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))));
 			} else {
@@ -188,7 +205,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		if( in_array($order_status, array('pending')) ){
 			if($data['status'] == 'Paid') {
 				add_post_meta($order->id,'billmate_invoice_id',$data['number']);
-				$order->add_order_note(sprintf(_('Billmate Invoice id: %s','billmate'),$data['number']));
+				$order->add_order_note(sprintf(__('Billmate Invoice id: %s','billmate'),$data['number']));
 
 				if ($this->order_status == 'default') {
 					$order->add_order_note(__($payment_note,'billmate'));
