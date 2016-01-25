@@ -41,7 +41,7 @@ class BillmateCommon {
 					$method = new WC_Gateway_Billmate_Bankpay();
 					break;
 				case 'billmate_cardpay':
-					$method = WC_Gateway_Billmate_Cardpay();
+					$method = new WC_Gateway_Billmate_Cardpay();
 					break;
 			}
 			if($method !== false) {
