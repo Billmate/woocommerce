@@ -82,6 +82,10 @@ If you would like to use our logo on your site then choose following:
 
 
 == Changelog ==
+
+= 2.2 (2016-02-12) =
+* Fix - Recurring number on order.
+
 = 2.2 (2016-01-25) =
 * Enhancement - Autoactivate invoices on complete.
 * Enhancement - Compatibility with Woocommerce Subscription. Recurring payment.
