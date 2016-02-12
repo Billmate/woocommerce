@@ -455,7 +455,8 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 	 */
 	function process_scheduled_payment($amount_to_charge,$order){
 		global $woocommerce;
-		$parent_id = wcs_get_subscriptions_for_renewal_order( $order );
+		$subscription = end($subscriptions);
+		$parent_id = $subscription->order->id;
 		$billmateToken = get_post_meta($parent_id,'_billmate_card_token',true);
 		if(empty($billmateToken))
 			$billmateToken = get_post_meta($parent_id,'billmate_card_token',true);
