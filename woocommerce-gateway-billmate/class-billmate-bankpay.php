@@ -174,8 +174,10 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			} else {
 				$redirect = $this->get_return_url($order);
 			}
-			if($accept_url_hit)
+			if($accept_url_hit) {
 				wp_safe_redirect($redirect);
+				exit;
+			}
 			else
 				wp_die('OK','ok',array('response' => 200));
 		}
@@ -192,6 +194,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			if($accept_url_hit) {
 				wp_safe_redirect(add_query_arg('key', $order->order_key,
 						add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_checkout_page_id')))));
+				exit;
 				return false;
 			}else{
 				wp_die('OK','ok',array('response' => 200));
@@ -219,8 +222,10 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			}
 			if($data['status'] == 'Cancelled'){
 				$order->cancel_order('Cancelled Order');
-				if($accept_url_hit)
+				if($accept_url_hit) {
 					wp_safe_redirect($order->get_cancel_order_url());
+					exit;
+				}
 				else
 					wp_die('OK','ok',array('response' => 200));
 			}
@@ -234,6 +239,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 					$redirect = $this->get_return_url($order);
 				}
 				wp_safe_redirect($redirect);
+				exit;
 			}
 			wp_die('OK','ok',array('response' => 200));
 		}
@@ -246,6 +252,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 				$redirect = $this->get_return_url($order);
 			}
 			wp_safe_redirect($redirect);
+			exit;
 		}
 		delete_transient('billmate_bankpay_order_id_'.$order_id);
 		wp_die('OK','ok',array('response' => 200));
