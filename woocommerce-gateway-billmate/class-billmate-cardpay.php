@@ -136,7 +136,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		//header( 'HTTP/1.1 200 OK' );
 		$recurring = false;
 		$k = new Billmate($this->eid,$this->secret,true,$this->testmode,false);
-		if( !empty($_GET['payment']) && $_GET['payment'] == 'success' ) {
+		if( !empty($_GET['payment']) ) {
 			if(!empty($_GET['recurring']) && $_GET['recurring'] == 1){
 				$recurring = true;
 			}
@@ -186,8 +186,10 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			} else {
 				$redirect = $this->get_return_url($order);
 			}
-			if($accept_url_hit)
+			if($accept_url_hit) {
 				wp_safe_redirect($redirect);
+				exit;
+			}
 			else
 				wp_die('OK','ok',array('response' => 200));
 		}
@@ -204,6 +206,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			if($accept_url_hit) {
 				wp_safe_redirect(add_query_arg('key', $order->order_key,
 						add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_checkout_page_id')))));
+				exit;
 				return false;
 			} else {
 				wp_die('OK','ok',array('response' => 200));
@@ -227,8 +230,10 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			}
 			if($data['status'] == 'Cancelled'){
 				$order->cancel_order('Cancelled Order');
-				if($accept_url_hit)
+				if($accept_url_hit) {
 					wp_safe_redirect($order->get_cancel_order_url());
+					exit;
+				}
 				else
 					wp_die('OK','ok',array('response' => 200));
 			}
@@ -242,6 +247,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 					$redirect = $this->get_return_url($order);
 				}
 				wp_safe_redirect($redirect);
+				exit;
 			}
 			wp_die('OK','ok',array('response' => 200));
 
@@ -255,6 +261,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 				$redirect = $this->get_return_url($order);
 			}
 			wp_safe_redirect($redirect);
+			exit;
 		}
 		wp_die('OK','ok',array('response' => 200));
 	}

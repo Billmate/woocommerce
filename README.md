@@ -49,7 +49,10 @@ Copy the code below for the size that fits your needs.
 
 ##Changelog
 
-### 2.2 (2016-02-12)
+### 2.2.2 (2016-02-16) = 
+* Fix - Exit after all redirects.
+
+### 2.2.2 (2016-02-12)
 * Fix - Recurring number on order. 
 
 ### 2.2 (2016-01-08)
