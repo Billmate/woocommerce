@@ -1,10 +1,10 @@
 === Billmate for WooCommerce ===
-Contributors: Vauren
+Contributors: Billmate
 Donate link:
 Tags: woocomerce, billmate, payments, cardpayments, invoice, partpayment, recurring, bankpayment
 Requires at least: 4.0
 Tested up to: 4.4
-Stable tag: 4.4
+Stable tag: 2.2.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -64,6 +64,9 @@ I depends on what payment methods you will use. If you use cardpayment you need 
 = How much does it cost to use Billmate? =
 
 We have different prices depending on what you choose. You can read more about it at http://billmate.se/priser
+
+= Can I use Wordfence or other Firewall plugin? =
+You need to make sure our callback IP, 54.194.217.63, is whitelisted  in Wordfence. Navigate to "Wordfence -> Options" and scroll down to "Other Options". Add our ip-number next to "Whitelisted IP addresses that bypass all rules" and it should go.
 
 == Screenshots ==
 
