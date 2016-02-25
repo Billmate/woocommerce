@@ -25,12 +25,11 @@ The invoice and part payment plugin only works if the currency is set to Swedish
 6. Go to --> WooCommerce --> Settings --> Payment Gateways and configure your Billmate settings.
 7. Billmate Part Payment: Click the button "Update paymentplans" on the settings page to fetch your shops PClasses and store them in the database.
 
+## Can I use Wordfence or other Firewall plugin?
+You need to make sure our callback IP, 54.194.217.63, is whitelisted  in Wordfence. Navigate to "Wordfence -> Options" and scroll down to "Other Options". Add our ip-number next to "Whitelisted IP addresses that bypass all rules" and it should go.
 
 ##How to place Billmate logo on your site.
 Copy the code below for the size that fits your needs.
-
-## Can I use Wordfence or other Firewall plugin?
-You need to make sure our callback IP, 54.194.217.63, is whitelisted  in Wordfence. Navigate to "Wordfence -> Options" and scroll down to "Other Options". Add our ip-number next to "Whitelisted IP addresses that bypass all rules" and it should go.
 
 
 ###Large
