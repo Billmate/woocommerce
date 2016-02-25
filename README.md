@@ -29,6 +29,10 @@ The invoice and part payment plugin only works if the currency is set to Swedish
 ##How to place Billmate logo on your site.
 Copy the code below for the size that fits your needs.
 
+## Can I use Wordfence or other Firewall plugin?
+You need to make sure our callback IP, 54.194.217.63, is whitelisted  in Wordfence. Navigate to "Wordfence -> Options" and scroll down to "Other Options". Add our ip-number next to "Whitelisted IP addresses that bypass all rules" and it should go.
+
+
 ###Large
 
 <a href="http://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_l.png" alt="Billmate Payment Gateway" /></a>
@@ -49,7 +53,11 @@ Copy the code below for the size that fits your needs.
 
 ##Changelog
 
-### 2.2.2 (2016-02-16) = 
+### 2.2.3 (2016-02-25)
+* Fix - Callback with post.
+
+
+### 2.2.2 (2016-02-16)  
 * Fix - Exit after all redirects.
 
 ### 2.2.1 (2016-02-12)

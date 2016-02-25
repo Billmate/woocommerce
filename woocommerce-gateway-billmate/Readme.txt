@@ -86,6 +86,9 @@ If you would like to use our logo on your site then choose following:
 
 == Changelog ==
 
+= 2.2.3 (2016-02-25) =
+* Fix - Callback with post.
+
 = 2.2.2 (2016-02-16) =
 * Fix - Exit after all redirects.
 
