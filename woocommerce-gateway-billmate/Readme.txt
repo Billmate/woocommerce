@@ -41,7 +41,7 @@ Quickinstallation
 5. Navigate to Settings under Wordpress, then "Billmate Settings" and enter your Billmate ID and Secret
 6. Navigate to Woocomerce-Settings-Checkout and setup the payment methods.
 
-Link to full documentation: http://billmate.se/plugins/manual/Installation_Manual_Woocommerce_Billmate.pdf
+Link to full documentation: https://billmate.se/plugins/manual/Installationsmanual_Woocommerce_Billmate.pdf (Swedish)
 
 = Update =
 Before updating the plugin, please save your settings and make a backup of your store. If you have a teststore, then do the update on the teststore before updating the real store.
