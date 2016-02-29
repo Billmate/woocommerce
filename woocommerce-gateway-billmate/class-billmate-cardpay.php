@@ -462,12 +462,17 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 	 */
 	function process_scheduled_payment($amount_to_charge,$order){
 		global $woocommerce;
+
+
+		$subscription = wcs_get_subscriptions_for_renewal_order( $order );
+
 		$subscription = end($subscriptions);
 		$parent_id = $subscription->order->id;
+
 		$billmateToken = get_post_meta($parent_id,'_billmate_card_token',true);
 		if(empty($billmateToken))
 			$billmateToken = get_post_meta($parent_id,'billmate_card_token',true);
-		error_log('billmate_token'.$billmateToken);
+
 		$total = 0;
 		$totalTax = 0;
 		$prepareDiscount = array();
@@ -709,14 +714,22 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			WC_Subscriptions_Manager::process_subscription_payment_failure_on_order($order);
 			return;
 		}else{
-			add_post_meta($order->id,'billmate_invoice_id',$result['number']);
+			if($result['status'] == 'Paid'){
+				add_post_meta($order->id,'billmate_invoice_id',$result['number']);
 
-			$order->add_order_note(sprintf(__("Subscription Payment Successful. Invoice ID: %s ",'billmate'), $result['number']));
-			$order->payment_complete($result['number']);
-			WC_Subscriptions_Manager::process_subscription_payments_on_order($order);
-			return array(
-				'result' => 'success'
-			);
+				$order->add_order_note(sprintf(__("Subscription Payment Successful. Invoice ID: %s ",'billmate'), $result['number']));
+				$order->payment_complete($result['number']);
+				WC_Subscriptions_Manager::process_subscription_payments_on_order($order);
+				return array(
+					'result' => 'success'
+				);
+			} else {
+				wc_bm_errors(__($result['message'],'billmate'));
+				$order->update_status('failed',sprintf(__("Subscription Payment Failed: Invoice ID: None" , 'billmate'),$result['message']));
+				$order->add_order_note(sprintf(__("Subscription Payment Failed: Invoice ID: None" , 'billmate'),$result['message']));
+				WC_Subscriptions_Manager::process_subscription_payment_failure_on_order($order);
+				return;
+			}
 		}
 
 

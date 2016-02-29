@@ -52,6 +52,11 @@ Copy the code below for the size that fits your needs.
 
 ##Changelog
 
+### 2.2.4 (2016-02-29)
+* Fix - Subscriptions
+* Fix - Status for subscriptions.
+
+
 ### 2.2.3 (2016-02-25)
 * Fix - Callback with post.
 
