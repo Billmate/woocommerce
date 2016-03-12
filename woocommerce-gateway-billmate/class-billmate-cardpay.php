@@ -464,7 +464,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		global $woocommerce;
 
 
-		$subscription = wcs_get_subscriptions_for_renewal_order( $order );
+		$subscriptions = wcs_get_subscriptions_for_renewal_order( $order );
 
 		$subscription = end($subscriptions);
 		$parent_id = $subscription->order->id;
