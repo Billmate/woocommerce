@@ -608,8 +608,8 @@ parse_str($_POST['post_data'], $datatemp);
 		$firstArr = explode(' ', $_POST['billing_last_name']);
 		$lastArr  = explode(' ', $_POST['billing_first_name']);
 
-		$usership = $_POST['billing_last_name'].' '.$_POST['billing_first_name'].' '.$_POST['billing_company'];
-		$userbill = $_POST['shipping_last_name'].' '.$_POST['shipping_first_name'].' '.$_POST['shipping_company'];
+		$usership = $_POST['billing_first_name'].' '.$_POST['billing_last_name'].' '.$_POST['billing_company'];
+		$userbill = $_POST['shipping_first_name'].' '.$_POST['shipping_last_name'].' '.$_POST['shipping_company'];
 
 		if( strlen( $addr['firstname'] )) {
 			$name = $addr['firstname'];
@@ -625,19 +625,19 @@ parse_str($_POST['post_data'], $datatemp);
 			$displayname = $_POST['billing_first_name'].' '.$_POST['billing_last_name'].'<br/>'.$addr['company'];
 		}
 
-		$shippingAndBilling = !isEqual( $usership, $userbill ) ||
+		$addressNotMatched  = !isEqual( $usership,  $apiName) ||
 		                      !isEqual($addr['street'], $billmate_billing_address ) ||
-		                      !isEqual($addr['zip'], $_POST['shipping_postcode']) ||
-		                      !isEqual($addr['city'], $_POST['shipping_city']) ||
-		                      !isEqual(strtoupper($addr['country']), strtoupper($_POST['shipping_country']));
+		                      !isEqual($addr['zip'], $_POST['billing_postcode']) ||
+		                      !isEqual($addr['city'], $_POST['billing_city']) ||
+		                      !isEqual(strtoupper($addr['country']), strtoupper($_POST['billing_country']));
 
-		$addressNotMatched =  !isEqual($usership, $apiName) ||
+		$shippingAndBilling=  !isEqual($usership,$userbill ) ||
 		                      !isEqual($_POST['billing_address_1'], $_POST['shipping_address_1'] ) ||
 		                      !isEqual($_POST['billing_postcode'], $_POST['shipping_postcode']) ||
 		                      !isEqual($_POST['billing_city'], $_POST['shipping_city']) ||
 		                      !isEqual($_POST['billing_country'], $_POST['shipping_country']);
 
-		$shippingAndBilling = $_POST['shipping_method'][0] == '' ? false : $shippingAndBilling;
+		$shippingAndBilling = (isset($_POST['ship_to_different_address']) && $_POST['ship_to_different_address'] == 1) ? $shippingAndBilling : false;
 
 		global $woocommerce;
 

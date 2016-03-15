@@ -9,9 +9,12 @@ function match_usernamevp( $str1, $str2 ){
 function isEqual($string1, $string2 ){
 //		$string1 = utf8_strtolower( preg_replace('/([\s+])/', '', Encoding::fixUTF8($string1) ));
 	//$string2 = utf8_strtolower( preg_replace('/([\s+])/', '', Encoding::fixUTF8($string2 )));
-	$string1 = explode(" ", utf8_strtolower(BillmateStringEncoding::fixUTF8($string1)) );
-	$string2 = explode(" ", utf8_strtolower(BillmateStringEncoding::fixUTF8($string2)) );
-	
+	//$string1 = explode(" ", utf8_strtolower(BillmateStringEncoding::fixUTF8($string1)) );
+	//$string2 = explode(" ", utf8_strtolower(BillmateStringEncoding::fixUTF8($string2)) );
+	error_log('str1'.$string1);
+	error_log('str2'.$string2);
+	$string1 = explode(" ", strtolower( $string1 ) );
+	$string2 = explode(" ", strtolower( $string2 ) );
 	$filterStr1 = array();
 	foreach( $string1 as $str1 ){
 		if( trim($str1,'.') == $str1 ){
