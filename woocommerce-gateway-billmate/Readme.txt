@@ -86,6 +86,9 @@ If you would like to use our logo on your site then choose following:
 
 == Changelog ==
 
+= 2.2.5 (2016-03-21) =
+* Fix - Not send in Payment terms.
+
 = 2.2.4 (2016-02-29) =
 * Fix - Subscriptions
 * Fix - Status for subscriptions

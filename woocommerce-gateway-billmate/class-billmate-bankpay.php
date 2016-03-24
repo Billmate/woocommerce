@@ -220,6 +220,15 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 				delete_transient('billmate_bankpay_order_id_'.$order_id);
 
 			}
+			if($data['status'] == 'Failed'){
+				$order->cancel_order('Failed payment');
+				if($accept_url_hit) {
+					wp_safe_redirect($order->get_cancel_order_url());
+					exit;
+				}
+				else
+					wp_die('OK','ok',array('response' => 200));
+			}
 			if($data['status'] == 'Cancelled'){
 				$order->cancel_order('Cancelled Order');
 				if($accept_url_hit) {
@@ -444,7 +453,6 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		);
 		$orderValues['PaymentInfo'] = array(
 			'paymentdate' => (string)date('Y-m-d'),
-			'paymentterms' => 14,
 			'yourreference' => $order->billing_first_name.' '.$order->billing_last_name
 		);
 
