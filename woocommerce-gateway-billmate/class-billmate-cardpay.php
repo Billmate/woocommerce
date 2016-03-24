@@ -228,6 +228,15 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 					$order->update_status($this->order_status);
 				}
 			}
+			if($data['status'] == 'Failed'){
+				$order->cancel_order('Failed payment');
+				if($accept_url_hit) {
+					wp_safe_redirect($order->get_cancel_order_url());
+					exit;
+				}
+				else
+					wp_die('OK','ok',array('response' => 200));
+			}
 			if($data['status'] == 'Cancelled'){
 				$order->cancel_order('Cancelled Order');
 				if($accept_url_hit) {
