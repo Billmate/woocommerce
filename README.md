@@ -52,6 +52,9 @@ Copy the code below for the size that fits your needs.
 
 ##Changelog
 
+### 2.2.5 (2016-03-21)
+* Fix - Not send in Payment terms.
+
 ### 2.2.4 (2016-02-29)
 * Fix - Subscriptions
 * Fix - Status for subscriptions.

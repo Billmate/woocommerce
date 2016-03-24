@@ -444,7 +444,6 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		);
 		$orderValues['PaymentInfo'] = array(
 			'paymentdate' => (string)date('Y-m-d'),
-			'paymentterms' => 14,
 			'yourreference' => $order->billing_first_name.' '.$order->billing_last_name
 		);
 

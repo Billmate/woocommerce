@@ -772,7 +772,6 @@ parse_str($_POST['post_data'], $datatemp);
 
 		$orderValues['PaymentInfo'] = array(
 			'paymentdate' => (string)date('Y-m-d'),
-			'paymentterms' => 14,
 			'yourreference' => $order->billing_first_name.' '.$order->billing_last_name
 		);
 		// Cart Contents
