@@ -991,8 +991,9 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 					$total += 100;
 				}
 
-				$round = (round($woocommerce->cart->total*100)) - round($total + $totalTax,0);
-				$round += ($woocommerce->cart->total == 0) ? 100 : 0;
+				$checkoutTotal = WC_Payment_Gateway::get_order_total();
+				$round = (round($checkoutTotal * 100)) - round($total + $totalTax,0);
+				$round += ($checkoutTotal == 0) ? 100 : 0;
 
 				$orderValues['Cart']['Total'] = array(
 					'withouttax' => round($total),
