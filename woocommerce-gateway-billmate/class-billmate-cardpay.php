@@ -39,8 +39,6 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		$this->testmode				= ( isset( $this->settings['testmode'] ) && $this->settings['testmode'] == 'yes' ) ? true : false;
 		$this->logo 				= get_option('billmate_common_logo');
 		$this->de_consent_terms		= ( isset( $this->settings['de_consent_terms'] ) ) ? $this->settings['de_consent_terms'] : '';
-		$this->prompt_name_entry	= ( isset( $this->settings['prompt_name_entry'] ) ) ? $this->settings['prompt_name_entry'] : 'YES';
-		$this->do_3dsecure			= ( isset( $this->settings['do_3dsecure'] ) ) ? $this->settings['do_3dsecure'] : 'NO';
 		$this->authentication_method= ( isset( $this->settings['authentication_method'] ) ) ? $this->settings['authentication_method'] : '';
 		$this->order_status = (isset($this->settings['order_status'])) ? $this->settings['order_status'] : false;
 		if ( $this->invoice_fee_id == "") $this->invoice_fee_id = 0;
@@ -342,26 +340,6 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 				'label' => __( 'Authentication Method', 'billmate' ),
 				'default' => ''
 			),
-			'do_3dsecure' => array(
-							'title' => __( 'Enable 3D Secure', 'billmate' ),
-							'type' => 'select',
-							'options' => array(
-								'YES'  => __('Yes','billmate'),
-								'NO' => __('No','billmate'),
-								),
-							'label' => __( 'Enable 3D Secure', 'billmate' ),
-							'default' => 'YES'
-						),
-			'prompt_name_entry' => array(
-							'title' => __( 'Enable Name', 'billmate' ),
-							'type' => 'select',
-							'options' => array(
-								'YES'  => __('Yes','billmate'),
-								'NO' => __('No','billmate'),
-								),
-							'label' => __( 'Enable Name', 'billmate' ),
-							'default' => 'NO'
-						),
 			'testmode' => array(
 							'title' => __( 'Test Mode', 'billmate' ),
 							'type' => 'checkbox',
@@ -864,8 +842,6 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 					'accepturl' => $accept_url,
 					'callbackurl' => $callback_url,
 					'cancelurl' => $cancel_url,
-					'3dsecure' => ($this->do_3dsecure != 'NO') ? 1 : 0,
-					'promptname' => ($this->prompt_name_entry == 'YES') ? 1 : 0,
 					'recurring' => 1,
 					'returnmethod' => ($url['scheme'] == 'https') ? 'POST' : 'GET'
 				);
@@ -1057,8 +1033,6 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 				'accepturl' => $accept_url,
 				'callbackurl' => $callback_url,
 				'cancelurl' => $cancel_url,
-				'3dsecure' => ($this->do_3dsecure != 'NO') ? 1 : 0,
-				'promptname' => ($this->prompt_name_entry == 'YES') ? 1 : 0,
 				'returnmethod' => ($url['scheme'] == 'https') ? 'POST' : 'GET'
 			);
 
