@@ -50,6 +50,9 @@ Copy the code below for the size that fits your needs.
 
 `<a href="http://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_s.png" alt="Billmate Payment Gateway" /></a>`
 
+##Testing
+Tested with [Browserstack](http://www.browserstack.com)
+
 ##Changelog
 
 ### 2.2.5 (2016-03-21)
