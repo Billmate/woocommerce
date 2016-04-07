@@ -27,8 +27,9 @@ function isEqual($string1, $string2 ){
 			$filterStr2[] = $str2;
 		}
 	}
+	$str1Count = count($string1);
 	$foundName = array_intersect( $filterStr1, $filterStr2 );
-	return count($foundName) > 0;
+	return count($foundName) == $str1Count;
 }
 
 function utf8_strlen($string) {

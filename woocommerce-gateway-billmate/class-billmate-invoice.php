@@ -636,7 +636,7 @@ parse_str($_POST['post_data'], $datatemp);
 		                      !isEqual($_POST['billing_postcode'], $_POST['shipping_postcode']) ||
 		                      !isEqual($_POST['billing_city'], $_POST['shipping_city']) ||
 		                      !isEqual($_POST['billing_country'], $_POST['shipping_country']);
-
+		
 		$shippingAndBilling = (isset($_POST['ship_to_different_address']) && $_POST['ship_to_different_address'] == 1) ? $shippingAndBilling : false;
 
 		global $woocommerce;
