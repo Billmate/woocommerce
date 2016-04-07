@@ -88,6 +88,11 @@ If you would like to use our logo on your site then choose following:
 
 == Changelog ==
 
+= 2.2.6 (2016-04-07) =
+* Fix - Address popup utf8.
+* Enhancement - Not send in zero fees.
+* Enhancement - Fixed some rounding issues.
+
 = 2.2.5 (2016-03-21) =
 * Fix - Not send in Payment terms.
 
