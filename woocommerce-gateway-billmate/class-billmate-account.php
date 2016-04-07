@@ -1225,7 +1225,7 @@ parse_str($_POST['post_data'], $datatemp);
 		}
 
 		foreach($addr as $key => $value){
-			$addr[$key] = mb_convert_encoding($value,'UTF-8','auto');
+			$addr[$key] = utf8_encode(utf8_decode($value));
 		}
 		$fullname = $_POST['billing_last_name'].' '.$_POST['billing_first_name'];
 		$firstArr = explode(' ', $_POST['billing_last_name']);
@@ -1524,81 +1524,8 @@ parse_str($_POST['post_data'], $datatemp);
 			'rounding' => round($round),
 			'withtax' => round($total + $totalTax+ $round)
 		);
-		try{
-			$addr = $k->GetAddress(array('pno' => $billmate_pno));
-		}catch( Exception $ex ){
-			wc_bm_errors( $ex->getMessage() );
-            return;
-		}
-        if( !is_array( $addr ) ) {
-		    wc_bm_errors( __('Unable to find address.'.$addr, 'billmate') );
-            return;
-        }
-        $fullname = $order->billing_last_name.' '.$order->billing_first_name.' '.$order->billing_company;
 
-		$usership = $order->billing_last_name.' '.$order->billing_first_name.' '.$order->billing_company;
-		$userbill = $order->shipping_last_name.' '.$order->shipping_first_name.' '.$order->shipping_company;
-
-		foreach($addr as $key => $value){
-			$addr[$key] = utf8_encode($value);
-		}
-
-		if( strlen( $addr['firstname'] )) {
-			$name = $addr['firstname'];
-			$lastname = $addr['lastname'];
-			$company = '';
-			$apiName =  $addr['firstname'].' '.$addr['lastname'];
-			$displayname = $addr['firstname'].' '.$addr['lastname'];
-		} else {
-			$name = $order->billing_first_name;
-			$lastname=$order->billing_last_name;
-			$company = $addr['company'];
-			$apiName =  $name.' '.$lastname.' '.$addr['company'];
-			$displayname = $order->billing_first_name.' '.$order->billing_last_name.'<br/>'.$addr['company'];
-		}
-
-		$shippingAndBilling = !isEqual( $usership, $userbill ) ||
-			!isEqual($addr['street'], $billmate_billing_address ) ||
-			!isEqual($addr['zip'], $order->shipping_postcode) ||
-			!isEqual($addr['city'], $order->shipping_city) ||
-			!isEqual(strtoupper($addr['country']), strtoupper($order->shipping_country));
-
-		$addressNotMatched =  !isEqual($usership, $apiName) ||
-			!isEqual($order->billing_address_1, $order->shipping_address_1 ) ||
-			!isEqual($order->billing_postcode, $order->shipping_postcode) ||
-			!isEqual($order->billing_city, $order->shipping_city) ||
-			!isEqual($order->billing_country, $order->shipping_country) ;
-
-		$shippingAndBilling = $order->get_shipping_method() == '' ? false : $shippingAndBilling;
-
-		global $woocommerce;
-
-		$importedCountry = isset($addr['country']) ? $addr['country'] : '';
-
-		if( $addressNotMatched || $shippingAndBilling ){
-			if( empty($_POST['geturl'] ) ){
-				$html = $displayname.'<br>'.$addr['street'].'<br>'.$addr['zip'].' '.$addr['city'].'<br/>'.$importedCountry.'<div style="margin-top:1em"><input type="button" value="'.__('Yes, make purchase with this address','billmate').'" onclick="ajax_load(this);modalWin.HideModalPopUp(); " class="billmate_button"/></div><a onclick="noPressButton()" class="linktag">'.__('No, I want to specify a different number or change payment method','billmate').'</a>';
-				$html.= '<span id="hidden_data"><input type="hidden" id="_first_name" value="'.$name.'" />';
-				$html.= '<input type="hidden" id="_last_name" value="'.$lastname.'" />';
-				$html.= '<input type="hidden" id="_company" value="'.$company.'" />';
-				$html.= '<input type="hidden" id="_address_1" value="'.$addr['street'].'" />';
-				$html.= '<input type="hidden" id="_postcode" value="'.$addr['zip'].'" />';
-				$html.= '<input type="hidden" id="_city" value="'.$addr['city'].'" /></span>';
-
-				if(version_compare(WC_VERSION,'2.4.0','<')) {
-					echo $code = '<script type="text/javascript">setTimeout(function(){modalWin.ShowMessage(\'' . $html . '\',350,500,\'' . __('Pay by invoice can be made only to the address listed in the National Register. Would you like to make the purchase with address:', 'billmate') . '\');},1000);</script>';
-					//wc_bm_errors($code);
-					die;
-				} else {
-					$code['messages'] = '<script type="text/javascript">setTimeout(function(){modalWin.ShowMessage(\''.$html.'\',350,500,\''.__('Pay by invoice can be made only to the address listed in the National Register. Would you like to make the purchase with address:','billmate').'\');},1000);</script>';
-					echo json_encode($code);
-					die;
-				}
-			}
-		}
-
-		//Create the address object and specify the values.
-
+		$this->getAddress();
         $countryData = BillmateCountry::getSwedenData();
 		$countries = $woocommerce->countries->get_allowed_countries();
 		$countryname = (int)$order->billing_country != 'SE' ? utf8_decode ($countries[$order->billing_country]) : 209;
@@ -1607,13 +1534,13 @@ parse_str($_POST['post_data'], $datatemp);
 			'pno' => $billmate_pno,
 			'nr' => empty($order->user_id ) || $order->user_id<= 0 ? '': $order->user_id,
 			'Billing' => array(
-				'firstname' => mb_convert_encoding($order->billing_first_name,'UTF-8','auto'),
-				'lastname' => mb_convert_encoding($order->billing_last_name,'UTF-8','auto'),
-				'company' => mb_convert_encoding($order->billing_company,'UTF-8','auto'),
-				'street' => mb_convert_encoding($billmate_billing_address,'UTF-8','auto'),
-				'street2' => mb_convert_encoding($order->billing_address_2,'UTF-8','auto'),
+				'firstname' => utf8_encode(utf8_decode($order->billing_first_name)),
+				'lastname' => utf8_encode(utf8_decode($order->billing_last_name)),
+				'company' => utf8_encode(utf8_decode($order->billing_company)),
+				'street' => utf8_encode(utf8_decode($billmate_billing_address)),
+				'street2' => utf8_encode(utf8_decode($order->billing_address_2)),
 				'zip' => $order->billing_postcode,
-				'city' => mb_convert_encoding($order->billing_city,'UTF-8','auto'),
+				'city' => utf8_encode(utf8_decode($order->billing_city)),
 				'country' => $order->billing_country,
 				'phone' => $order->billing_phone,
 				'email' => $order->billing_email
@@ -1625,32 +1552,32 @@ parse_str($_POST['post_data'], $datatemp);
 			$email = $order->billing_email;
 			$telno = ''; //We skip the normal land line phone, only one is needed.
 			$cellno = $order->billing_phone;
-			$company = mb_convert_encoding($order->billing_company,'UTF-8','auto');
-			$fname = mb_convert_encoding($order->billing_first_name,'UTF-8','auto');
-			$lname = mb_convert_encoding($order->billing_last_name,'UTF-8','auto');
-			$careof = mb_convert_encoding($order->billing_address_2,'UTF-8','auto');  //No care of; C/O.
-			$street = mb_convert_encoding($billmate_billing_address,'UTF-8','auto'); //For DE and NL specify street number in houseNo.
-			$zip = mb_convert_encoding($order->billing_postcode,'UTF-8','auto');
-			$city = mb_convert_encoding($order->billing_city,'UTF-8','auto');
-			$country = mb_convert_encoding($countries[$order->billing_country],'UTF-8','auto');
-			$houseNo = mb_convert_encoding($billmate_billing_house_number,'UTF-8','auto'); //For DE and NL we need to specify houseNo.
-			$houseExt = mb_convert_encoding($billmate_billing_house_extension,'UTF-8','auto'); //Only required for NL.
+			$company = utf8_encode(utf8_decode($order->billing_company));
+			$fname = utf8_encode(utf8_decode($order->billing_first_name));
+			$lname = utf8_encode(utf8_decode($order->billing_last_name));
+			$careof = utf8_encode(utf8_decode($order->billing_address_2));  //No care of; C/O.
+			$street = utf8_encode(utf8_decode($billmate_billing_address)); //For DE and NL specify street number in houseNo.
+			$zip = utf8_encode(utf8_decode($order->billing_postcode));
+			$city = utf8_encode(utf8_decode($order->billing_city));
+			$country = utf8_encode(utf8_decode($countries[$order->billing_country]));
+			$houseNo = utf8_encode(utf8_decode($billmate_billing_house_number)); //For DE and NL we need to specify houseNo.
+			$houseExt = utf8_encode(utf8_decode($billmate_billing_house_extension)); //Only required for NL.
 			$countryCode = $order->billing_country;
 
 		} else {
 			$email = $order->billing_email;
 			$telno = ''; //We skip the normal land line phone; only one is needed.
 			$cellno = $order->billing_phone;
-			$company = mb_convert_encoding($order->shipping_company,'UTF-8','auto');
-			$fname = mb_convert_encoding($order->shipping_first_name,'UTF-8','auto');
-			$lname = mb_convert_encoding($order->shipping_last_name,'UTF-8','auto');
-			$careof = mb_convert_encoding($order->shipping_address_2,'UTF-8','auto');  //No care of; C/O.
-			$street = mb_convert_encoding($billmate_shipping_address,'UTF-8','auto'); //For DE and NL specify street number in houseNo.
-			$zip = mb_convert_encoding($order->shipping_postcode,'UTF-8','auto');
-			$city = mb_convert_encoding($order->shipping_city,'UTF-8','auto');
-			$country = mb_convert_encoding($countries[$order->shipping_country],'UTF-8','auto');
-			$houseNo = mb_convert_encoding($billmate_shipping_house_number,'UTF-8','auto'); //For DE and NL we need to specify houseNo.
-			$houseExt = mb_convert_encoding($billmate_shipping_house_extension,'UTF-8','auto'); //Only required for NL.
+			$company = utf8_encode(utf8_decode($order->shipping_company));
+			$fname = utf8_encode(utf8_decode($order->shipping_first_name));
+			$lname = utf8_encode(utf8_decode($order->shipping_last_name));
+			$careof = utf8_encode(utf8_decode($order->shipping_address_2));  //No care of; C/O.
+			$street = utf8_encode(utf8_decode($billmate_shipping_address)); //For DE and NL specify street number in houseNo.
+			$zip = utf8_encode(utf8_decode($order->shipping_postcode));
+			$city = utf8_encode(utf8_decode($order->shipping_city));
+			$country = utf8_encode(utf8_decode($countries[$order->shipping_country]));
+			$houseNo = utf8_encode(utf8_decode($billmate_shipping_house_number)); //For DE and NL we need to specify houseNo.
+			$houseExt = utf8_encode(utf8_decode($billmate_shipping_house_extension)); //Only required for NL.
 			$countryCode = $order->shipping_country;
 
 		}
