@@ -672,7 +672,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			$total += ($shipping_price-$order->order_shipping_tax) * 100;
 			$totalTax += (($shipping_price-$order->order_shipping_tax) * ($calculated_shipping_tax_percentage/100))*100;
 		endif;
-		$round = (round($woocommerce->cart->total * 100)) - round($total + $totalTax,0);
+		$round = (round(WC_Payment_Gateway::get_order_total() * 100)) - round($total + $totalTax,0);
 
 		$orderValues['Cart']['Total'] = array(
 			'withouttax' => round($total),

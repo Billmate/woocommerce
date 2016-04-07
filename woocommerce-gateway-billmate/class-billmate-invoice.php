@@ -602,7 +602,7 @@ parse_str($_POST['post_data'], $datatemp);
 			return;
 		}
 		foreach($addr as $key => $value){
-			$addr[$key] = mb_convert_encoding($value,'UTF-8','auto');
+			$addr[$key] = utf8_encode(utf8_decode($value));
 		}
 		$fullname = $_POST['billing_last_name'].' '.$_POST['billing_first_name'];
 		$firstArr = explode(' ', $_POST['billing_last_name']);
@@ -636,7 +636,7 @@ parse_str($_POST['post_data'], $datatemp);
 		                      !isEqual($_POST['billing_postcode'], $_POST['shipping_postcode']) ||
 		                      !isEqual($_POST['billing_city'], $_POST['shipping_city']) ||
 		                      !isEqual($_POST['billing_country'], $_POST['shipping_country']);
-
+		
 		$shippingAndBilling = (isset($_POST['ship_to_different_address']) && $_POST['ship_to_different_address'] == 1) ? $shippingAndBilling : false;
 
 		global $woocommerce;
@@ -929,7 +929,7 @@ parse_str($_POST['post_data'], $datatemp);
 				$rate = $rate['rate'];
 
 				$orderValues['Cart']['Handling'] = array(
-					'withouttax'    => $this->invoice_fee*100,
+					'withouttax'    => round($this->invoice_fee*100),
 					'taxrate'      => (int)$rate,
 				);
 
@@ -984,7 +984,7 @@ parse_str($_POST['post_data'], $datatemp);
 
 				$rate = $rate['rate'];
 				$orderValues['Cart']['Handling'] = array(
-					'withouttax'    => $this->invoice_fee*100,
+					'withouttax'    => round($this->invoice_fee*100),
 					'taxrate'      => (int)$rate,
 				);
 
@@ -996,7 +996,7 @@ parse_str($_POST['post_data'], $datatemp);
 
 		} // End invoice_fee_price > 0
 
-		$round = (round($woocommerce->cart->total * 100)) - round($total + $totalTax,0);
+		$round = (round(WC_Payment_Gateway::get_order_total() * 100)) - round($total + $totalTax,0);
 
 		$orderValues['Cart']['Total'] = array(
 			'withouttax' => round($total),
@@ -1015,13 +1015,13 @@ parse_str($_POST['post_data'], $datatemp);
 			'pno' => $billmate_pno,
 			'nr' => empty($order->user_id ) || $order->user_id<= 0 ? '': $order->user_id,
 			'Billing' => array(
-				'firstname' => mb_convert_encoding($order->billing_first_name,'UTF-8','auto'),
-				'lastname' => mb_convert_encoding($order->billing_last_name,'UTF-8','auto'),
-				'company' => mb_convert_encoding($order->billing_company,'UTF-8','auto'),
-				'street' => mb_convert_encoding($billmate_billing_address,'UTF-8','auto'),
-				'street2' => mb_convert_encoding($order->billing_address_2,'UTF-8','auto'),
+				'firstname' => utf8_encode(utf8_decode($order->billing_first_name)),
+				'lastname' => utf8_encode(utf8_decode($order->billing_last_name)),
+				'company' => utf8_encode(utf8_decode($order->billing_company)),
+				'street' => utf8_encode(utf8_decode($billmate_billing_address)),
+				'street2' => utf8_encode(utf8_decode($order->billing_address_2)),
 				'zip' => $order->billing_postcode,
-				'city' => mb_convert_encoding($order->billing_city,'UTF-8','auto'),
+				'city' => utf8_encode(utf8_decode($order->billing_city)),
 				'country' => $order->billing_country,
 				'phone' => $order->billing_phone,
 				'email' => $order->billing_email
@@ -1033,32 +1033,32 @@ parse_str($_POST['post_data'], $datatemp);
 			$email = $order->billing_email;
 			$telno = ''; //We skip the normal land line phone, only one is needed.
 			$cellno = $order->billing_phone;
-			$company = mb_convert_encoding($order->billing_company,'UTF-8','auto');
-			$fname = mb_convert_encoding($order->billing_first_name,'UTF-8','auto');
-			$lname = mb_convert_encoding($order->billing_last_name,'UTF-8','auto');
-			$careof = mb_convert_encoding($order->billing_address_2,'UTF-8','auto');  //No care of; C/O.
-			$street = mb_convert_encoding($billmate_billing_address,'UTF-8','auto'); //For DE and NL specify street number in houseNo.
-			$zip = mb_convert_encoding($order->billing_postcode,'UTF-8','auto');
-			$city = mb_convert_encoding($order->billing_city,'UTF-8','auto');
-			$country = mb_convert_encoding($countries[$order->billing_country],'UTF-8','auto');
-			$houseNo = mb_convert_encoding($billmate_billing_house_number,'UTF-8','auto'); //For DE and NL we need to specify houseNo.
-			$houseExt = mb_convert_encoding($billmate_billing_house_extension,'UTF-8','auto'); //Only required for NL.
+			$company = utf8_encode(utf8_decode($order->billing_company));
+			$fname = utf8_encode(utf8_decode($order->billing_first_name));
+			$lname = utf8_encode(utf8_decode($order->billing_last_name));
+			$careof = utf8_encode(utf8_decode($order->billing_address_2));  //No care of; C/O.
+			$street = utf8_encode(utf8_decode($billmate_billing_address)); //For DE and NL specify street number in houseNo.
+			$zip = utf8_encode(utf8_decode($order->billing_postcode));
+			$city = utf8_encode(utf8_decode($order->billing_city));
+			$country = utf8_encode(utf8_decode($countries[$order->billing_country]));
+			$houseNo = utf8_encode(utf8_decode($billmate_billing_house_number)); //For DE and NL we need to specify houseNo.
+			$houseExt = utf8_encode(utf8_decode($billmate_billing_house_extension)); //Only required for NL.
 			$countryCode = $order->billing_country;
 
 		} else {
 			$email = $order->billing_email;
 			$telno = ''; //We skip the normal land line phone; only one is needed.
 			$cellno = $order->billing_phone;
-			$company = mb_convert_encoding($order->shipping_company,'UTF-8','auto');
-			$fname = mb_convert_encoding($order->shipping_first_name,'UTF-8','auto');
-			$lname = mb_convert_encoding($order->shipping_last_name,'UTF-8','auto');
-			$careof = mb_convert_encoding($order->shipping_address_2,'UTF-8','auto');  //No care of; C/O.
-			$street = mb_convert_encoding($billmate_shipping_address,'UTF-8','auto'); //For DE and NL specify street number in houseNo.
-			$zip = mb_convert_encoding($order->shipping_postcode,'UTF-8','auto');
-			$city = mb_convert_encoding($order->shipping_city,'UTF-8','auto');
-			$country = mb_convert_encoding($countries[$order->shipping_country],'UTF-8','auto');
-			$houseNo = mb_convert_encoding($billmate_shipping_house_number,'UTF-8','auto'); //For DE and NL we need to specify houseNo.
-			$houseExt = mb_convert_encoding($billmate_shipping_house_extension,'UTF-8','auto'); //Only required for NL.
+			$company = utf8_encode(utf8_decode($order->shipping_company));
+			$fname = utf8_encode(utf8_decode($order->shipping_first_name));
+			$lname = utf8_encode(utf8_decode($order->shipping_last_name));
+			$careof = utf8_encode(utf8_decode($order->shipping_address_2));  //No care of; C/O.
+			$street = utf8_encode(utf8_decode($billmate_shipping_address)); //For DE and NL specify street number in houseNo.
+			$zip = utf8_encode(utf8_decode($order->shipping_postcode));
+			$city = utf8_encode(utf8_decode($order->shipping_city));
+			$country = utf8_encode(utf8_decode($countries[$order->shipping_country]));
+			$houseNo = utf8_encode(utf8_decode($billmate_shipping_house_number)); //For DE and NL we need to specify houseNo.
+			$houseExt = utf8_encode(utf8_decode($billmate_shipping_house_extension)); //Only required for NL.
 			$countryCode = $order->shipping_country;
 
 		}

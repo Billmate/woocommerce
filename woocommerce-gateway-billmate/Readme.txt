@@ -16,6 +16,8 @@ Billmate Gateway is a plugin that extends WooCommerce, allowing your customers t
 
 When the order is passed to Billmate a credit record of the customer is made. If the check turns out all right, Billmate creates an invoice in their system. After you (as the merchant) completes the order in WooCommerce, you need to log in to Billmate to approve/send the invoice.
 
+All our plugins is tested with Browserstack - https://www.browserstack.com
+
 Billmate is a great payment alternative for merchants and customers in Sweden.
 
 If you have any questions please visit http://billmate.se/kontakt to make contact with us.
