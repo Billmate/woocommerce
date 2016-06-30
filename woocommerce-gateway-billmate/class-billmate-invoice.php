@@ -9,6 +9,8 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
      *
      */
 
+	private $paymentMethod;
+
 	public function __construct() {
 		global $woocommerce;
 
@@ -23,6 +25,13 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 
 		// Load the settings.
 		$this->init_settings();
+
+		/*
+		 * Payment method
+		 * 1 = Invoice. Credit check and address check
+		 * 2 = Inovice service. No credit check and no address check
+		 */
+		$this->paymentMethod = 1;
 
 		// Define user set variables
 		$this->enabled				= ( isset( $this->settings['enabled'] ) ) ? $this->settings['enabled'] : '';
@@ -643,7 +652,8 @@ parse_str($_POST['post_data'], $datatemp);
 
 		$importedCountry = isset($addr['country']) ? $addr['country'] : '';
 
-		if( $addressNotMatched || $shippingAndBilling ){
+		if( ($addressNotMatched || $shippingAndBilling) AND $this->paymentMethod == 1 ){
+			// Address does not match the adress fetched from Billate AND payment method is 1 (invoice)
 			if( empty($_POST['geturl'] ) ){
 				$html = $displayname.'<br>'.$addr['street'].'<br>'.$addr['zip'].' '.$addr['city'].'<br/>'.$importedCountry.'<div style="margin-top:1em"><input type="button" value="'.__('Yes, make purchase with this address','billmate').'" onclick="ajax_load(this);modalWin.HideModalPopUp(); " class="billmate_button"/></div><a onclick="noPressButton()" class="linktag">'.__('No, I want to specify a different number or change payment method','billmate').'</a>';
 				$html.= '<span id="hidden_data"><input type="hidden" id="_first_name" value="'.$name.'" />';
@@ -762,7 +772,7 @@ parse_str($_POST['post_data'], $datatemp);
 		$prepareDiscount = array();
 		$orderid = ltrim($order->get_order_number(),'#');
 		$orderValues['PaymentData'] = array(
-			'method' => 1,
+			'method' => $this->paymentMethod,
 			'currency' => get_woocommerce_currency(),
 			'language' => $lang[0],
 			'country' => $country,
