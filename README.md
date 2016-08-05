@@ -53,7 +53,10 @@ Copy the code below for the size that fits your needs.
 ##Testing
 Tested with [Browserstack](http://www.browserstack.com)
 
-##Changelog
+## Changelog
+
+### 2.2.7 (2016-08-05)
+* Fix - Discount and VAT.
 
 ### 2.2.6 (2016-04-07)
 * Fix - Address popup utf8.
