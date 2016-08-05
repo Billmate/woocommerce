@@ -1433,6 +1433,7 @@ parse_str($_POST['post_data'], $datatemp);
 				// apply_filters to item price so we can filter this if needed
 				$billmate_item_price_including_tax = round($order->get_item_total( $item, true )*100);
 				$billmate_item_standard_price = round($order->get_item_subtotal($item,true)*100);
+                $billmate_item_standard_price_without_tax = $billmate_item_standard_price / (1 + ((int)$item_tax_percentage / 100));
 				$discount = false;
 				if($billmate_item_price_including_tax != $billmate_item_standard_price){
 					$discount = true;
@@ -1451,7 +1452,7 @@ parse_str($_POST['post_data'], $datatemp);
 					'quantity'   => (int)$item['qty'],
 					'artnr'    => $sku,
 					'title'    => $item['name'],
-					'aprice'    =>  ($discount) ? ($billmate_item_standard_price) : ($priceExcl), //+$item->unittax
+					'aprice'    =>  ($discount) ? ($billmate_item_standard_price_without_tax) : ($priceExcl),
 					'taxrate'      => (int)$item_tax_percentage,
 					'discount' => ($discount) ? round((1 - ($billmate_item_price_including_tax/$billmate_item_standard_price)) * 100 ,0) : 0,
 					'withouttax' => $item['qty'] * ($priceExcl)
