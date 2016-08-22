@@ -127,6 +127,16 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 
 			$accept_url_hit = true;
 			$payment_note = 'Note: Payment Completed Accept Url.';
+		} else if(!empty($_GET['payment']) && $_GET['payment'] == 'cancel' ){
+			if( empty( $_POST ) ){
+				$_POST = $_GET;
+			}
+			$input = file_get_contents('php://input');
+			if(is_array($input))
+				$_POST = array_merge($_POST, $input);
+
+			$cancel_url_hit = true;
+			$payment_note = 'Note: Payment Cancelled.';
 		} else {
 			$_POST = (is_array($_GET) && isset($_GET['data'])) ? $_GET : file_get_contents("php://input");
 			$accept_url_hit = false;
@@ -178,12 +188,19 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 				wp_safe_redirect($redirect);
 				exit;
 			}
+			if($cancel_url_hit){
+				wc_bm_errors('Couldnt process payment for your order, try again or select other payment option');
+				wp_safe_redirect(add_query_arg('key', $order->order_key,
+					add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_checkout_page_id')))));
+				exit;
+
+			}
 			else
 				wp_die('OK','ok',array('response' => 200));
 		}
 		// Set Transient if not exists to prevent multiple callbacks
 		set_transient('billmate_bankpay_order_id_'.$order_id,true,3600);
-		if(isset($data['code']) || isset($data['error'])){
+		if(isset($data['code']) || isset($data['error']) || ($cancel_url_hit) || $data['status'] == 'Failed'){
 			if($_POST['error_message'] == 'Invalid credit bank number') {
 				$error_message = 'Tyvärr kunde inte din betalning genomföras';
 			} else {
@@ -464,18 +481,18 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 
 
 
-		$cancel_url = html_entity_decode($woocommerce->cart->get_checkout_url());
+		//$cancel_url = html_entity_decode($woocommerce->cart->get_checkout_url());
 		$accept_url= trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Bankpay&payment=success';
 		//$callback_url= 'http://api.billmate.se/callback.php';
 		$callback_url = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Bankpay';
-
+		$cancel_url = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Bankpay&payment=cancel';
 
         $url = parse_url($callback_url);
 
 		$orderValues['Card'] = array(
 			'accepturl' => $accept_url,
 			'callbackurl' => $callback_url,
-			'cancelurl' => $accept_url,
+			'cancelurl' => $cancel_url,
             'returnmethod' => ($url['scheme'] == 'https') ? 'POST' : 'GET'
 		);
 
