@@ -841,7 +841,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 				$orderValues['Card'] = array(
 					'accepturl' => $accept_url,
 					'callbackurl' => $callback_url,
-					'cancelurl' => $cancel_url,
+					'cancelurl' => $accept_url,
 					'recurring' => 1,
 					'returnmethod' => ($url['scheme'] == 'https') ? 'POST' : 'GET'
 				);
@@ -1032,7 +1032,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			$orderValues['Card'] = array(
 				'accepturl' => $accept_url,
 				'callbackurl' => $callback_url,
-				'cancelurl' => $cancel_url,
+				'cancelurl' => $accept_url,
 				'returnmethod' => ($url['scheme'] == 'https') ? 'POST' : 'GET'
 			);
 
