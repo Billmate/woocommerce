@@ -570,7 +570,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		$orderValues['Card'] = array(
 			'accepturl' => $accept_url,
 			'callbackurl' => $callback_url,
-			'cancelurl' => $cancel_url,
+			'cancelurl' => $accept_url,
 			'3dsecure' => ($this->do_3dsecure != 'NO') ? 1 : 0,
 			'promptname' => ($this->prompt_name_entry == 'YES') ? 1 : 0,
 			'recurringnr' => $billmateToken,

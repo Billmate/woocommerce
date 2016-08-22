@@ -475,7 +475,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		$orderValues['Card'] = array(
 			'accepturl' => $accept_url,
 			'callbackurl' => $callback_url,
-			'cancelurl' => $cancel_url,
+			'cancelurl' => $accept_url,
             'returnmethod' => ($url['scheme'] == 'https') ? 'POST' : 'GET'
 		);
 
