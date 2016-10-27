@@ -366,8 +366,9 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 			?>
 			<p>
 		    <a class="button" href="<?php echo admin_url('admin.php?'.$_SERVER['QUERY_STRING'].'&billmatePclassListener=1');?>"><?php _e('Update Paymentplans', 'billmate'); ?> </a>
+				<a class="button" href="<?php echo admin_url('admin.php?'.$_SERVER['QUERY_STRING'].'&resetPclasses=1');?>"><?php _e('Clear Paymentplans', 'billmate'); ?> </a>
 
-		    </p>
+			</p>
     	<table class="form-table">
     	<?php
     		// Generate the HTML For the settings form.
@@ -528,7 +529,12 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 
  		global $woocommerce;
 			register_setting('wc_gateway_billmate_partpayment','pclasses');
+
  		if (isset($_GET['billmatePclassListener']) && $_GET['billmatePclassListener'] == '1'):
+			if(isset($_GET['resetPclasses']) && $_GET['resetPclasses'] == '1'):
+				set_option('wc_gateway_billmate_partpayment_pclasses',false);
+			endif;
+
 
 			// Test mode or Live mode
 			if ( $this->testmode == 'yes' ):

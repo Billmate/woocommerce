@@ -609,7 +609,7 @@ parse_str($_POST['post_data'], $datatemp);
 		$lastArr  = explode(' ', $_POST['billing_first_name']);
 
 		$usership = $_POST['billing_first_name'].' '.$_POST['billing_last_name'].' '.$_POST['billing_company'];
-		$userbill = $_POST['shipping_first_name'].' '.$_POST['shipping_last_name'].' '.$_POST['shipping_company'];
+		$userbill = (isset($_POST['shipping_first_name']) && isset($_POST['shipping_last_name']) && isset($_POST['shipping_company'])) ? $_POST['shipping_first_name'].' '.$_POST['shipping_last_name'].' '.$_POST['shipping_company'] : $usership;
 
 		if( strlen( $addr['firstname'] )) {
 			$name = $addr['firstname'];
@@ -630,14 +630,17 @@ parse_str($_POST['post_data'], $datatemp);
 		                      !isEqual($addr['zip'], $_POST['billing_postcode']) ||
 		                      !isEqual($addr['city'], $_POST['billing_city']) ||
 		                      !isEqual(strtoupper($addr['country']), strtoupper($_POST['billing_country']));
+		if(isset($_POST['shipping_address_1']) && isset($_POST['shipping_postcode']) && isset($_POST['shipping_city']) && isset($_POST['shipping_country'])) {
+			$shippingAndBilling = !isEqual($usership, $userbill) ||
+				!isEqual($_POST['billing_address_1'], $_POST['shipping_address_1']) ||
+				!isEqual($_POST['billing_postcode'], $_POST['shipping_postcode']) ||
+				!isEqual($_POST['billing_city'], $_POST['shipping_city']) ||
+				!isEqual($_POST['billing_country'], $_POST['shipping_country']);
 
-		$shippingAndBilling=  !isEqual($usership,$userbill ) ||
-		                      !isEqual($_POST['billing_address_1'], $_POST['shipping_address_1'] ) ||
-		                      !isEqual($_POST['billing_postcode'], $_POST['shipping_postcode']) ||
-		                      !isEqual($_POST['billing_city'], $_POST['shipping_city']) ||
-		                      !isEqual($_POST['billing_country'], $_POST['shipping_country']);
-		
-		$shippingAndBilling = (isset($_POST['ship_to_different_address']) && $_POST['ship_to_different_address'] == 1) ? $shippingAndBilling : false;
+			$shippingAndBilling = (isset($_POST['ship_to_different_address']) && $_POST['ship_to_different_address'] == 1) ? $shippingAndBilling : false;
+		} else {
+			$shippingAndBilling = false;
+		}
 
 		global $woocommerce;
 
@@ -1029,8 +1032,7 @@ parse_str($_POST['post_data'], $datatemp);
 			)
 		);
 		// Shipping address
-		if ( $order->get_shipping_method() == '' ) {
-
+		if ( $order->get_shipping_method() == '' || $billmate_shipping_address == '') {
 			$email = $order->billing_email;
 			$telno = ''; //We skip the normal land line phone, only one is needed.
 			$cellno = $order->billing_phone;
