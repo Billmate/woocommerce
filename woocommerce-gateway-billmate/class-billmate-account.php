@@ -532,7 +532,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 
  		if (isset($_GET['billmatePclassListener']) && $_GET['billmatePclassListener'] == '1'):
 			if(isset($_GET['resetPclasses']) && $_GET['resetPclasses'] == '1'):
-				set_option('wc_gateway_billmate_partpayment_pclasses',false);
+				update_option('wc_gateway_billmate_partpayment_pclasses',false);
 			endif;
 
 
