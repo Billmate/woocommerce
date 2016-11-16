@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Billmate Woocommerce plugin\n"
 "POT-Creation-Date: 2016-01-25 11:23+0100\n"
-"PO-Revision-Date: 2016-02-16 10:56+0100\n"
+"PO-Revision-Date: 2016-02-17 10:56+0100\n"
 "Last-Translator: \n"
 "Language-Team: Boxedsolutions <jesper@boxedsolutions.se>\n"
 "Language: sv_SE\n"
@@ -83,6 +83,14 @@ msgstr ""
 #: ../class-billmate-cardpay.php:314 ../class-billmate-invoice.php:200
 msgid "Upper threshold"
 msgstr "Högsta belopp"
+
+#: ../class-billmate-cardpay.php:135
+msgid "The card payment has been canceled before it was processed. Please try again or choose a different payment method."
+msgstr "Kortköpet avbröts innan det fullföljdes. Var vänlig prova igen eller välj ett annat betalalternativ."
+
+#: ../class-billmate-cardpay.php:136
+msgid "Unfortunately your card payment was not processed with the provided card details. Please try again or choose another payment method."
+msgstr "Dessvärre gick det inte att genomföra kortköpet med de uppgifter ni tillhandahållit. Var vänlig försök igen eller välj ett annat betalsätt."
 
 #: ../class-billmate-account.php:215
 msgid ""
