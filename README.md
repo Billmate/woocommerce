@@ -2,7 +2,10 @@
 By Billmate AB - [https://billmate.se](https://billmate.se/ "billmate.se")
 Original code created by Niklas Högefjord - http://krokedil.com/
 
-Documentation with instructions on how to setup the plugin can be found at http://billmate.se/plugins/manual/Installation_Manual_Woocommerce_Billmate.pdf
+## Documentation
+[Installation manual in English](http://billmate.se/plugins/manual/Installation_Manual_Woocommerce_Billmate.pdf)
+
+[Installation manual in Swedish](http://billmate.se/plugins/manual/Installationsmanual_Woocommerce_Billmate.pdf)
 
 ##Description
 Billmate Gateway is a plugin that extends WooCommerce, allowing your customers to get their products first and pay by invoice to Billmate later (https://www.billmate.se/). This plugin utilizes Billmate Invoice, Billmate Card, Billmate Bank and Billmate Part Payment (Standard Integration type).
