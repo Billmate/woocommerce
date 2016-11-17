@@ -117,6 +117,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 	function check_ipn_response(){
 		global $woocommerce;
 		//header( 'HTTP/1.1 200 OK' );
+        $checkoutMessageCancel = __('Unfortunately your bank payment was not processed with the provided bank details. Please try again or choose another payment method.', 'billmate');
 		if( !empty($_GET['payment']) && $_GET['payment'] == 'success' ) {
 			if( empty( $_POST ) ){
 				$_POST = $_GET;
@@ -188,10 +189,9 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 				wp_safe_redirect($redirect);
 				exit;
 			}
-			if($cancel_url_hit){
-				wc_bm_errors('Couldnt process payment for your order, try again or select other payment option');
-				wp_safe_redirect(add_query_arg('key', $order->order_key,
-					add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_checkout_page_id')))));
+			elseif($cancel_url_hit){
+				wc_bm_errors($checkoutMessageCancel);
+				wp_safe_redirect($woocommerce->cart->get_checkout_url());
 				exit;
 
 			}
@@ -202,7 +202,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		set_transient('billmate_bankpay_order_id_'.$order_id,true,3600);
 		if(isset($data['code']) || isset($data['error']) || ($cancel_url_hit) || $data['status'] == 'Failed'){
 			if($_POST['error_message'] == 'Invalid credit bank number') {
-				$error_message = 'Tyvärr kunde inte din betalning genomföras';
+				$error_message = $checkoutMessageCancel;
 			} else {
 				$error_message = $data['message'];
 			}
@@ -239,7 +239,8 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			}
 			if($data['status'] == 'Failed'){
 				$order->cancel_order('Failed payment');
-				if($accept_url_hit) {
+				if($cancel_url_hit) {
+                    wc_bm_errors($checkoutMessageCancel);
 					wp_safe_redirect($order->get_cancel_order_url());
 					exit;
 				}
@@ -248,13 +249,20 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			}
 			if($data['status'] == 'Cancelled'){
 				$order->cancel_order('Cancelled Order');
-				if($accept_url_hit) {
+				if($cancel_url_hit) {
+                    wc_bm_errors($checkoutMessageCancel);
 					wp_safe_redirect($order->get_cancel_order_url());
 					exit;
 				}
 				else
 					wp_die('OK','ok',array('response' => 200));
 			}
+            if($cancel_url_hit) {
+                /* In case of cancel and we not received cancel or failed status */
+                wc_bm_errors($checkoutMessageCancel);
+                wp_safe_redirect($woocommerce->cart->get_checkout_url());
+                exit;
+            }
 			if( $accept_url_hit ){
 				$redirect = '';
 				$woocommerce->cart->empty_cart();

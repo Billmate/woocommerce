@@ -92,6 +92,10 @@ msgstr "Kortköpet avbröts innan det fullföljdes. Var vänlig prova igen eller
 msgid "Unfortunately your card payment was not processed with the provided card details. Please try again or choose another payment method."
 msgstr "Dessvärre gick det inte att genomföra kortköpet med de uppgifter ni tillhandahållit. Var vänlig försök igen eller välj ett annat betalsätt."
 
+#: ../class-billmate-bankpay.php:120
+msgid "Unfortunately your bank payment was not processed with the provided bank details. Please try again or choose another payment method."
+msgstr "Dessvärre gick det inte att genomföra köpet med de uppgifter ni tillhandahållit. Var vänlig försök igen eller välj ett annat betalsätt."
+
 #: ../class-billmate-account.php:215
 msgid ""
 "Disable Billmate Part Payment if Cart Total is higher than the specified "
