@@ -306,7 +306,10 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
     	?>
     	<h3><?php _e('Billmate Part Payment', 'billmate'); ?></h3>
 	    	<p><?php _e('With Billmate your customers can pay by partpayment. Billmate works by adding extra personal information fields and then sending the details to Billmate for verification.', 'billmate'); ?></p>
-
+            <p>
+                <a href="https://billmate.se/plugins/manual/Installationsmanual_Woocommerce_Billmate.pdf" target="_blank">Installationsmanual Billmate Modul ( Manual Svenska )</a><br />
+                <a href="http://billmate.se/plugins/manual/Installation_Manual_Woocommerce_Billmate.pdf" target="_blank">Installation Manual Billmate ( Manual English )</a>
+            </p>
 
 		    <?php
 
