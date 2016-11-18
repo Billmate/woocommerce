@@ -306,7 +306,10 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
     	?>
     	<h3><?php _e('Billmate Part Payment', 'billmate'); ?></h3>
 	    	<p><?php _e('With Billmate your customers can pay by partpayment. Billmate works by adding extra personal information fields and then sending the details to Billmate for verification.', 'billmate'); ?></p>
-
+            <p>
+                <a href="https://billmate.se/plugins/manual/Installationsmanual_Woocommerce_Billmate.pdf" target="_blank">Installationsmanual Billmate Modul ( Manual Svenska )</a><br />
+                <a href="http://billmate.se/plugins/manual/Installation_Manual_Woocommerce_Billmate.pdf" target="_blank">Installation Manual Billmate ( Manual English )</a>
+            </p>
 
 		    <?php
 
@@ -366,8 +369,9 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 			?>
 			<p>
 		    <a class="button" href="<?php echo admin_url('admin.php?'.$_SERVER['QUERY_STRING'].'&billmatePclassListener=1');?>"><?php _e('Update Paymentplans', 'billmate'); ?> </a>
+				<a class="button" href="<?php echo admin_url('admin.php?'.$_SERVER['QUERY_STRING'].'&billmatePclassListener=1&resetPclasses=1');?>"><?php _e('Clear Paymentplans', 'billmate'); ?> </a>
 
-		    </p>
+			</p>
     	<table class="form-table">
     	<?php
     		// Generate the HTML For the settings form.
@@ -528,7 +532,12 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 
  		global $woocommerce;
 			register_setting('wc_gateway_billmate_partpayment','pclasses');
+
  		if (isset($_GET['billmatePclassListener']) && $_GET['billmatePclassListener'] == '1'):
+			if(isset($_GET['resetPclasses']) && $_GET['resetPclasses'] == '1'):
+				update_option('wc_gateway_billmate_partpayment_pclasses',false);
+			endif;
+
 
 			// Test mode or Live mode
 			if ( $this->testmode == 'yes' ):
@@ -861,7 +870,7 @@ parse_str($_POST['post_data'], $datatemp);
 		<div class="clear"></div>
 			<p class="form-row">
 				<input type="checkbox" class="input-checkbox" checked="checked" value="yes" name="valid_email_it_is" id="valid_email_it_is" style="float:left;margin-top:6px" />
-				<label><?php echo sprintf(__('My e-mail%s is correct och and may be used for billing. I confirm the ', 'billmate'), (strlen($datatemp['billing_email']) > 0) ? ', '.$datatemp['billing_email'].',' : ' '); ?><a href="https://billmate.se/billmate/?cmd=villkor_delbetalning" onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=650');return false;"><?php echo __('terms of partpayment','billmate'); ?></a> <?php echo __('and accept the liability.','billmate') ?></label>
+				<label><?php echo sprintf(__('My e-mail%s is correct och and may be used for billing. I confirm the ', 'billmate'), (strlen($datatemp['billing_email']) > 0) ? ', '.$datatemp['billing_email'].',' : ' '); ?><a class="billmateCheckoutTermLink" href="https://billmate.se/billmate/?cmd=villkor_delbetalning" onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=650');return false;"><?php echo __('terms of partpayment','billmate'); ?></a> <?php echo __('and accept the liability.','billmate') ?></label>
 			</p>
 
 			<?php if ( $this->shop_country == 'DE' && $this->de_consent_terms == 'yes' ) : ?>

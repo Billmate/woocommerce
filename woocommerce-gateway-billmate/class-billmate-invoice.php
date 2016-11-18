@@ -257,6 +257,10 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
     	<h3><?php _e('Billmate Invoice', 'billmate'); ?></h3>
 
 	    	<p><?php _e('With Billmate your customers can pay by invoice. Billmate works by adding extra personal information fields and then sending the details to Billmate for verification.','billmate'); ?></p>
+            <p>
+                <a href="https://billmate.se/plugins/manual/Installationsmanual_Woocommerce_Billmate.pdf" target="_blank">Installationsmanual Billmate Modul ( Manual Svenska )</a><br />
+                <a href="http://billmate.se/plugins/manual/Installation_Manual_Woocommerce_Billmate.pdf" target="_blank">Installation Manual Billmate ( Manual English )</a>
+            </p>
 			<?php if(isset($this->invoice_fee_id) && $this->invoice_fee_id != ''): ?>
 
 			<i class="ui-icon ui-icon-info"></i><div><?php printf(__('You may inactivate or remove the invoice fee product with id %s','billmate'),$this->invoice_fee_id); ?></div>
@@ -522,7 +526,7 @@ parse_str($_POST['post_data'], $datatemp);
 		<div class="clear"></div>
 			<p class="form-row">
 				<input type="checkbox" class="input-checkbox" checked="checked" value="yes" name="valid_email_it_is_invoice" id="valid_email_it_is_invoice" style="float:left;margin-top:6px" />
-				<label><?php echo sprintf(__('My e-mail%s is correct och and may be used for billing. I confirm the ', 'billmate'), (strlen($datatemp['billing_email']) > 0) ? ', '.$datatemp['billing_email'].',' : ' '); ?><a href="https://billmate.se/billmate/?cmd=villkor" onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=650');return false;"><?php echo __('terms of partpayment','billmate'); ?></a> <?php echo __('and accept the liability.','billmate') ?></label>
+				<label><?php echo sprintf(__('My e-mail%s is correct och and may be used for billing. I confirm the ', 'billmate'), (strlen($datatemp['billing_email']) > 0) ? ', '.$datatemp['billing_email'].',' : ' '); ?><a class="billmateCheckoutTermLink" href="https://billmate.se/billmate/?cmd=villkor" onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=650');return false;"><?php echo __('terms of partpayment','billmate'); ?></a> <?php echo __('and accept the liability.','billmate') ?></label>
 			</p>
 		<div class="clear"></div>
 
@@ -609,7 +613,7 @@ parse_str($_POST['post_data'], $datatemp);
 		$lastArr  = explode(' ', $_POST['billing_first_name']);
 
 		$usership = $_POST['billing_first_name'].' '.$_POST['billing_last_name'].' '.$_POST['billing_company'];
-		$userbill = $_POST['shipping_first_name'].' '.$_POST['shipping_last_name'].' '.$_POST['shipping_company'];
+		$userbill = (isset($_POST['shipping_first_name']) && isset($_POST['shipping_last_name']) && isset($_POST['shipping_company'])) ? $_POST['shipping_first_name'].' '.$_POST['shipping_last_name'].' '.$_POST['shipping_company'] : $usership;
 
 		if( strlen( $addr['firstname'] )) {
 			$name = $addr['firstname'];
@@ -630,14 +634,17 @@ parse_str($_POST['post_data'], $datatemp);
 		                      !isEqual($addr['zip'], $_POST['billing_postcode']) ||
 		                      !isEqual($addr['city'], $_POST['billing_city']) ||
 		                      !isEqual(strtoupper($addr['country']), strtoupper($_POST['billing_country']));
+		if(isset($_POST['shipping_address_1']) && isset($_POST['shipping_postcode']) && isset($_POST['shipping_city']) && isset($_POST['shipping_country'])) {
+			$shippingAndBilling = !isEqual($usership, $userbill) ||
+				!isEqual($_POST['billing_address_1'], $_POST['shipping_address_1']) ||
+				!isEqual($_POST['billing_postcode'], $_POST['shipping_postcode']) ||
+				!isEqual($_POST['billing_city'], $_POST['shipping_city']) ||
+				!isEqual($_POST['billing_country'], $_POST['shipping_country']);
 
-		$shippingAndBilling=  !isEqual($usership,$userbill ) ||
-		                      !isEqual($_POST['billing_address_1'], $_POST['shipping_address_1'] ) ||
-		                      !isEqual($_POST['billing_postcode'], $_POST['shipping_postcode']) ||
-		                      !isEqual($_POST['billing_city'], $_POST['shipping_city']) ||
-		                      !isEqual($_POST['billing_country'], $_POST['shipping_country']);
-		
-		$shippingAndBilling = (isset($_POST['ship_to_different_address']) && $_POST['ship_to_different_address'] == 1) ? $shippingAndBilling : false;
+			$shippingAndBilling = (isset($_POST['ship_to_different_address']) && $_POST['ship_to_different_address'] == 1) ? $shippingAndBilling : false;
+		} else {
+			$shippingAndBilling = false;
+		}
 
 		global $woocommerce;
 
@@ -1029,8 +1036,7 @@ parse_str($_POST['post_data'], $datatemp);
 			)
 		);
 		// Shipping address
-		if ( $order->get_shipping_method() == '' ) {
-
+		if ( $order->get_shipping_method() == '' || $billmate_shipping_address == '') {
 			$email = $order->billing_email;
 			$telno = ''; //We skip the normal land line phone, only one is needed.
 			$cellno = $order->billing_phone;

@@ -132,9 +132,11 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 	function check_ipn_response() {
 		global $woocommerce;
 		//header( 'HTTP/1.1 200 OK' );
+        $checkoutMessageCancel = __('The card payment has been canceled before it was processed. Please try again or choose a different payment method.','billmate');
+        $checkoutMessageFail = __('Unfortunately your card payment was not processed with the provided card details. Please try again or choose another payment method.','billmate');
 		$recurring = false;
 		$k = new Billmate($this->eid,$this->secret,true,$this->testmode,false);
-		if( !empty($_GET['payment']) ) {
+		if( !empty($_GET['payment']) && $_GET['payment'] == 'success' ) {
 			if(!empty($_GET['recurring']) && $_GET['recurring'] == 1){
 				$recurring = true;
 			}
@@ -147,6 +149,16 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 
 			$accept_url_hit = true;
 			$payment_note = 'Note: Payment Completed Accept Url.';
+		} elseif (!empty($_GET['payment']) && $_GET['payment'] == 'cancel'){
+			if( empty( $_POST ) ){
+				$_POST = $_GET;
+			}
+			$input = file_get_contents('php://input');
+			if(is_array($input))
+				$_POST = array_merge($_POST, $input);
+
+			$cancel_url_hit = true;
+			$payment_note = 'Note: Payment Cancelled.';
 		} else {
             $_POST = (is_array($_GET) && $_GET['data']) ? $_GET : file_get_contents("php://input");
             $accept_url_hit = false;
@@ -187,23 +199,42 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			if($accept_url_hit) {
 				wp_safe_redirect($redirect);
 				exit;
+			} elseif($cancel_url_hit) {
+				if(isset($data['status']) AND $data['status'] == 'Failed') {
+					wc_bm_errors($checkoutMessageFail);
+				} elseif(isset($data['status']) AND $data['status'] == 'Cancelled') {
+					wc_bm_errors($checkoutMessageCancel);
+				}
+				wp_safe_redirect($woocommerce->cart->get_checkout_url());
+				exit;
+
 			}
 			else
 				wp_die('OK','ok',array('response' => 200));
 		}
 		// Set Transient if not exists to prevent multiple callbacks
 		set_transient('billmate_cardpay_order_id_'.$order_id,true,3600);
-		if(isset($data['code']) || isset($data['error'])){
+		if(isset($data['code']) || isset($data['error']) || ($cancel_url_hit) || $data['status'] == 'Failed'){
 			if($data['error_message'] == 'Invalid credit bank number') {
-				$error_message = 'Tyvärr kunde inte din betalning genomföras';
+                $error_message = $checkoutMessageFail;
 			} else {
 				$error_message = $data['message'];
 			}
+
 			$order->add_order_note( __($error_message, 'billmate') );
 			wc_bm_errors($error_message);
 			if($accept_url_hit) {
 				wp_safe_redirect(add_query_arg('key', $order->order_key,
 						add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_checkout_page_id')))));
+				exit;
+				return false;
+			} elseif($cancel_url_hit){
+				if($data['status'] == 'Failed') {
+					wc_bm_errors($checkoutMessageFail);
+				} else {
+					wc_bm_errors($checkoutMessageCancel);
+				}
+				wp_safe_redirect($woocommerce->cart->get_checkout_url());
 				exit;
 				return false;
 			} else {
@@ -228,8 +259,9 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			}
 			if($data['status'] == 'Failed'){
 				$order->cancel_order('Failed payment');
-				if($accept_url_hit) {
-					wp_safe_redirect($order->get_cancel_order_url());
+				if($cancel_url_hit) {
+					wc_bm_errors($checkoutMessageFail);
+					wp_safe_redirect($woocommerce->cart->get_checkout_url());
 					exit;
 				}
 				else
@@ -237,8 +269,9 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			}
 			if($data['status'] == 'Cancelled'){
 				$order->cancel_order('Cancelled Order');
-				if($accept_url_hit) {
-					wp_safe_redirect($order->get_cancel_order_url());
+				if($cancel_url_hit) {
+					wc_bm_errors($checkoutMessageCancel);
+					wp_safe_redirect($woocommerce->cart->get_checkout_url());
 					exit;
 				}
 				else
@@ -379,7 +412,10 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
     	<h3><?php _e('Billmate Cardpay', 'billmate'); ?></h3>
 
 	    	<p><?php _e('With Billmate your customers can pay by cardpay. Billmate works by adding extra personal information fields and then sending the details to Billmate for verification.', 'billmate');?></p>
-
+            <p>
+                <a href="https://billmate.se/plugins/manual/Installationsmanual_Woocommerce_Billmate.pdf" target="_blank">Installationsmanual Billmate Modul ( Manual Svenska )</a><br />
+                <a href="http://billmate.se/plugins/manual/Installation_Manual_Woocommerce_Billmate.pdf" target="_blank">Installation Manual Billmate ( Manual English )</a>
+            </p>
 
     	<table class="form-table">
     	<?php
@@ -463,10 +499,11 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		$total = 0;
 		$totalTax = 0;
 		$prepareDiscount = array();
-		$cancel_url = html_entity_decode(get_site_url());
+		//$cancel_url = html_entity_decode(get_site_url());
 		$accept_url= trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Cardpay&payment=success&recurring=1';
 
 		$callback_url = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Cardpay&recurring=1';
+		$cancel_url = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Cardpay&payment=cancel';
 
 		$url = parse_url($accept_url);
 		$language = explode('_',get_locale());
@@ -734,10 +771,11 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 				$totalTax = 0;
 				$prepareDiscount = array();
 				$productTax = 0;
-				$cancel_url = html_entity_decode($woocommerce->cart->get_checkout_url());
+				//$cancel_url = html_entity_decode($woocommerce->cart->get_checkout_url());
 				$accept_url= trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Cardpay&payment=success&recurring=1';
 
 				$callback_url = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Cardpay&recurring=1';
+				$cancel_url = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Cardpay&payment=cancel';
 
 				$url = parse_url($accept_url);
 				$language = explode('_',get_locale());
@@ -1022,10 +1060,11 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 
 
 
-			$cancel_url = html_entity_decode($woocommerce->cart->get_checkout_url());
+			//$cancel_url = html_entity_decode($woocommerce->cart->get_checkout_url());
 			$accept_url= trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Cardpay&payment=success';
 
 			$callback_url = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Cardpay';
+			$cancel_url = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Cardpay&payment=cancel';
 
 			$url = parse_url($accept_url);
 

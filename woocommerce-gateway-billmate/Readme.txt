@@ -3,8 +3,8 @@ Contributors: Billmate
 Donate link:
 Tags: woocomerce, billmate, payments, cardpayments, invoice, partpayment, recurring, bankpayment
 Requires at least: 4.0
-Tested up to: 4.5.2
-Stable tag: 2.2.7
+Tested up to: 4.6.1
+Stable tag: 2.2.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -87,6 +87,13 @@ If you would like to use our logo on your site then choose following:
 
 
 == Changelog ==
+
+= 2.2.8 (2016-11-18) =
+* Fix - Get address support for IE8 IE9
+* Enhancement - Display message in checkout when cancel/fail cardpayment
+* Enhancement - Display message in checkout when cancel/fail bankpayment
+* Enhancement - Links to manual in settings
+* Enhancement - Button to reset Pclasses in settings
 
 = 2.2.7 (2016-08-05) =
 * Fix - Discount and VAT.

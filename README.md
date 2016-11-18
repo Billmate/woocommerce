@@ -2,7 +2,10 @@
 By Billmate AB - [https://billmate.se](https://billmate.se/ "billmate.se")
 Original code created by Niklas Högefjord - http://krokedil.com/
 
-Documentation with instructions on how to setup the plugin can be found at http://billmate.se/plugins/manual/Installation_Manual_Woocommerce_Billmate.pdf
+## Documentation
+[Installation manual in English](http://billmate.se/plugins/manual/Installation_Manual_Woocommerce_Billmate.pdf)
+
+[Installation manual in Swedish](http://billmate.se/plugins/manual/Installationsmanual_Woocommerce_Billmate.pdf)
 
 ##Description
 Billmate Gateway is a plugin that extends WooCommerce, allowing your customers to get their products first and pay by invoice to Billmate later (https://www.billmate.se/). This plugin utilizes Billmate Invoice, Billmate Card, Billmate Bank and Billmate Part Payment (Standard Integration type).
@@ -15,6 +18,14 @@ Billmate is a great payment alternative for merchants and customers in Sweden.
 ##Important note
 The invoice and part payment plugin only works if the currency is set to Swedish Krona (SEK) and the Base country is set to Sweden.
 
+## COMPATIBILITY WordPress versions
+4.5.4 - 4.6.1
+
+## COMPATIBILITY WooCommerce versions
+2.5.5 - 2.6.6
+
+## COMPATIBILITY WooCommerce checkout
+* WooCommerce default checkout 2.5.5 - 2.6.6
 
 ##Installation
 1. Download and unzip the latest release zip file.
@@ -54,6 +65,14 @@ Copy the code below for the size that fits your needs.
 Tested with [Browserstack](http://www.browserstack.com)
 
 ## Changelog
+
+### 2.2.8 (2016-11-18)
+* Fix - Get address support for IE8 IE9
+* Enhancement - Display message in checkout when cancel/fail cardpayment
+* Enhancement - Display message in checkout when cancel/fail bankpayment
+* Enhancement - Links to manual in settings
+* Enhancement - Button to reset Pclasses in settings
+
 
 ### 2.2.7 (2016-08-05)
 * Fix - Discount and VAT.
