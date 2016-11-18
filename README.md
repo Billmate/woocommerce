@@ -66,6 +66,14 @@ Tested with [Browserstack](http://www.browserstack.com)
 
 ## Changelog
 
+### 2.2.8 (2016-11-18)
+* Fix - Get address support for IE8 IE9
+* Enhancement - Display message in checkout when cancel/fail cardpayment
+* Enhancement - Display message in checkout when cancel/fail bankpayment
+* Enhancement - Links to manual in settings
+* Enhancement - Button to reset Pclasses in settings
+
+
 ### 2.2.7 (2016-08-05)
 * Fix - Discount and VAT.
 
