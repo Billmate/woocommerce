@@ -867,6 +867,14 @@ parse_str($_POST['post_data'], $datatemp);
 			//endif;
 		endforeach; endif;
 
+        /* Add additional fees that are not invoice fee to order API request as articles */
+        $orderFeesArticles = BillmateOrder::getOrderFeesAsOrderArticles();
+        $orderValues['Articles'] = array_merge($orderValues['Articles'], $orderFeesArticles);
+        foreach($orderFeesArticles AS $orderFeesArticle) {
+            $total += $orderFeesArticle['aprice'];
+            $totalTax += ($orderFeesArticle['aprice'] * ($orderFeesArticle['taxrate']/100));
+        }
+
 		// Discount
 		if ($order->order_discount>0) :
 
