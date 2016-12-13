@@ -6,7 +6,7 @@ Description: Receive payments on your WooCommerce store via Billmate. Invoice, p
 Version: 2.2.8
 Author: Billmate
 Text Domain: billmate
-Author URI: http://billmate.se
+Author URI: https://billmate.se
 Domain Path: /languages/
 */
 
