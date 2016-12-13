@@ -81,7 +81,7 @@ class BillmateCommon {
                     </p>
                     <div class="clear"></div>
                     <p class="form-row form-row-first">
-                        <input type="text" name="pno" label="12345678-1235" class="form-row-wide input-text" value="<?php echo isset($_SESSION['billmate_pno']) ? $_SESSION['billmate_pno'] : ''; ?>"/>
+                        <input type="text" autocomplete="off" name="pno" label="12345678-1235" class="form-row-wide input-text" value="<?php echo isset($_SESSION['billmate_pno']) ? $_SESSION['billmate_pno'] : ''; ?>"/>
                     </p>
                     <p class="form-row form-row-last">
                         <label></label>
