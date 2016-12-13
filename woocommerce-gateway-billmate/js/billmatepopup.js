@@ -97,6 +97,12 @@ function ModalPopupWindow() {
         document.getElementById("spanLoading").style.display = "none";
         ApplyBtnStyle();
 		ShowDivInCenter("divFrameParent");
+
+        if(matchMedia('(max-width: 800px)').matches){
+            this.ResizePopUp(370,250);
+        }else if(matchMedia('(min-width: 800px)').matches){
+            this.ResizePopUp(280,500);
+        }
     }
     this.ShowConfirmationMessage = function (message, height, width, title, onCloseCallBack, firstButtonText, onFirstButtonClick, secondButtonText, onSecondButtonClick) {
         this.ShowMessage(message, height, width, title);
@@ -173,7 +179,7 @@ function ShowMessage(content,wtitle){
 }
 AddEvent(window,'resize',function(){
 	if( popupshowed ){
-		if(matchMedia('(min-width: 500px) and (max-width: 800px)').matches){
+		if(matchMedia('(max-width: 800px)').matches){
 			modalWin.ResizePopUp(370,250);
 		}else if(matchMedia('(min-width: 800px)').matches){
 			modalWin.ResizePopUp(280,500);
