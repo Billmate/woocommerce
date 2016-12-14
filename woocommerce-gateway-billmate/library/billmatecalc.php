@@ -528,10 +528,8 @@ class BillmateCalc {
     }
 
     public static function getCheapestPClass($sum, $flags, $pclasses) {
-        if (!is_numeric ($sum)) {
-            throw new Exception(
-                'Error in ' . __METHOD__ . ': Argument sum is not numeric!');
-        }
+
+        $sum = (is_numeric($sum)) ? $sum : 0;
 
         if(!is_numeric ($flags) || !in_array ($flags,
                 array(BillmateFlags::CHECKOUT_PAGE, BillmateFlags::PRODUCT_PAGE))) {

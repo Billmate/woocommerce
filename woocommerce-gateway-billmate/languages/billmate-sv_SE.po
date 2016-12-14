@@ -1053,7 +1053,7 @@ msgstr ""
 #~ "billmate.se\" target=\"_blank\">Billmate</a>. Invoice, partpayment, "
 #~ "credit/debit card and direct bank transfers. Secure and 100% free plugin"
 #~ msgstr ""
-#~ "Ta betalt i din WooCommerce butik med <a href=\"http://www.billmate.se\" "
+#~ "Ta betalt i din WooCommerce butik med <a href=\"https://billmate.se\" "
 #~ "target=\"_blank\">Billmate</a>. Faktura, delbetalning, kredit/debit kort "
 #~ "och direkt bankbetalning. Säkert och 100% gratis plugin."
 

@@ -3,8 +3,8 @@ Contributors: Billmate
 Donate link:
 Tags: woocomerce, billmate, payments, cardpayments, invoice, partpayment, recurring, bankpayment
 Requires at least: 4.0
-Tested up to: 4.6.1
-Stable tag: 2.2.8
+Tested up to: 4.7
+Stable tag: 2.2.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ Billmate offers a complete paymentsolution to your webshop.
 
 == Description ==
 
-Billmate Gateway is a plugin that extends WooCommerce, allowing your customers to get their products first and pay by invoice to Billmate later (https://www.billmate.se/). This plugin utilizes Billmate Invoice, Billmate Card, Billmate Bank and Billmate Part Payment.
+Billmate Gateway is a plugin that extends WooCommerce, allowing your customers to get their products first and pay by invoice to Billmate later (https://billmate.se/). This plugin utilizes Billmate Invoice, Billmate Card, Billmate Bank and Billmate Part Payment.
 
 When the order is passed to Billmate a credit record of the customer is made. If the check turns out all right, Billmate creates an invoice in their system. After you (as the merchant) completes the order in WooCommerce, you need to log in to Billmate to approve/send the invoice.
 
@@ -20,7 +20,7 @@ All our plugins is tested with Browserstack - https://www.browserstack.com
 
 Billmate is a great payment alternative for merchants and customers in Sweden.
 
-If you have any questions please visit http://billmate.se/kontakt to make contact with us.
+If you have any questions please visit https://billmate.se/kontakt to make contact with us.
 
 
 == Installation ==
@@ -52,12 +52,12 @@ Before updating the plugin, please save your settings and make a backup of your 
 
 = How do I get started? =
 
-The first thing you have to do is to get an account at Billmate.se. Yo can create an account at http://billmate.se/anslut-webbshop/. Then you download the plugin and install it. If you like to make test purchases please contact Billmate, and we will help you.
+The first thing you have to do is to get an account at Billmate.se. Yo can create an account at https://billmate.se/anslut-webbshop/. Then you download the plugin and install it. If you like to make test purchases please contact Billmate, and we will help you.
 
 
 = How do I make contact with Billmate? =
 
-You can contact us by phone or e-mail. You can find phonenumbers and mailadresses at http://billmate.se/kontakt/
+You can contact us by phone or e-mail. You can find phonenumbers and mailadresses at https://billmate.se/kontakt/
 
 = Is there anything else I need before I can use Billmate plugin on my webstore? =
 
@@ -65,7 +65,7 @@ I depends on what payment methods you will use. If you use cardpayment you need 
 
 = How much does it cost to use Billmate? =
 
-We have different prices depending on what you choose. You can read more about it at http://billmate.se/priser
+We have different prices depending on what you choose. You can read more about it at https://billmate.se/priser
 
 = Can I use Wordfence or other Firewall plugin? =
 You need to make sure our callback IP, 54.194.217.63, is whitelisted  in Wordfence. Navigate to "Wordfence -> Options" and scroll down to "Other Options". Add our ip-number next to "Whitelisted IP addresses that bypass all rules" and it should go.
@@ -87,6 +87,11 @@ If you would like to use our logo on your site then choose following:
 
 
 == Changelog ==
+
+= 2.2.9 (2016-12-14) =
+* Fix - Adjust som styling in checkout for smaller devices
+* Enhancement - Add product option to order
+* Enhancement - Add additional fees to order as products
 
 = 2.2.8 (2016-11-18) =
 * Fix - Get address support for IE8 IE9

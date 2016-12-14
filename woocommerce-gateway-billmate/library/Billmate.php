@@ -13,7 +13,7 @@
  * @copyright 2013-2014 Billmate AB
  * @license Proprietary and fully owned by Billmate AB
  * @version 2.1.6
- * @link http://www.billmate.se
+ * @link https://billmate.se
  *
  * History:
  * 2.0 20140625 Yuksel Findik: Second Version

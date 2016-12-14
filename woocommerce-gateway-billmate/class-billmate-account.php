@@ -308,7 +308,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 	    	<p><?php _e('With Billmate your customers can pay by partpayment. Billmate works by adding extra personal information fields and then sending the details to Billmate for verification.', 'billmate'); ?></p>
             <p>
                 <a href="https://billmate.se/plugins/manual/Installationsmanual_Woocommerce_Billmate.pdf" target="_blank">Installationsmanual Billmate Modul ( Manual Svenska )</a><br />
-                <a href="http://billmate.se/plugins/manual/Installation_Manual_Woocommerce_Billmate.pdf" target="_blank">Installation Manual Billmate ( Manual English )</a>
+                <a href="https://billmate.se/plugins/manual/Installation_Manual_Woocommerce_Billmate.pdf" target="_blank">Installation Manual Billmate ( Manual English )</a>
             </p>
 
 		    <?php
@@ -1421,6 +1421,9 @@ parse_str($_POST['post_data'], $datatemp);
 			$_product = $order->get_product_from_item( $item );
 			if ($_product->exists() && $item['qty']) :
 
+                /* Formatting the product data that will be sent as api requests */
+                $billmateProduct = new BillmateProduct($_product);
+
 				// We manually calculate the tax percentage here
 				// is product taxable?
 				if ($_product->is_taxable())
@@ -1460,7 +1463,7 @@ parse_str($_POST['post_data'], $datatemp);
 				$orderValues['Articles'][] = array(
 					'quantity'   => (int)$item['qty'],
 					'artnr'    => $sku,
-					'title'    => $item['name'],
+					'title'    => $billmateProduct->getTitle(),
 					'aprice'    =>  ($discount) ? ($billmate_item_standard_price_without_tax) : ($priceExcl),
 					'taxrate'      => (int)$item_tax_percentage,
 					'discount' => ($discount) ? round((1 - ($billmate_item_price_including_tax/$billmate_item_standard_price)) * 100 ,0) : 0,
@@ -1477,6 +1480,14 @@ parse_str($_POST['post_data'], $datatemp);
 
 			endif;
 		endforeach; endif;
+
+        /* Add additional fees that are not invoice fee to order API request as articles */
+        $orderFeesArticles = BillmateOrder::getOrderFeesAsOrderArticles();
+        $orderValues['Articles'] = array_merge($orderValues['Articles'], $orderFeesArticles);
+        foreach($orderFeesArticles AS $orderFeesArticle) {
+            $total += $orderFeesArticle['aprice'];
+            $totalTax += ($orderFeesArticle['aprice'] * ($orderFeesArticle['taxrate']/100));
+        }
 
 		// Discount
 		if ($order->order_discount>0) :

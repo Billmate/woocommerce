@@ -74,12 +74,25 @@ class BillmateCommon {
     {
         if(get_option('billmate_common_getaddress') == 'active'){
             ?>
-            <p class="form-row">
-                <label for="pno"><?php echo __('Social Security Number / Corporate Registration Number','billmate'); ?></label>
-                <input type="text" name="pno" label="12345678-1235" class="form-row-wide input-text" style="width: 60%;" value="<?php echo isset($_SESSION['billmate_pno']) ? $_SESSION['billmate_pno'] : ''; ?>"/>
-                <button id="getaddress" class="'getaddress-button"><?php echo __('Get Address','billmate'); ?></button>
-            </p>
-            <div id="getaddresserr"></div>
+            <div class="col12-set">
+                <div class="col-1">
+                    <p class="form-row">
+                        <label for="pno"><?php echo __('Social Security Number / Corporate Registration Number','billmate'); ?></label>
+                    </p>
+                    <div class="clear"></div>
+                    <p class="form-row form-row-first">
+                        <input type="text" autocomplete="off" name="pno" label="12345678-1235" class="form-row-wide input-text" value="<?php echo isset($_SESSION['billmate_pno']) ? $_SESSION['billmate_pno'] : ''; ?>"/>
+                    </p>
+                    <p class="form-row form-row-last">
+                        <label></label>
+                        <button id="getaddress" class="'button getaddress-button"><?php echo __('Get Address','billmate'); ?></button>
+                    </p>
+
+                    <p class="form-row">
+                        <div id="getaddresserr"></div>
+                    </p>
+                </div>
+            </div>
             <div class="clear"></div>
             <script type="text/javascript">
                 var ajaxurl = '<?php echo admin_url('admin-ajax.php'); ?>';

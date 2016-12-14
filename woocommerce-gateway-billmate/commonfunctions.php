@@ -1,5 +1,5 @@
 <?php
-define('BILLPLUGIN_VERSION','2.2.8');
+define('BILLPLUGIN_VERSION','2.2.9');
 define('BILLMATE_CLIENT','PHP:Woocommerce:'.BILLPLUGIN_VERSION);
 define('BILLMATE_SERVER','2.1.9');
 
@@ -962,4 +962,58 @@ if(!class_exists('BillmateCountry')){
 			return array('country'=>$country,'language'=> $language, 'encoding' => $encoding,'currency' => $currency );
 		}
 	} //End BillmateCountry
+}
+
+
+if(!class_exists('BillmateOrder')){
+    class BillmateOrder {
+        public static function getOrderFeesAsOrderArticles() {
+            global $woocommerce;
+
+            /* Return additional fees that are not invoice fee as order article */
+            $billmateOrderArticles = array();
+
+            if ( version_compare( WOOCOMMERCE_VERSION, '2.0', '>' ) ) {
+                $fees = WC()->cart->get_fees();
+                foreach($fees as $fee){
+                    if(strtolower($fee->id) != strtolower(__('Invoice fee','billmate'))) {
+                        $tax = new WC_Tax();
+                        $invoicetax = $tax->get_rates($fee->tax_class);
+                        $rate = array_pop($invoicetax);
+                        $rate = $rate['rate'];
+
+                        $billmateOrderArticles[] = array(
+                            'quantity'   => 1,
+                            'artnr'    => $fee->id,
+                            'title'    => $fee->name,
+                            'aprice'    =>  ($fee->amount * 100),
+                            'taxrate'      => $rate,
+                            'discount' => 0,
+                            'withouttax' => ($fee->amount * 100)
+                        );
+                    }
+                }
+            }
+            return $billmateOrderArticles;
+        }
+    }
+}
+
+if(!class_exists('BillmateProduct')) {
+    /* Formatting the product data that will be sent as api requests */
+    class BillmateProduct {
+        private $product;
+
+        public function __construct($product) {
+            $this->product = $product;
+        }
+
+        public function getTitle() {
+            $name = $this->product->get_title();
+            if($this->product->is_type('variation')) {
+                $name .= ' - ' . $this->product->get_formatted_variation_attributes(true);
+            }
+            return $name;
+        }
+    }
 }

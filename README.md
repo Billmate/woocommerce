@@ -3,12 +3,12 @@ By Billmate AB - [https://billmate.se](https://billmate.se/ "billmate.se")
 Original code created by Niklas Högefjord - http://krokedil.com/
 
 ## Documentation
-[Installation manual in English](http://billmate.se/plugins/manual/Installation_Manual_Woocommerce_Billmate.pdf)
+[Installation manual in English](https://billmate.se/plugins/manual/Installation_Manual_Woocommerce_Billmate.pdf)
 
-[Installation manual in Swedish](http://billmate.se/plugins/manual/Installationsmanual_Woocommerce_Billmate.pdf)
+[Installation manual in Swedish](https://billmate.se/plugins/manual/Installationsmanual_Woocommerce_Billmate.pdf)
 
 ##Description
-Billmate Gateway is a plugin that extends WooCommerce, allowing your customers to get their products first and pay by invoice to Billmate later (https://www.billmate.se/). This plugin utilizes Billmate Invoice, Billmate Card, Billmate Bank and Billmate Part Payment (Standard Integration type).
+Billmate Gateway is a plugin that extends WooCommerce, allowing your customers to get their products first and pay by invoice to Billmate later (https://billmate.se/). This plugin utilizes Billmate Invoice, Billmate Card, Billmate Bank and Billmate Part Payment (Standard Integration type).
 
 When the order is passed to Billmate a credit record of the customer is made. If the check turns out all right, Billmate creates an invoice in their system. After you (as the merchant) completes the order in WooCommerce, you need to log in to Billmate to approve/send the invoice.
 
@@ -19,13 +19,13 @@ Billmate is a great payment alternative for merchants and customers in Sweden.
 The invoice and part payment plugin only works if the currency is set to Swedish Krona (SEK) and the Base country is set to Sweden.
 
 ## COMPATIBILITY WordPress versions
-4.5.4 - 4.6.1
+4.5.4 - 4.7
 
 ## COMPATIBILITY WooCommerce versions
-2.5.5 - 2.6.6
+2.5.5 - 2.6.9
 
 ## COMPATIBILITY WooCommerce checkout
-* WooCommerce default checkout 2.5.5 - 2.6.6
+* WooCommerce default checkout 2.5.5 - 2.6.9
 
 ##Installation
 1. Download and unzip the latest release zip file.
@@ -45,26 +45,31 @@ Copy the code below for the size that fits your needs.
 
 ###Large
 
-<a href="http://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_l.png" alt="Billmate Payment Gateway" /></a>
+<a href="https://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_l.png" alt="Billmate Payment Gateway" /></a>
 
-`<a href="http://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_l.png" alt="Billmate Payment Gateway" /></a>`
+`<a href="https://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_l.png" alt="Billmate Payment Gateway" /></a>`
 
 ###Medium
 
-<a href="http://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_m.png" alt="Billmate Payment Gateway" /></a>
+<a href="https://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_m.png" alt="Billmate Payment Gateway" /></a>
 
-`<a href="http://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_m.png" alt="Billmate Payment Gateway" /></a>`
+`<a href="https://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_m.png" alt="Billmate Payment Gateway" /></a>`
 
 ###Small
 
-<a href="http://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_s.png" alt="Billmate Payment Gateway" /></a>
+<a href="https://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_s.png" alt="Billmate Payment Gateway" /></a>
 
-`<a href="http://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_s.png" alt="Billmate Payment Gateway" /></a>`
+`<a href="https://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_s.png" alt="Billmate Payment Gateway" /></a>`
 
 ##Testing
 Tested with [Browserstack](http://www.browserstack.com)
 
 ## Changelog
+
+### 2.2.9 (2016-12-14)
+* Fix - Adjust som styling in checkout for smaller devices
+* Enhancement - Add product option to order
+* Enhancement - Add additional fees to order as products
 
 ### 2.2.8 (2016-11-18)
 * Fix - Get address support for IE8 IE9
