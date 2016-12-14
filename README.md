@@ -19,13 +19,13 @@ Billmate is a great payment alternative for merchants and customers in Sweden.
 The invoice and part payment plugin only works if the currency is set to Swedish Krona (SEK) and the Base country is set to Sweden.
 
 ## COMPATIBILITY WordPress versions
-4.5.4 - 4.6.1
+4.5.4 - 4.7
 
 ## COMPATIBILITY WooCommerce versions
-2.5.5 - 2.6.6
+2.5.5 - 2.6.9
 
 ## COMPATIBILITY WooCommerce checkout
-* WooCommerce default checkout 2.5.5 - 2.6.6
+* WooCommerce default checkout 2.5.5 - 2.6.9
 
 ##Installation
 1. Download and unzip the latest release zip file.
