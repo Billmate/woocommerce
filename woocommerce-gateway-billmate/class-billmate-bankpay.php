@@ -596,6 +596,9 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			$_product = $order->get_product_from_item( $item );
 			if ($_product->exists() && $item['qty']) :
 
+                /* Formatting the product data that will be sent as api requests */
+                $billmateProduct = new BillmateProduct($_product);
+
 				// is product taxable?
 				if ($_product->is_taxable())
 				{
@@ -635,7 +638,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 				$orderValues['Articles'][] = array(
 					'quantity'   => (int)$item['qty'],
 					'artnr'    => $sku,
-					'title'    => $item['name'],
+					'title'    => $billmateProduct->getTitle(),
 					'aprice'    =>  ($discount) ? ($billmate_item_standard_price_without_tax) : ($priceExcl),
 					'taxrate'      => (int)$item_tax_percentage,
 					'discount' => ($discount) ? round((1 - ($billmate_item_price_including_tax/$billmate_item_standard_price)) * 100 ,0) : 0,

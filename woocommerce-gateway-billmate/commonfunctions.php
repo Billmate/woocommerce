@@ -998,3 +998,22 @@ if(!class_exists('BillmateOrder')){
         }
     }
 }
+
+if(!class_exists('BillmateProduct')) {
+    /* Formatting the product data that will be sent as api requests */
+    class BillmateProduct {
+        private $product;
+
+        public function __construct($product) {
+            $this->product = $product;
+        }
+
+        public function getTitle() {
+            $name = $this->product->get_title();
+            if($this->product->is_type('variation')) {
+                $name .= ' - ' . $this->product->get_formatted_variation_attributes(true);
+            }
+            return $name;
+        }
+    }
+}
