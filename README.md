@@ -66,6 +66,11 @@ Tested with [Browserstack](http://www.browserstack.com)
 
 ## Changelog
 
+### 2.2.9 (2016-12-14)
+* Fix - Adjust som styling in checkout for smaller devices
+* Enhancement - Add product option to order
+* Enhancement - Add additional fees to order as products
+
 ### 2.2.8 (2016-11-18)
 * Fix - Get address support for IE8 IE9
 * Enhancement - Display message in checkout when cancel/fail cardpayment

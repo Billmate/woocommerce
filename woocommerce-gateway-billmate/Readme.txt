@@ -4,7 +4,7 @@ Donate link:
 Tags: woocomerce, billmate, payments, cardpayments, invoice, partpayment, recurring, bankpayment
 Requires at least: 4.0
 Tested up to: 4.6.1
-Stable tag: 2.2.8
+Stable tag: 2.2.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -87,6 +87,11 @@ If you would like to use our logo on your site then choose following:
 
 
 == Changelog ==
+
+= 2.2.9 (2016-12-14) =
+* Fix - Adjust som styling in checkout for smaller devices
+* Enhancement - Add product option to order
+* Enhancement - Add additional fees to order as products
 
 = 2.2.8 (2016-11-18) =
 * Fix - Get address support for IE8 IE9
