@@ -66,6 +66,9 @@ Tested with [Browserstack](http://www.browserstack.com)
 
 ## Changelog
 
+### 2.2.10 (2016-12-21)
+* Fix - Abort payment, then do a new with same method.
+
 ### 2.2.9 (2016-12-14)
 * Fix - Adjust som styling in checkout for smaller devices
 * Enhancement - Add product option to order

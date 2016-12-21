@@ -117,6 +117,8 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 	function check_ipn_response(){
 		global $woocommerce;
 		//header( 'HTTP/1.1 200 OK' );
+		$accept_url_hit = false;
+		$cancel_url_hit = false;
         $checkoutMessageCancel = __('Unfortunately your bank payment was not processed with the provided bank details. Please try again or choose another payment method.', 'billmate');
 		if( !empty($_GET['payment']) && $_GET['payment'] == 'success' ) {
 			if( empty( $_POST ) ){
@@ -186,11 +188,14 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 				$redirect = $this->get_return_url($order);
 			}
 			if($accept_url_hit) {
+				
 				wp_safe_redirect($redirect);
 				exit;
 			}
 			elseif($cancel_url_hit){
 				wc_bm_errors($checkoutMessageCancel);
+				delete_transient('billmate_bankpay_order_id_'.$order_id);
+
 				wp_safe_redirect($woocommerce->cart->get_checkout_url());
 				exit;
 
@@ -201,14 +206,16 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		// Set Transient if not exists to prevent multiple callbacks
 		set_transient('billmate_bankpay_order_id_'.$order_id,true,3600);
 		if(isset($data['code']) || isset($data['error']) || ($cancel_url_hit) || $data['status'] == 'Failed'){
-			if($_POST['error_message'] == 'Invalid credit bank number') {
+			if($_POST['status'] == 'Failed') {
 				$error_message = $checkoutMessageCancel;
 			} else {
-				$error_message = $data['message'];
+				$error_message = $checkoutMessageCancel;
 			}
 			$order->add_order_note( __($error_message, 'billmate') );
-			wc_bm_errors($error_message);
+			
 			if($accept_url_hit) {
+				delete_transient('billmate_bankpay_order_id_'.$order_id);
+
 				wp_safe_redirect(add_query_arg('key', $order->order_key,
 						add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_checkout_page_id')))));
 				exit;
@@ -222,7 +229,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		} else {
 			$order_status_terms = wp_get_object_terms( $order_id, 'shop_order_status', array('fields' => 'slugs') ); $order_status = $order_status_terms[0];
 		}
-		if( in_array($order_status, array('pending')) ){
+		if( in_array($order_status, array('pending','cancelled')) ){
 			if($data['status'] == 'Paid') {
 				add_post_meta($order->id,'billmate_invoice_id',$data['number']);
 				$order->add_order_note(sprintf(__('Billmate Invoice id: %s','billmate'),$data['number']));
@@ -239,6 +246,8 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			}
 			if($data['status'] == 'Failed'){
 				$order->cancel_order('Failed payment');
+				delete_transient('billmate_bankpay_order_id_'.$order_id);
+
 				if($cancel_url_hit) {
                     wc_bm_errors($checkoutMessageCancel);
 					wp_safe_redirect($order->get_cancel_order_url());
@@ -249,6 +258,8 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			}
 			if($data['status'] == 'Cancelled'){
 				$order->cancel_order('Cancelled Order');
+				delete_transient('billmate_bankpay_order_id_'.$order_id);
+
 				if($cancel_url_hit) {
                     wc_bm_errors($checkoutMessageCancel);
 					wp_safe_redirect($order->get_cancel_order_url());
@@ -260,7 +271,9 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
             if($cancel_url_hit) {
                 /* In case of cancel and we not received cancel or failed status */
                 wc_bm_errors($checkoutMessageCancel);
-                wp_safe_redirect($woocommerce->cart->get_checkout_url());
+				delete_transient('billmate_bankpay_order_id_'.$order_id);
+
+				wp_safe_redirect($woocommerce->cart->get_checkout_url());
                 exit;
             }
 			if( $accept_url_hit ){
