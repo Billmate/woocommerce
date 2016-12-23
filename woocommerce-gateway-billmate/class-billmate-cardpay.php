@@ -135,6 +135,8 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
         $checkoutMessageCancel = __('The card payment has been canceled before it was processed. Please try again or choose a different payment method.','billmate');
         $checkoutMessageFail = __('Unfortunately your card payment was not processed with the provided card details. Please try again or choose another payment method.','billmate');
 		$recurring = false;
+		$cancel_url_hit = false;
+		$accept_url_hit = false;
 		$k = new Billmate($this->eid,$this->secret,true,$this->testmode,false);
 		if( !empty($_GET['payment']) && $_GET['payment'] == 'success' ) {
 			if(!empty($_GET['recurring']) && $_GET['recurring'] == 1){
@@ -160,7 +162,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			$cancel_url_hit = true;
 			$payment_note = 'Note: Payment Cancelled.';
 		} else {
-            $_POST = (is_array($_GET) && $_GET['data']) ? $_GET : file_get_contents("php://input");
+            $_POST = (is_array($_GET) && isset($_GET['data'])) ? $_GET : file_get_contents("php://input");
             $accept_url_hit = false;
 			$payment_note = 'Note: Payment Completed (callback success).';
 		}
@@ -205,6 +207,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 				} elseif(isset($data['status']) AND $data['status'] == 'Cancelled') {
 					wc_bm_errors($checkoutMessageCancel);
 				}
+
 				wp_safe_redirect($woocommerce->cart->get_checkout_url());
 				exit;
 
@@ -215,15 +218,17 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		// Set Transient if not exists to prevent multiple callbacks
 		set_transient('billmate_cardpay_order_id_'.$order_id,true,3600);
 		if(isset($data['code']) || isset($data['error']) || ($cancel_url_hit) || $data['status'] == 'Failed'){
-			if($data['error_message'] == 'Invalid credit bank number') {
+			if($data['status'] == 'Failed') {
                 $error_message = $checkoutMessageFail;
 			} else {
-				$error_message = $data['message'];
+				$error_message = $checkoutMessageCancel;
 			}
 
 			$order->add_order_note( __($error_message, 'billmate') );
-			wc_bm_errors($error_message);
+
 			if($accept_url_hit) {
+				delete_transient('billmate_cardpay_order_id_'.$order_id);
+
 				wp_safe_redirect(add_query_arg('key', $order->order_key,
 						add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_checkout_page_id')))));
 				exit;
@@ -234,6 +239,8 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 				} else {
 					wc_bm_errors($checkoutMessageCancel);
 				}
+				delete_transient('billmate_cardpay_order_id_'.$order_id);
+
 				wp_safe_redirect($woocommerce->cart->get_checkout_url());
 				exit;
 				return false;
@@ -246,7 +253,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		} else {
 			$order_status_terms = wp_get_object_terms( $order_id, 'shop_order_status', array('fields' => 'slugs') ); $order_status = $order_status_terms[0];
 		}
-		if( in_array($order_status, array('pending')) ){
+		if( in_array($order_status, array('pending','cancelled')) ){
 			//$order->update_status('completed', $payment_note);
 			if($data['status'] == 'Paid') {
 				add_post_meta($order->id,'billmate_invoice_id',$data['number']);
@@ -260,6 +267,8 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			if($data['status'] == 'Failed'){
 				$order->cancel_order('Failed payment');
 				if($cancel_url_hit) {
+					delete_transient('billmate_cardpay_order_id_'.$order_id);
+
 					wc_bm_errors($checkoutMessageFail);
 					wp_safe_redirect($woocommerce->cart->get_checkout_url());
 					exit;
@@ -271,6 +280,8 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 				$order->cancel_order('Cancelled Order');
 				if($cancel_url_hit) {
 					wc_bm_errors($checkoutMessageCancel);
+					delete_transient('billmate_cardpay_order_id_'.$order_id);
+
 					wp_safe_redirect($woocommerce->cart->get_checkout_url());
 					exit;
 				}
