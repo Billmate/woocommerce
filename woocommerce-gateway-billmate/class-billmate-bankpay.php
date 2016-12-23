@@ -121,31 +121,34 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		$cancel_url_hit = false;
         $checkoutMessageCancel = __('Unfortunately your bank payment was not processed with the provided bank details. Please try again or choose another payment method.', 'billmate');
 		if( !empty($_GET['payment']) && $_GET['payment'] == 'success' ) {
-			if( empty( $_POST ) ){
+
+			if(is_array($_GET) && isset($_GET['data']))
 				$_POST = $_GET;
-			}
-			$input = file_get_contents('php://input');
-			if(is_array($input))
-				$_POST = array_merge($_POST, $input);
+
+			if(!isset($_POST['data']))
+				$_POST = file_get_contents('php://input');
+
 
 			$accept_url_hit = true;
 			$payment_note = 'Note: Payment Completed Accept Url.';
 		} else if(!empty($_GET['payment']) && $_GET['payment'] == 'cancel' ){
-			if( empty( $_POST ) ){
+
+			if(is_array($_GET) && isset($_GET['data']))
 				$_POST = $_GET;
-			}
-			$input = file_get_contents('php://input');
-			if(is_array($input))
-				$_POST = array_merge($_POST, $input);
+
+			if(!isset($_POST['data']))
+				$_POST = file_get_contents('php://input');
 
 			$cancel_url_hit = true;
 			$payment_note = 'Note: Payment Cancelled.';
 		} else {
+			error_log('$_GET'.print_r($_GET,true));
 			$_POST = (is_array($_GET) && isset($_GET['data'])) ? $_GET : file_get_contents("php://input");
 			$accept_url_hit = false;
 			$payment_note = 'Note: Payment Completed (callback success).';
 		}
 		$k = new Billmate($this->eid,$this->secret,true,$this->testmode,false);
+
 		if(is_array($_POST))
 		{
 			foreach($_POST as $key => $value)
@@ -165,23 +168,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		$order = new WC_Order( $order_id );
 		// Check if transient is set(Success url is processing)
 		if(false !== get_transient('billmate_bankpay_order_id_'.$order_id)){
-			if(!$accept_url_hit){
-				if($data['status'] == 'Paid') {
-					add_post_meta($order->id,'billmate_invoice_id',$data['number']);
-					$order->add_order_note(sprintf(__('Billmate Invoice id: %s','billmate'),$data['number']));
 
-					if ($this->order_status == 'default') {
-						$order->add_order_note(__($payment_note,'billmate'));
-						$order->payment_complete();
-					} else {
-						$order->add_order_note(__($payment_note,'billmate'));
-						$order->update_status($this->order_status);
-					}
-					delete_transient('billmate_bankpay_order_id_'.$order_id);
-					wp_die('OK','ok',array('response' => 200));
-
-				}
-			}
 			if(version_compare(WC_VERSION, '2.0.0', '<')) {
 				$redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))));
 			} else {
@@ -194,7 +181,6 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			}
 			elseif($cancel_url_hit){
 				wc_bm_errors($checkoutMessageCancel);
-				delete_transient('billmate_bankpay_order_id_'.$order_id);
 
 				wp_safe_redirect($woocommerce->cart->get_checkout_url());
 				exit;
@@ -211,6 +197,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			} else {
 				$error_message = $checkoutMessageCancel;
 			}
+
 			$order->add_order_note( __($error_message, 'billmate') );
 			
 			if($accept_url_hit) {
@@ -220,6 +207,14 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 						add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_checkout_page_id')))));
 				exit;
 				return false;
+			}
+			elseif($cancel_url_hit){
+				wc_bm_errors($checkoutMessageCancel);
+				delete_transient('billmate_bankpay_order_id_'.$order_id);
+
+				wp_safe_redirect($woocommerce->cart->get_checkout_url());
+				exit;
+
 			}else{
 				wp_die('OK','ok',array('response' => 200));
 			}
@@ -250,7 +245,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 
 				if($cancel_url_hit) {
                     wc_bm_errors($checkoutMessageCancel);
-					wp_safe_redirect($order->get_cancel_order_url());
+					wp_safe_redirect($woocommerce->cart->get_checkout_url());
 					exit;
 				}
 				else
@@ -262,7 +257,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 
 				if($cancel_url_hit) {
                     wc_bm_errors($checkoutMessageCancel);
-					wp_safe_redirect($order->get_cancel_order_url());
+					wp_safe_redirect($woocommerce->cart->get_checkout_url());
 					exit;
 				}
 				else
