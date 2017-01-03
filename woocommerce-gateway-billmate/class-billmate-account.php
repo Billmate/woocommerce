@@ -931,7 +931,7 @@ parse_str($_POST['post_data'], $datatemp);
 				throw new Exception($data);
 			}
 			if(isset($data['code'])){
-				throw new Exception($data);
+				throw new Exception($data['message']);
 			}
 			$output = array();
 			$i = 0;

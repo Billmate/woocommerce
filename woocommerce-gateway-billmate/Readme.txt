@@ -88,6 +88,9 @@ If you would like to use our logo on your site then choose following:
 
 == Changelog ==
 
+= 2.2.11 (2017-01-03) =
+* Fix - New Years issue with update payment plans.
+
 = 2.2.10 (2016-12-21) =
 * Fix - Abort payment, then do a new with same method.
 
