@@ -127,7 +127,13 @@ function ajax_load(obj){
         $j('#billing'+id).val( $this.val( ) );
         $j('#shipping'+id).val( $this.val( ) );
     });
-    jQuery('.checkout').prepend(hidden);
+	if(jQuery('.checkout').length > 0){
+		jQuery('.checkout').prepend(hidden);
+
+	} else {
+		jQuery('#order_review').prepend(hidden);
+
+	}
     jQuery('#place_order').trigger('click');
 }
 
