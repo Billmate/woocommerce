@@ -804,6 +804,21 @@ parse_str($_POST['post_data'], $datatemp);
 				$order->billing_postcode =  $order->shipping_postcode = $addr['zip'];
 				$order->billing_city =  $order->shipping_city = $addr['city'];
 				$order->billing_country =  $order->shipping_country = $addr['country'];
+				$address = array(
+					'first_name' => $name,
+					'last_name'  => $lastname,
+					'company'    => $company,
+					'email'      => $order->billing_email,
+					'phone'      => $order->billing_phone,
+					'address_1'  => $addr['street'],
+					'address_2'  => '',
+					'city'       => $addr['city'],
+					'state'      => '',
+					'postcode'   => $addr['zip'],
+					'country'    => $addr['country']
+				);
+				$order->set_address($address,'billing');
+				$order->set_address($address,'shipping');
 				return true;
 			}
 		}
