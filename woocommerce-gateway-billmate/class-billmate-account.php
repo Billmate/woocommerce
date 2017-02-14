@@ -665,7 +665,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 
 		// Show billmate_warning_banner if NL
 		?>
-		<?php if(isset($_GET['pay_for_order']) && isset($_SESSION['address_verification'])): ?>
+		<?php if(isset($_GET['pay_for_order']) && isset($_SESSION['address_verification']) && (isset($_POST['billmate_pno']) && $_POST['billmate_pno'] != '')): ?>
 			<?php echo $_SESSION['address_verification']; ?>
 		<?php endif; ?>
 		<fieldset>
@@ -1180,7 +1180,7 @@ parse_str($_POST['post_data'], $datatemp);
 	}
 
 
-	public function getAddressPayment($order)
+	public function getAddressPayment(&$order)
 	{
 		// Collect the dob different depending on country
 		if ( $this->shop_country == 'NL' || $this->shop_country == 'DE' ) :
@@ -1297,7 +1297,7 @@ parse_str($_POST['post_data'], $datatemp);
 				} else {
 					$_SESSION['address_verification'] = '<script type="text/javascript">setTimeout(function(){modalWin.ShowMessage(\''.$html.'\',350,500,\''.__('Pay by invoice can be made only to the address listed in the National Register. Would you like to make the purchase with address:','billmate').'\');},1000);</script>';
 					wc_bm_errors(__('Pay by invoice can be made only to the address listed in the National Register. Would you like to make the purchase with address:','billmate'));
-					return $order;
+					return false;
 				}
 			} else {
 				$order->billing_first_name = $order->shipping_first_name = $name;
@@ -1307,7 +1307,7 @@ parse_str($_POST['post_data'], $datatemp);
 				$order->billing_postcode =  $order->shipping_postcode = $addr['zip'];
 				$order->billing_city =  $order->shipping_city = $addr['city'];
 				$order->billing_country =  $order->shipping_country = $addr['country'];
-				return $order;
+				return true;
 			}
 		}
 	}
@@ -1466,36 +1466,7 @@ parse_str($_POST['post_data'], $datatemp);
 		$billmate_de_consent_terms	= isset($_POST['billmate_de_consent_terms']) ? woocommerce_clean($_POST['billmate_de_consent_terms']) : '';
 
 
-		// Split address into House number and House extension for NL & DE customers
-		if ( $this->shop_country == 'NL' || $this->shop_country == 'DE' ) :
-
-			require_once('split-address.php');
-
-			$billmate_billing_address				= $order->billing_address_1;
-			$splitted_address 					= splitAddress($billmate_billing_address);
-
-			$billmate_billing_address				= $splitted_address[0];
-			$billmate_billing_house_number		= $splitted_address[1];
-			$billmate_billing_house_extension		= $splitted_address[2];
-
-			$billmate_shipping_address			= $order->shipping_address_1;
-			$splitted_address 					= splitAddress($billmate_shipping_address);
-
-			$billmate_shipping_address			= $splitted_address[0];
-			$billmate_shipping_house_number		= $splitted_address[1];
-			$billmate_shipping_house_extension	= $splitted_address[2];
-
-		else :
-
-			$billmate_billing_address				= $order->billing_address_1;
-			$billmate_billing_house_number		= '';
-			$billmate_billing_house_extension		= '';
-
-			$billmate_shipping_address			= $order->shipping_address_1;
-			$billmate_shipping_house_number		= '';
-			$billmate_shipping_house_extension	= '';
-
-		endif;
+		
 
 
 
@@ -1683,8 +1654,42 @@ parse_str($_POST['post_data'], $datatemp);
 
 		if(!isset($_GET['pay_for_order']))
 			$this->getAddress();
-		else
-			$order = $this->getAddressPayment($order);
+		else{
+			if(!$this->getAddressPayment($order)){
+				return array('result' => 'error');
+			}
+		}
+
+		// Split address into House number and House extension for NL & DE customers
+		if ( $this->shop_country == 'NL' || $this->shop_country == 'DE' ) :
+
+			require_once('split-address.php');
+
+			$billmate_billing_address				= $order->billing_address_1;
+			$splitted_address 					= splitAddress($billmate_billing_address);
+
+			$billmate_billing_address				= $splitted_address[0];
+			$billmate_billing_house_number		= $splitted_address[1];
+			$billmate_billing_house_extension		= $splitted_address[2];
+
+			$billmate_shipping_address			= $order->shipping_address_1;
+			$splitted_address 					= splitAddress($billmate_shipping_address);
+
+			$billmate_shipping_address			= $splitted_address[0];
+			$billmate_shipping_house_number		= $splitted_address[1];
+			$billmate_shipping_house_extension	= $splitted_address[2];
+
+		else :
+
+			$billmate_billing_address				= $order->billing_address_1;
+			$billmate_billing_house_number		= '';
+			$billmate_billing_house_extension		= '';
+
+			$billmate_shipping_address			= $order->shipping_address_1;
+			$billmate_shipping_house_number		= '';
+			$billmate_shipping_house_extension	= '';
+
+		endif;
 		
         $countryData = BillmateCountry::getSwedenData();
 		$countries = $woocommerce->countries->get_allowed_countries();
