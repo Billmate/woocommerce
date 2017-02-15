@@ -66,6 +66,10 @@ Tested with [Browserstack](http://www.browserstack.com)
 
 ## Changelog
 
+### 2.2.11 (2017-01-03)
+* Fix - New Years issue with update payment plans.
+* Fix - Payment link issue invoice and partpay.
+
 ### 2.2.10 (2016-12-21)
 * Fix - Abort payment, then do a new with same method.
 
