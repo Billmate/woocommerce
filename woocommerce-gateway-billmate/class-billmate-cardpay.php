@@ -468,7 +468,15 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			}
 			if(!empty($this->allowed_countries)){
 
-				if(!in_array($woocommerce->customer->country,$this->allowed_countries))
+				$order_id = absint( get_query_var( 'order-pay' ) );
+				if(0 < $order_id){
+					$order = wc_get_order( $order_id );
+					$address = $order->get_address();
+					$country = $address['country'];
+				} else {
+					$country = $woocommerce->customer->get_country();
+				}
+				if(!in_array($country,$this->allowed_countries))
 					return false;
 			}
 			// Only activate the payment gateway if the customers country is the same as the filtered shop country ($this->billmate_country)

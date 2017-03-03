@@ -297,8 +297,15 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 
 			if (!$this->eid || !$this->secret) return false;
 			$allowed_countries = array_intersect(array('SE'),is_array($this->allowed_countries) ? $this->allowed_countries : array($this->allowed_countries));
-
-			if(is_array($this->allowed_countries) && !in_array($woocommerce->customer->get_country() , $allowed_countries)){
+			$order_id = absint( get_query_var( 'order-pay' ) );
+			if(0 < $order_id){
+				$order = wc_get_order( $order_id );
+				$address = $order->get_address();
+				$country = $address['country'];
+			} else {
+				$country = $woocommerce->customer->get_country();
+			}
+			if(is_array($this->allowed_countries) && !in_array($country , $allowed_countries)){
 				return false;
 			}
 
