@@ -185,6 +185,7 @@ function init_billmate_gateway() {
 	require_once 'class-billmate-common.php';
 	require_once 'class-billmate-checkout.php';
 	$common = new BillmateCommon();
+	
 
 
 } // End init_billmate_gateway.

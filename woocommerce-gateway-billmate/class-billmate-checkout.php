@@ -44,15 +44,24 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         add_action('init','register_billmate_incomplete_order_status');
         add_filter( 'wc_order_statuses', array( $this, 'add_billmate_incomplete_to_order_statuses' ) );
 
+        // Update Address from Iframe
+        add_action( 'wp_ajax_billmate_update_address', array(
+            $this,
+            'billmate_update_address'
+        ) );
+        add_action( 'wp_ajax_nopriv_billmate_update_address', array(
+            $this,
+            'billmate_update_address'
+        ) );
         // Cart quantity
-        add_action( 'wp_ajax_billmate_checkout_cart_callback_update', array(
+        /*add_action( 'wp_ajax_billmate_checkout_cart_callback_update', array(
             $this,
             'billmate_checkout_cart_callback_update'
         ) );
         add_action( 'wp_ajax_nopriv_billmate_checkout_cart_callback_update', array(
             $this,
             'billmate_checkout_cart_callback_update'
-        ) );
+        ) );*/
         // Cart remove
         add_action( 'wp_ajax_billmate_checkout_remove_item', array(
             $this,
@@ -63,21 +72,13 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             'billmate_checkout_cart_callback_remove'
         ) );
         // Shipping method selector
-        add_action( 'wp_ajax_billmate_checkout_shipping_callback', array( $this, 'billmate_checkout_shipping_callback' ) );
+        /*add_action( 'wp_ajax_billmate_checkout_shipping_callback', array( $this, 'billmate_checkout_shipping_callback' ) );
         add_action( 'wp_ajax_nopriv_billmate_checkout_shipping_callback', array(
             $this,
             'billmate_checkout_shipping_callback'
-        ) );
+        ) );*/
 
-        // Update Address from Iframe
-        add_action( 'wp_ajax_billmate_update_address', array(
-            $this,
-            'billmate_update_address'
-        ) );
-        add_action( 'wp_ajax_nopriv_billmate_update_address', array(
-            $this,
-            'billmate_update_address'
-        ) );
+
 
 
     }
@@ -668,3 +669,16 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
     }
 }
+class WC_Gateway_Billmate_Checkout_Extra{
+    public function __construct()
+    {
+        add_action('init',array($this,'start'));
+    }
+
+    public function start()
+    {
+        $checkout = new WC_Gateway_Billmate_Checkout();
+    }
+}
+
+$extra = new WC_Gateway_Billmate_Checkout_Extra();
