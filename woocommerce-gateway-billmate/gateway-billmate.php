@@ -147,7 +147,13 @@ function init_billmate_gateway() {
 				wp_enqueue_script( 'billmate-invoice-js' );
 				wp_register_script( 'billmate-popup-js', plugins_url( '/js/billmatepopup.js', __FILE__ ),array(),false, true );
 				wp_enqueue_script( 'billmate-popup-js' );
+
+
 			}
+			wp_register_script( 'billmate-checkout-js', plugins_url( '/js/billmatecheckout.js', __FILE__ ),array(),false, true );
+			wp_enqueue_script( 'billmate-checkout-js' );
+			wp_localize_script( 'billmate-checkout-js', 'billmate',
+				array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
 
 
 
@@ -177,6 +183,7 @@ function init_billmate_gateway() {
 	require_once 'class-billmate-bankpay.php';
 
 	require_once 'class-billmate-common.php';
+	require_once 'class-billmate-checkout.php';
 	$common = new BillmateCommon();
 
 
@@ -190,6 +197,7 @@ function add_billmate_gateway( $methods ) {
 	$methods[] = 'WC_Gateway_Billmate_Partpayment';
 	$methods[] = 'WC_Gateway_Billmate_Cardpay';
 	$methods[] = 'WC_Gateway_Billmate_Bankpay';
+	$methods[] = 'WC_Gateway_Billmate_Checkout';
 	return $methods;
 }
 
