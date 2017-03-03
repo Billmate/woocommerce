@@ -304,12 +304,12 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 
 			// Cart totals check - Lower threshold
 			if ( $this->lower_threshold !== '' ) {
-				if ( ( $woocommerce->cart->total - $this->invoice_fee ) < $this->lower_threshold ) return false;
+				if ( ( WC_Payment_Gateway::get_order_total() - $this->invoice_fee ) < $this->lower_threshold ) return false;
 			}
 
 			// Cart totals check - Upper threshold
 			if ( $this->upper_threshold !== '' ) {
-				if ( ( $woocommerce->cart->total - $this->invoice_fee) > $this->upper_threshold ) return false;
+				if ( ( WC_Payment_Gateway::get_order_total() - $this->invoice_fee) > $this->upper_threshold ) return false;
 			}
 
 			// Only activate the payment gateway if the customers country is the same as the filtered shop country ($this->billmate_country)

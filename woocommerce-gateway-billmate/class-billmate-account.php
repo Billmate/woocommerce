@@ -445,7 +445,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 			$pclasses = get_option('wc_gateway_billmate_partpayment_pclasses',false);
 
 			if($pclasses){
-				$billmate_cart_total = $woocommerce->cart->total;
+				$billmate_cart_total = WC_Payment_Gateway::get_order_total();
 				$sum = apply_filters( 'billmate_cart_total', $billmate_cart_total ); // Cart total.
                 $fees = $woocommerce->cart->get_fees();
                 $availableFees = array();

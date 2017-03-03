@@ -53,6 +53,16 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             $this,
             'billmate_update_address'
         ) );
+
+        // Update Address from Iframe
+        add_action( 'wp_ajax_billmate_set_method', array(
+            $this,
+            'billmate_set_method'
+        ) );
+        add_action( 'wp_ajax_nopriv_billmate_set_method', array(
+            $this,
+            'billmate_set_method'
+        ) );
         // Cart quantity
         /*add_action( 'wp_ajax_billmate_checkout_cart_callback_update', array(
             $this,
@@ -107,13 +117,74 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         ) );
     }
 
+    function add_invoice_fee_process() {
+        global $woocommerce;
+
+        // Only run this if Billmate Invoice is the choosen payment method and this is WC +2.0
+
+            $invoice_fee = new WC_Gateway_Billmate_Invoice;
+            $tax = new WC_Tax();
+            $rate = $tax->get_rates($invoice_fee->invoice_fee_tax_class);
+            $rate = array_pop($rate);
+            $rate = $rate['rate'];
+
+            $woocommerce->cart->add_fee(__('Invoice fee','billmate'),$invoice_fee->invoice_fee,true,$invoice_fee->invoice_fee_tax_class);
+
+
+    }
+    function billmate_set_method(){
+
+        $connection = new BillMate($this->eid,$this->secret,true,$this->testmode == 'yes');
+        $result = $connection->getCheckout(array('PaymentData' => array('hash' => $_REQUEST['hash'])));
+        if(!isset($result['code'])) {
+            $class = '';
+            switch ($result['PaymentData']['method']) {
+                case 1:
+                    $method = 'billmate_invoice';
+                    //$class = new WC_Gateway_Billmate_Invoice();
+                    break;
+                case 4:
+                    $method = 'billmate_partpayment';
+                    //$class = new WC_Gateway_Billmate_Partpayment();
+                    break;
+                case 8:
+                    $method = 'billmate_cardpay';
+                    $result['PaymentData']['accepturl'] = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Cardpay&payment=success';
+                    $result['PaymentData']['callbackurl'] = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Cardpay';
+                    $result['PaymentData']['cancelurl'] = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Cardpay&payment=cancel';
+                    $result['PaymentData']['returnmethod'] = is_ssl() ? 'POST' : 'GET';
+                    //$class = new WC_Gateway_Billmate_Cardpay();
+                    break;
+                case 16:
+                    $method = 'billmate_bankpay';
+                    $result['PaymentData']['accepturl'] = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Bankpay&payment=success';
+                    $result['PaymentData']['callbackurl'] = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Bankpay';
+                    $result['PaymentData']['cancelurl'] = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Bankpay&payment=cancel';
+                    $result['PaymentData']['returnmethod'] = is_ssl() ? 'POST' : 'GET';
+                    //$class = new WC_Gateway_Billmate_Bankpay();
+                    break;
+            }
+            $order = wc_get_order( WC()->session->get( 'billmate_checkout_order' ) );
+            //error_log('className'.get_class($class));
+
+            $order->add_fee();
+            $available_gateways = WC()->payment_gateways->payment_gateways();
+            $payment_method = $available_gateways[$method];
+            $order->set_payment_method($payment_method);
+            $order->calculate_taxes();
+            $order->calculate_shipping();
+            $order->calculate_totals();
+            $this->updateCheckout($result, $order);
+            wp_send_json_success();
+        }
+        wp_send_json_error();
+    }
+
     function billmate_update_address(){
         global $woocommerce;
 
-        error_log('before_connection');
         $connection = new BillMate($this->eid,$this->secret,true,$this->testmode == 'yes');
         $result = $connection->getCheckout(array('PaymentData' => array('hash' => $_REQUEST['hash'])));
-        error_log('after_connection'.print_r($result,true));
         if(!isset($result['code'])){
             WC()->session->set( 'billmate_checkout_hash',$_REQUEST['hash'] );
             $order = wc_get_order( WC()->session->get( 'billmate_checkout_order' ) );
@@ -149,8 +220,41 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             );
             $order->set_address($billing_address,'billing');
             $order->set_address($shipping_address,'shipping');
-            $order->calculate_taxes();
 
+            switch ($result['PaymentData']['method']) {
+                case 1:
+                    $method = 'billmate_invoice';
+                    //$class = new WC_Gateway_Billmate_Invoice();
+                    break;
+                case 4:
+                    $method = 'billmate_partpayment';
+                    //$class = new WC_Gateway_Billmate_Partpayment();
+                    break;
+                case 8:
+                    $method = 'billmate_cardpay';
+                    $result['PaymentData']['accepturl'] = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Cardpay&payment=success';
+                    $result['PaymentData']['callbackurl'] = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Cardpay';
+                    $result['PaymentData']['cancelurl'] = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Cardpay&payment=cancel';
+                    $result['PaymentData']['returnmethod'] = is_ssl() ? 'POST' : 'GET';
+                    //$class = new WC_Gateway_Billmate_Cardpay();
+                    break;
+                case 16:
+                    $method = 'billmate_bankpay';
+                    $result['PaymentData']['accepturl'] = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Bankpay&payment=success';
+                    $result['PaymentData']['callbackurl'] = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Bankpay';
+                    $result['PaymentData']['cancelurl'] = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Bankpay&payment=cancel';
+                    $result['PaymentData']['returnmethod'] = is_ssl() ? 'POST' : 'GET';
+                    //$class = new WC_Gateway_Billmate_Bankpay();
+                    break;
+            }
+            $available_gateways = WC()->payment_gateways->payment_gateways();
+            $payment_method = $available_gateways[$method];
+            $order->set_payment_method($payment_method);
+
+            $order->calculate_taxes();
+            $order->calculate_shipping();
+            $order->calculate_totals();
+            $this->updateCheckout($result, $order);
             wp_send_json_success();
         }
         wp_send_json_error();
@@ -577,6 +681,175 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         );
 
         return $billmate->initCheckout($orderValues);
+
+    }
+
+    public function updateCheckout($result, $order)
+    {
+        $billmate = new Billmate($this->eid,$this->secret,true, $this->testmode == 'yes',false);
+
+        $orderValues = $result;
+        $total = 0;
+        $totalTax = 0;
+
+        unset($orderValues['Articles']);
+        if (sizeof($order->get_items())>0) : foreach ($order->get_items() as $item) :
+
+            if ( function_exists( 'get_product' ) ) {
+
+                // Version 2.0
+                $_product = $order->get_product_from_item($item);
+
+                // Get SKU or product id
+                if ( $_product->get_sku() ) {
+                    $sku = $_product->get_sku();
+                } else {
+                    $sku = $_product->id;
+                }
+
+            } else {
+
+                // Version 1.6.6
+                $_product = new WC_Product( $item['id'] );
+
+                // Get SKU or product id
+                if ( $_product->get_sku() ) {
+                    $sku = $_product->get_sku();
+                } else {
+                    $sku = $item['id'];
+                }
+
+            }
+
+            /* Formatting the product data that will be sent as api requests */
+            $billmateProduct = new BillmateProduct($_product);
+
+            // is product taxable?
+            if ($_product->is_taxable())
+            {
+                $taxClass = $_product->get_tax_class();
+                $tax = new WC_Tax();
+                $rates = $tax->get_rates($taxClass);
+                $item_tax_percentage = 0;
+                foreach($rates as $row){
+                    // Is it Compound Tax?
+                    if(isset($row['compund']) && $row['compound'] == 'yes')
+                        $item_tax_percentage += $row['rate'];
+                    else
+                        $item_tax_percentage = $row['rate'];
+                }
+            } else
+                $item_tax_percentage = 0;
+
+
+            // apply_filters to item price so we can filter this if needed
+            $billmate_item_price_including_tax = round($order->get_item_total( $item, true )*100);
+            $billmate_item_standard_price = round($order->get_item_subtotal($item,true)*100);
+            $billmate_item_standard_price_without_tax = $billmate_item_standard_price / (1 + ((int)$item_tax_percentage / 100));
+            $discount = false;
+            if($billmate_item_price_including_tax != $billmate_item_standard_price){
+                $discount = true;
+            }
+            $item_price = apply_filters( 'billmate_item_price_including_tax', $billmate_item_price_including_tax);
+
+            if ( $_product->get_sku() ) {
+                $sku = $_product->get_sku();
+            } else {
+                $sku = $_product->id;
+            }
+
+            $priceExcl = round($item_price - (100 * $order->get_item_tax($item,false)));
+
+            $orderValues['Articles'][] = array(
+                'quantity'   => (int)$item['qty'],
+                'artnr'    => $sku,
+                'title'    =>  $billmateProduct->getTitle(),
+                'aprice'    =>  ($discount) ? ($billmate_item_standard_price_without_tax) : ($priceExcl),
+                'taxrate'      => (int)$item_tax_percentage,
+                'discount' => ($discount) ? round((1 - ($billmate_item_price_including_tax/$billmate_item_standard_price)) * 100 ,0) : 0,
+                'withouttax' => $item['qty'] * ($priceExcl)
+            );
+            $totalTemp = ($item['qty'] * ($priceExcl));
+            $total += $totalTemp;
+            $totalTax += ($totalTemp * $item_tax_percentage/100);
+            if(isset($prepareDiscount[$item_tax_percentage])){
+                $prepareDiscount[$item_tax_percentage] += $totalTemp;
+            } else {
+                $prepareDiscount[$item_tax_percentage] = $totalTemp;
+            }
+
+            //endif;
+        endforeach; endif;
+
+        /* Add additional fees that are not invoice fee to order API request as articles */
+        $orderFeesArticles = BillmateOrder::getOrderFeesAsOrderArticles();
+        $orderValues['Articles'] = array_merge($orderValues['Articles'], $orderFeesArticles);
+        foreach($orderFeesArticles AS $orderFeesArticle) {
+            $total += $orderFeesArticle['aprice'];
+            $totalTax += ($orderFeesArticle['aprice'] * ($orderFeesArticle['taxrate']/100));
+        }
+
+        // Discount
+        if ($order->order_discount>0) :
+
+            // apply_filters to order discount so we can filter this if needed
+            $billmate_order_discount = $order->order_discount;
+            $order_discount = apply_filters( 'billmate_order_discount', $billmate_order_discount );
+            $total_value = $total;
+            foreach($prepareDiscount as $key => $value){
+                $percent = $value/$total_value;
+
+                $discountAmount = ($percent * $order_discount) * (1-($key/100)/(1+($key/100)));
+
+                $orderValues['Articles'][] = array(
+                    'quantity'   => (int)1,
+                    'artnr'    => "",
+                    'title'    => sprintf(__('Discount %s%% tax', 'billmate'),round($key,0)),
+                    'aprice'    => -($discountAmount*100), //+$item->unittax
+                    'taxrate'      => (int)$key,
+                    'discount' => (float)0,
+                    'withouttax' => -($discountAmount*100)
+
+                );
+                $total -= ($discountAmount * 100);
+                $totalTax -= ($discountAmount * ($key/100))*100;
+
+            }
+
+        endif;
+
+        // Shipping
+        unset($orderValues['Cart']);
+        if ($order->order_shipping>0) :
+
+            // We manually calculate the shipping taxrate percentage here
+            $calculated_shipping_tax_percentage = ($order->order_shipping_tax/$order->order_shipping)*100; //25.00
+            $calculated_shipping_tax_decimal = ($order->order_shipping_tax/$order->order_shipping)+1; //0.25
+
+            // apply_filters to Shipping so we can filter this if needed
+            $billmate_shipping_price_including_tax = $order->order_shipping*$calculated_shipping_tax_decimal;
+            $shipping_price = apply_filters( 'billmate_shipping_price_including_tax', $billmate_shipping_price_including_tax );
+
+            $orderValues['Cart']['Shipping'] = array(
+                'withouttax'    => ($shipping_price-$order->order_shipping_tax)*100,
+                'taxrate'      => (int)$calculated_shipping_tax_percentage,
+
+            );
+            $total += ($shipping_price-$order->order_shipping_tax) * 100;
+            $totalTax += (($shipping_price-$order->order_shipping_tax) * ($calculated_shipping_tax_percentage/100))*100;
+        endif;
+
+
+
+        $round = (round(WC_Payment_Gateway::get_order_total() * 100)) - round($total + $totalTax,0);
+
+        $orderValues['Cart']['Total'] = array(
+            'withouttax' => round($total),
+            'tax' => round($totalTax,0),
+            'rounding' => round($round),
+            'withtax' => round($total + $totalTax + $round)
+        );
+        return $billmate->updateCheckout($orderValues);
 
     }
 

@@ -15,8 +15,8 @@ var BillmateIframe = new function(){
             data: data,
             type: 'POST',
             success: function(response){
-                var result = JSON.parse(response);
-                if(result.success) {
+
+                if(response.hasOwnProperty("success") && response.success) {
                     window.address_selected = true;
                 }
             }
@@ -25,13 +25,13 @@ var BillmateIframe = new function(){
     };
     this.updatePaymentMethod = function(data){
         if(window.method != data.method) {
+            data.action = 'billmate_set_method';
             jQuery.ajax({
-                url: UPDATE_PAYMENT_METHOD_URL,
+                url: billmate.ajax_url,
                 data: data,
                 type: 'POST',
                 success: function (response) {
-                    var result = response.evalJSON();
-                    if (result.success) {
+                    if (response.hasOwnProperty("success") && response.success) {
 
                         self.updateCheckout();
 
@@ -53,7 +53,7 @@ var BillmateIframe = new function(){
             data: data,
             type: 'POST',
             success: function(response){
-                var result = response.evalJSON();
+                var result = JSON.parse(response);
                 location.href=result.url;
             }
         });
@@ -88,13 +88,13 @@ var BillmateIframe = new function(){
             switch (json.event) {
                 case 'address_selected':
                     self.updateAddress(json.data);
-                    //self.updatePaymentMethod(json.data);
+                    self.updatePaymentMethod(json.data);
                     //self.updateTotals();
                     break;
                 case 'payment_method_selected':
                     if (window.address_selected !== null) {
                         self.updatePaymentMethod(json.data);
-                        self.updateTotals();
+                        //self.updateTotals();
                     }
                     break;
                 case 'checkout_success':

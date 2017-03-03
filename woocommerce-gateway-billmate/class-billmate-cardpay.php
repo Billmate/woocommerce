@@ -459,12 +459,12 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 
 			// Cart totals check - Lower threshold
 			if ( $this->lower_threshold !== '' ) {
-				if ( $woocommerce->cart->total < $this->lower_threshold ) return false;
+				if ( WC_Payment_Gateway::get_order_total() < $this->lower_threshold ) return false;
 			}
 
 			// Cart totals check - Upper threshold
 			if ( $this->upper_threshold !== '' ) {
-				if ( $woocommerce->cart->total > $this->upper_threshold ) return false;
+				if ( WC_Payment_Gateway::get_order_total() > $this->upper_threshold ) return false;
 			}
 			if(!empty($this->allowed_countries)){
 
