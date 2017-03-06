@@ -62,8 +62,9 @@ var BillmateIframe = new function(){
     }
     this.createOrder = function(data){
         // Create Order
+        data.action = 'billmate_create_order';
         jQuery.ajax({
-            url : CREATE_ORDER_URL,
+            url : billmate.ajax_url,
             data: data,
             type: 'POST',
             success: function(response){

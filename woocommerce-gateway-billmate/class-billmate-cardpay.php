@@ -729,7 +729,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 
 			$orderValues['Cart']['Shipping'] = array(
 				'withouttax'    => ($shipping_price -$order->order_shipping_tax)*100,
-				'taxrate'      => (int)$calculated_shipping_tax_percentage,
+				'taxrate'      => round($calculated_shipping_tax_percentage),
 
 			);
 			$total += ($shipping_price-$order->order_shipping_tax) * 100;
@@ -1005,7 +1005,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 
 					$orderValues['Cart']['Shipping'] = array(
 						'withouttax'    => ($shipping_price -$order->order_shipping_tax)*100,
-						'taxrate'      => (int)$calculated_shipping_tax_percentage,
+						'taxrate'      => round($calculated_shipping_tax_percentage),
 
 					);
 					$total += ($shipping_price-$order->order_shipping_tax) * 100;

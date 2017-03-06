@@ -65,6 +65,9 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             $this,
             'billmate_set_method'
         ) );
+        add_action('wp_ajax_billmate_complete_order',array($this,'complete_order'));
+        add_action('wp_ajax_nopriv_billmate_complete_order',array($this,'complete_order'));
+
         // Cart quantity
         /*add_action( 'wp_ajax_billmate_checkout_cart_callback_update', array(
             $this,
@@ -239,8 +242,8 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             switch (strtolower($result['PaymentData']['order']['status'])){
                 case 'pending':
                     $order->update_status( 'pending' );
-                    $order->add_order_note( __('Order is PENDING APPROVAL by Billmate. Please visit Billmate Online for the latest status on this order. Billmate Invoice number: ', 'billmate') . $result['PaymentInfo']['number'] );
-                    add_post_meta($order->id,'billmate_invoice_id',$result['PaymentInfo']['number']);
+                    $order->add_order_note( __('Order is PENDING APPROVAL by Billmate. Please visit Billmate Online for the latest status on this order. Billmate Invoice number: ', 'billmate') .$result['PaymentData']['order']['number']);
+                    add_post_meta($order->id,'billmate_invoice_id',$result['PaymentData']['order']['number']);
                     // Remove cart
                     WC()->cart->empty_cart();
                     if(version_compare(WC_VERSION, '2.0.0', '<')){
@@ -248,15 +251,18 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                     } else {
                         $redirect = $this->get_return_url($order);
                     }
-                    wp_redirect($redirect);
+
+                    $response = array('url' => $redirect);
+                    wp_send_json_success($response);
+
                     exit;
                     break;
                 case 'created':
                 case 'paid':
                     $order->update_status( 'pending' );
                     $order->payment_complete($result['PaymentInfo']['number']);
-                    $order->add_order_note( __('Billmate payment completed. Billmate Invoice number:', 'billmate') .$result['PaymentInfo']['number'] );
-                    add_post_meta($order->id,'billmate_invoice_id',$result['PaymentInfo']['number']);
+                    $order->add_order_note( __('Billmate payment completed. Billmate Invoice number:', 'billmate') .$result['PaymentData']['order']['number'] );
+                    add_post_meta($order->id,'billmate_invoice_id',$result['PaymentData']['order']['number']);
                     // Remove cart
                     WC()->cart->empty_cart();
                     if(version_compare(WC_VERSION, '2.0.0', '<')){
@@ -264,7 +270,10 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                     } else {
                         $redirect = $this->get_return_url($order);
                     }
-                    wp_redirect($redirect);
+
+                    $response = array('url' => $redirect);
+                    wp_send_json_success($response);
+
                     exit;
 
                 break;
@@ -772,7 +781,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
             $orderValues['Cart']['Shipping'] = array(
                 'withouttax'    => ($shipping_price-$order->order_shipping_tax)*100,
-                'taxrate'      => (int)$calculated_shipping_tax_percentage,
+                'taxrate'      => round($calculated_shipping_tax_percentage),
 
             );
             $total += ($shipping_price-$order->order_shipping_tax) * 100;
@@ -956,7 +965,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
             $orderValues['Cart']['Shipping'] = array(
                 'withouttax'    => ($shipping_price-$order->order_shipping_tax)*100,
-                'taxrate'      => (int)$calculated_shipping_tax_percentage,
+                'taxrate'      => round($calculated_shipping_tax_percentage),
 
             );
             $total += ($shipping_price-$order->order_shipping_tax) * 100;

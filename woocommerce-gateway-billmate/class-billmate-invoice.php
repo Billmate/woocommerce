@@ -1049,7 +1049,7 @@ parse_str($_POST['post_data'], $datatemp);
 
 			$orderValues['Cart']['Shipping'] = array(
 				'withouttax'    => ($shipping_price-$order->order_shipping_tax)*100,
-				'taxrate'      => (int)$calculated_shipping_tax_percentage,
+				'taxrate'      => round($calculated_shipping_tax_percentage),
 
 			);
 			$total += ($shipping_price-$order->order_shipping_tax) * 100;
