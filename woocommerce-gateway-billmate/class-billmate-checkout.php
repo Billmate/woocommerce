@@ -253,7 +253,12 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                     }
 
                     $response = array('url' => $redirect);
+                    WC()->session->__unset( 'billmate_checkout_hash' );
+                    WC()->session->__unset( 'billmate_checkout_order' );
+
+
                     wp_send_json_success($response);
+
                     break;
                 case 'created':
                 case 'paid':
@@ -270,7 +275,11 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                     }
 
                     $response = array('url' => $redirect);
-                    wp_send_json_success($response);
+
+                    WC()->session->__unset( 'billmate_checkout_hash' );
+                    WC()->session->__unset( 'billmate_checkout_order' );
+
+                wp_send_json_success($response);
                 break;
                 case 'cancelled':
                     break;
