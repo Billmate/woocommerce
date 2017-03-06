@@ -3,6 +3,7 @@
  */
 window.method = null;
 window.address_selected = null;
+window.hash = null;
 var BillmateIframe = new function(){
     var self = this;
     var childWindow = null;
@@ -23,6 +24,19 @@ var BillmateIframe = new function(){
         });
 
     };
+    this.updateBillmate = function(){
+        jQuery.ajax({
+            url : billmate.ajax_url,
+            data: {action: 'billmate_update_address',hash: window.hash},
+            type: 'POST',
+            success: function(response){
+
+                if(response.hasOwnProperty("success") && response.success) {
+                    window.address_selected = true;
+                }
+            }
+        });
+    };
     this.updatePaymentMethod = function(data){
         if(window.method != data.method) {
             data.action = 'billmate_set_method';
@@ -32,7 +46,7 @@ var BillmateIframe = new function(){
                 type: 'POST',
                 success: function (response) {
                     if (response.hasOwnProperty("success") && response.success) {
-
+                        jQuery( 'body' ).trigger( 'update_checkout' );
                         self.updateCheckout();
 
                         window.method = data.method;
@@ -74,6 +88,21 @@ var BillmateIframe = new function(){
             window.addEventListener("message",self.handleEvent);
 
         })
+        jQuery(document.body).on('updated_shipping_method',function(e){
+            self.updateBillmate();
+            jQuery( 'body' ).trigger( 'update_checkout' );
+            self.updateCheckout();
+        })
+        jQuery(document.body).on('applied_coupon',function(e){
+            self.updateBillmate();
+            jQuery( 'body' ).trigger( 'update_checkout' );
+            self.updateCheckout();
+        })
+        jQuery(document.body).on('removed_coupon',function(e){
+            self.updateBillmate();
+            jQuery( 'body' ).trigger( 'update_checkout' );
+            self.updateCheckout();
+        })
     }
     this.handleEvent = function(event){
         console.log(event);
@@ -87,11 +116,14 @@ var BillmateIframe = new function(){
             console.log(json);
             switch (json.event) {
                 case 'address_selected':
+                    window.hash = json.data.hash;
                     self.updateAddress(json.data);
                     self.updatePaymentMethod(json.data);
                     //self.updateTotals();
                     break;
                 case 'payment_method_selected':
+                    window.hash = json.data.hash;
+
                     if (window.address_selected !== null) {
                         self.updatePaymentMethod(json.data);
                         //self.updateTotals();

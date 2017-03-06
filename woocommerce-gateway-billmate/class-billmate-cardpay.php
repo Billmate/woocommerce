@@ -444,6 +444,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 
 	function is_available() {
 		global $woocommerce;
+		
 		if ($this->enabled=="yes") :
 
 			// if (!is_ssl()) return false;

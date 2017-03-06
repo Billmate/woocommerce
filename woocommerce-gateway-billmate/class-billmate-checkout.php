@@ -30,6 +30,8 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         $this->secret				= get_option('billmate_common_secret');//( isset( $this->settings['secret'] ) ) ? $this->settings['secret'] : '';
         $this->logo 				= get_option('billmate_common_logo');
         $this->terms_url            = (isset($this->settings['terms_url'])) ? $this->settings['terms_url'] : false;
+        $this->checkout_url            = (isset($this->settings['checkout_url'])) ? $this->settings['checkout_url'] : false;
+
         $this->testmode				= ( isset( $this->settings['testmode'] ) ) ? $this->settings['testmode'] : '';
 
 
@@ -88,9 +90,19 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             'billmate_checkout_shipping_callback'
         ) );*/
 
+        add_filter('woocommerce_get_checkout_url',array($this,'change_to_bco'),20);
 
 
 
+    }
+
+    function change_to_bco($url){
+        if(!is_admin()) {
+            $checkout_url = get_post($this->checkout_url);
+
+            return $checkout_url->guid;
+        }
+        return $url;
     }
 
     function add_billmate_incomplete_to_order_statuses($order_statuses){
@@ -127,9 +139,29 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             $rate = $tax->get_rates($invoice_fee->invoice_fee_tax_class);
             $rate = array_pop($rate);
             $rate = $rate['rate'];
+            $new_fee            = new stdClass();
+            $new_fee->id        = sanitize_title( __('Invoice fee','billmate') );
+            $new_fee->name      = esc_attr(__('Invoice fee','billmate'));
+            $new_fee->amount    = (float) esc_attr( $invoice_fee->invoice_fee );
+            $new_fee->tax_class = $invoice_fee->invoice_fee_tax_class;
+            $new_fee->taxable   = true;
+            $new_fee->tax       = 0;
+            $new_fee->tax_data  = array();
 
-            $woocommerce->cart->add_fee(__('Invoice fee','billmate'),$invoice_fee->invoice_fee,true,$invoice_fee->invoice_fee_tax_class);
+            return $new_fee;
 
+
+    }
+
+
+    private function get_fee_id($order,$name)
+    {
+        $fees = $order->get_fees();
+        foreach($fees as $key=>$fee)
+        {
+            if($fee['name']==$name)
+                return $key;
+        }
 
     }
     function billmate_set_method(){
@@ -138,10 +170,25 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         $result = $connection->getCheckout(array('PaymentData' => array('hash' => $_REQUEST['hash'])));
         if(!isset($result['code'])) {
             $class = '';
+
+            if($result['PaymentData']['method'] == 1){
+
+                $invoice_fee = new WC_Gateway_Billmate_Invoice;
+                $tax = new WC_Tax();
+                $rate = $tax->get_rates($invoice_fee->invoice_fee_tax_class);
+                $rate = array_pop($rate);
+                $rate = $rate['rate'];
+
+                WC()->cart->add_fee(__('Invoice fee','billmate'),$invoice_fee->invoice_fee,true,$invoice_fee->invoice_fee_tax_class);
+            }
+            $orderId = $this->create_order();
+            $order = wc_get_order( $orderId );
+            // Clear invoice fee
             switch ($result['PaymentData']['method']) {
                 case 1:
                     $method = 'billmate_invoice';
                     //$class = new WC_Gateway_Billmate_Invoice();
+
                     break;
                 case 4:
                     $method = 'billmate_partpayment';
@@ -164,10 +211,9 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                     //$class = new WC_Gateway_Billmate_Bankpay();
                     break;
             }
-            $order = wc_get_order( WC()->session->get( 'billmate_checkout_order' ) );
             //error_log('className'.get_class($class));
 
-            $order->add_fee();
+
             $available_gateways = WC()->payment_gateways->payment_gateways();
             $payment_method = $available_gateways[$method];
             $order->set_payment_method($payment_method);
@@ -180,6 +226,58 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         wp_send_json_error();
     }
 
+    function get_order(){
+        return wc_get_order(WC()->session->get( 'billmate_checkout_order' ));
+    }
+    
+    function complete_order(){
+        $order = $this->get_order();
+        $connection = new BillMate($this->eid,$this->secret,true,$this->testmode == 'yes');
+
+        $result = $connection->getCheckout(array('PaymentData' => array('hash' => $_REQUEST['hash'])));
+        if(!isset($result['code'])){
+            switch (strtolower($result['PaymentData']['order']['status'])){
+                case 'pending':
+                    $order->update_status( 'pending' );
+                    $order->add_order_note( __('Order is PENDING APPROVAL by Billmate. Please visit Billmate Online for the latest status on this order. Billmate Invoice number: ', 'billmate') . $result['PaymentInfo']['number'] );
+                    add_post_meta($order->id,'billmate_invoice_id',$result['PaymentInfo']['number']);
+                    // Remove cart
+                    WC()->cart->empty_cart();
+                    if(version_compare(WC_VERSION, '2.0.0', '<')){
+                        $redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order->id, get_permalink(get_option('woocommerce_thanks_page_id'))));
+                    } else {
+                        $redirect = $this->get_return_url($order);
+                    }
+                    wp_redirect($redirect);
+                    exit;
+                    break;
+                case 'created':
+                case 'paid':
+                    $order->update_status( 'pending' );
+                    $order->payment_complete($result['PaymentInfo']['number']);
+                    $order->add_order_note( __('Billmate payment completed. Billmate Invoice number:', 'billmate') .$result['PaymentInfo']['number'] );
+                    add_post_meta($order->id,'billmate_invoice_id',$result['PaymentInfo']['number']);
+                    // Remove cart
+                    WC()->cart->empty_cart();
+                    if(version_compare(WC_VERSION, '2.0.0', '<')){
+                        $redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order->id, get_permalink(get_option('woocommerce_thanks_page_id'))));
+                    } else {
+                        $redirect = $this->get_return_url($order);
+                    }
+                    wp_redirect($redirect);
+                    exit;
+
+                break;
+                case 'cancelled':
+                    break;
+                case 'failed':
+                    break;
+            }
+        }
+
+
+    }
+
     function billmate_update_address(){
         global $woocommerce;
 
@@ -187,7 +285,18 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         $result = $connection->getCheckout(array('PaymentData' => array('hash' => $_REQUEST['hash'])));
         if(!isset($result['code'])){
             WC()->session->set( 'billmate_checkout_hash',$_REQUEST['hash'] );
-            $order = wc_get_order( WC()->session->get( 'billmate_checkout_order' ) );
+            if($result['PaymentData']['method'] == 1){
+
+                $invoice_fee = new WC_Gateway_Billmate_Invoice;
+                $tax = new WC_Tax();
+                $rate = $tax->get_rates($invoice_fee->invoice_fee_tax_class);
+                $rate = array_pop($rate);
+                $rate = $rate['rate'];
+
+                WC()->cart->add_fee(__('Invoice fee','billmate'),$invoice_fee->invoice_fee,true,$invoice_fee->invoice_fee_tax_class);
+            }
+            $orderId = $this->create_order();
+            $order = wc_get_order( $orderId );
 
             $billing_address = array(
                 'first_name' => $result['Customer']['Billing']['firstname'],
@@ -225,6 +334,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                 case 1:
                     $method = 'billmate_invoice';
                     //$class = new WC_Gateway_Billmate_Invoice();
+
                     break;
                 case 4:
                     $method = 'billmate_partpayment';
@@ -820,6 +930,20 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
         // Shipping
         unset($orderValues['Cart']);
+        
+        if(count($order->get_fees()) > 0 ):
+            foreach ($order->get_fees() as $fee){
+                if($fee['name'] == esc_attr(__('Invoice fee','billmate'))) {
+                    $orderValues['Cart']['Handling'] = array(
+                        'withouttax' => round($fee['line_total'] * 100),
+                        'taxrate' => ($fee['line_tax'] / $fee['line_total']) * 100
+                    );
+                    $total += $orderValues['Cart']['Handling']['withouttax'];
+                    $totalTax += $fee['line_tax'] * 100;
+                }
+
+            }
+        endif;
         if ($order->order_shipping>0) :
 
             // We manually calculate the shipping taxrate percentage here
@@ -841,7 +965,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
 
 
-        $round = (round(WC_Payment_Gateway::get_order_total() * 100)) - round($total + $totalTax,0);
+        $round = (round($order->get_total() * 100)) - round($total + $totalTax,0);
 
         $orderValues['Cart']['Total'] = array(
             'withouttax' => round($total),
@@ -930,10 +1054,18 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                 'default' => 'default',
                 'options' => $order_statuses
             ),
+            'checkout_url' => array(
+                'title'       => __( 'Checkout Page', 'billmate' ),
+                'type'        => 'select',
+                'description' => __( 'Please select checkout page.', 'billmate' ),
+                'default'     => '',
+                'options' => $pageOption
+
+            ),
             'terms_url'                    => array(
                 'title'       => __( 'Terms Page', 'billmate' ),
                 'type'        => 'select',
-                'description' => __( 'Please enter url for the terms page.', 'billmate' ),
+                'description' => __( 'Please select the terms page.', 'billmate' ),
                 'default'     => '',
                 'options' => $pageOption
             )
