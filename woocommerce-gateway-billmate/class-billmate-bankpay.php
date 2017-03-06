@@ -175,7 +175,8 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 				$redirect = $this->get_return_url($order);
 			}
 			if($accept_url_hit) {
-				
+				WC()->session->__unset( 'billmate_checkout_hash' );
+				WC()->session->__unset( 'billmate_checkout_order' );
 				wp_safe_redirect($redirect);
 				exit;
 			}
@@ -280,6 +281,8 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 				} else {
 					$redirect = $this->get_return_url($order);
 				}
+				WC()->session->__unset( 'billmate_checkout_hash' );
+				WC()->session->__unset( 'billmate_checkout_order' );
 				wp_safe_redirect($redirect);
 				exit;
 			}
@@ -293,6 +296,8 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			} else {
 				$redirect = $this->get_return_url($order);
 			}
+			WC()->session->__unset( 'billmate_checkout_hash' );
+			WC()->session->__unset( 'billmate_checkout_order' );
 			wp_safe_redirect($redirect);
 			exit;
 		}
