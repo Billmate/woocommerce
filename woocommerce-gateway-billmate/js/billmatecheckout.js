@@ -62,14 +62,15 @@ var BillmateIframe = new function(){
     }
     this.createOrder = function(data){
         // Create Order
-        data.action = 'billmate_create_order';
+        data.action = 'billmate_complete_order';
         jQuery.ajax({
             url : billmate.ajax_url,
             data: data,
             type: 'POST',
             success: function(response){
-                var result = JSON.parse(response);
-                location.href=result.url;
+                console.log(response)
+                if(response.hasOwnProperty("success") && response.success)
+                    location.href=response.data.url;
             }
         });
 

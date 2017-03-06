@@ -65,8 +65,8 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             $this,
             'billmate_set_method'
         ) );
-        add_action('wp_ajax_billmate_complete_order',array($this,'complete_order'));
-        add_action('wp_ajax_nopriv_billmate_complete_order',array($this,'complete_order'));
+        add_action('wp_ajax_billmate_complete_order',array($this,'billmate_complete_order'));
+        add_action('wp_ajax_nopriv_billmate_complete_order',array($this,'billmate_complete_order'));
 
         // Cart quantity
         /*add_action( 'wp_ajax_billmate_checkout_cart_callback_update', array(
@@ -233,7 +233,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         return wc_get_order(WC()->session->get( 'billmate_checkout_order' ));
     }
     
-    function complete_order(){
+    function billmate_complete_order(){
         $order = $this->get_order();
         $connection = new BillMate($this->eid,$this->secret,true,$this->testmode == 'yes');
 
@@ -254,8 +254,6 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
                     $response = array('url' => $redirect);
                     wp_send_json_success($response);
-
-                    exit;
                     break;
                 case 'created':
                 case 'paid':
@@ -273,9 +271,6 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
                     $response = array('url' => $redirect);
                     wp_send_json_success($response);
-
-                    exit;
-
                 break;
                 case 'cancelled':
                     break;
