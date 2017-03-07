@@ -46,8 +46,10 @@ function get_billmate_checkout(){
 
 	$checkout = new WC_Gateway_Billmate_Checkout();
 	
-	if ( sizeof( WC()->cart->get_cart() ) > 0 ) {
+	if ( !WC()->cart->is_empty()) {
 		return '<iframe id="checkout" src="' . $checkout->get_url() . '" sandbox="allow-same-origin allow-scripts allow-modals allow-popups allow-forms allow-top-navigation" style="width:100%;min-height:800px;border:none;"></iframe>';
+	} else {
+		return '';
 	}
 }
 
