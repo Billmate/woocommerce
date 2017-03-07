@@ -424,6 +424,12 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		global $woocommerce;
 		if ($this->enabled=="yes") :
 
+            /* Adjustment in case of checking availability in WooCommerce settings */
+            $parsedUrl = parse_url($_SERVER['REQUEST_URI']);
+            if(is_array($parsedUrl) && isset($parsedUrl['path']) && basename($parsedUrl['path']) == "admin.php" && isset($_GET['page']) && $_GET['page'] == 'wc-settings') {
+                return true;
+            }
+
 			// if (!is_ssl()) return false;
 
 			// Currency check
