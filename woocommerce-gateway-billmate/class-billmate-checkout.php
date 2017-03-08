@@ -101,9 +101,11 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
     function change_to_bco($url){
         if(!is_admin()) {
-            $checkout_url = get_post($this->checkout_url);
+            if($this->enabled == 'yes') {
+                $checkout_url = get_post($this->checkout_url);
 
-            return $checkout_url->guid;
+                return $checkout_url->guid;
+            }
         }
         return $url;
     }
