@@ -240,54 +240,59 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         $connection = new BillMate($this->eid,$this->secret,true,$this->testmode == 'yes');
 
         $result = $connection->getCheckout(array('PaymentData' => array('hash' => $_REQUEST['hash'])));
-        if(!isset($result['code'])){
-            switch (strtolower($result['PaymentData']['order']['status'])){
-                case 'pending':
-                    $order->update_status( 'pending' );
-                    $order->add_order_note( __('Order is PENDING APPROVAL by Billmate. Please visit Billmate Online for the latest status on this order. Billmate Invoice number: ', 'billmate') .$result['PaymentData']['order']['number']);
-                    add_post_meta($order->id,'billmate_invoice_id',$result['PaymentData']['order']['number']);
-                    // Remove cart
-                    WC()->cart->empty_cart();
-                    if(version_compare(WC_VERSION, '2.0.0', '<')){
-                        $redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order->id, get_permalink(get_option('woocommerce_thanks_page_id'))));
-                    } else {
-                        $redirect = $this->get_return_url($order);
-                    }
+        if(is_object($order)) {
+            if (!isset($result['code'])) {
+                switch (strtolower($result['PaymentData']['order']['status'])) {
+                    case 'pending':
+                        $order->update_status('pending');
+                        $order->add_order_note(__('Order is PENDING APPROVAL by Billmate. Please visit Billmate Online for the latest status on this order. Billmate Invoice number: ', 'billmate') . $result['PaymentData']['order']['number']);
+                        add_post_meta($order->id, 'billmate_invoice_id', $result['PaymentData']['order']['number']);
+                        // Remove cart
+                        WC()->cart->empty_cart();
+                        if (version_compare(WC_VERSION, '2.0.0', '<')) {
+                            $redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order->id, get_permalink(get_option('woocommerce_thanks_page_id'))));
+                        } else {
+                            $redirect = $this->get_return_url($order);
+                        }
 
-                    $response = array('url' => $redirect);
-                    WC()->session->__unset( 'billmate_checkout_hash' );
-                    WC()->session->__unset( 'billmate_checkout_order' );
+                        $response = array('url' => $redirect);
+                        WC()->session->__unset('billmate_checkout_hash');
+                        WC()->session->__unset('billmate_checkout_order');
 
 
-                    wp_send_json_success($response);
+                        wp_send_json_success($response);
 
-                    break;
-                case 'created':
-                case 'paid':
-                    $order->update_status( 'pending' );
-                    $order->payment_complete($result['PaymentInfo']['number']);
-                    $order->add_order_note( __('Billmate payment completed. Billmate Invoice number:', 'billmate') .$result['PaymentData']['order']['number'] );
-                    add_post_meta($order->id,'billmate_invoice_id',$result['PaymentData']['order']['number']);
-                    // Remove cart
-                    WC()->cart->empty_cart();
-                    if(version_compare(WC_VERSION, '2.0.0', '<')){
-                        $redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order->id, get_permalink(get_option('woocommerce_thanks_page_id'))));
-                    } else {
-                        $redirect = $this->get_return_url($order);
-                    }
+                        break;
+                    case 'created':
+                    case 'paid':
+                        $order->update_status('pending');
+                        $order->payment_complete($result['PaymentInfo']['number']);
+                        $order->add_order_note(__('Billmate payment completed. Billmate Invoice number:', 'billmate') . $result['PaymentData']['order']['number']);
+                        add_post_meta($order->id, 'billmate_invoice_id', $result['PaymentData']['order']['number']);
+                        // Remove cart
+                        WC()->cart->empty_cart();
+                        if (version_compare(WC_VERSION, '2.0.0', '<')) {
+                            $redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order->id, get_permalink(get_option('woocommerce_thanks_page_id'))));
+                        } else {
+                            $redirect = $this->get_return_url($order);
+                        }
 
-                    $response = array('url' => $redirect);
+                        $response = array('url' => $redirect);
 
-                    WC()->session->__unset( 'billmate_checkout_hash' );
-                    WC()->session->__unset( 'billmate_checkout_order' );
+                        WC()->session->__unset('billmate_checkout_hash');
+                        WC()->session->__unset('billmate_checkout_order');
 
-                wp_send_json_success($response);
-                break;
-                case 'cancelled':
-                    break;
-                case 'failed':
-                    break;
+                        wp_send_json_success($response);
+                        break;
+                    case 'cancelled':
+                        break;
+                    case 'failed':
+                        break;
+                }
             }
+        } else {
+            wp_redirect(wc_get_cart_url());
+            exit();
         }
 
 
