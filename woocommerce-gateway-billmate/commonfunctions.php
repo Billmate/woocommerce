@@ -976,7 +976,7 @@ if(!class_exists('BillmateOrder')){
             if ( version_compare( WOOCOMMERCE_VERSION, '2.0', '>' ) ) {
                 $fees = WC()->cart->get_fees();
                 foreach($fees as $fee){
-                    if(strtolower($fee->id) != strtolower(__('Invoice fee','billmate'))) {
+                    if(strtolower($fee->id) != strtolower(__('Invoice fee','billmate')) AND strtolower($fee->name) != strtolower(__('Invoice fee','billmate'))) {
                         $tax = new WC_Tax();
                         $invoicetax = $tax->get_rates($fee->tax_class);
                         $rate = array_pop($invoicetax);
