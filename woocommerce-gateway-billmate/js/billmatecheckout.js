@@ -46,8 +46,10 @@ var BillmateIframe = new function(){
                 type: 'POST',
                 success: function (response) {
                     if (response.hasOwnProperty("success") && response.success) {
+
                         jQuery( 'body' ).trigger( 'update_checkout' );
-                        self.updateCheckout();
+                        if(response.data.update_checkout)
+                            self.updateCheckout();
 
                         window.method = data.method;
 
@@ -136,6 +138,10 @@ var BillmateIframe = new function(){
                     break;
                 case 'content_height':
                     jQuery('#checkout').height(json.data);
+                    break;
+                case 'content_scroll_position':
+                    console.log('Scroll position'+json.data);
+                    jQuery('html, body').animate({scrollTop: jQuery(document).find( "#checkout" ).offset().top + json.data}, 400);
                     break;
                 default:
                     console.log(event);

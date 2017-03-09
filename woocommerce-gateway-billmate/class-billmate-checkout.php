@@ -225,8 +225,8 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             $order->calculate_taxes();
             $order->calculate_shipping();
             $order->calculate_totals();
-            $this->updateCheckout($result, $order);
-            wp_send_json_success();
+            $data = $this->updateCheckout($result, $order);
+            wp_send_json_success($data);
         }
         wp_send_json_error();
     }
@@ -384,8 +384,8 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             $order->calculate_taxes();
             $order->calculate_shipping();
             $order->calculate_totals();
-            $this->updateCheckout($result, $order);
-            wp_send_json_success();
+            $data = $this->updateCheckout($result, $order);
+            wp_send_json_success($data);
         }
         wp_send_json_error();
     }
@@ -821,7 +821,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         $orderValues = $result;
         $total = 0;
         $totalTax = 0;
-
+        $previousTotal = $result['Cart']['Total']['withtax'];
         unset($orderValues['Articles']);
         if (sizeof($order->get_items())>0) : foreach ($order->get_items() as $item) :
 
@@ -993,7 +993,15 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             'rounding' => round($round),
             'withtax' => round($total + $totalTax + $round)
         );
-        return $billmate->updateCheckout($orderValues);
+        $data = $billmate->updateCheckout($orderValues);
+        
+        if(!isset($data['code'])){
+            if($previousTotal != $orderValues['Cart']['Total']['withtax']){
+                return array('update_checkout' => true);
+            } else {
+                return array('update_checkout' => false);
+            }
+        }
 
     }
 
