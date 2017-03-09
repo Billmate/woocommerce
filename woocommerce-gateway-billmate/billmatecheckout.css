@@ -1,0 +1,29 @@
+.billmateoverlay {
+    display:    none;
+    position:   relative;
+    z-index:    1000;
+    top:        -700px;
+    left:       0;
+    width: 200px;
+    height: 200px;
+    margin: auto auto;
+    border: 3px solid rgba(0,0,0,0);
+    border-radius: 50%;
+    border-top: 2px solid #fff;
+    border-right: 2px solid #fff;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+}
+
+#checkoutdiv.loading {
+    overflow: hidden;
+}
+
+/* Anytime the body has the loading class, our
+   modal element will be visible */
+#checkoutdiv.loading .billmateoverlay {
+    display: block;
+}
+#checkoutdiv.loading #checkout{
+    display:none;
+}

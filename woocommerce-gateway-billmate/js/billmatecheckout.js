@@ -4,6 +4,7 @@
 window.method = null;
 window.address_selected = null;
 window.hash = null;
+
 var BillmateIframe = new function(){
     var self = this;
     var childWindow = null;
@@ -179,5 +180,15 @@ jQuery(document).ready(function(){
             },
             
         })
+
+    })
+    jQuery(document).ajaxStart(function(){
+        var height = jQuery('#checkout').height();
+        jQuery('.billmateoverlay').height(height);
+        jQuery('#checkoutdiv').addClass('loading');
+    })
+    jQuery(document).ajaxComplete(function(){
+        jQuery('#checkoutdiv').removeClass('loading');
+
     })
 })
