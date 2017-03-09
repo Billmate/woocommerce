@@ -27,3 +27,6 @@
 #checkoutdiv.loading #checkout{
     display:none;
 }
+.cart-totals > .wc-proceed-to-checkout {
+    display:none;
+}
