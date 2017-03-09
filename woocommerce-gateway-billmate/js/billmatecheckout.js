@@ -4,6 +4,7 @@
 window.method = null;
 window.address_selected = null;
 window.hash = null;
+window.latestScroll = null;
 
 var BillmateIframe = new function(){
     var self = this;
@@ -142,6 +143,7 @@ var BillmateIframe = new function(){
                     break;
                 case 'content_scroll_position':
                     console.log('Scroll position'+json.data);
+                    window.latestScroll = jQuery(document).find( "#checkout" ).offset().top + json.data;
                     jQuery('html, body').animate({scrollTop: jQuery(document).find( "#checkout" ).offset().top + json.data}, 400);
                     break;
                 default:
@@ -183,9 +185,8 @@ jQuery(document).ready(function(){
 
     })
     jQuery(document).ajaxStart(function(){
-        var height = jQuery('#checkout').height();
-        jQuery('.billmateoverlay').height(height);
         jQuery('#checkoutdiv').addClass('loading');
+
     })
     jQuery(document).ajaxComplete(function(){
         jQuery('#checkoutdiv').removeClass('loading');
