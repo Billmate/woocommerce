@@ -29,4 +29,10 @@
 }
 .wc-proceed-to-checkout {
     display:none!important;
+    height: 0px !important;
+    margin: 0px !important;
+    overflow: hidden !important;
+    padding: 0px !important;
+    position: relative !important;
+    width: 0px !important;
 }
