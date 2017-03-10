@@ -201,17 +201,17 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                     break;
                 case 8:
                     $method = 'billmate_cardpay';
-                    $result['PaymentData']['accepturl'] = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Cardpay&payment=success';
-                    $result['PaymentData']['callbackurl'] = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Cardpay';
-                    $result['PaymentData']['cancelurl'] = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Cardpay&payment=cancel';
+                    $result['PaymentData']['accepturl'] = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Cardpay&payment=success&method=checkout';
+                    $result['PaymentData']['callbackurl'] = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Cardpay&method=checkout';
+                    $result['PaymentData']['cancelurl'] = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Cardpay&payment=cancel&method=checkout';
                     $result['PaymentData']['returnmethod'] = is_ssl() ? 'POST' : 'GET';
                     //$class = new WC_Gateway_Billmate_Cardpay();
                     break;
                 case 16:
                     $method = 'billmate_bankpay';
-                    $result['PaymentData']['accepturl'] = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Bankpay&payment=success';
-                    $result['PaymentData']['callbackurl'] = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Bankpay';
-                    $result['PaymentData']['cancelurl'] = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Bankpay&payment=cancel';
+                    $result['PaymentData']['accepturl'] = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Bankpay&payment=success&method=checkout';
+                    $result['PaymentData']['callbackurl'] = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Bankpay&method=checkout';
+                    $result['PaymentData']['cancelurl'] = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Bankpay&payment=cancel&method=checkout';
                     $result['PaymentData']['returnmethod'] = is_ssl() ? 'POST' : 'GET';
                     //$class = new WC_Gateway_Billmate_Bankpay();
                     break;
