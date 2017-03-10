@@ -69,14 +69,14 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         add_action('wp_ajax_nopriv_billmate_complete_order',array($this,'billmate_complete_order'));
 
         // Cart quantity
-        /*add_action( 'wp_ajax_billmate_checkout_cart_callback_update', array(
+        add_action( 'wp_ajax_billmate_checkout_cart_callback_update', array(
             $this,
             'billmate_checkout_cart_callback_update'
         ) );
         add_action( 'wp_ajax_nopriv_billmate_checkout_cart_callback_update', array(
             $this,
             'billmate_checkout_cart_callback_update'
-        ) );*/
+        ) );
         // Cart remove
         add_action( 'wp_ajax_billmate_checkout_remove_item', array(
             $this,
@@ -391,7 +391,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
     }
 
     function billmate_checkout_cart_callback_update() {
-        if ( ! wp_verify_nonce( $_REQUEST['nonce'], 'billmate_checkout_nonce' ) ) {
+        if ( ! wp_verify_nonce( $_REQUEST['billmate_checkout_nonce'], 'billmate_checkout_nonce' ) ) {
             exit( 'Nonce can not be verified.' );
         }
         global $woocommerce;
@@ -413,13 +413,15 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         $woocommerce->cart->calculate_shipping();
         $woocommerce->cart->calculate_fees();
         $woocommerce->cart->calculate_totals();
-        $this->create_order();
-        $this->get_url();
-        $data['success'] = true;
-        $data['update'] = true;
+        $orderId = $this->create_order();
+        $order = wc_get_order($orderId);
+        $billmate = new Billmate($this->eid,$this->secret,true, $this->testmode == 'yes',false);
+
+        $result = $billmate->getCheckout(array('PaymentData' => array('hash' => WC()->session->get( 'billmate_checkout_hash' ))));
+
+        $data = $this->updateCheckout($result,$order);
 
         wp_send_json_success( $data );
-        wp_die();
     }
 
     function create_order( $customer_email = '' ) {

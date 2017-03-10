@@ -94,6 +94,31 @@ var BillmateIframe = new function(){
             window.addEventListener("message",self.handleEvent);
 
         })
+        jQuery(document).on('change', 'td.product-quantity input[type=number]', function (event) {
+
+            var name = jQuery(this).attr('name');
+            var regex = /cart\[(.*)\]\[qty\]/gi;
+            var result = regex.exec(name);
+            jQuery.ajax({
+                url:billmate.ajax_url,
+                type:'POST',
+                data: {
+                    action : 'billmate_checkout_cart_callback_update',
+                    billmate_checkout_nonce: billmate.billmate_checkout_nonce,
+                    cart_item_key: result[1],
+                    new_quantity: jQuery(this).val()
+                },
+                success: function(response){
+                    if(response.success){
+                        if(response.data.update_checkout){
+                            self.updateCheckout();
+                        }
+                    }
+                }
+
+            })
+
+        })
         jQuery(document.body).on('updated_shipping_method',function(e){
             self.updateBillmate();
             jQuery( 'body' ).trigger( 'update_checkout' );
