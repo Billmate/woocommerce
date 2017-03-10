@@ -137,7 +137,10 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		$recurring = false;
 		$cancel_url_hit = false;
 		$accept_url_hit = false;
+		$checkout = false;
 		$k = new Billmate($this->eid,$this->secret,true,$this->testmode,false);
+		if(!empty($_GET['method']) && $_GET['method'] == 'checkout')
+			$checkout = true;
 		if( !empty($_GET['payment']) && $_GET['payment'] == 'success' ) {
 			if(!empty($_GET['recurring']) && $_GET['recurring'] == 1){
 				$recurring = true;
@@ -255,14 +258,18 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		} else {
 			$order_status_terms = wp_get_object_terms( $order_id, 'shop_order_status', array('fields' => 'slugs') ); $order_status = $order_status_terms[0];
 		}
-		if( in_array($order_status, array('pending','cancelled')) ){
+		if( in_array($order_status, array('pending','cancelled','wc-bm-incomplete')) ){
 			//$order->update_status('completed', $payment_note);
-			if($data['status'] == 'Paid') {
+			if($data['status'] == 'Paid' || $data['status'] == 'Created') {
 				add_post_meta($order->id,'billmate_invoice_id',$data['number']);
 				$order->add_order_note(sprintf(__('Billmate Invoice id: %s','billmate'),$data['number']));
 				if ($this->order_status == 'default') {
+					if($checkout)
+						$order->update_status('pending');
 					$order->payment_complete();
 				} else {
+					if($checkout)
+						$order->update_status('pending');
 					$order->update_status($this->order_status);
 				}
 			}

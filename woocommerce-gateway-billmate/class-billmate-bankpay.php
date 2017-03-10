@@ -120,6 +120,9 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		$accept_url_hit = false;
 		$cancel_url_hit = false;
         $checkoutMessageCancel = __('Unfortunately your bank payment was not processed with the provided bank details. Please try again or choose another payment method.', 'billmate');
+		$checkout = false;
+		if(!empty($_GET['method']) && $_GET['method'] == 'checkout')
+			$checkout = true;
 		if( !empty($_GET['payment']) && $_GET['payment'] == 'success' ) {
 
 			if(is_array($_GET) && isset($_GET['data']))
@@ -225,15 +228,19 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		} else {
 			$order_status_terms = wp_get_object_terms( $order_id, 'shop_order_status', array('fields' => 'slugs') ); $order_status = $order_status_terms[0];
 		}
-		if( in_array($order_status, array('pending','cancelled')) ){
+		if( in_array($order_status, array('pending','cancelled','wc-bm-incomplete')) ){
 			if($data['status'] == 'Paid') {
 				add_post_meta($order->id,'billmate_invoice_id',$data['number']);
 				$order->add_order_note(sprintf(__('Billmate Invoice id: %s','billmate'),$data['number']));
 
 				if ($this->order_status == 'default') {
+					if($checkout)
+						$order->update_status('pending');
 					$order->add_order_note(__($payment_note,'billmate'));
 					$order->payment_complete();
 				} else {
+					if($checkout)
+						$order->update_status('pending');
 					$order->add_order_note(__($payment_note,'billmate'));
 					$order->update_status($this->order_status);
 				}
