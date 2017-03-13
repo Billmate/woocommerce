@@ -212,6 +212,7 @@ jQuery(document).ready(function(){
     })
     jQuery(document).ajaxStart(function(){
         jQuery('#checkoutdiv').addClass('loading');
+        jQuery("#checkoutdiv.loading .billmateoverlay").height(jQuery("#checkoutdiv").height());
 
     })
     jQuery(document).ajaxComplete(function(){
