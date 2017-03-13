@@ -110,6 +110,7 @@ var BillmateIframe = new function(){
                 },
                 success: function(response){
                     if(response.success){
+                        jQuery(document.body).trigger('wc_update_cart');
                         if(response.data.update_checkout){
                             self.updateCheckout();
                         }
