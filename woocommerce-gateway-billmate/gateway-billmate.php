@@ -154,11 +154,12 @@ function init_billmate_gateway() {
 			if($checkout->enabled == 'yes' && is_page($checkout->checkout_url)){
 				wp_enqueue_style( 'billmate-checkous', plugins_url( '/billmatecheckout.css', __FILE__ ), array(), '1.0', 'all');
 
+				wp_register_script( 'billmate-checkout-js', plugins_url( '/js/billmatecheckout.js', __FILE__ ),array(),false, true );
+				wp_enqueue_script( 'billmate-checkout-js' );
+				wp_localize_script( 'billmate-checkout-js', 'billmate',
+					array( 'ajax_url' => admin_url( 'admin-ajax.php' ),'billmate_checkout_nonce' => wp_create_nonce('billmate_checkout_nonce')) );
+
 			}
-			wp_register_script( 'billmate-checkout-js', plugins_url( '/js/billmatecheckout.js', __FILE__ ),array(),false, true );
-			wp_enqueue_script( 'billmate-checkout-js' );
-			wp_localize_script( 'billmate-checkout-js', 'billmate',
-				array( 'ajax_url' => admin_url( 'admin-ajax.php' ),'billmate_checkout_nonce' => wp_create_nonce('billmate_checkout_nonce')) );
 
 
 
