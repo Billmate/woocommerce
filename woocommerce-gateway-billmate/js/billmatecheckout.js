@@ -36,6 +36,7 @@ var BillmateIframe = new function(){
                 if(response.hasOwnProperty("success") && response.success) {
                     window.address_selected = true;
                 }
+                self.updateCheckout();
             }
         });
     };
@@ -122,8 +123,6 @@ var BillmateIframe = new function(){
         })
         jQuery(document.body).on('updated_shipping_method',function(e){
             self.updateBillmate();
-            jQuery( 'body' ).trigger( 'update_checkout' );
-            self.updateCheckout();
         })
         jQuery(document.body).on('applied_coupon',function(e){
             self.updateBillmate();
@@ -148,13 +147,11 @@ var BillmateIframe = new function(){
             console.log(json);
             switch (json.event) {
                 case 'address_selected':
-                    window.hash = json.data.hash;
                     self.updateAddress(json.data);
                     self.updatePaymentMethod(json.data);
                     //self.updateTotals();
                     break;
                 case 'payment_method_selected':
-                    window.hash = json.data.hash;
 
                     if (window.address_selected !== null) {
                         self.updatePaymentMethod(json.data);
@@ -186,7 +183,6 @@ var BillmateIframe = new function(){
     };
 
     this.updateCheckout = function(){
-        console.log('update_checkout');
         var win = document.getElementById('checkout').contentWindow;
         win.postMessage(JSON.stringify({event: 'update_checkout'}),'*')
     }
@@ -217,6 +213,6 @@ jQuery(document).ready(function(){
         jQuery('#checkoutdiv').addClass('loading');
         jQuery("#checkoutdiv.loading .billmateoverlay").height(jQuery("#checkoutdiv").height());
 
-    })
-    
-})
+    });
+
+});

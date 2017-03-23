@@ -172,7 +172,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
     function billmate_set_method(){
 
         $connection = new BillMate($this->eid,$this->secret,true,$this->testmode == 'yes');
-        $result = $connection->getCheckout(array('PaymentData' => array('hash' => $_REQUEST['hash'])));
+        $result = $connection->getCheckout(array('PaymentData' => array('hash' => WC()->session->get('billmate_checkout_hash'))));
         if(!isset($result['code'])) {
             $class = '';
 
@@ -239,7 +239,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         $order = $this->get_order();
         $connection = new BillMate($this->eid,$this->secret,true,$this->testmode == 'yes');
 
-        $result = $connection->getCheckout(array('PaymentData' => array('hash' => $_REQUEST['hash'])));
+        $result = $connection->getCheckout(array('PaymentData' => array('hash' => WC()->session->get('billmate_checkout_hash'))));
         if(is_object($order)) {
             if (!isset($result['code'])) {
                 switch (strtolower($result['PaymentData']['order']['status'])) {
@@ -302,9 +302,14 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         global $woocommerce;
 
         $connection = new BillMate($this->eid,$this->secret,true,$this->testmode == 'yes');
-        $result = $connection->getCheckout(array('PaymentData' => array('hash' => $_REQUEST['hash'])));
-        if(!isset($result['code'])){
-            WC()->session->set( 'billmate_checkout_hash',$_REQUEST['hash'] );
+        $result = array("code" => "no hash");
+
+        $hash = WC()->session->get('billmate_checkout_hash');
+        if($hash != "") {
+            $result = $connection->getCheckout(array('PaymentData' => array('hash' => $hash)));
+        }
+
+        if($hash != "" AND isset($result['code']) == false){
             if($result['PaymentData']['method'] == 1){
 
                 $invoice_fee = new WC_Gateway_Billmate_Invoice;
@@ -331,22 +336,24 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                 'postcode'   => $result['Customer']['Billing']['zip'],
                 'country'    => $result['Customer']['Billing']['country']
             );
-            if (!isset($result['Customer']['Shipping']) ||(isset($result['Customer']['Shipping']) && count($result['Customer']['Shipping']) == 0)) {
-                $result['Customer']['Shipping'] = $result['Customer']['Billing'];
+
+            if(isset($result['Customer']['Shipping']) AND is_array($result['Customer']['Shipping']) AND count($result['Customer']['Shipping']) > 0) {
+                $shipping_address = array(
+                    'first_name' => $result['Customer']['Shipping']['firstname'],
+                    'last_name'  => $result['Customer']['Shipping']['lastname'],
+                    'company'    => $result['Customer']['Shipping']['company'],
+                    'email'      => $result['Customer']['Shipping']['email'],
+                    'phone'      => $result['Customer']['Shipping']['phone'],
+                    'address_1'  => $result['Customer']['Shipping']['street'],
+                    'address_2'  => '',
+                    'city'       => $result['Customer']['Shipping']['city'],
+                    'state'      => '',
+                    'postcode'   => $result['Customer']['Shipping']['zip'],
+                    'country'    => $result['Customer']['Shipping']['country']
+                );
+            } else {
+                $shipping_address = $billing_address;
             }
-            $shipping_address = array(
-                'first_name' => $result['Customer']['Shipping']['firstname'],
-                'last_name'  => $result['Customer']['Shipping']['lastname'],
-                'company'    => $result['Customer']['Shipping']['company'],
-                'email'      => $result['Customer']['Shipping']['email'],
-                'phone'      => $result['Customer']['Shipping']['phone'],
-                'address_1'  => $result['Customer']['Shipping']['street'],
-                'address_2'  => '',
-                'city'       => $result['Customer']['Shipping']['city'],
-                'state'      => '',
-                'postcode'   => $result['Customer']['Shipping']['zip'],
-                'country'    => $result['Customer']['Shipping']['country']
-            );
             $order->set_address($billing_address,'billing');
             $order->set_address($shipping_address,'shipping');
 
@@ -812,7 +819,19 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             'withtax' => round($total + $totalTax + $round)
         );
 
-        return $billmate->initCheckout($orderValues);
+
+        $result = $billmate->initCheckout($orderValues);
+
+        // Save checkout hash
+        if(!isset($result['code']) AND isset($result['url']) AND $result['url'] != "") {
+           $url = $result['url'];
+           $parts = explode('/',$url);
+           $sum = count($parts);
+           $hash = ($parts[$sum-1] == 'test') ? str_replace('\\','',$parts[$sum-2]) : str_replace('\\','',$parts[$sum-1]);
+           WC()->session->set('billmate_checkout_hash', $hash);
+       }
+
+        return $result;
 
     }
 
@@ -966,8 +985,8 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
             }
         endif;
-        if ($order->order_shipping>0) :
 
+        if ($order->order_shipping>0) :
             // We manually calculate the shipping taxrate percentage here
             $calculated_shipping_tax_percentage = ($order->order_shipping_tax/$order->order_shipping)*100; //25.00
             $calculated_shipping_tax_decimal = ($order->order_shipping_tax/$order->order_shipping)+1; //0.25
