@@ -51,14 +51,17 @@ var BillmateIframe = new function(){
                     if (response.hasOwnProperty("success") && response.success) {
 
                         jQuery( 'body' ).trigger( 'update_checkout' );
-                        if(response.data.update_checkout)
+                        if(response.data.update_checkout) {
                             self.updateCheckout();
-
+                        } else {
+                            jQuery('#checkoutdiv').removeClass('loading');
+                        }
                         window.method = data.method;
-
                     }
                 }
             });
+        } else {
+            jQuery('#checkoutdiv').removeClass('loading');
         }
 
     };
