@@ -904,6 +904,10 @@ msgstr "En fakturaavgift på %1$s tillkommer på orderbeloppet."
 msgid "Personal / Corporate "
 msgstr "Person / Organisationsnummer"
 
+#: ../class-billmate-invoice.php:551
+msgid "terms of invoice"
+msgstr "köpvillkoren"
+
 #: ../class-billmate-invoice.php:1353
 msgid "<strong>Gender</strong> is a required field"
 msgstr "<strong>Kön</strong> krävs för att gå vidare"
