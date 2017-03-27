@@ -34,6 +34,8 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
         $this->testmode				= ( isset( $this->settings['testmode'] ) ) ? $this->settings['testmode'] : '';
 
+        $this->errorCode = "";
+        $this->errorMessage = "";
 
         /* 1.6.6 */
         add_action( 'woocommerce_update_options_payment_gateways', array( &$this, 'process_admin_options' ) );
@@ -627,15 +629,21 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             $checkout = $billmate->getCheckout(array('PaymentData' => array('hash' => WC()->session->get( 'billmate_checkout_hash' ))));
             if(!isset($checkout['code'])){
                 return $checkout['PaymentData']['url'];
+            } else {
+                $this->errorCode = (isset($checkout['code'])) ? $checkout['code'] : $this->errorCode;
+                $this->errorMessage = (isset($checkout['message'])) ? $checkout['message'] : $this->errorMessage;
             }
         } else {
             $result = $this->initCheckout($orderId);
             if(!isset($result['code'])){
                 return $result['url'];
+            } else {
+                $this->errorCode = (isset($result['code'])) ? $result['code'] : $this->errorCode;
+                $this->errorMessage = (isset($result['message'])) ? $result['message'] : $this->errorMessage;
             }
 
         }
-        
+
     }
 
     function initCheckout($orderId = null){
@@ -1121,6 +1129,13 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         ) );
         
 
+    }
+
+    public function get_error() {
+        return array(
+            "code" => $this->errorCode,
+            "message" => $this->errorMessage
+        );
     }
 }
 class WC_Gateway_Billmate_Checkout_Extra{

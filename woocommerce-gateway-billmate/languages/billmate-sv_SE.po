@@ -940,6 +940,14 @@ msgstr ""
 "kredit/debit kort och direkt bankbetalning. Säkert och 100&#37; gratis "
 "plugin."
 
+#: ../shortcodes.php:62
+msgid "Billmate Checkout could not be loaded, please contact store manager. Language need to be set to SV. Error code: %s"
+msgstr "Billmate Checkout kunde inte laddas, vänligen kontakta butiksansvarig. Språk behöver vara inställd på SV. Felkod: %s"
+
+#: ../shortcodes.php:64
+msgid "Billmate Checkout could not be loaded, please contact store manager. Error code: %s"
+msgstr "Billmate Checkout kunde inte laddas, vänligen kontakta butiksansvarig. Felkod: %s"
+
 #~ msgid "Subscription Payment Failed: "
 #~ msgstr "Prenumerationsbetalning misslyckades:"
 

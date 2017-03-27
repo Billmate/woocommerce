@@ -47,9 +47,18 @@ function get_billmate_checkout(){
 	$checkout = new WC_Gateway_Billmate_Checkout();
 	
 	if ( !WC()->cart->is_empty()) {
-		return '<div id="checkoutdiv"><iframe id="checkout" src="' . $checkout->get_url() . '" sandbox="allow-same-origin allow-scripts allow-modals allow-popups allow-forms allow-top-navigation" style="width:100%;min-height:800px;border:none;"></iframe><div class="billmateoverlay"></div><div class="billmateloading"></div></div>';
-	} else {
-		return '';
+        $checkoutUrl = $checkout->get_url();
+        $wpLanguage = strtolower(current(explode('_',get_locale())));
+
+        if($checkoutUrl != "") {
+		  return '<div id="checkoutdiv"><iframe id="checkout" src="' . $checkoutUrl . '" sandbox="allow-same-origin allow-scripts allow-modals allow-popups allow-forms allow-top-navigation" style="width:100%;min-height:800px;border:none;"></iframe><div class="billmateoverlay"></div><div class="billmateloading"></div></div>';
+        } else {
+            $checkoutError = $checkout->get_error();
+            if($wpLanguage != "sv") {
+                return '<div id="checkoutdiv">'.sprintf(__('Billmate Checkout could not be loaded, please contact store manager. Language need to be set to SV. Error code: %s','billmate'), $checkoutError['code']).'</div>';
+            }
+            return '<div id="checkoutdiv">'.sprintf(__('Billmate Checkout could not be loaded, please contact store manager. Error code: %s','billmate'), $checkoutError['code']).'</div>';
+        }
 	}
 }
 
