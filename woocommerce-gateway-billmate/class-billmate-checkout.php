@@ -820,6 +820,33 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
         $round = (round(WC_Payment_Gateway::get_order_total() * 100)) - round($total + $totalTax,0);
 
+        /* Make sure available handling fee is added when init checkout, at this point, no payment will be made */
+        if(!isset($orderValues['Cart']['Handling'])) {
+            $invoice_fee = new WC_Gateway_Billmate_Invoice;
+            $tax = new WC_Tax();
+            $rate = $tax->get_rates($invoice_fee->invoice_fee_tax_class);
+            $rate = array_pop($rate);
+            $rate = round($rate['rate']);
+            $invoiceFee = $invoice_fee->invoice_fee * 100;
+
+            if($invoiceFee > 0) {
+                $orderValues['Cart']['Handling'] = array(
+                    'withouttax' => $invoiceFee,
+                    'taxrate' => $rate
+                );
+                $rateTimes = 1;
+                if($rate > 0) {
+                    $rateTimes = 1 + ($rate / 100);
+                }
+
+                $invoiceFeeTotal = $invoiceFee;
+                $invoiceFeeTax = ($invoiceFee * $rateTimes) - $invoiceFee;
+                $total += $invoiceFeeTotal;
+                $totalTax += $invoiceFeeTax;
+            }
+        }
+
+
         $orderValues['Cart']['Total'] = array(
             'withouttax' => round($total),
             'tax' => round($totalTax,0),
