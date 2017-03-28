@@ -65,8 +65,6 @@ var BillmateIframe = new function(){
                     }
                 }
             });
-        } else {
-            self.hideCheckoutLoading();
         }
 
     };
