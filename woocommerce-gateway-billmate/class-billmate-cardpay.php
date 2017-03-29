@@ -258,7 +258,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		} else {
 			$order_status_terms = wp_get_object_terms( $order_id, 'shop_order_status', array('fields' => 'slugs') ); $order_status = $order_status_terms[0];
 		}
-		if( in_array($order_status, array('pending','cancelled','wc-bm-incomplete')) ){
+		if( in_array($order_status, array('pending','cancelled','bm-incomplete')) ){
 			//$order->update_status('completed', $payment_note);
 			if($data['status'] == 'Paid' || $data['status'] == 'Created') {
 				add_post_meta($order->id,'billmate_invoice_id',$data['number']);

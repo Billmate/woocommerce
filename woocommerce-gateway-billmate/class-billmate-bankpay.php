@@ -228,7 +228,15 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		} else {
 			$order_status_terms = wp_get_object_terms( $order_id, 'shop_order_status', array('fields' => 'slugs') ); $order_status = $order_status_terms[0];
 		}
-		if( in_array($order_status, array('pending','cancelled','wc-bm-incomplete')) ){
+
+		if( in_array($order_status, array('pending','cancelled','bm-incomplete')) ){
+            if($data['status'] == 'Pending') {
+                if($checkout) {
+                    $order->add_order_note(__($payment_note,'billmate'));
+                    $order->update_status('pending');
+                    delete_transient('billmate_bankpay_order_id_'.$order_id);
+                }
+            }
 			if($data['status'] == 'Paid') {
 				add_post_meta($order->id,'billmate_invoice_id',$data['number']);
 				$order->add_order_note(sprintf(__('Billmate Invoice id: %s','billmate'),$data['number']));
