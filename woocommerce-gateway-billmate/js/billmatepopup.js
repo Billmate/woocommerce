@@ -228,7 +228,6 @@ AddEvent(window,'load',function(){
         errors.each(function(index, error){
             if((error = $(error).children('i'))) {
                 error = $(error).attr('data-error-code');
-                console.log(error);
             }
 
             if(typeof error != 'undefined') {

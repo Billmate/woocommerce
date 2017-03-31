@@ -80,7 +80,6 @@ var BillmateIframe = new function(){
             data: data,
             type: 'POST',
             success: function(response){
-                console.log(response)
                 if(response.hasOwnProperty("success") && response.success)
                     location.href=response.data.url;
             }
@@ -99,19 +98,16 @@ var BillmateIframe = new function(){
     };
     this.initListeners = function () {
         jQuery(document).ready(function () {
-            console.log('initEventListeners');
             window.addEventListener("message",self.handleEvent);
 
         });
 
         jQuery(document).on('click', "input[name='update_cart']", function() {
-            console.log("update cart item amount");
             jQuery('#checkoutdiv').addClass('loading');
             jQuery("#checkoutdiv.loading .billmateoverlay").height(jQuery("#checkoutdiv").height());
         });
 
         jQuery(document.body).on('wc_fragments_refreshed',function(e){
-            console.log("product-quantity changed");
             self.updateBillmate();
             jQuery( 'body' ).trigger( 'update_checkout' );
         });
@@ -131,7 +127,6 @@ var BillmateIframe = new function(){
         })
     }
     this.handleEvent = function(event){
-        console.log(event);
         if(event.origin == "https://checkout.billmate.se") {
             try {
                 var json = JSON.parse(event.data);
@@ -139,7 +134,6 @@ var BillmateIframe = new function(){
                 return;
             }
             self.childWindow = json.source;
-            console.log(json);
             switch (json.event) {
                 case 'address_selected':
                     self.updateAddress(json.data);
@@ -160,7 +154,6 @@ var BillmateIframe = new function(){
                     jQuery('#checkout').height(json.data);
                     break;
                 case 'content_scroll_position':
-                    console.log('Scroll position'+json.data);
                     window.latestScroll = jQuery(document).find( "#checkout" ).offset().top + json.data;
                     jQuery('html, body').animate({scrollTop: jQuery(document).find( "#checkout" ).offset().top + json.data}, 400);
                     break;
@@ -168,8 +161,6 @@ var BillmateIframe = new function(){
                     self.hideCheckoutLoading();
                     break;
                 default:
-                    console.log(event);
-                    console.log('not implemented')
                     break;
 
             }

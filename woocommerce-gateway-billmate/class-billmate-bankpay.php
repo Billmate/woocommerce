@@ -145,7 +145,6 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			$cancel_url_hit = true;
 			$payment_note = 'Note: Payment Cancelled.';
 		} else {
-			error_log('$_GET'.print_r($_GET,true));
 			$_POST = (is_array($_GET) && isset($_GET['data'])) ? $_GET : file_get_contents("php://input");
 			$accept_url_hit = false;
 			$payment_note = 'Note: Payment Completed (callback success).';

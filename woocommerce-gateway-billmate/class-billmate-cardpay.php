@@ -762,7 +762,6 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			$totalTax += (($shipping_price-$order->order_shipping_tax) * ($calculated_shipping_tax_percentage/100))*100;
 		endif;
 
-		error_log('subscription_total',WC_Subscriptions_Order::get_recurring_total($order));
 		$round = 0;//(round($order->order_total,2)*100) - round($total + $totalTax,0);
 
 

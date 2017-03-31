@@ -218,7 +218,6 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                     //$class = new WC_Gateway_Billmate_Bankpay();
                     break;
             }
-            //error_log('className'.get_class($class));
 
 
             $available_gateways = WC()->payment_gateways->payment_gateways();
@@ -473,11 +472,9 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             'customer_id' => $customer_id,
             'created_via' => 'billmate_checkout',
         );
-        error_log('$order_data'.print_r($order_data,true));
 
         // Create the order.
         $order = wc_create_order( $order_data );
-        error_log('$order'.print_r($order,true));
 
         if ( is_wp_error( $order ) ) {
             throw new Exception( __( 'Error: Unable to create order. Please try again.', 'woocommerce' ) );
