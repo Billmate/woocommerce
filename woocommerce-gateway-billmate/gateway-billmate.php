@@ -74,13 +74,50 @@ function activate_billmate_gateway(){
 		add_action('admin_notices','wordfence_notice');
 	}
 
+    maby_update_billmate_gateway();
 }
+
 function wordfence_notice(){
 	echo '<div id="message" class="warning">';
 	echo '<p>'.__("To make Wordfence and Billmate Gateway work toghether you have to add the Callback IP to the whitelist. To do so navigate to Wordfence->Options and then scroll down to \"Other Options\". Find \"Whitelisted IP addresses that bypass all rules\" and add the IP 54.194.217.63.",'billmate').'</p>';
 	echo '</div>';
 }
 register_activation_hook(__FILE__,'activate_billmate_gateway');
+
+add_action( 'admin_init', 'maby_update_billmate_gateway' );
+function maby_update_billmate_gateway() {
+    if(version_compare(get_option("woocommerce_billmate_version"), BILLPLUGIN_VERSION, '<')) {
+        update_billmate_gateway();
+    }
+}
+
+function update_billmate_gateway() {
+    // Maby create new page for Billmate Checkout
+    $checkoutSettings = get_option("woocommerce_billmate_checkout_settings", array());
+    if(!isset($checkoutSettings['checkout_url']) OR intval($checkoutSettings['checkout_url']) != $checkoutSettings['checkout_url']) {
+        if(function_exists("wc_create_page")) {
+            $pageId = wc_create_page('billmate-checkout','','Billmate Checkout', '[woocommerce_cart] [billmate_checkout]',0);
+            if($pageId == intval($pageId) AND intval($pageId) > 0) {
+                $checkoutSettings['checkout_url'] = $pageId;
+                update_option('woocommerce_billmate_checkout_settings', $checkoutSettings);
+            }
+        }
+    }
+
+    // Maby use WooCommerce terms page for Billmate Checkout
+    if(!isset($checkoutSettings['terms_url']) OR intval($checkoutSettings['terms_url']) != $checkoutSettings['terms_url']) {
+        if(function_exists("wc_get_page_id")) {
+            $wcTermsPageId = wc_get_page_id("terms");
+            if(is_int($wcTermsPageId) AND $wcTermsPageId > 0) {
+                $checkoutSettings['terms_url'] = $wcTermsPageId;
+                update_option('woocommerce_billmate_checkout_settings', $checkoutSettings);
+            }
+        }
+    }
+
+    update_option("woocommerce_billmate_version", BILLPLUGIN_VERSION);
+}
+
 function init_billmate_gateway() {
 
 	// If the WooCommerce payment gateway class is not available, do nothing
