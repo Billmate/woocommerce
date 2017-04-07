@@ -759,6 +759,10 @@ msgstr "Startkostnad"
 msgid "Transaction to be credited"
 msgstr "Transaktion som ska krediteras"
 
+#: ../class-billmate-checkout.php:1166
+msgid "Before enabling Billmate Checkout, please contact Billmate to make sure that Billmate Checkout is active on your account."
+msgstr "Före aktivering av Billmate Checkout, vänligen kontakta Billmate och kontrollera att Billmate Checkout är aktiverat för ert konto."
+
 #: ../class-billmate-common.php:37
 #, php-format
 msgid ""
@@ -943,6 +947,10 @@ msgstr ""
 "Ta betalt i din WooCommerce butik med Billmate. Faktura, delbetalning, "
 "kredit/debit kort och direkt bankbetalning. Säkert och 100&#37; gratis "
 "plugin."
+
+#: ../gateway-billmate.php:128
+msgid "Billmate Checkout is released! Contact Billmate (support@billmate.se) to get started with Billmate Checkout."
+msgstr "Billmate Checkout är lanserad! Kontakta Billmate (support@billmate.se) för att komma igång med Billmate Checkout."
 
 #: ../shortcodes.php:62
 msgid "Billmate Checkout could not be loaded, please contact store manager. Language need to be set to SV. Error code: %s"

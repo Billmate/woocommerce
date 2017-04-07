@@ -115,7 +115,17 @@ function update_billmate_gateway() {
         }
     }
 
+    // Display message in admin that Billmate checkout is available
+    add_action( 'admin_notices', 'billmate_gateway_admin_message_checkout_available' );
+
     update_option("woocommerce_billmate_version", BILLPLUGIN_VERSION);
+}
+
+
+function billmate_gateway_admin_message_checkout_available() {
+    $class = 'notice notice-info';
+    $message = __('Billmate Checkout is released! Contact Billmate (support@billmate.se) to get started with Billmate Checkout.', 'billmate');
+    printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), '<img style="height:14px;margin-right:6px;" src="https://online.billmate.se/wp-content/uploads/2013/03/billmate_247x50.png">'.esc_html( $message ) );
 }
 
 function init_billmate_gateway() {

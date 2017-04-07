@@ -1146,6 +1146,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                 'title' => __( 'Enable/Disable', 'billmate' ),
                 'type' => 'checkbox',
                 'label' => __( 'Enable Billmate Checkout', 'billmate' ),
+                'description' => __('Before enabling Billmate Checkout, please contact Billmate to make sure that Billmate Checkout is active on your account.', 'billmate'),
                 'default' => 'no'
             ),
             'testmode' => array(
