@@ -128,6 +128,86 @@ function billmate_gateway_admin_message_checkout_available() {
     printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), '<img style="height:14px;margin-right:6px;" src="https://online.billmate.se/wp-content/uploads/2013/03/billmate_247x50.png">'.esc_html( $message ) );
 }
 
+function billmate_gateway_admin_error_message($message = "") {
+    $class = 'notice notice-error';
+    if($message != "") {
+        printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), '<img style="height:14px;margin-right:6px;" src="https://online.billmate.se/wp-content/uploads/2013/03/billmate_247x50.png">'.esc_html( $message ) );
+    }
+}
+
+add_action( 'update_option_woocommerce_billmate_checkout_settings', 'billmate_gateway_admin_checkout_settings_update');
+function billmate_gateway_admin_checkout_settings_update() {
+
+    // Display admin message when update Billmate Checkout settings and one or more setting need adjustments
+
+    $checkoutSettings = get_option("woocommerce_billmate_checkout_settings", array());
+
+    if(isset($checkoutSettings['enabled']) AND $checkoutSettings['enabled'] == 'yes') {
+        // Billmate checkout is enabled
+        if(!isset($checkoutSettings['checkout_url']) OR intval($checkoutSettings['checkout_url']) != $checkoutSettings['checkout_url'] OR intval($checkoutSettings['checkout_url']) < 1) {
+            billmate_gateway_admin_error_message('Billmate checkut must have Billmate Checkout page to be able to function');
+        }
+
+        if(!isset($checkoutSettings['terms_url']) OR intval($checkoutSettings['terms_url']) != $checkoutSettings['terms_url'] OR intval($checkoutSettings['terms_url']) < 1) {
+            billmate_gateway_admin_error_message('Billmate Checkout must have a terms page to be able to function');
+        }
+
+        // Check supported language is set
+        $wpLanguage = strtolower(current(explode('_',get_locale())));
+        if($wpLanguage != "sv") {
+            billmate_gateway_admin_error_message('Billmate Checkout need the language to be set as SV to be able to function');
+        }
+
+        // Get avaliable payment methods and check if is enabled in store. If available and not enabled, display admin messages
+        $availablePaymentMethods = array();
+        $billmate = new Billmate(get_option('billmate_common_eid'), get_option('billmate_common_secret'), false);
+        $accountInfo =  $billmate->getAccountinfo(array());
+        if(isset($accountInfo) AND is_array($accountInfo) AND isset($accountInfo['paymentoptions']) AND is_array($accountInfo['paymentoptions'])) {
+            foreach($accountInfo['paymentoptions'] AS $paymentoption) {
+                if(isset($paymentoption['method'])) {
+                    $availablePaymentMethods[$paymentoption['method']] = $paymentoption['method'];
+                }
+            }
+        }
+
+        $billmateInvoiceSettings = get_option('woocommerce_billmate_invoice_settings');
+        $billmatePartpaymentSettings = get_option('woocommerce_billmate_partpayment_settings');
+        $billmateCardpaySettings = get_option('woocommerce_billmate_cardpay_settings');
+        $billmateBankpaySettings = get_option('woocommerce_billmate_bankpay_settings');
+
+        $enabledPaymentMethods = array(
+            "1" => array(
+                "enabled" => ((isset($billmateInvoiceSettings['enabled']) AND $billmateInvoiceSettings['enabled'] == 'yes') ? 'yes' : 'no'),
+                "method" => "1",
+                "name" => "Billmate Invoice"
+            ),
+            "4" => array(
+                "enabled" => ((isset($billmatePartpaymentSettings['enabled']) AND $billmatePartpaymentSettings['enabled'] == 'yes') ? 'yes' : 'no'),
+                "method" => "4",
+                "name" => "Billmate partpayment"
+            ),
+            "8" => array(
+                "enabled" => ((isset($billmateCardpaySettings['enabled']) AND $billmateCardpaySettings['enabled'] == 'yes') ? 'yes' : 'no'),
+                "method" => "8",
+                "name" => "Billmate Cardpayment"
+            ),
+            "16" => array(
+                "enabled" => ((isset($billmateBankpaySettings['enabled']) AND $billmateBankpaySettings['enabled'] == 'yes') ? 'yes' : 'no'),
+                "method" => "16",
+                "name" => "Billmate Bankpayment"
+            )
+        );
+
+        foreach($enabledPaymentMethods AS $method) {
+            if((!isset($method['enabled']) OR $method['enabled'] != 'yes') AND in_array($method['method'], $availablePaymentMethods)) {
+                // Payment method is enabled and not active
+                billmate_gateway_admin_error_message("Billmate Checkout need ".$method['name']." to be activated to be able function");
+            }
+        }
+    }
+
+}
+
 function init_billmate_gateway() {
 
 	// If the WooCommerce payment gateway class is not available, do nothing
