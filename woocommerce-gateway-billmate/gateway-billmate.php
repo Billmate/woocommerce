@@ -201,7 +201,7 @@ function billmate_gateway_admin_checkout_settings_update() {
         foreach($enabledPaymentMethods AS $method) {
             if((!isset($method['enabled']) OR $method['enabled'] != 'yes') AND in_array($method['method'], $availablePaymentMethods)) {
                 // Payment method is enabled and not active
-                billmate_gateway_admin_error_message("Billmate Checkout need ".$method['name']." to be activated to be able function");
+                billmate_gateway_admin_error_message("Billmate Checkout need ".$method['name']." to be activated to be able to function");
             }
         }
     }
