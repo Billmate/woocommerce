@@ -176,7 +176,7 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 							'title' => __( 'Enable/Disable', 'billmate' ),
 							'type' => 'checkbox',
 							'label' => __( 'Enable Billmate Invoice', 'billmate' ),
-							'default' => 'yes'
+							'default' => 'no'
 						),
 			'title' => array(
 							'title' => __( 'Title', 'billmate' ),
@@ -285,6 +285,11 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 
 		if ($this->enabled=="yes") :
 
+            if(is_checkout() == false && is_checkout_pay_page() == false) {
+                // Not on store checkout page
+                return true;
+            }
+
 			// if (!is_ssl()) return false;
 
 			// Currency check
@@ -297,19 +302,34 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 
 			if (!$this->eid || !$this->secret) return false;
 			$allowed_countries = array_intersect(array('SE'),is_array($this->allowed_countries) ? $this->allowed_countries : array($this->allowed_countries));
-
-			if(is_array($this->allowed_countries) && !in_array($woocommerce->customer->get_country() , $allowed_countries)){
+			$order_id = absint( get_query_var( 'order-pay' ) );
+			if(0 < $order_id){
+				$order = wc_get_order( $order_id );
+				$address = $order->get_address();
+				$country = $address['country'];
+			} else {
+				$country = "";
+                if( isset($woocommerce) &&
+                    is_object($woocommerce) &&
+                    isset($woocommerce->customer) &&
+                    is_object($woocommerce->customer) &&
+                    method_exists($woocommerce->customer, "get_country")
+                ) {
+                    $country = $woocommerce->customer->get_country();
+                }
+			}
+			if(is_array($this->allowed_countries) && !in_array($country , $allowed_countries)){
 				return false;
 			}
 
 			// Cart totals check - Lower threshold
 			if ( $this->lower_threshold !== '' ) {
-				if ( ( $woocommerce->cart->total - $this->invoice_fee ) < $this->lower_threshold ) return false;
+				if ( ( WC_Payment_Gateway::get_order_total() - $this->invoice_fee ) < $this->lower_threshold ) return false;
 			}
 
 			// Cart totals check - Upper threshold
 			if ( $this->upper_threshold !== '' ) {
-				if ( ( $woocommerce->cart->total - $this->invoice_fee) > $this->upper_threshold ) return false;
+				if ( ( WC_Payment_Gateway::get_order_total() - $this->invoice_fee) > $this->upper_threshold ) return false;
 			}
 
 			// Only activate the payment gateway if the customers country is the same as the filtered shop country ($this->billmate_country)
@@ -528,7 +548,7 @@ parse_str($_POST['post_data'], $datatemp);
 		<div class="clear"></div>
 			<p class="form-row">
 				<input type="checkbox" class="input-checkbox" checked="checked" value="yes" name="valid_email_it_is_invoice" id="valid_email_it_is_invoice" style="float:left;margin-top:6px" />
-				<label><?php echo sprintf(__('My e-mail%s is correct och and may be used for billing. I confirm the ', 'billmate'), (strlen($datatemp['billing_email']) > 0) ? ', '.$datatemp['billing_email'].',' : ' '); ?><a class="billmateCheckoutTermLink" href="https://billmate.se/billmate/?cmd=villkor" onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=650');return false;"><?php echo __('terms of partpayment','billmate'); ?></a> <?php echo __('and accept the liability.','billmate') ?></label>
+				<label><?php echo sprintf(__('My e-mail%s is correct och and may be used for billing. I confirm the ', 'billmate'), (strlen($datatemp['billing_email']) > 0) ? ', '.$datatemp['billing_email'].',' : ' '); ?><a class="billmateCheckoutTermLink" href="https://billmate.se/billmate/?cmd=villkor" onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=650');return false;"><?php echo __('terms of invoice','billmate'); ?></a> <?php echo __('and accept the liability.','billmate') ?></label>
 			</p>
 		<div class="clear"></div>
 
@@ -1042,7 +1062,7 @@ parse_str($_POST['post_data'], $datatemp);
 
 			$orderValues['Cart']['Shipping'] = array(
 				'withouttax'    => ($shipping_price-$order->order_shipping_tax)*100,
-				'taxrate'      => (int)$calculated_shipping_tax_percentage,
+				'taxrate'      => round($calculated_shipping_tax_percentage),
 
 			);
 			$total += ($shipping_price-$order->order_shipping_tax) * 100;

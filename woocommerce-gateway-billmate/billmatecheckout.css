@@ -1,0 +1,66 @@
+.billmateoverlay {
+    background: #FFFFFF;
+    display: none;
+    height: 100vh;
+    left: 0;
+    opacity: 0.5;
+    padding-top: 49vh;
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    z-index: 2;
+}
+
+.billmateloading {
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+    border: 5px solid rgba(0, 0, 0, 0);
+    border-radius: 50%;
+    border-right: 5px solid #0099D3;
+    border-top: 5px solid #0099D3;
+    display: none;
+    height: 100px;
+    left: 50%;
+    margin: -50px 0 0 -50px;
+    position: absolute;
+    top: 50%;
+    width: 100px;
+    z-index: 3;
+}
+
+.cart_totals{
+    margin: 30px 0 50px 0
+}
+
+
+#checkoutdiv {
+    position: relative;
+    overflow: auto;
+}
+
+#checkoutdiv.loading {
+    overflow: hidden;
+}
+
+/* Anytime the body has the loading class, our
+   modal element will be visible */
+#checkoutdiv.loading .billmateoverlay,
+#checkoutdiv.loading .billmateloading {
+    display: block;
+}
+
+.wc-proceed-to-checkout {
+    display:none!important;
+    height: 0px !important;
+    margin: 0px !important;
+    overflow: hidden !important;
+    padding: 0px !important;
+    position: relative !important;
+    width: 0px !important;
+}
+
+.woocommerce table.cart td.actions .input-text,
+.woocommerce-page #content table.cart td.actions .input-text,
+.woocommerce-page table.cart td.actions .input-text{
+    width: 140px !important
+}

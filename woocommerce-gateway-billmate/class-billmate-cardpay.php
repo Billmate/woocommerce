@@ -137,7 +137,10 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		$recurring = false;
 		$cancel_url_hit = false;
 		$accept_url_hit = false;
+		$checkout = false;
 		$k = new Billmate($this->eid,$this->secret,true,$this->testmode,false);
+		if(!empty($_GET['method']) && $_GET['method'] == 'checkout')
+			$checkout = true;
 		if( !empty($_GET['payment']) && $_GET['payment'] == 'success' ) {
 			if(!empty($_GET['recurring']) && $_GET['recurring'] == 1){
 				$recurring = true;
@@ -199,6 +202,8 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 				$redirect = $this->get_return_url($order);
 			}
 			if($accept_url_hit) {
+				WC()->session->__unset( 'billmate_checkout_hash' );
+				WC()->session->__unset( 'billmate_checkout_order' );
 				wp_safe_redirect($redirect);
 				exit;
 			} elseif($cancel_url_hit) {
@@ -253,14 +258,18 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		} else {
 			$order_status_terms = wp_get_object_terms( $order_id, 'shop_order_status', array('fields' => 'slugs') ); $order_status = $order_status_terms[0];
 		}
-		if( in_array($order_status, array('pending','cancelled')) ){
+		if( in_array($order_status, array('pending','cancelled','bm-incomplete')) ){
 			//$order->update_status('completed', $payment_note);
-			if($data['status'] == 'Paid') {
+			if($data['status'] == 'Paid' || $data['status'] == 'Created') {
 				add_post_meta($order->id,'billmate_invoice_id',$data['number']);
 				$order->add_order_note(sprintf(__('Billmate Invoice id: %s','billmate'),$data['number']));
 				if ($this->order_status == 'default') {
+					if($checkout)
+						$order->update_status('pending');
 					$order->payment_complete();
 				} else {
+					if($checkout)
+						$order->update_status('pending');
 					$order->update_status($this->order_status);
 				}
 			}
@@ -297,6 +306,8 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 				} else {
 					$redirect = $this->get_return_url($order);
 				}
+				WC()->session->__unset( 'billmate_checkout_hash' );
+				WC()->session->__unset( 'billmate_checkout_order' );
 				wp_safe_redirect($redirect);
 				exit;
 			}
@@ -311,6 +322,8 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			} else {
 				$redirect = $this->get_return_url($order);
 			}
+			WC()->session->__unset( 'billmate_checkout_hash' );
+			WC()->session->__unset( 'billmate_checkout_order' );
 			wp_safe_redirect($redirect);
 			exit;
 		}
@@ -348,7 +361,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 							'title' => __( 'Enable/Disable', 'billmate' ),
 							'type' => 'checkbox',
 							'label' => __( 'Enable Billmate Cardpay', 'billmate' ),
-							'default' => 'yes'
+							'default' => 'no'
 						),
 			'title' => array(
 							'title' => __( 'Title', 'billmate' ),
@@ -444,7 +457,13 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 
 	function is_available() {
 		global $woocommerce;
+		
 		if ($this->enabled=="yes") :
+
+            if(is_checkout() == false && is_checkout_pay_page() == false) {
+                // Not on store checkout page
+                return true;
+            }
 
 			// if (!is_ssl()) return false;
 
@@ -459,16 +478,32 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 
 			// Cart totals check - Lower threshold
 			if ( $this->lower_threshold !== '' ) {
-				if ( $woocommerce->cart->total < $this->lower_threshold ) return false;
+				if ( WC_Payment_Gateway::get_order_total() < $this->lower_threshold ) return false;
 			}
 
 			// Cart totals check - Upper threshold
 			if ( $this->upper_threshold !== '' ) {
-				if ( $woocommerce->cart->total > $this->upper_threshold ) return false;
+				if ( WC_Payment_Gateway::get_order_total() > $this->upper_threshold ) return false;
 			}
 			if(!empty($this->allowed_countries)){
 
-				if(!in_array($woocommerce->customer->country,$this->allowed_countries))
+				$order_id = absint( get_query_var( 'order-pay' ) );
+				if(0 < $order_id){
+					$order = wc_get_order( $order_id );
+					$address = $order->get_address();
+					$country = $address['country'];
+				} else {
+					$country = "";
+                    if( isset($woocommerce) &&
+                        is_object($woocommerce) &&
+                        isset($woocommerce->customer) &&
+                        is_object($woocommerce->customer) &&
+                        method_exists($woocommerce->customer, "get_country")
+                    ) {
+                        $country = $woocommerce->customer->get_country();
+                    }
+				}
+				if(!in_array($country,$this->allowed_countries))
 					return false;
 			}
 			// Only activate the payment gateway if the customers country is the same as the filtered shop country ($this->billmate_country)
@@ -720,14 +755,13 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 
 			$orderValues['Cart']['Shipping'] = array(
 				'withouttax'    => ($shipping_price -$order->order_shipping_tax)*100,
-				'taxrate'      => (int)$calculated_shipping_tax_percentage,
+				'taxrate'      => round($calculated_shipping_tax_percentage),
 
 			);
 			$total += ($shipping_price-$order->order_shipping_tax) * 100;
 			$totalTax += (($shipping_price-$order->order_shipping_tax) * ($calculated_shipping_tax_percentage/100))*100;
 		endif;
 
-		error_log('subscription_total',WC_Subscriptions_Order::get_recurring_total($order));
 		$round = 0;//(round($order->order_total,2)*100) - round($total + $totalTax,0);
 
 
@@ -996,7 +1030,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 
 					$orderValues['Cart']['Shipping'] = array(
 						'withouttax'    => ($shipping_price -$order->order_shipping_tax)*100,
-						'taxrate'      => (int)$calculated_shipping_tax_percentage,
+						'taxrate'      => round($calculated_shipping_tax_percentage),
 
 					);
 					$total += ($shipping_price-$order->order_shipping_tax) * 100;

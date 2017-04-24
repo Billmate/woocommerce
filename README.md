@@ -66,6 +66,12 @@ Tested with [Browserstack](http://www.browserstack.com)
 
 ## Changelog
 
+
+### 3.0 (2017-04-24)
+* Feature - Add support for Billmate Checkout
+* Fix - Prevent admin menu would be affected
+* Fix - Prevent handling fee added as order item
+
 ### 2.2.11 (2017-01-03)
 * Fix - New Years issue with update payment plans.
 * Fix - Payment link issue invoice and partpay.

@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce Billmate Gateway
 Plugin URI: http://woothemes.com/woocommerce
 Description: Receive payments on your WooCommerce store via Billmate. Invoice, partpayment, credit/debit card and direct bank transfers. Secure and 100&#37; free plugin.
-Version: 2.2.11
+Version: 3.0
 Author: Billmate
 Text Domain: billmate
 Author URI: https://billmate.se
@@ -74,13 +74,140 @@ function activate_billmate_gateway(){
 		add_action('admin_notices','wordfence_notice');
 	}
 
+    maby_update_billmate_gateway();
 }
+
 function wordfence_notice(){
 	echo '<div id="message" class="warning">';
 	echo '<p>'.__("To make Wordfence and Billmate Gateway work toghether you have to add the Callback IP to the whitelist. To do so navigate to Wordfence->Options and then scroll down to \"Other Options\". Find \"Whitelisted IP addresses that bypass all rules\" and add the IP 54.194.217.63.",'billmate').'</p>';
 	echo '</div>';
 }
 register_activation_hook(__FILE__,'activate_billmate_gateway');
+
+add_action( 'admin_init', 'maby_update_billmate_gateway' );
+function maby_update_billmate_gateway() {
+    if(version_compare(get_option("woocommerce_billmate_version"), BILLPLUGIN_VERSION, '<')) {
+        update_billmate_gateway();
+    }
+}
+
+function update_billmate_gateway() {
+    // Maby create new page for Billmate Checkout
+    $checkoutSettings = get_option("woocommerce_billmate_checkout_settings", array());
+    if(!isset($checkoutSettings['checkout_url']) OR intval($checkoutSettings['checkout_url']) != $checkoutSettings['checkout_url']) {
+        if(function_exists("wc_create_page")) {
+            $pageId = wc_create_page('billmate-checkout','','Billmate Checkout', '[woocommerce_cart] [billmate_checkout]',0);
+            if($pageId == intval($pageId) AND intval($pageId) > 0) {
+                $checkoutSettings['checkout_url'] = $pageId;
+                update_option('woocommerce_billmate_checkout_settings', $checkoutSettings);
+            }
+        }
+    }
+
+    // Maby use WooCommerce terms page for Billmate Checkout
+    if(!isset($checkoutSettings['terms_url']) OR intval($checkoutSettings['terms_url']) != $checkoutSettings['terms_url']) {
+        if(function_exists("wc_get_page_id")) {
+            $wcTermsPageId = wc_get_page_id("terms");
+            if(is_int($wcTermsPageId) AND $wcTermsPageId > 0) {
+                $checkoutSettings['terms_url'] = $wcTermsPageId;
+                update_option('woocommerce_billmate_checkout_settings', $checkoutSettings);
+            }
+        }
+    }
+
+    // Display message in admin that Billmate checkout is available
+    add_action( 'admin_notices', 'billmate_gateway_admin_message_checkout_available' );
+
+    update_option("woocommerce_billmate_version", BILLPLUGIN_VERSION);
+}
+
+
+function billmate_gateway_admin_message_checkout_available() {
+    $class = 'notice notice-info';
+    $message = __('Billmate Checkout is released! Contact Billmate (support@billmate.se) to get started with Billmate Checkout.', 'billmate');
+    printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), '<img style="height:14px;margin-right:6px;" src="https://online.billmate.se/wp-content/uploads/2013/03/billmate_247x50.png">'.esc_html( $message ) );
+}
+
+function billmate_gateway_admin_error_message($message = "") {
+    $class = 'notice notice-error';
+    if($message != "") {
+        printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), '<img style="height:14px;margin-right:6px;" src="https://online.billmate.se/wp-content/uploads/2013/03/billmate_247x50.png">'.esc_html( $message ) );
+    }
+}
+
+add_action( 'update_option_woocommerce_billmate_checkout_settings', 'billmate_gateway_admin_checkout_settings_update');
+function billmate_gateway_admin_checkout_settings_update() {
+
+    // Display admin message when update Billmate Checkout settings and one or more setting need adjustments
+
+    $checkoutSettings = get_option("woocommerce_billmate_checkout_settings", array());
+
+    if(isset($checkoutSettings['enabled']) AND $checkoutSettings['enabled'] == 'yes') {
+        // Billmate checkout is enabled
+        if(!isset($checkoutSettings['checkout_url']) OR intval($checkoutSettings['checkout_url']) != $checkoutSettings['checkout_url'] OR intval($checkoutSettings['checkout_url']) < 1) {
+            billmate_gateway_admin_error_message('Billmate checkut must have Billmate Checkout page to be able to function');
+        }
+
+        if(!isset($checkoutSettings['terms_url']) OR intval($checkoutSettings['terms_url']) != $checkoutSettings['terms_url'] OR intval($checkoutSettings['terms_url']) < 1) {
+            billmate_gateway_admin_error_message('Billmate Checkout must have a terms page to be able to function');
+        }
+
+        // Check supported language is set
+        $wpLanguage = strtolower(current(explode('_',get_locale())));
+        if($wpLanguage != "sv") {
+            billmate_gateway_admin_error_message('Billmate Checkout need the language to be set as SV to be able to function');
+        }
+
+        // Get avaliable payment methods and check if is enabled in store. If available and not enabled, display admin messages
+        $availablePaymentMethods = array();
+        $billmate = new Billmate(get_option('billmate_common_eid'), get_option('billmate_common_secret'), false);
+        $accountInfo =  $billmate->getAccountinfo(array());
+        if(isset($accountInfo) AND is_array($accountInfo) AND isset($accountInfo['paymentoptions']) AND is_array($accountInfo['paymentoptions'])) {
+            foreach($accountInfo['paymentoptions'] AS $paymentoption) {
+                if(isset($paymentoption['method'])) {
+                    $availablePaymentMethods[$paymentoption['method']] = $paymentoption['method'];
+                }
+            }
+        }
+
+        $billmateInvoiceSettings = get_option('woocommerce_billmate_invoice_settings');
+        $billmatePartpaymentSettings = get_option('woocommerce_billmate_partpayment_settings');
+        $billmateCardpaySettings = get_option('woocommerce_billmate_cardpay_settings');
+        $billmateBankpaySettings = get_option('woocommerce_billmate_bankpay_settings');
+
+        $enabledPaymentMethods = array(
+            "1" => array(
+                "enabled" => ((isset($billmateInvoiceSettings['enabled']) AND $billmateInvoiceSettings['enabled'] == 'yes') ? 'yes' : 'no'),
+                "method" => "1",
+                "name" => "Billmate Invoice"
+            ),
+            "4" => array(
+                "enabled" => ((isset($billmatePartpaymentSettings['enabled']) AND $billmatePartpaymentSettings['enabled'] == 'yes') ? 'yes' : 'no'),
+                "method" => "4",
+                "name" => "Billmate partpayment"
+            ),
+            "8" => array(
+                "enabled" => ((isset($billmateCardpaySettings['enabled']) AND $billmateCardpaySettings['enabled'] == 'yes') ? 'yes' : 'no'),
+                "method" => "8",
+                "name" => "Billmate Cardpayment"
+            ),
+            "16" => array(
+                "enabled" => ((isset($billmateBankpaySettings['enabled']) AND $billmateBankpaySettings['enabled'] == 'yes') ? 'yes' : 'no'),
+                "method" => "16",
+                "name" => "Billmate Bankpayment"
+            )
+        );
+
+        foreach($enabledPaymentMethods AS $method) {
+            if((!isset($method['enabled']) OR $method['enabled'] != 'yes') AND in_array($method['method'], $availablePaymentMethods)) {
+                // Payment method is enabled and not active
+                billmate_gateway_admin_error_message("Billmate Checkout need ".$method['name']." to be activated to be able to function");
+            }
+        }
+    }
+
+}
+
 function init_billmate_gateway() {
 
 	// If the WooCommerce payment gateway class is not available, do nothing
@@ -147,6 +274,18 @@ function init_billmate_gateway() {
 				wp_enqueue_script( 'billmate-invoice-js' );
 				wp_register_script( 'billmate-popup-js', plugins_url( '/js/billmatepopup.js', __FILE__ ),array(),false, true );
 				wp_enqueue_script( 'billmate-popup-js' );
+
+
+			}
+			$checkout = new WC_Gateway_Billmate_Checkout();
+			if($checkout->enabled == 'yes' && is_page($checkout->checkout_url)){
+				wp_enqueue_style( 'billmate-checkous', plugins_url( '/billmatecheckout.css', __FILE__ ), array(), '1.0', 'all');
+
+				wp_register_script( 'billmate-checkout-js', plugins_url( '/js/billmatecheckout.js', __FILE__ ),array(),false, true );
+				wp_enqueue_script( 'billmate-checkout-js' );
+				wp_localize_script( 'billmate-checkout-js', 'billmate',
+					array( 'ajax_url' => admin_url( 'admin-ajax.php' ),'billmate_checkout_nonce' => wp_create_nonce('billmate_checkout_nonce')) );
+
 			}
 
 
@@ -177,7 +316,9 @@ function init_billmate_gateway() {
 	require_once 'class-billmate-bankpay.php';
 
 	require_once 'class-billmate-common.php';
+	require_once 'class-billmate-checkout.php';
 	$common = new BillmateCommon();
+	
 
 
 } // End init_billmate_gateway.
@@ -190,6 +331,7 @@ function add_billmate_gateway( $methods ) {
 	$methods[] = 'WC_Gateway_Billmate_Partpayment';
 	$methods[] = 'WC_Gateway_Billmate_Cardpay';
 	$methods[] = 'WC_Gateway_Billmate_Bankpay';
+	$methods[] = 'WC_Gateway_Billmate_Checkout';
 	return $methods;
 }
 

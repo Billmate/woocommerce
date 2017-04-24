@@ -189,7 +189,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 							'title' => __( 'Enable/Disable', 'billmate' ),
 							'type' => 'checkbox',
 							'label' => __( 'Enable Billmate Part Payment', 'billmate' ),
-							'default' => 'yes'
+							'default' => 'no'
 						),
 			'title' => array(
 							'title' => __( 'Title', 'billmate' ),
@@ -434,10 +434,32 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 		global $woocommerce;
 
 		if ($this->enabled=="yes") :
+
+            if(is_checkout() == false && is_checkout_pay_page() == false) {
+                // Not on store checkout page
+                return true;
+            }
+
 			if (!in_array(get_option('woocommerce_currency'), array('SEK'))) return false;
 
 			$allowed_countries = array_intersect(array('SE'),is_array($this->allowed_countries) ? $this->allowed_countries : array($this->allowed_countries));
-			if(is_array($this->allowed_countries) && !in_array($woocommerce->customer->get_country() , $allowed_countries)){
+			$order_id = absint( get_query_var( 'order-pay' ) );
+			if(0 < $order_id){
+				$order = wc_get_order( $order_id );
+				$address = $order->get_address();
+				$country = $address['country'];
+			} else {
+				$country = "";
+                if( isset($woocommerce) &&
+                    is_object($woocommerce) &&
+                    isset($woocommerce->customer) &&
+                    is_object($woocommerce->customer) &&
+                    method_exists($woocommerce->customer, "get_country")
+                ) {
+                    $country = $woocommerce->customer->get_country();
+                }
+			}
+			if(is_array($this->allowed_countries) && !in_array($country , $allowed_countries)){
 				return false;
 			}
 			$pclasses_not_available = true;
@@ -445,7 +467,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 			$pclasses = get_option('wc_gateway_billmate_partpayment_pclasses',false);
 
 			if($pclasses){
-				$billmate_cart_total = $woocommerce->cart->total;
+				$billmate_cart_total = WC_Payment_Gateway::get_order_total();
 				$sum = apply_filters( 'billmate_cart_total', $billmate_cart_total ); // Cart total.
                 $fees = $woocommerce->cart->get_fees();
                 $availableFees = array();
@@ -1653,7 +1675,7 @@ parse_str($_POST['post_data'], $datatemp);
 
 			$orderValues['Cart']['Shipping'] = array(
 				'withouttax'    => ($shipping_price-$order->order_shipping_tax)*100,
-				'taxrate'      => (int)$calculated_shipping_tax_percentage,
+				'taxrate'      => round($calculated_shipping_tax_percentage),
 
 			);
 			$total += ($shipping_price-$order->order_shipping_tax) * 100;
