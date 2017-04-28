@@ -632,6 +632,36 @@ parse_str($_POST['post_data'], $datatemp);
 		foreach($addr as $key => $value){
 			$addr[$key] = utf8_encode(utf8_decode($value));
 		}
+
+        $post2Trim = array(
+            "billing_address_1",
+            "billing_first_name",
+            "billing_last_name",
+            "billing_city",
+            "billing_country",
+            "billing_postcode",
+            "shipping_address_1",
+            "shipping_city",
+            "shipping_company",
+            "shipping_country",
+            "shipping_first_name",
+            "shipping_last_name",
+            "shipping_postcode"
+        );
+
+        foreach($post2Trim AS $post2TrimKey) {
+            if(isset($_POST[$post2TrimKey]) AND is_string($_POST[$post2TrimKey])) {
+                $_POST[$post2TrimKey] = trim($_POST[$post2TrimKey]);
+            }
+        }
+
+        $addr2Trim = array("firstname", "lastname", "city", "company", "country", "street", "zip");
+        foreach($addr2Trim AS $addr2TrimKey) {
+            if(isset($addr[$addr2TrimKey]) AND is_string($addr[$addr2TrimKey])) {
+                $addr[$addr2TrimKey] = trim($addr[$addr2TrimKey]);
+            }
+        }
+
 		$fullname = $_POST['billing_last_name'].' '.$_POST['billing_first_name'];
 		$firstArr = explode(' ', $_POST['billing_last_name']);
 		$lastArr  = explode(' ', $_POST['billing_first_name']);
@@ -644,14 +674,21 @@ parse_str($_POST['post_data'], $datatemp);
 			$lastname = $addr['lastname'];
 			$company = '';
 			$apiName =  $addr['firstname'].' '.$addr['lastname'];
+            $usership = $_POST['billing_first_name'].' '.$_POST['billing_last_name'];
 			$displayname = $addr['firstname'].' '.$addr['lastname'];
 		} else {
 			$name = $_POST['billing_first_name'];
 			$lastname = $_POST['billing_last_name'];
 			$company  =  $addr['company'];
 			$apiName =  $name.' '.$lastname.' '.$addr['company'];
+            $usership = $_POST['billing_first_name'].' '.$_POST['billing_last_name'].' '.$_POST['billing_company'];
 			$displayname = $_POST['billing_first_name'].' '.$_POST['billing_last_name'].'<br/>'.$addr['company'];
 		}
+
+        $usership = (is_string($usership)) ? trim($usership) : $usership;
+        $userbill = (is_string($userbill)) ? trim($userbill) : $userbill;
+        $apiName = (is_string($apiName)) ? trim($apiName) : $apiName;
+        $billmate_billing_address = (is_string($billmate_billing_address)) ? trim($billmate_billing_address) : $billmate_billing_address;
 
 		$addressNotMatched  = !isEqual( $usership,  $apiName) ||
 		                      !isEqual($addr['street'], $billmate_billing_address ) ||
@@ -769,11 +806,13 @@ parse_str($_POST['post_data'], $datatemp);
 			$lastname = $addr['lastname'];
 			$company = '';
 			$apiName =  $addr['firstname'].' '.$addr['lastname'];
+            $usership = $order->billing_first_name.' '.$order->billing_last_name;
 			$displayname = $addr['firstname'].' '.$addr['lastname'];
 		} else {
 			$name = $_POST['billing_first_name'];
 			$lastname = $_POST['billing_last_name'];
 			$company  =  $addr['company'];
+            $usership = $order->billing_first_name.' '.$order->billing_last_name.' '.$order->billing_company;
 			$apiName =  $name.' '.$lastname.' '.$addr['company'];
 			$displayname = $order->billing_first_name.' '.$order->billing_last_name.'<br/>'.$addr['company'];
 		}
