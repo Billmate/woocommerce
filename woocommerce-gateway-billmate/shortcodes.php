@@ -46,7 +46,7 @@ function get_billmate_checkout(){
 
 	$checkout = new WC_Gateway_Billmate_Checkout();
 	
-	if ( !WC()->cart->is_empty()) {
+    if(isset(WC()->cart) AND is_object(WC()->cart) AND method_exists(WC()->cart, "is_empty") AND !WC()->cart->is_empty()) {
         $checkoutUrl = $checkout->get_url();
         $wpLanguage = strtolower(current(explode('_',get_locale())));
 
