@@ -37,7 +37,7 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 		$this->invoice_fee_id		= ( isset( $this->settings['invoice_fee_id'] ) ) ? $this->settings['invoice_fee_id'] : '';
 		$this->testmode				= ( isset( $this->settings['testmode'] ) ) ? $this->settings['testmode'] : '';
 		$this->de_consent_terms		= ( isset( $this->settings['de_consent_terms'] ) ) ? $this->settings['de_consent_terms'] : '';
-		$this->invoice_fee 			= ( isset( $this->settings['billmate_invoice_fee'] ) ) ? $this->settings['billmate_invoice_fee'] : 0;
+        $this->invoice_fee          = ( isset( $this->settings['billmate_invoice_fee'] ) ) ? floatval(str_replace(",",".",$this->settings['billmate_invoice_fee'])) : 0;
 		$this->invoice_fee_tax_class = (isset( $this->settings['billmate_invoice_fee_tax_class'] ) ) ? $this->settings['billmate_invoice_fee_tax_class'] : '';
 		$this->allowed_countries 		= ( isset( $this->settings['billmateinvoice_allowed_countries'] ) && !empty($this->settings['billmateinvoice_allowed_countries'])) ? $this->settings['billmateinvoice_allowed_countries'] : array('SE');
 		$this->order_status = (isset($this->settings['order_status'])) ? $this->settings['order_status'] : false;
