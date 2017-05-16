@@ -32,8 +32,8 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 		$this->secret				= get_option('billmate_common_secret');//( isset( $this->settings['secret'] ) ) ? $this->settings['secret'] : '';
 		$this->logo 				= get_option('billmate_common_logo');
 
-		$this->lower_threshold		= ( isset( $this->settings['lower_threshold'] ) ) ? $this->settings['lower_threshold'] : '';
-		$this->upper_threshold		= ( isset( $this->settings['upper_threshold'] ) ) ? $this->settings['upper_threshold'] : '';
+		$this->lower_threshold		= ( isset( $this->settings['lower_threshold'] ) ) ? floatval(str_replace(",",".",$this->settings['lower_threshold'])) : '';
+		$this->upper_threshold		= ( isset( $this->settings['upper_threshold'] ) ) ? floatval(str_replace(",",".",$this->settings['upper_threshold'])) : '';
 		$this->invoice_fee_id		= ( isset( $this->settings['invoice_fee_id'] ) ) ? $this->settings['invoice_fee_id'] : '';
 		$this->testmode				= ( isset( $this->settings['testmode'] ) ) ? $this->settings['testmode'] : '';
 		$this->de_consent_terms		= ( isset( $this->settings['de_consent_terms'] ) ) ? $this->settings['de_consent_terms'] : '';
