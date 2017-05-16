@@ -450,13 +450,16 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 				$country = $address['country'];
 			} else {
 				$country = "";
-                if( isset($woocommerce) &&
+                if(isset($woocommerce) &&
                     is_object($woocommerce) &&
                     isset($woocommerce->customer) &&
-                    is_object($woocommerce->customer) &&
-                    method_exists($woocommerce->customer, "get_country")
+                    is_object($woocommerce->customer)
                 ) {
-                    $country = $woocommerce->customer->get_country();
+                    if(version_compare(WC_VERSION, '3.0.0', '>=') AND method_exists($woocommerce->customer, "get_billing_country")) {
+                        $country = $woocommerce->customer->get_billing_country();
+                    } elseif(method_exists($woocommerce->customer, "get_country")) {
+                        $country = $woocommerce->customer->get_country();
+                    }
                 }
 			}
 			if(is_array($this->allowed_countries) && !in_array($country , $allowed_countries)){
@@ -2202,12 +2205,21 @@ parse_str($_POST['post_data'], $datatemp);
 	function get_terms_country() {
 		global $woocommerce;
 
-		if ( $woocommerce->customer->get_country() == true && in_array( $woocommerce->customer->get_country(), array('SE', 'NO', 'DK', 'DE', 'FI', 'NL') ) ) {
+        $country = "";
+        if(isset($woocommerce) &&
+            is_object($woocommerce) &&
+            isset($woocommerce->customer) &&
+            is_object($woocommerce->customer)
+        ) {
+            if(version_compare(WC_VERSION, '3.0.0', '>=') AND method_exists($woocommerce->customer, "get_billing_country")) {
+                $country = $woocommerce->customer->get_billing_country();
+            } elseif(method_exists($woocommerce->customer, "get_country")) {
+                $country = $woocommerce->customer->get_country();
+            }
+        }
 
-			//
-			//return strtolower($woocommerce->customer->get_country());
-			return strtolower($this->billmate_country);
-
+        if($country != "" AND in_array($country, array('SE', 'NO', 'DK', 'DE', 'FI', 'NL'))) {
+			return strtolower($country);
 		} else {
 
 			return strtolower($this->billmate_country);

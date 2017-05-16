@@ -462,13 +462,16 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 				$country = $address['country'];
 			} else {
 				$country = "";
-                if( isset($woocommerce) &&
+                if(isset($woocommerce) &&
                     is_object($woocommerce) &&
                     isset($woocommerce->customer) &&
-                    is_object($woocommerce->customer) &&
-                    method_exists($woocommerce->customer, "get_country")
+                    is_object($woocommerce->customer)
                 ) {
-                    $country = $woocommerce->customer->get_country();
+                    if(version_compare(WC_VERSION, '3.0.0', '>=') AND method_exists($woocommerce->customer, "get_billing_country")) {
+                        $country = $woocommerce->customer->get_billing_country();
+                    } elseif(method_exists($woocommerce->customer, "get_country")) {
+                        $country = $woocommerce->customer->get_country();
+                    }
                 }
 			}
 			if(!in_array($country , $allowed_countries)){
