@@ -43,8 +43,8 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 		$this->secret							= get_option('billmate_common_secret');//( isset( $this->settings['secret'] ) ) ? $this->settings['secret'] : '';
 		$this->logo 				= get_option('billmate_common_logo');
 
-		$this->lower_threshold					= ( isset( $this->settings['lower_threshold'] ) ) ? floatval(str_replace(",",".",$this->settings['lower_threshold'])) : '';
-		$this->upper_threshold					= ( isset( $this->settings['upper_threshold'] ) ) ? floatval(str_replace(",",".",$this->settings['upper_threshold'])) : '';
+		$this->lower_threshold					= ( isset( $this->settings['lower_threshold'] ) AND $this->settings['lower_threshold'] != '' ) ? floatval(str_replace(",",".",$this->settings['lower_threshold'])) : '';
+		$this->upper_threshold					= ( isset( $this->settings['upper_threshold'] ) AND $this->settings['upper_threshold'] != '' ) ? floatval(str_replace(",",".",$this->settings['upper_threshold'])) : '';
 		$this->show_monthly_cost				= ( isset( $this->settings['show_monthly_cost'] ) ) ? $this->settings['show_monthly_cost'] : '';
 		$this->show_monthly_cost_info			= ( isset( $this->settings['show_monthly_cost_info'] ) ) ? $this->settings['show_monthly_cost_info'] : '';
 		$this->show_monthly_cost_prio			= ( isset( $this->settings['show_monthly_cost_prio'] ) ) ? $this->settings['show_monthly_cost_prio'] : '15';
