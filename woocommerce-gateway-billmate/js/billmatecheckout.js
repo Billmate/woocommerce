@@ -102,29 +102,41 @@ var BillmateIframe = new function(){
 
         });
 
+        /* Listen to WooCommerce checkout elements */
         jQuery(document).on('click', "input[name='update_cart']", function() {
             jQuery('#checkoutdiv').addClass('loading');
             jQuery("#checkoutdiv.loading .billmateoverlay").height(jQuery("#checkoutdiv").height());
         });
-
-        jQuery(document.body).on('wc_fragments_refreshed',function(e){
-            self.updateBillmate();
-            jQuery( 'body' ).trigger( 'update_checkout' );
+        jQuery( document ).on('click', 'div.woocommerce > form input[type=submit]', function() {
+                jQuery('#checkoutdiv').addClass('loading');
+                jQuery("#checkoutdiv.loading .billmateoverlay").height(jQuery("#checkoutdiv").height());
+        });
+        jQuery( document ).on('keypress', 'div.woocommerce > form input[type=number]', function() {
+                jQuery('#checkoutdiv').addClass('loading');
+                jQuery("#checkoutdiv.loading .billmateoverlay").height(jQuery("#checkoutdiv").height());
+        });
+        jQuery( document ).on('submit', 'div.woocommerce:not(.widget_product_search) > form', function() {
+                jQuery('#checkoutdiv').addClass('loading');
+                jQuery("#checkoutdiv.loading .billmateoverlay").height(jQuery("#checkoutdiv").height());
+        });
+        jQuery( document ).on('click', 'a.woocommerce-remove-coupon', function() {
+                jQuery('#checkoutdiv').addClass('loading');
+                jQuery("#checkoutdiv.loading .billmateoverlay").height(jQuery("#checkoutdiv").height());
+        });
+        jQuery( document ).on('click', 'td.product-remove > a', function() {
+                jQuery('#checkoutdiv').addClass('loading');
+                jQuery("#checkoutdiv.loading .billmateoverlay").height(jQuery("#checkoutdiv").height());
+        });
+        jQuery( document ).on('change', 'select.shipping_method, input[name^=shipping_method]', function() {
+                jQuery('#checkoutdiv').addClass('loading');
+                jQuery("#checkoutdiv.loading .billmateoverlay").height(jQuery("#checkoutdiv").height());
         });
 
-        jQuery(document.body).on('updated_shipping_method',function(e){
+        /* Updated cart totals */
+        jQuery(document.body).on('updated_cart_totals',function(e){
             self.updateBillmate();
-        })
-        jQuery(document.body).on('applied_coupon',function(e){
-            self.updateBillmate();
-            jQuery( 'body' ).trigger( 'update_checkout' );
-            self.updateCheckout();
-        })
-        jQuery(document.body).on('removed_coupon',function(e){
-            self.updateBillmate();
-            jQuery( 'body' ).trigger( 'update_checkout' );
-            self.updateCheckout();
-        })
+        });
+
     }
     this.handleEvent = function(event){
         if(event.origin == "https://checkout.billmate.se") {
