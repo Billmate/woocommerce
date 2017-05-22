@@ -638,12 +638,23 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             $order_coupons = $order->get_items( array( 'coupon' ) );
             if ( empty( $order_coupons ) ) {
                 foreach ( WC()->cart->get_coupons() as $code => $coupon ) {
-                    if ( ! $order->add_coupon( $code, WC()->cart->get_coupon_discount_amount( $code ) ) ) {
 
+                    if(version_compare(WC_VERSION, '3.0.0', '>=')) {
 
-                        throw new Exception( __( 'Error: Unable to create order. Please try again.', 'woocommerce' ) );
+                        $item = new WC_Order_Item_Coupon();
+                        $item->set_props( array(
+                            'code'         => $code,
+                            'discount'     => WC()->cart->get_coupon_discount_amount( $code ),
+                            'discount_tax' => WC()->cart->get_coupon_discount_tax_amount( $code ),
+                            'order_id'     => $order->get_id()
+                        ) );
+                        $item->save();
+                        $order->add_item( $item );
+
                     } else {
-
+                        if ( ! $order->add_coupon( $code, WC()->cart->get_coupon_discount_amount( $code ) ) ) {
+                            throw new Exception( __( 'Error: Unable to create order. Please try again.', 'woocommerce' ) );
+                        }
                     }
                 }
             }
