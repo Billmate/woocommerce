@@ -763,6 +763,22 @@ msgstr "Transaktion som ska krediteras"
 msgid "Before enabling Billmate Checkout, please contact Billmate to make sure that Billmate Checkout is active on your account."
 msgstr "Före aktivering av Billmate Checkout, vänligen kontakta Billmate och kontrollera att Billmate Checkout är aktiverat för ert konto."
 
+#: ../class-billmate-checkout.php:1288
+msgid "Checkout Page"
+msgstr "Checkout sida"
+
+#: ../class-billmate-checkout.php:1219
+msgid "Please select checkout page."
+msgstr "Vänligen ange sida för Billmate Checkout."
+
+#: ../class-billmate-checkout.php:1296
+msgid "Terms Page"
+msgstr "Köpvillkor sida"
+
+#: ../class-billmate-checkout.php:1298
+msgid "Please select the terms page."
+msgstr "Vänligen ange sida för köpvillkor."
+
 #: ../class-billmate-common.php:37
 #, php-format
 msgid ""
