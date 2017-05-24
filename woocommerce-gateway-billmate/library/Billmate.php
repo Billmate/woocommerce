@@ -54,6 +54,7 @@ class BillMate{
 	 	return $this->call($name,$args[0]);
 	}
 	function call($function,$params) {
+        $params = $this->trim_array($params);
 		$values = array(
 			"credentials" => array(
 				"id"=>$this->ID,
@@ -77,6 +78,15 @@ class BillMate{
 		}
 		return $this->verify_hash($response);
 	}
+    function trim_array($params = array()) {
+        $params = (is_string($params)) ? trim($params) : $params;
+        if(is_array($params)) {
+            foreach($params AS $key => $val) {
+                $params[$key] = $this->trim_array($val);
+            }
+        }
+        return $params;
+    }
 	function verify_hash($response) {
 		$response_array = is_array($response)?$response:json_decode($response,true);
 		//If it is not decodable, the actual response will be returnt.

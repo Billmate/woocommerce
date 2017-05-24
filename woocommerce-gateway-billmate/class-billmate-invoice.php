@@ -32,12 +32,12 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 		$this->secret				= get_option('billmate_common_secret');//( isset( $this->settings['secret'] ) ) ? $this->settings['secret'] : '';
 		$this->logo 				= get_option('billmate_common_logo');
 
-		$this->lower_threshold		= ( isset( $this->settings['lower_threshold'] ) ) ? $this->settings['lower_threshold'] : '';
-		$this->upper_threshold		= ( isset( $this->settings['upper_threshold'] ) ) ? $this->settings['upper_threshold'] : '';
+		$this->lower_threshold		= ( isset( $this->settings['lower_threshold'] ) AND $this->settings['lower_threshold'] != '' ) ? floatval(str_replace(",",".",$this->settings['lower_threshold'])) : '';
+		$this->upper_threshold		= ( isset( $this->settings['upper_threshold'] ) AND $this->settings['upper_threshold'] != '' ) ? floatval(str_replace(",",".",$this->settings['upper_threshold'])) : '';
 		$this->invoice_fee_id		= ( isset( $this->settings['invoice_fee_id'] ) ) ? $this->settings['invoice_fee_id'] : '';
 		$this->testmode				= ( isset( $this->settings['testmode'] ) ) ? $this->settings['testmode'] : '';
 		$this->de_consent_terms		= ( isset( $this->settings['de_consent_terms'] ) ) ? $this->settings['de_consent_terms'] : '';
-		$this->invoice_fee 			= ( isset( $this->settings['billmate_invoice_fee'] ) ) ? $this->settings['billmate_invoice_fee'] : 0;
+        $this->invoice_fee          = ( isset( $this->settings['billmate_invoice_fee'] ) ) ? floatval(str_replace(",",".",$this->settings['billmate_invoice_fee'])) : 0;
 		$this->invoice_fee_tax_class = (isset( $this->settings['billmate_invoice_fee_tax_class'] ) ) ? $this->settings['billmate_invoice_fee_tax_class'] : '';
 		$this->allowed_countries 		= ( isset( $this->settings['billmateinvoice_allowed_countries'] ) && !empty($this->settings['billmateinvoice_allowed_countries'])) ? $this->settings['billmateinvoice_allowed_countries'] : array('SE');
 		$this->order_status = (isset($this->settings['order_status'])) ? $this->settings['order_status'] : false;
@@ -309,13 +309,16 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 				$country = $address['country'];
 			} else {
 				$country = "";
-                if( isset($woocommerce) &&
+                if(isset($woocommerce) &&
                     is_object($woocommerce) &&
                     isset($woocommerce->customer) &&
-                    is_object($woocommerce->customer) &&
-                    method_exists($woocommerce->customer, "get_country")
+                    is_object($woocommerce->customer)
                 ) {
-                    $country = $woocommerce->customer->get_country();
+                    if(version_compare(WC_VERSION, '3.0.0', '>=') AND method_exists($woocommerce->customer, "get_billing_country")) {
+                        $country = $woocommerce->customer->get_billing_country();
+                    } elseif(method_exists($woocommerce->customer, "get_country")) {
+                        $country = $woocommerce->customer->get_country();
+                    }
                 }
 			}
 			if(is_array($this->allowed_countries) && !in_array($country , $allowed_countries)){
@@ -632,6 +635,36 @@ parse_str($_POST['post_data'], $datatemp);
 		foreach($addr as $key => $value){
 			$addr[$key] = utf8_encode(utf8_decode($value));
 		}
+
+        $post2Trim = array(
+            "billing_address_1",
+            "billing_first_name",
+            "billing_last_name",
+            "billing_city",
+            "billing_country",
+            "billing_postcode",
+            "shipping_address_1",
+            "shipping_city",
+            "shipping_company",
+            "shipping_country",
+            "shipping_first_name",
+            "shipping_last_name",
+            "shipping_postcode"
+        );
+
+        foreach($post2Trim AS $post2TrimKey) {
+            if(isset($_POST[$post2TrimKey]) AND is_string($_POST[$post2TrimKey])) {
+                $_POST[$post2TrimKey] = trim($_POST[$post2TrimKey]);
+            }
+        }
+
+        $addr2Trim = array("firstname", "lastname", "city", "company", "country", "street", "zip");
+        foreach($addr2Trim AS $addr2TrimKey) {
+            if(isset($addr[$addr2TrimKey]) AND is_string($addr[$addr2TrimKey])) {
+                $addr[$addr2TrimKey] = trim($addr[$addr2TrimKey]);
+            }
+        }
+
 		$fullname = $_POST['billing_last_name'].' '.$_POST['billing_first_name'];
 		$firstArr = explode(' ', $_POST['billing_last_name']);
 		$lastArr  = explode(' ', $_POST['billing_first_name']);
@@ -644,14 +677,21 @@ parse_str($_POST['post_data'], $datatemp);
 			$lastname = $addr['lastname'];
 			$company = '';
 			$apiName =  $addr['firstname'].' '.$addr['lastname'];
+            $usership = $_POST['billing_first_name'].' '.$_POST['billing_last_name'];
 			$displayname = $addr['firstname'].' '.$addr['lastname'];
 		} else {
 			$name = $_POST['billing_first_name'];
 			$lastname = $_POST['billing_last_name'];
 			$company  =  $addr['company'];
 			$apiName =  $name.' '.$lastname.' '.$addr['company'];
+            $usership = $_POST['billing_first_name'].' '.$_POST['billing_last_name'].' '.$_POST['billing_company'];
 			$displayname = $_POST['billing_first_name'].' '.$_POST['billing_last_name'].'<br/>'.$addr['company'];
 		}
+
+        $usership = (is_string($usership)) ? trim($usership) : $usership;
+        $userbill = (is_string($userbill)) ? trim($userbill) : $userbill;
+        $apiName = (is_string($apiName)) ? trim($apiName) : $apiName;
+        $billmate_billing_address = (is_string($billmate_billing_address)) ? trim($billmate_billing_address) : $billmate_billing_address;
 
 		$addressNotMatched  = !isEqual( $usership,  $apiName) ||
 		                      !isEqual($addr['street'], $billmate_billing_address ) ||
@@ -769,11 +809,13 @@ parse_str($_POST['post_data'], $datatemp);
 			$lastname = $addr['lastname'];
 			$company = '';
 			$apiName =  $addr['firstname'].' '.$addr['lastname'];
+            $usership = $order->billing_first_name.' '.$order->billing_last_name;
 			$displayname = $addr['firstname'].' '.$addr['lastname'];
 		} else {
 			$name = $_POST['billing_first_name'];
 			$lastname = $_POST['billing_last_name'];
 			$company  =  $addr['company'];
+            $usership = $order->billing_first_name.' '.$order->billing_last_name.' '.$order->billing_company;
 			$apiName =  $name.' '.$lastname.' '.$addr['company'];
 			$displayname = $order->billing_first_name.' '.$order->billing_last_name.'<br/>'.$addr['company'];
 		}

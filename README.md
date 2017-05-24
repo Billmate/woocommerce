@@ -22,10 +22,10 @@ The invoice and part payment plugin only works if the currency is set to Swedish
 4.5.4 - 4.7
 
 ## COMPATIBILITY WooCommerce versions
-2.5.5 - 2.6.9
+2.5.5 - 3.0.6
 
 ## COMPATIBILITY WooCommerce checkout
-* WooCommerce default checkout 2.5.5 - 2.6.9
+* WooCommerce default checkout 2.5.5 - 3.0.6
 
 ##Installation
 1. Download and unzip the latest release zip file.
@@ -66,6 +66,10 @@ Tested with [Browserstack](http://www.browserstack.com)
 
 ## Changelog
 
+### 3.0.1 (2017-05-16)
+* Fix - Improve compatibility with WC 3
+* Fix - Improve compatibility with PHP 7
+* Fix - Improve Billmate Checkout
 
 ### 3.0 (2017-04-24)
 * Feature - Add support for Billmate Checkout

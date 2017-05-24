@@ -355,6 +355,26 @@ AddEvent(window,'load',function(){
             }
         })
     });
+
+
+    /* Display getAddress in checkout if selected country is SE */
+    if($("#billing_country").length > 0 && $(".checkout-billmate-getaddress-wrapper").length > 0) {
+        $("#billing_country").change(function() {
+            if($("#billing_country").val() == "SE") {
+                $('.checkout-billmate-getaddress-wrapper').show();
+            } else {
+                $('.checkout-billmate-getaddress-wrapper').hide();
+            }
+        });
+        if($("#billing_country").val() != "SE" && $('.checkout-billmate-getaddress-wrapper').is(":hidden") == false) {
+            $("#billing_country").trigger("change");
+        }
+        if($("#billing_country").val() == "SE" && $('.checkout-billmate-getaddress-wrapper').is(":hidden") == true) {
+            $("#billing_country").trigger("change");
+        }
+    }
+
+
 });
  function ShowDivInCenter(divId)
 {

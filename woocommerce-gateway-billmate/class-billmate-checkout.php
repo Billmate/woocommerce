@@ -240,6 +240,12 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         $order = $this->get_order();
         $connection = new BillMate($this->eid,$this->secret,true,$this->testmode == 'yes');
 
+        if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+            $orderId = $order->getId();
+        } else {
+            $order->id;
+        }
+
         $result = $connection->getCheckout(array('PaymentData' => array('hash' => WC()->session->get('billmate_checkout_hash'))));
         if(is_object($order)) {
             if (!isset($result['code'])) {
@@ -247,11 +253,11 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                     case 'pending':
                         $order->update_status('pending');
                         $order->add_order_note(__('Order is PENDING APPROVAL by Billmate. Please visit Billmate Online for the latest status on this order. Billmate Invoice number: ', 'billmate') . $result['PaymentData']['order']['number']);
-                        add_post_meta($order->id, 'billmate_invoice_id', $result['PaymentData']['order']['number']);
+                        add_post_meta($orderId, 'billmate_invoice_id', $result['PaymentData']['order']['number']);
                         // Remove cart
                         WC()->cart->empty_cart();
                         if (version_compare(WC_VERSION, '2.0.0', '<')) {
-                            $redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order->id, get_permalink(get_option('woocommerce_thanks_page_id'))));
+                            $redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $orderId, get_permalink(get_option('woocommerce_thanks_page_id'))));
                         } else {
                             $redirect = $this->get_return_url($order);
                         }
@@ -269,11 +275,11 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                         $order->update_status('pending');
                         $order->payment_complete($result['PaymentInfo']['number']);
                         $order->add_order_note(__('Billmate payment completed. Billmate Invoice number:', 'billmate') . $result['PaymentData']['order']['number']);
-                        add_post_meta($order->id, 'billmate_invoice_id', $result['PaymentData']['order']['number']);
+                        add_post_meta($orderId, 'billmate_invoice_id', $result['PaymentData']['order']['number']);
                         // Remove cart
                         WC()->cart->empty_cart();
                         if (version_compare(WC_VERSION, '2.0.0', '<')) {
-                            $redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order->id, get_permalink(get_option('woocommerce_thanks_page_id'))));
+                            $redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $orderId, get_permalink(get_option('woocommerce_thanks_page_id'))));
                         } else {
                             $redirect = $this->get_return_url($order);
                         }
@@ -327,7 +333,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             $billing_address = array(
                 'first_name' => $result['Customer']['Billing']['firstname'],
                 'last_name'  => $result['Customer']['Billing']['lastname'],
-                'company'    => $result['Customer']['Billing']['company'],
+                'company'    => (isset($result['Customer']['Billing']['company']) ? $result['Customer']['Billing']['company'] : ''),
                 'email'      => $result['Customer']['Billing']['email'],
                 'phone'      => $result['Customer']['Billing']['phone'],
                 'address_1'  => $result['Customer']['Billing']['street'],
@@ -342,7 +348,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                 $shipping_address = array(
                     'first_name' => $result['Customer']['Shipping']['firstname'],
                     'last_name'  => $result['Customer']['Shipping']['lastname'],
-                    'company'    => $result['Customer']['Shipping']['company'],
+                    'company'    => (isset($result['Customer']['Shipping']['company']) ? $result['Customer']['Shipping']['company'] : ''),
                     'email'      => $result['Customer']['Shipping']['email'],
                     'phone'      => $result['Customer']['Shipping']['phone'],
                     'address_1'  => $result['Customer']['Shipping']['street'],
@@ -495,8 +501,15 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         } else {
             // Create order in WooCommerce if we have an email.
             $order = $this->create_wc_order();
-            update_post_meta( $order->id, '_billmatecheckout_incomplete_customer_email', $customer_email, true );
-            WC()->session->set( 'billmate_checkout_order', $order->id );
+
+            if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+                $orderId = $order->get_id();
+            } else {
+                $orderId = $order->id;
+            }
+
+            update_post_meta( $orderId, '_billmatecheckout_incomplete_customer_email', $customer_email, true );
+            WC()->session->set( 'billmate_checkout_order', $orderId );
         }
 
         if(isset($order)){
@@ -531,16 +544,37 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             $order_fees = $order->get_items( array( 'fee' ) );
             if ( empty( $order_fees ) ) {
                 foreach ( WC()->cart->get_fees() as $key => $fee ) {
-                    $item_id = $order->add_fee( $fee );
+
+                    if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+                        $orderId = $order->get_id();
+                    } else {
+                        $orderId = $order->id;
+                    }
+
+                    if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+                        $item = new WC_Order_Item_Fee();
+                        $item->set_props( array(
+                            'name'      => $fee->name,
+                            'tax_class' => $fee->taxable ? $fee->tax_class : 0,
+                            'total'     => $fee->amount,
+                            'total_tax' => $fee->tax,
+                            'taxes'     => array(
+                                'total' => $fee->tax_data,
+                            ),
+                            'order_id'  => $orderId,
+                        ) );
+                        $item->save();
+                        $order->add_item( $item );
+                        $item_id = $item->get_id();
+                    } else {
+                        $item_id = $order->add_fee( $fee );
+                    }
 
                     if ( ! $item_id ) {
-
-
                         throw new Exception( __( 'Error: Unable to create order. Please try again.', 'woocommerce' ) );
                     }
 
-
-                    do_action( 'woocommerce_add_order_fee_meta', $order->id, $item_id, $fee, $key );
+                    do_action( 'woocommerce_add_order_fee_meta', $orderId, $item_id, $fee, $key );
                 }
             }
 
@@ -555,10 +589,28 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                 // Store shipping for all packages.
                 foreach ( WC()->shipping->get_packages() as $package_key => $package ) {
                     if ( isset( $package['rates'][ $this_shipping_methods[ $package_key ] ] ) ) {
-                        $item_id = $order->add_shipping( $package['rates'][ $this_shipping_methods[ $package_key ] ] );
+
+                        if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+                            $shipping_rate = $package['rates'][ $this_shipping_methods[ $package_key ] ];
+                            $item = new WC_Order_Item_Shipping();
+                            $item->set_props( array(
+                                'method_title' => $shipping_rate->label,
+                                'method_id'    => $shipping_rate->id,
+                                'total'        => wc_format_decimal( $shipping_rate->cost ),
+                                'taxes'        => $shipping_rate->taxes,
+                                'order_id'     => $order->get_id()
+                            ) );
+                            foreach ( $shipping_rate->get_meta_data() as $key => $value ) {
+                                $item->add_meta_data( $key, $value, true );
+                            }
+                            $item->save();
+                            $order->add_item( $item );
+                            $item_id = $item->get_id();
+                        } else {
+                            $item_id = $order->add_shipping( $package['rates'][ $this_shipping_methods[ $package_key ] ] );
+                        }
 
                         if ( ! $item_id ) {
-
                             throw new Exception( __( 'Error: Unable to create order. Please try again.', 'woocommerce' ) );
                         }
 
@@ -569,9 +621,16 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             $order_taxes = $order->get_items( array( 'tax' ) );
             if ( empty( $order_taxes ) ) {
                 foreach ( array_keys( WC()->cart->taxes + WC()->cart->shipping_taxes ) as $tax_id ) {
-                    if ( $tax_id && ! $order->add_tax( $tax_id, WC()->cart->get_tax_amount( $tax_id ), WC()->cart->get_shipping_tax_amount( $tax_id ) ) && apply_filters( 'woocommerce_cart_remove_taxes_zero_rate_id', 'zero-rated' ) !== $tax_id ) {
 
-                        throw new Exception( sprintf( __( 'Error %d: Unable to create order. Please try again.', 'woocommerce' ), 405 ) );
+                    if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+                        $tax_code = WC_Tax::get_rate_code( $tax_id );
+                        if(!is_numeric($tax_id) OR $tax_id < 1 OR $tax_code == false) {
+                            throw new Exception( sprintf( __( 'Error %d: Unable to create order. Please try again.', 'woocommerce' ), 405 ) );
+                        }
+                    } else {
+                        if ($tax_id && ! $order->add_tax( $tax_id, WC()->cart->get_tax_amount( $tax_id ), WC()->cart->get_shipping_tax_amount( $tax_id ) ) && apply_filters( 'woocommerce_cart_remove_taxes_zero_rate_id', 'zero-rated' ) !== $tax_id ) {
+                            throw new Exception( sprintf( __( 'Error %d: Unable to create order. Please try again.', 'woocommerce' ), 405 ) );
+                        }
                     }
                 }
             }
@@ -579,12 +638,23 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             $order_coupons = $order->get_items( array( 'coupon' ) );
             if ( empty( $order_coupons ) ) {
                 foreach ( WC()->cart->get_coupons() as $code => $coupon ) {
-                    if ( ! $order->add_coupon( $code, WC()->cart->get_coupon_discount_amount( $code ) ) ) {
 
+                    if(version_compare(WC_VERSION, '3.0.0', '>=')) {
 
-                        throw new Exception( __( 'Error: Unable to create order. Please try again.', 'woocommerce' ) );
+                        $item = new WC_Order_Item_Coupon();
+                        $item->set_props( array(
+                            'code'         => $code,
+                            'discount'     => WC()->cart->get_coupon_discount_amount( $code ),
+                            'discount_tax' => WC()->cart->get_coupon_discount_tax_amount( $code ),
+                            'order_id'     => $order->get_id()
+                        ) );
+                        $item->save();
+                        $order->add_item( $item );
+
                     } else {
-
+                        if ( ! $order->add_coupon( $code, WC()->cart->get_coupon_discount_amount( $code ) ) ) {
+                            throw new Exception( __( 'Error: Unable to create order. Please try again.', 'woocommerce' ) );
+                        }
                     }
                 }
             }
@@ -608,14 +678,20 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
             $order->calculate_totals();
 
+            if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+                $orderId = $order->get_id();
+            } else {
+                $orderId = $order->id;
+            }
+
             if ( email_exists( $customer_email ) ) {
                 $user    = get_user_by( 'email', $customer_email );
                 $user_id = $user->ID;
-                update_post_meta( $order->id, '_customer_user', $user_id );
+                update_post_meta( $orderId, '_customer_user', $user_id );
             }
-            do_action( 'woocommerce_checkout_update_order_meta', $order->id, array() );
+            do_action( 'woocommerce_checkout_update_order_meta', $orderId, array() );
         }
-        return $order->id;
+        return $orderId;
     }
 
     function get_url(){
@@ -657,7 +733,6 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         );
         $lang = explode('_',get_locale());
 
-
         $location = wc_get_base_location();
         $orderValues['PaymentData'] = array(
             'method' => 93,
@@ -679,7 +754,11 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                 if ( $_product->get_sku() ) {
                     $sku = $_product->get_sku();
                 } else {
-                    $sku = $_product->id;
+                    if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+                        $sku = $_product->get_id();
+                    } else {
+                        $sku = $_product->id;
+                    }
                 }
 
             } else {
@@ -730,7 +809,11 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             if ( $_product->get_sku() ) {
                 $sku = $_product->get_sku();
             } else {
-                $sku = $_product->id;
+                if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+                    $sku = $_product->get_id();
+                } else {
+                    $sku = $_product->id;
+                }
             }
 
             $priceExcl = round($item_price - (100 * $order->get_item_tax($item,false)));
@@ -764,11 +847,19 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             $totalTax += ($orderFeesArticle['aprice'] * ($orderFeesArticle['taxrate']/100));
         }
 
+
+
+        if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+            $order_discount_total = $order->get_total_discount();
+        } else {
+            $order_discount_total = $order->order_discount;
+        }
+
         // Discount
-        if ($order->order_discount>0) :
+        if ($order_discount_total > 0) :
 
             // apply_filters to order discount so we can filter this if needed
-            $billmate_order_discount = $order->order_discount;
+            $billmate_order_discount = $order_discount_total;
             $order_discount = apply_filters( 'billmate_order_discount', $billmate_order_discount );
             $total_value = $total;
             foreach($prepareDiscount as $key => $value){
@@ -794,23 +885,31 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         endif;
 
         // Shipping
-        if ($order->order_shipping>0) :
+        if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+            $order_shipping_total = $order->get_shipping_total();
+            $order_shipping_tax = $order->get_shipping_tax();
+        } else {
+            $order_shipping_total = $order->order_shipping;
+            $order_shipping_tax = $order->order_shipping_tax;
+        }
+
+        if ($order_shipping_total > 0) :
 
             // We manually calculate the shipping taxrate percentage here
-            $calculated_shipping_tax_percentage = ($order->order_shipping_tax/$order->order_shipping)*100; //25.00
-            $calculated_shipping_tax_decimal = ($order->order_shipping_tax/$order->order_shipping)+1; //0.25
+            $calculated_shipping_tax_percentage = ($order_shipping_tax / $order_shipping_total) * 100; //25.00
+            $calculated_shipping_tax_decimal = ($order_shipping_tax / $order_shipping_total) + 1; //0.25
 
             // apply_filters to Shipping so we can filter this if needed
-            $billmate_shipping_price_including_tax = $order->order_shipping*$calculated_shipping_tax_decimal;
+            $billmate_shipping_price_including_tax = $order_shipping_total * $calculated_shipping_tax_decimal;
             $shipping_price = apply_filters( 'billmate_shipping_price_including_tax', $billmate_shipping_price_including_tax );
 
             $orderValues['Cart']['Shipping'] = array(
-                'withouttax'    => ($shipping_price-$order->order_shipping_tax)*100,
+                'withouttax'    => ($shipping_price - $order_shipping_tax) * 100,
                 'taxrate'      => round($calculated_shipping_tax_percentage),
 
             );
-            $total += ($shipping_price-$order->order_shipping_tax) * 100;
-            $totalTax += (($shipping_price-$order->order_shipping_tax) * ($calculated_shipping_tax_percentage/100))*100;
+            $total += ($shipping_price - $order_shipping_tax) * 100;
+            $totalTax += (($shipping_price - $order_shipping_tax) * ($calculated_shipping_tax_percentage/100)) * 100;
         endif;
 
 
@@ -887,7 +986,11 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                 if ( $_product->get_sku() ) {
                     $sku = $_product->get_sku();
                 } else {
-                    $sku = $_product->id;
+                    if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+                        $orderId = $_product->get_id();
+                    } else {
+                        $sku = $_product->id;
+                    }
                 }
 
             } else {
@@ -938,7 +1041,11 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             if ( $_product->get_sku() ) {
                 $sku = $_product->get_sku();
             } else {
-                $sku = $_product->id;
+                if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+                    $sku = $_product->get_id();
+                } else {
+                    $sku = $_product->id;
+                }
             }
 
             $priceExcl = round($item_price - (100 * $order->get_item_tax($item,false)));
@@ -973,10 +1080,17 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         }
 
         // Discount
-        if ($order->order_discount>0) :
+
+        if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+            $order_discount_total = $order->get_total_discount();
+        } else {
+            $order_discount_total = $order->order_discount;
+        }
+
+        if ($order_discount_total > 0) :
 
             // apply_filters to order discount so we can filter this if needed
-            $billmate_order_discount = $order->order_discount;
+            $billmate_order_discount = $order_discount_total;
             $order_discount = apply_filters( 'billmate_order_discount', $billmate_order_discount );
             $total_value = $total;
             foreach($prepareDiscount as $key => $value){
@@ -1018,22 +1132,30 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             }
         endif;
 
-        if ($order->order_shipping>0) :
+        if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+            $order_shipping_total = $order->get_shipping_total();
+            $order_shipping_tax = $order->get_shipping_tax();
+        } else {
+            $order_shipping_total = $order->order_shipping;
+            $order_shipping_tax = $order->order_shipping_tax;
+        }
+
+        if ($order_shipping_total > 0) :
             // We manually calculate the shipping taxrate percentage here
-            $calculated_shipping_tax_percentage = ($order->order_shipping_tax/$order->order_shipping)*100; //25.00
-            $calculated_shipping_tax_decimal = ($order->order_shipping_tax/$order->order_shipping)+1; //0.25
+            $calculated_shipping_tax_percentage = ($order_shipping_tax / $order_shipping_total) * 100; //25.00
+            $calculated_shipping_tax_decimal = ($order_shipping_tax / $order_shipping_total) + 1; //0.25
 
             // apply_filters to Shipping so we can filter this if needed
-            $billmate_shipping_price_including_tax = $order->order_shipping*$calculated_shipping_tax_decimal;
+            $billmate_shipping_price_including_tax = $order_shipping_total * $calculated_shipping_tax_decimal;
             $shipping_price = apply_filters( 'billmate_shipping_price_including_tax', $billmate_shipping_price_including_tax );
 
             $orderValues['Cart']['Shipping'] = array(
-                'withouttax'    => ($shipping_price-$order->order_shipping_tax)*100,
+                'withouttax'    => ($shipping_price - $order_shipping_tax) * 100,
                 'taxrate'      => round($calculated_shipping_tax_percentage),
 
             );
-            $total += ($shipping_price-$order->order_shipping_tax) * 100;
-            $totalTax += (($shipping_price-$order->order_shipping_tax) * ($calculated_shipping_tax_percentage/100))*100;
+            $total += ($shipping_price - $order_shipping_tax) * 100;
+            $totalTax += (($shipping_price - $order_shipping_tax) * ($calculated_shipping_tax_percentage/100)) * 100;
         endif;
 
 

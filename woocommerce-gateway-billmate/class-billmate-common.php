@@ -74,7 +74,7 @@ class BillmateCommon {
     {
         if(get_option('billmate_common_getaddress') == 'active'){
             ?>
-            <div class="col12-set">
+            <div class="col12-set checkout-billmate-getaddress-wrapper">
                 <div class="col-1">
                     <p class="form-row">
                         <label for="pno"><?php echo __('Social Security Number / Corporate Registration Number','billmate'); ?></label>

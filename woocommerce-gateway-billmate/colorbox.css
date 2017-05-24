@@ -49,6 +49,6 @@
 	background-color:#444444!important;
 }
 .payment_method_billmate_bankpay img {
-	width: 145px;
-	height: 50px;
+	max-width: 145px;
+	max-height: 50px;
 }
