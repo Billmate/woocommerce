@@ -240,14 +240,15 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         $order = $this->get_order();
         $connection = new BillMate($this->eid,$this->secret,true,$this->testmode == 'yes');
 
-        if(version_compare(WC_VERSION, '3.0.0', '>=')) {
-            $orderId = $order->getId();
-        } else {
-            $order->id;
-        }
-
         $result = $connection->getCheckout(array('PaymentData' => array('hash' => WC()->session->get('billmate_checkout_hash'))));
         if(is_object($order)) {
+
+            if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+                $orderId = $order->get_id();
+            } else {
+                $orderId = $order->id;
+            }
+
             if (!isset($result['code'])) {
                 switch (strtolower($result['PaymentData']['order']['status'])) {
                     case 'pending':
