@@ -249,7 +249,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                 $orderId = $order->id;
             }
 
-            if (!isset($result['code'])) {
+            if (!isset($result['code']) AND isset($result['PaymentData']['order']['status'])) {
                 switch (strtolower($result['PaymentData']['order']['status'])) {
                     case 'pending':
                         $order->update_status('pending');
@@ -274,7 +274,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                     case 'created':
                     case 'paid':
                         $order->update_status('pending');
-                        $order->payment_complete($result['PaymentInfo']['number']);
+                        $order->payment_complete(((isset($result['PaymentInfo']['number'])) ? $result['PaymentInfo']['number'] : 0));
                         $order->add_order_note(__('Billmate payment completed. Billmate Invoice number:', 'billmate') . $result['PaymentData']['order']['number']);
                         add_post_meta($orderId, 'billmate_invoice_id', $result['PaymentData']['order']['number']);
                         // Remove cart
