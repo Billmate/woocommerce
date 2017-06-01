@@ -967,6 +967,207 @@ if(!class_exists('BillmateCountry')){
 
 if(!class_exists('BillmateOrder')){
     class BillmateOrder {
+
+        private $order;
+        private $orderData;
+        private $allowedCountries;
+        private $paymentterms;
+        private $customerPno;
+        public function __construct($order) {
+            $this->order = $order;
+            $this->orderData = array();
+            $this->allowedCountries = array();
+            $this->paymentterms = 0;
+        }
+
+        public function setCustomerPno($pno = "") {
+            $this->customerPno = $pno;
+        }
+
+        public function setAllowedCountries($countries = array()) {
+            $this->allowedCountries = $countries;
+        }
+
+        public function setPaymentterms($paymentterms) {
+            $this->paymentterms = $paymentterms;
+        }
+
+        public function getCustomerData() {
+            $this->orderData['Customer'] = array();
+            if($this->customerPno != "") {
+                $this->orderData['Customer']['pno'] = $this->customerPno;
+            }
+
+            $this->orderData['Customer']['nr'] = $this->getCustomerNrData();
+            $this->orderData['Customer']['Billing'] = $this->getCustomerBillingData();
+            $this->orderData['Customer']['Shipping'] = $this->getCustomerShippingData();
+
+            return $this->orderData['Customer'];
+        }
+
+        public function getCustomerPnoData() {
+            if(isset($this->orderData['Customer']['pno'])) {
+                return $this->orderData['Customer']['pno'];
+            } else {
+                if(!isset($this->orderData['Customer'])) {
+                    $this->orderData['Customer'] = array();
+                }
+            }
+            $this->orderData['Customer']['pno'] = $this->customerPno;
+            return $this->orderData['Customer']['pno'];
+        }
+
+        public function getCustomerNrData() {
+            if(isset($this->orderData['Customer']['nr'])) {
+                return $this->orderData['Customer']['nr'];
+            } else {
+                if(!isset($this->orderData['Customer'])) {
+                    $this->orderData['Customer'] = array();
+                }
+            }
+
+            if($this->is_wc3()) {
+                $orderUserId = $this->order->get_user_id();
+                $this->orderData['Customer']['nr'] = (empty($orderUserId ) || $orderUserId <= 0) ? '': $orderUserId;
+            } else {
+                $this->orderData['Customer']['nr'] = empty($this->order->user_id ) || $this->order->user_id<= 0 ? '': $this->order->user_id;
+            }
+
+            return $this->orderData['Customer']['nr'];
+        }
+
+        public function getCustomerBillingData() {
+
+            if(isset($this->orderData['Customer']['Billing'])) {
+                return $this->orderData['Customer']['Billing'];
+            } else {
+                if(!isset($this->orderData['Customer'])) {
+                    $this->orderData['Customer'] = array();
+                }
+            }
+
+            if($this->is_wc3()) {
+                $this->orderData['Customer']['Billing'] = array(
+                    'firstname' => $this->utf8Encode($this->order->get_billing_first_name()),
+                    'lastname' => $this->utf8Encode($this->order->get_billing_last_name()),
+                    'company' => $this->utf8Encode($this->order->get_billing_company()),
+                    'street' => $this->utf8Encode($this->order->get_billing_address_1()),
+                    'street2' => $this->utf8Encode($this->order->get_billing_address_2()),
+                    'zip' => $this->order->get_billing_postcode(),
+                    'city' => $this->utf8Encode($this->order->get_billing_city()),
+                    'country' => $this->order->get_billing_country(),
+                    'phone' => $this->order->get_billing_phone(),
+                    'email' => $this->order->get_billing_email()
+                );
+            } else {
+                $this->orderData['Customer']['Billing'] = array(
+                    'firstname' => $this->utf8Encode($this->order->billing_first_name),
+                    'lastname' => $this->utf8Encode($this->order->billing_last_name),
+                    'company' => $this->utf8Encode($this->order->billing_company),
+                    'street' => $this->utf8Encode($this->order->billing_address_1),
+                    'street2' => $this->utf8Encode($this->order->billing_address_2),
+                    'zip' => $this->order->billing_postcode,
+                    'city' => $this->utf8Encode($this->order->billing_city),
+                    'country' => $this->order->billing_country,
+                    'phone' => $this->order->billing_phone,
+                    'email' => $this->order->billing_email
+                );
+            }
+
+            return $this->orderData['Customer']['Billing'];
+        }
+
+        public function getCustomerShippingData() {
+            if(isset($this->orderData['Customer']['Shipping'])) {
+                return $this->orderData['Customer']['Shipping'];
+            } else {
+                if(!isset($this->orderData['Customer'])) {
+                    $this->orderData['Customer'] = array();
+                }
+            }
+
+            // Customer billing need to be set
+            $this->getCustomerBillingData();
+
+            if ( $this->order->get_shipping_method() == '' ) {
+                $this->orderData['Customer']['Shipping'] = $this->orderData['Customer']['Billing'];
+
+                $this->orderData['Customer']['Shipping'] = array(
+                    'firstname' => $this->orderData['Customer']['Billing']['firstname'],
+                    'lastname' => $this->orderData['Customer']['Billing']['lastname'],
+                    'company' => $this->orderData['Customer']['Billing']['company'],
+                    'street' => $this->orderData['Customer']['Billing']['street'],
+                    'street2' => $this->orderData['Customer']['Billing']['street2'],
+                    'zip' => $this->orderData['Customer']['Billing']['zip'],
+                    'city' => $this->orderData['Customer']['Billing']['city'],
+                    'country' => $this->orderData['Customer']['Billing']['country'],
+                    'phone' => $this->orderData['Customer']['Billing']['phone']
+                );
+
+                return $this->orderData['Customer']['Shipping'];
+            }
+
+            if($this->is_wc3()) {
+                $this->orderData['Customer']['Shipping'] = array(
+                    'firstname' => $this->utf8Encode($this->order->get_shipping_first_name()),
+                    'lastname' => $this->utf8Encode($this->order->get_shipping_last_name()),
+                    'company' => $this->utf8Encode($this->order->get_shipping_company()),
+                    'street' => $this->utf8Encode($this->order->get_shipping_address_1()),
+                    'street2' => $this->utf8Encode($this->order->get_shipping_address_2()),
+                    'zip' => $this->order->get_shipping_postcode(),
+                    'city' => $this->utf8Encode($this->order->get_shipping_city()),
+                    'country' => $this->order->get_shipping_country(),
+                    'phone' => $this->order->get_billing_phone()
+                );
+            } else {
+                $this->orderData['Customer']['Shipping'] = array(
+                    'firstname' => $this->utf8Encode( $this->order->shipping_first_name),
+                    'lastname' => $this->utf8Encode( $this->order->shipping_last_name),
+                    'company' => $this->utf8Encode( $this->order->shipping_company),
+                    'street' => $this->utf8Encode( $this->order->shipping_address_1),
+                    'street2' => $this->utf8Encode( $this->order->shipping_address_2),
+                    'zip' => $this->utf8Encode( $this->order->shipping_postcode),
+                    'city' => $this->utf8Encode( $this->order->shipping_city),
+                    'country' => $this->order->shipping_country,
+                    'phone' => $this->order->billing_phone
+                );
+            }
+
+            return $this->orderData['Customer']['Shipping'];
+        }
+
+
+        public function getPaymentInfoData() {
+            if(isset($this->orderData['PaymentInfo'])) {
+                return $this->orderData['PaymentInfo'];
+            }
+
+            // Customer billing need to be set
+            $this->getCustomerBillingData();
+
+            $this->orderData['PaymentInfo'] = array();
+            $this->orderData['PaymentInfo']['paymentdate'] = (string)date('Y-m-d');
+
+            if($this->paymentterms > 0) {
+                $this->orderData['PaymentInfo']['paymentterms'] = $this->paymentterms;
+            }
+
+            $this->orderData['PaymentInfo']['yourreference'] = $this->orderData['Customer']['Billing']['firstname'].' '.$this->orderData['Customer']['Billing']['lastname'];
+            return $this->orderData['PaymentInfo'];
+        }
+
+        private function is_wc3() {
+            return version_compare(WC_VERSION, '3.0.0', '>=');
+        }
+
+        private function utf8Encode($param = "") {
+            if($param) {
+                $param = mb_convert_encoding($param,'UTF-8','auto');
+            }
+            return $param;
+        }
+
+
         public static function getOrderFeesAsOrderArticles() {
             global $woocommerce;
 

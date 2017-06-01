@@ -19,7 +19,12 @@ function return_billmate_price() {
 		$pclasses_not_available = false;
 	//$WC_Gateway_Billmate_Partpayment = new WC_Gateway_Billmate_Partpayment;
 	$product = new WC_Product( get_the_ID() );
-  	$price = $product->price;
+
+    if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+        $price = $product->get_price();
+    } else {
+        $price = $product->price;
+    }
 
 	$settings = get_option('woocommerce_billmate_partpayment_settings');
 	$eid = get_option('billmate_common_eid');;
@@ -226,7 +231,12 @@ function return_billmate_partpayment_info_link() {
 	$billmate_shortcode = true;
 
 	$product = new WC_Product( get_the_ID() );
-  	$price = $product->price;
+
+    if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+        $price = $product->get_price();
+    } else {
+        $price = $product->price;
+    }
 
 	ob_start();
 	WC_Gateway_Billmate_Partpayment::payment_fields_options( $price, false , BillmateFlags::PRODUCT_PAGE);
