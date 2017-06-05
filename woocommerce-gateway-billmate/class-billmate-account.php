@@ -1417,12 +1417,14 @@ parse_str($_POST['post_data'], $datatemp);
 
         $post2Trim = array(
             "billing_address_1",
+            "billing_address_2",
             "billing_first_name",
             "billing_last_name",
             "billing_city",
             "billing_country",
             "billing_postcode",
             "shipping_address_1",
+            "shipping_address_2",
             "shipping_city",
             "shipping_company",
             "shipping_country",
@@ -1495,6 +1497,11 @@ parse_str($_POST['post_data'], $datatemp);
 				$html.= '<input type="hidden" id="_last_name" value="'.$lastname.'" />';
 				$html.= '<input type="hidden" id="_company" value="'.$company.'" />';
 				$html.= '<input type="hidden" id="_address_1" value="'.$addr['street'].'" />';
+
+                if(isset($_POST['billing_address_2']) AND $_POST['billing_address_2'] != "") {
+                    $html.= '<input type="hidden" id="_address_2" value="'.$this->woocommerce_clean($_POST['billing_address_2']).'" />';
+                }
+
 				$html.= '<input type="hidden" id="_postcode" value="'.$addr['zip'].'" />';
 				$html.= '<input type="hidden" id="_city" value="'.$addr['city'].'" /></span>';
 
