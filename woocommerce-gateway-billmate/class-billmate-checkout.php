@@ -221,8 +221,12 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
 
             $available_gateways = WC()->payment_gateways->payment_gateways();
-            $payment_method = $available_gateways[$method];
-            $order->set_payment_method($payment_method);
+
+            if(isset($method) AND $method != "" AND isset($available_gateways[$method])) {
+                $payment_method = $available_gateways[$method];
+                $order->set_payment_method($payment_method);
+            }
+
             $order->calculate_taxes();
             $order->calculate_shipping();
             $order->calculate_totals();
@@ -331,39 +335,41 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             $orderId = $this->create_order();
             $order = wc_get_order( $orderId );
 
-            $billing_address = array(
-                'first_name' => $result['Customer']['Billing']['firstname'],
-                'last_name'  => $result['Customer']['Billing']['lastname'],
-                'company'    => (isset($result['Customer']['Billing']['company']) ? $result['Customer']['Billing']['company'] : ''),
-                'email'      => $result['Customer']['Billing']['email'],
-                'phone'      => $result['Customer']['Billing']['phone'],
-                'address_1'  => $result['Customer']['Billing']['street'],
-                'address_2'  => '',
-                'city'       => $result['Customer']['Billing']['city'],
-                'state'      => '',
-                'postcode'   => $result['Customer']['Billing']['zip'],
-                'country'    => $result['Customer']['Billing']['country']
-            );
-
-            if(isset($result['Customer']['Shipping']) AND is_array($result['Customer']['Shipping']) AND count($result['Customer']['Shipping']) > 0) {
-                $shipping_address = array(
-                    'first_name' => $result['Customer']['Shipping']['firstname'],
-                    'last_name'  => $result['Customer']['Shipping']['lastname'],
-                    'company'    => (isset($result['Customer']['Shipping']['company']) ? $result['Customer']['Shipping']['company'] : ''),
-                    'email'      => $result['Customer']['Shipping']['email'],
-                    'phone'      => $result['Customer']['Shipping']['phone'],
-                    'address_1'  => $result['Customer']['Shipping']['street'],
+            if(isset($result['Customer']) AND is_array($result['Customer']) AND count($result['Customer']) > 0) {
+                $billing_address = array(
+                    'first_name' => $result['Customer']['Billing']['firstname'],
+                    'last_name'  => $result['Customer']['Billing']['lastname'],
+                    'company'    => (isset($result['Customer']['Billing']['company']) ? $result['Customer']['Billing']['company'] : ''),
+                    'email'      => $result['Customer']['Billing']['email'],
+                    'phone'      => $result['Customer']['Billing']['phone'],
+                    'address_1'  => $result['Customer']['Billing']['street'],
                     'address_2'  => '',
-                    'city'       => $result['Customer']['Shipping']['city'],
+                    'city'       => $result['Customer']['Billing']['city'],
                     'state'      => '',
-                    'postcode'   => $result['Customer']['Shipping']['zip'],
-                    'country'    => $result['Customer']['Shipping']['country']
+                    'postcode'   => $result['Customer']['Billing']['zip'],
+                    'country'    => $result['Customer']['Billing']['country']
                 );
-            } else {
-                $shipping_address = $billing_address;
+
+                if(isset($result['Customer']['Shipping']) AND is_array($result['Customer']['Shipping']) AND count($result['Customer']['Shipping']) > 0) {
+                    $shipping_address = array(
+                        'first_name' => $result['Customer']['Shipping']['firstname'],
+                        'last_name'  => $result['Customer']['Shipping']['lastname'],
+                        'company'    => (isset($result['Customer']['Shipping']['company']) ? $result['Customer']['Shipping']['company'] : ''),
+                        'email'      => $result['Customer']['Shipping']['email'],
+                        'phone'      => $result['Customer']['Shipping']['phone'],
+                        'address_1'  => $result['Customer']['Shipping']['street'],
+                        'address_2'  => '',
+                        'city'       => $result['Customer']['Shipping']['city'],
+                        'state'      => '',
+                        'postcode'   => $result['Customer']['Shipping']['zip'],
+                        'country'    => $result['Customer']['Shipping']['country']
+                    );
+                } else {
+                    $shipping_address = $billing_address;
+                }
+                $order->set_address($billing_address,'billing');
+                $order->set_address($shipping_address,'shipping');
             }
-            $order->set_address($billing_address,'billing');
-            $order->set_address($shipping_address,'shipping');
 
             switch ($result['PaymentData']['method']) {
                 case 1:
@@ -393,8 +399,10 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                     break;
             }
             $available_gateways = WC()->payment_gateways->payment_gateways();
-            $payment_method = $available_gateways[$method];
-            $order->set_payment_method($payment_method);
+            if(isset($method) AND $method != "" AND isset($available_gateways[$method])) {
+                $payment_method = $available_gateways[$method];
+                $order->set_payment_method($payment_method);
+            }
 
             $order->calculate_taxes();
             $order->calculate_shipping();
@@ -1195,8 +1203,9 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             'rounding' => round($round),
             'withtax' => round($total + $totalTax + $round)
         );
+
         $data = $billmate->updateCheckout($orderValues);
-        
+
         if(!isset($data['code'])){
             if($previousTotal != $orderValues['Cart']['Total']['withtax']){
                 return array('update_checkout' => true);
