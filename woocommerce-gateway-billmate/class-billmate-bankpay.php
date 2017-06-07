@@ -195,7 +195,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		// Set Transient if not exists to prevent multiple callbacks
 		set_transient('billmate_bankpay_order_id_'.$order_id,true,3600);
 		if(isset($data['code']) || isset($data['error']) || ($cancel_url_hit) || $data['status'] == 'Failed'){
-			if($_POST['status'] == 'Failed') {
+			if(isset($_POST['status']) AND $_POST['status'] == 'Failed') {
 				$error_message = $checkoutMessageCancel;
 			} else {
 				$error_message = $checkoutMessageCancel;
@@ -237,7 +237,14 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
                 }
             }
 			if($data['status'] == 'Paid') {
-				add_post_meta($order->id,'billmate_invoice_id',$data['number']);
+
+                if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+                    $orderId = $order->get_id();
+                } else {
+                    $orderId = $order->id;
+                }
+
+				add_post_meta($orderId, 'billmate_invoice_id', $data['number']);
 				$order->add_order_note(sprintf(__('Billmate Invoice id: %s','billmate'),$data['number']));
 
 				if ($this->order_status == 'default') {
@@ -518,6 +525,9 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		$language = explode('_',get_locale());
 		if(!defined('BILLMATE_LANGUAGE')) define('BILLMATE_LANGUAGE',strtolower($language[0]));
 
+        $billmateOrder = new BillmateOrder($order);
+        $billmateOrder->setAllowedCountries($woocommerce->countries->get_allowed_countries());
+
 		$orderValues = array();
 		$capture_now   = $this->authentication_method == 'sales' ? 'YES' : 'NO';
 		$orderValues['PaymentData'] = array(
@@ -528,13 +538,10 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			'autoactivate' => 0,
 			'orderid' => preg_replace('/#/','',$order->get_order_number()),
 			'logo' => (strlen($this->logo)> 0) ? $this->logo : ''
-
-		);
-		$orderValues['PaymentInfo'] = array(
-			'paymentdate' => (string)date('Y-m-d'),
-			'yourreference' => $order->billing_first_name.' '.$order->billing_last_name
 		);
 
+
+        $orderValues['PaymentInfo'] = $billmateOrder->getPaymentInfoData();
 
 		$languageCode = $language[0];
 		$languageCode = $languageCode == 'DA' ? 'DK' : $languageCode;
@@ -558,9 +565,11 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
             'returnmethod' => ($url['scheme'] == 'https') ? 'POST' : 'GET'
 		);
 
-		$orderValues['Customer'] = array(
-			'nr' => empty($order->user_id ) || $order->user_id<= 0 ? '': $order->user_id
-		);
+        $orderValues['Customer'] = array();
+        $orderValues['Customer']['nr'] = $billmateOrder->getCustomerNrData();
+        $orderValues['Customer']['Billing'] = $billmateOrder->getCustomerBillingData();
+        $orderValues['Customer']['Shipping'] = $billmateOrder->getCustomerShippingData();
+
 		if ( $this->shop_country == 'NL' || $this->shop_country == 'DE' ) :
 
 			require_once('split-address.php');
@@ -579,67 +588,13 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			$billmate_shipping_house_number		= $splitted_address[1];
 			$billmate_shipping_house_extension	= $splitted_address[2];
 
-		else :
-
-			$billmate_billing_address				= $order->billing_address_1;
-			$billmate_billing_house_number		= '';
-			$billmate_billing_house_extension		= '';
-
-			$billmate_shipping_address			= $order->shipping_address_1;
-			$billmate_shipping_house_number		= '';
-			$billmate_shipping_house_extension	= '';
+            $orderValues['Customer']['Billing']['street'] = $billmate_billing_address;
+            $orderValues['Customer']['Shipping']['street'] = $billmate_shipping_address;
 
 		endif;
-		$countries = $woocommerce->countries->get_allowed_countries();
-		$orderValues['Customer']['Billing'] = array(
-			'firstname' => mb_convert_encoding($order->billing_first_name,'UTF-8','auto'),
-			'lastname' => mb_convert_encoding($order->billing_last_name,'UTF-8','auto'),
-			'company' => mb_convert_encoding($order->billing_company,'UTF-8','auto'),
-			'street' => mb_convert_encoding($billmate_billing_address,'UTF-8','auto'),
-			'street2' => mb_convert_encoding($order->billing_address_2,'UTF-8','auto'),
-			'zip' => $order->billing_postcode,
-			'city' => mb_convert_encoding($order->billing_city,'UTF-8','auto'),
-			'country' => $countries[$order->billing_country],
-			'phone' => $order->billing_phone,
-			'email' => $order->billing_email
-		);
-		if ( $order->get_shipping_method() == '' ) {
-
-			$email = $order->billing_email;
-			$telno = ''; //We skip the normal land line phone, only one is needed.
-			$cellno = $order->billing_phone;
-			$company = mb_convert_encoding( $order->billing_company,'UTF-8','auto');
-			$fname = mb_convert_encoding( $order->billing_first_name,'UTF-8','auto');
-			$lname = mb_convert_encoding( $order->billing_last_name,'UTF-8','auto');
-			$careof = mb_convert_encoding( $order->billing_address_2,'UTF-8','auto');  //No care of; C/O.
-			$street = mb_convert_encoding( $billmate_billing_address,'UTF-8','auto'); //For DE and NL specify street number in houseNo.
-			$zip = mb_convert_encoding( $order->billing_postcode,'UTF-8','auto');
-			$city = mb_convert_encoding( $order->billing_city,'UTF-8','auto');
-
-		} else {
-			$email = $order->billing_email;
-			$telno = ''; //We skip the normal land line phone; only one is needed.
-			$cellno = $order->billing_phone;
-			$company = mb_convert_encoding( $order->shipping_company,'UTF-8','auto');
-			$fname = mb_convert_encoding( $order->shipping_first_name,'UTF-8','auto');
-			$lname = mb_convert_encoding( $order->shipping_last_name,'UTF-8','auto');
-			$careof = mb_convert_encoding( $order->shipping_address_2,'UTF-8','auto');  //No care of; C/O.
-			$street = mb_convert_encoding( $billmate_shipping_address,'UTF-8','auto'); //For DE and NL specify street number in houseNo.
-			$zip = mb_convert_encoding( $order->shipping_postcode,'UTF-8','auto');
-			$city = mb_convert_encoding( $order->shipping_city,'UTF-8','auto');
 
 
-		}
-		$orderValues['Customer']['Shipping'] = array(
-			'firstname' => $fname,
-			'lastname' => $lname,
-			'company' => $company,
-			'street' => $street,
-			'zip' => $zip,
-			'city' => $city,
-			'country' => $countries[$order->billing_country],
-			'phone' => $cellno
-		);
+
 		$total = 0;
 		$totalTax = 0;
 		$prepareDiscount = array();
@@ -681,7 +636,11 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 				if ( $_product->get_sku() ) {
 					$sku = $_product->get_sku();
 				} else {
-					$sku = $_product->id;
+                    if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+                        $sku = $_product->get_id();
+                    } else {
+                        $sku = $_product->id;
+                    }
 				}
 
 				$priceExcl = round($item_price - (100 * $order->get_item_tax($item,false)));
@@ -716,10 +675,15 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
         }
 
 		// Discount
-		if ($order->order_discount>0) :
+        if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+            $order_discount_total = $order->get_total_discount();
+        } else {
+            $order_discount_total = $order->order_discount;
+        }
+		if ($order_discount_total > 0) :
 
 			// apply_filters to order discount so we can filter this if needed
-			$billmate_order_discount = $order->order_discount;
+			$billmate_order_discount = $order_discount_total;
 			$order_discount = apply_filters( 'billmate_order_discount', $billmate_order_discount );
 			$total_value = $total;
 			foreach($prepareDiscount as $key => $value){
@@ -745,23 +709,30 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		endif;
 
 		// Shipping
-		if ($order->order_shipping>0) :
+        if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+            $order_shipping_total = $order->get_shipping_total();
+            $order_shipping_tax = $order->get_shipping_tax();
+        } else {
+            $order_shipping_total = $order->order_shipping;
+            $order_shipping_tax = $order->order_shipping_tax;
+        }
+		if ($order_shipping_total > 0) :
 
 			// We manually calculate the shipping taxrate percentage here
-			$calculated_shipping_tax_percentage = ($order->order_shipping_tax/$order->order_shipping)*100; //25.00
-			$calculated_shipping_tax_decimal = ($order->order_shipping_tax/$order->order_shipping)+1; //0.25
+			$calculated_shipping_tax_percentage = ($order_shipping_tax / $order_shipping_total) * 100; //25.00
+			$calculated_shipping_tax_decimal = ($order_shipping_tax / $order_shipping_total) + 1; //0.25
 
 			// apply_filters to Shipping so we can filter this if needed
-			$billmate_shipping_price_including_tax = $order->order_shipping*$calculated_shipping_tax_decimal;
+			$billmate_shipping_price_including_tax = $order_shipping_total * $calculated_shipping_tax_decimal;
 			$shipping_price = apply_filters( 'billmate_shipping_price_including_tax', $billmate_shipping_price_including_tax );
 
 			$orderValues['Cart']['Shipping'] = array(
-				'withouttax'    => ($shipping_price-$order->order_shipping_tax)*100,
+				'withouttax'    => ($shipping_price - $order_shipping_tax) * 100,
 				'taxrate'      => round($calculated_shipping_tax_percentage),
 
 			);
-			$total += ($shipping_price-$order->order_shipping_tax) * 100;
-			$totalTax += (($shipping_price-$order->order_shipping_tax) * ($calculated_shipping_tax_percentage/100))*100;
+			$total += ($shipping_price - $order_shipping_tax) * 100;
+			$totalTax += (($shipping_price - $order_shipping_tax) * ($calculated_shipping_tax_percentage/100)) * 100;
 		endif;
 		$round = (round(WC_Payment_Gateway::get_order_total() * 100)) - round($total + $totalTax,0);
 

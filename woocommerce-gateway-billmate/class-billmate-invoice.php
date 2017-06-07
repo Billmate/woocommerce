@@ -579,18 +579,18 @@ parse_str($_POST['post_data'], $datatemp);
 	{
 		// Collect the dob different depending on country
 		if ( $this->shop_country == 'NL' || $this->shop_country == 'DE' ) :
-			$billmate_pno_day 			= isset($_POST['billmate_invo_date_of_birth_day']) ? woocommerce_clean($_POST['billmate_invo_date_of_birth_day']) : '';
-			$billmate_pno_month 			= isset($_POST['billmate_invo_date_of_birth_month']) ? woocommerce_clean($_POST['billmate_invo_date_of_birth_month']) : '';
-			$billmate_pno_year 			= isset($_POST['billmate_invo_date_of_birth_year']) ? woocommerce_clean($_POST['billmate_invo_date_of_birth_year']) : '';
+			$billmate_pno_day 			= isset($_POST['billmate_invo_date_of_birth_day']) ? $this->woocommerce_clean($_POST['billmate_invo_date_of_birth_day']) : '';
+			$billmate_pno_month 			= isset($_POST['billmate_invo_date_of_birth_month']) ? $this->woocommerce_clean($_POST['billmate_invo_date_of_birth_month']) : '';
+			$billmate_pno_year 			= isset($_POST['billmate_invo_date_of_birth_year']) ? $this->woocommerce_clean($_POST['billmate_invo_date_of_birth_year']) : '';
 			$billmate_pno 				= $billmate_pno_day . $billmate_pno_month . $billmate_pno_year;
 		else :
-			$billmate_pno 				= isset($_POST['billmate_invo_pno']) ? woocommerce_clean($_POST['billmate_invo_pno']) : '';
+			$billmate_pno 				= isset($_POST['billmate_invo_pno']) ? $this->woocommerce_clean($_POST['billmate_invo_pno']) : '';
 		endif;
 		if($billmate_pno == ''){
 			return;
 		}
-		$billmate_gender 					= isset($_POST['billmate_invo_gender']) ? woocommerce_clean($_POST['billmate_invo_gender']) : '';
-		$billmate_de_consent_terms		= isset($_POST['billmate_invo_de_consent_terms']) ? woocommerce_clean($_POST['billmate_invo_de_consent_terms']) : '';
+		$billmate_gender 					= isset($_POST['billmate_invo_gender']) ? $this->woocommerce_clean($_POST['billmate_invo_gender']) : '';
+		$billmate_de_consent_terms		= isset($_POST['billmate_invo_de_consent_terms']) ? $this->woocommerce_clean($_POST['billmate_invo_de_consent_terms']) : '';
 		// Split address into House number and House extension for NL & DE customers
 		if ( $this->shop_country == 'NL' || $this->shop_country == 'DE' ) :
 			require_once('split-address.php');
@@ -638,12 +638,14 @@ parse_str($_POST['post_data'], $datatemp);
 
         $post2Trim = array(
             "billing_address_1",
+            "billing_address_2",
             "billing_first_name",
             "billing_last_name",
             "billing_city",
             "billing_country",
             "billing_postcode",
             "shipping_address_1",
+            "shipping_address_2",
             "shipping_city",
             "shipping_company",
             "shipping_country",
@@ -721,6 +723,11 @@ parse_str($_POST['post_data'], $datatemp);
 				$html.= '<input type="hidden" id="_last_name" value="'.$lastname.'" />';
 				$html.= '<input type="hidden" id="_company" value="'.$company.'" />';
 				$html.= '<input type="hidden" id="_address_1" value="'.$addr['street'].'" />';
+
+                if(isset($_POST['billing_address_2']) AND $_POST['billing_address_2'] != "") {
+                    $html.= '<input type="hidden" id="_address_2" value="'.$this->woocommerce_clean($_POST['billing_address_2']).'" />';
+                }
+
 				$html.= '<input type="hidden" id="_postcode" value="'.$addr['zip'].'" />';
 				$html.= '<input type="hidden" id="_city" value="'.$addr['city'].'" /></span>';
 				if(version_compare(WC_VERSION,'2.4.0','<')) {
@@ -741,18 +748,18 @@ parse_str($_POST['post_data'], $datatemp);
 	{
 		// Collect the dob different depending on country
 		if ( $this->shop_country == 'NL' || $this->shop_country == 'DE' ) :
-			$billmate_pno_day 			= isset($_POST['billmate_invo_date_of_birth_day']) ? woocommerce_clean($_POST['billmate_invo_date_of_birth_day']) : '';
-			$billmate_pno_month 			= isset($_POST['billmate_invo_date_of_birth_month']) ? woocommerce_clean($_POST['billmate_invo_date_of_birth_month']) : '';
-			$billmate_pno_year 			= isset($_POST['billmate_invo_date_of_birth_year']) ? woocommerce_clean($_POST['billmate_invo_date_of_birth_year']) : '';
+			$billmate_pno_day 			= isset($_POST['billmate_invo_date_of_birth_day']) ? $this->woocommerce_clean($_POST['billmate_invo_date_of_birth_day']) : '';
+			$billmate_pno_month 			= isset($_POST['billmate_invo_date_of_birth_month']) ? $this->woocommerce_clean($_POST['billmate_invo_date_of_birth_month']) : '';
+			$billmate_pno_year 			= isset($_POST['billmate_invo_date_of_birth_year']) ? $this->woocommerce_clean($_POST['billmate_invo_date_of_birth_year']) : '';
 			$billmate_pno 				= $billmate_pno_day . $billmate_pno_month . $billmate_pno_year;
 		else :
-			$billmate_pno 				= isset($_POST['billmate_invo_pno']) ? woocommerce_clean($_POST['billmate_invo_pno']) : '';
+			$billmate_pno 				= isset($_POST['billmate_invo_pno']) ? $this->woocommerce_clean($_POST['billmate_invo_pno']) : '';
 		endif;
 		if($billmate_pno == ''){
 			return;
 		}
-		$billmate_gender 					= isset($_POST['billmate_invo_gender']) ? woocommerce_clean($_POST['billmate_invo_gender']) : '';
-		$billmate_de_consent_terms		= isset($_POST['billmate_invo_de_consent_terms']) ? woocommerce_clean($_POST['billmate_invo_de_consent_terms']) : '';
+		$billmate_gender 					= isset($_POST['billmate_invo_gender']) ? $this->woocommerce_clean($_POST['billmate_invo_gender']) : '';
+		$billmate_de_consent_terms		= isset($_POST['billmate_invo_de_consent_terms']) ? $this->woocommerce_clean($_POST['billmate_invo_de_consent_terms']) : '';
 		// Split address into House number and House extension for NL & DE customers
 		if ( $this->shop_country == 'NL' || $this->shop_country == 'DE' ) :
 			require_once('split-address.php');
@@ -894,6 +901,11 @@ parse_str($_POST['post_data'], $datatemp);
 
 		$order = new WC_order( $order_id );
 
+        $countries = $woocommerce->countries->get_allowed_countries();
+
+        $billmateOrder = new BillmateOrder($order);
+        $billmateOrder->setAllowedCountries($countries);
+
 		if(empty($_POST['valid_email_it_is_invoice'])){
             wc_bm_errors( sprintf( __('Please confirm the email %s is correct. The email will be used for invoicing.', 'billmate'), $order->billing_email ));
             return;
@@ -901,21 +913,21 @@ parse_str($_POST['post_data'], $datatemp);
 
 		// Collect the dob different depending on country
 		if ( $this->shop_country == 'NL' || $this->shop_country == 'DE' ) :
-			$billmate_pno_day 			= isset($_POST['billmate_invo_date_of_birth_day']) ? woocommerce_clean($_POST['billmate_invo_date_of_birth_day']) : '';
-			$billmate_pno_month 			= isset($_POST['billmate_invo_date_of_birth_month']) ? woocommerce_clean($_POST['billmate_invo_date_of_birth_month']) : '';
-			$billmate_pno_year 			= isset($_POST['billmate_invo_date_of_birth_year']) ? woocommerce_clean($_POST['billmate_invo_date_of_birth_year']) : '';
+			$billmate_pno_day 			= isset($_POST['billmate_invo_date_of_birth_day']) ? $this->woocommerce_clean($_POST['billmate_invo_date_of_birth_day']) : '';
+			$billmate_pno_month 			= isset($_POST['billmate_invo_date_of_birth_month']) ? $this->woocommerce_clean($_POST['billmate_invo_date_of_birth_month']) : '';
+			$billmate_pno_year 			= isset($_POST['billmate_invo_date_of_birth_year']) ? $this->woocommerce_clean($_POST['billmate_invo_date_of_birth_year']) : '';
 			$billmate_pno 				= $billmate_pno_day . $billmate_pno_month . $billmate_pno_year;
 		else :
-			$billmate_pno 				= isset($_POST['billmate_invo_pno']) ? woocommerce_clean($_POST['billmate_invo_pno']) : '';
+			$billmate_pno 				= isset($_POST['billmate_invo_pno']) ? $this->woocommerce_clean($_POST['billmate_invo_pno']) : '';
 		endif;
 		if($billmate_pno == ''){
 			return;
 		}
-		$billmate_gender 					= isset($_POST['billmate_invo_gender']) ? woocommerce_clean($_POST['billmate_invo_gender']) : '';
-		$billmate_de_consent_terms		= isset($_POST['billmate_invo_de_consent_terms']) ? woocommerce_clean($_POST['billmate_invo_de_consent_terms']) : '';
+		$billmate_gender 					= isset($_POST['billmate_invo_gender']) ? $this->woocommerce_clean($_POST['billmate_invo_gender']) : '';
+		$billmate_de_consent_terms		= isset($_POST['billmate_invo_de_consent_terms']) ? $this->woocommerce_clean($_POST['billmate_invo_de_consent_terms']) : '';
 
 
-
+        $billmateOrder->setCustomerPno($billmate_pno);
 
 
 		// Test mode or Live mode
@@ -961,10 +973,8 @@ parse_str($_POST['post_data'], $datatemp);
 			'logo' => ($this->logo && strlen($this->logo)> 0) ? $this->logo : ''
 		);
 
-		$orderValues['PaymentInfo'] = array(
-			'paymentdate' => (string)date('Y-m-d'),
-			'yourreference' => $order->billing_first_name.' '.$order->billing_last_name
-		);
+        $orderValues['PaymentInfo'] = $billmateOrder->getPaymentInfoData();
+
 		// Cart Contents
 		if (sizeof($order->get_items())>0) : foreach ($order->get_items() as $item) :
 
@@ -977,7 +987,11 @@ parse_str($_POST['post_data'], $datatemp);
 				if ( $_product->get_sku() ) {
 					$sku = $_product->get_sku();
 				} else {
-					$sku = $_product->id;
+                    if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+                        $sku = $_product->get_id();
+                    } else {
+                        $sku = $_product->id;
+                    }
 				}
 
 			} else {
@@ -1028,7 +1042,11 @@ parse_str($_POST['post_data'], $datatemp);
 			if ( $_product->get_sku() ) {
 				$sku = $_product->get_sku();
 			} else {
-				$sku = $_product->id;
+                if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+                    $sku = $_product->get_id();
+                } else {
+                    $sku = $_product->id;
+                }
 			}
 
 			$priceExcl = round($item_price - (100 * $order->get_item_tax($item,false)));
@@ -1063,10 +1081,15 @@ parse_str($_POST['post_data'], $datatemp);
         }
 
 		// Discount
-		if ($order->order_discount>0) :
+        if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+            $order_discount_total = $order->get_total_discount();
+        } else {
+            $order_discount_total = $order->order_discount;
+        }
+		if ($order_discount_total > 0) :
 
 			// apply_filters to order discount so we can filter this if needed
-			$billmate_order_discount = $order->order_discount;
+			$billmate_order_discount = $order_discount_total;
 			$order_discount = apply_filters( 'billmate_order_discount', $billmate_order_discount );
 			$total_value = $total;
 			foreach($prepareDiscount as $key => $value){
@@ -1092,23 +1115,32 @@ parse_str($_POST['post_data'], $datatemp);
 		endif;
 
 		// Shipping
-		if ($order->order_shipping>0) :
+        if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+            $order_shipping_total = $order->get_shipping_total();
+            $order_shipping_tax = $order->get_shipping_tax();
+        } else {
+            $order_shipping_total = $order->order_shipping;
+            $order_shipping_tax = $order->order_shipping_tax;
+        }
+
+		if ($order_shipping_total > 0) :
 
 			// We manually calculate the shipping taxrate percentage here
-			$calculated_shipping_tax_percentage = ($order->order_shipping_tax/$order->order_shipping)*100; //25.00
-			$calculated_shipping_tax_decimal = ($order->order_shipping_tax/$order->order_shipping)+1; //0.25
+			$calculated_shipping_tax_percentage = ($order_shipping_tax / $order_shipping_total) * 100; //25.00
+			$calculated_shipping_tax_decimal = ($order_shipping_tax / $order_shipping_total) + 1; //0.25
 
 			// apply_filters to Shipping so we can filter this if needed
-			$billmate_shipping_price_including_tax = $order->order_shipping*$calculated_shipping_tax_decimal;
+			$billmate_shipping_price_including_tax = $order_shipping_total * $calculated_shipping_tax_decimal;
 			$shipping_price = apply_filters( 'billmate_shipping_price_including_tax', $billmate_shipping_price_including_tax );
 
 			$orderValues['Cart']['Shipping'] = array(
-				'withouttax'    => ($shipping_price-$order->order_shipping_tax)*100,
+				'withouttax'    => ($shipping_price - $order_shipping_tax) * 100,
 				'taxrate'      => round($calculated_shipping_tax_percentage),
 
 			);
-			$total += ($shipping_price-$order->order_shipping_tax) * 100;
-			$totalTax += (($shipping_price-$order->order_shipping_tax) * ($calculated_shipping_tax_percentage/100))*100;
+			$total += ($shipping_price - $order_shipping_tax) * 100;
+			$totalTax += (($shipping_price-$order_shipping_tax) * ($calculated_shipping_tax_percentage / 100)) * 100;
+
 		endif;
 
 
@@ -1120,7 +1152,11 @@ parse_str($_POST['post_data'], $datatemp);
 			// We have already checked that the product exists in billmate_invoice_init()
 			// Version check - 1.6.6 or 2.0
 			if ( function_exists( 'get_product' ) ) {
-				$product = get_product($this->invoice_fee_id);
+                if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+                    $product = wc_get_product($this->invoice_fee_id);
+                } else {
+                    $product = get_product($this->invoice_fee_id);
+                }
 			} else {
 				$product = new WC_Product( $this->invoice_fee_id );
 			}
@@ -1216,6 +1252,12 @@ parse_str($_POST['post_data'], $datatemp);
 			}
 		}
 
+        $orderValues['Customer'] = array();
+        $orderValues['Customer']['pno'] = $billmateOrder->getCustomerPnoData();
+        $orderValues['Customer']['nr'] = $billmateOrder->getCustomerNrData();
+        $orderValues['Customer']['Billing'] = $billmateOrder->getCustomerBillingData();
+        $orderValues['Customer']['Shipping'] = $billmateOrder->getCustomerShippingData();
+
 		// Split address into House number and House extension for NL & DE customers
 		if ( $this->shop_country == 'NL' || $this->shop_country == 'DE' ) :
 
@@ -1235,82 +1277,12 @@ parse_str($_POST['post_data'], $datatemp);
 			$billmate_shipping_house_number		= $splitted_address[1];
 			$billmate_shipping_house_extension	= $splitted_address[2];
 
-		else :
-
-			$billmate_billing_address				= $order->billing_address_1;
-			$billmate_billing_house_number		= '';
-			$billmate_billing_house_extension		= '';
-
-			$billmate_shipping_address			= $order->shipping_address_1;
-			$billmate_shipping_house_number		= '';
-			$billmate_shipping_house_extension	= '';
+            $orderValues['Customer']['Billing']['street'] = $billmate_billing_address;
+            $orderValues['Customer']['Shipping']['street'] = $billmate_shipping_address;
 
 		endif;
 
-		$countryData = BillmateCountry::getSwedenData();
-		$countries = $woocommerce->countries->get_allowed_countries();
-		$countryname = (int)$order->billing_country != 'SE' ? utf8_encode ($countries[$order->billing_country]) : 209;
 
-		$orderValues['Customer'] = array(
-			'pno' => $billmate_pno,
-			'nr' => empty($order->user_id ) || $order->user_id<= 0 ? '': $order->user_id,
-			'Billing' => array(
-				'firstname' => utf8_encode(utf8_decode($order->billing_first_name)),
-				'lastname' => utf8_encode(utf8_decode($order->billing_last_name)),
-				'company' => utf8_encode(utf8_decode($order->billing_company)),
-				'street' => utf8_encode(utf8_decode($billmate_billing_address)),
-				'street2' => utf8_encode(utf8_decode($order->billing_address_2)),
-				'zip' => $order->billing_postcode,
-				'city' => utf8_encode(utf8_decode($order->billing_city)),
-				'country' => $order->billing_country,
-				'phone' => $order->billing_phone,
-				'email' => $order->billing_email
-			)
-		);
-		// Shipping address
-		if ( $order->get_shipping_method() == '' || $billmate_shipping_address == '') {
-			$email = $order->billing_email;
-			$telno = ''; //We skip the normal land line phone, only one is needed.
-			$cellno = $order->billing_phone;
-			$company = utf8_encode(utf8_decode($order->billing_company));
-			$fname = utf8_encode(utf8_decode($order->billing_first_name));
-			$lname = utf8_encode(utf8_decode($order->billing_last_name));
-			$careof = utf8_encode(utf8_decode($order->billing_address_2));  //No care of; C/O.
-			$street = utf8_encode(utf8_decode($billmate_billing_address)); //For DE and NL specify street number in houseNo.
-			$zip = utf8_encode(utf8_decode($order->billing_postcode));
-			$city = utf8_encode(utf8_decode($order->billing_city));
-			$country = utf8_encode(utf8_decode($countries[$order->billing_country]));
-			$houseNo = utf8_encode(utf8_decode($billmate_billing_house_number)); //For DE and NL we need to specify houseNo.
-			$houseExt = utf8_encode(utf8_decode($billmate_billing_house_extension)); //Only required for NL.
-			$countryCode = $order->billing_country;
-
-		} else {
-			$email = $order->billing_email;
-			$telno = ''; //We skip the normal land line phone; only one is needed.
-			$cellno = $order->billing_phone;
-			$company = utf8_encode(utf8_decode($order->shipping_company));
-			$fname = utf8_encode(utf8_decode($order->shipping_first_name));
-			$lname = utf8_encode(utf8_decode($order->shipping_last_name));
-			$careof = utf8_encode(utf8_decode($order->shipping_address_2));  //No care of; C/O.
-			$street = utf8_encode(utf8_decode($billmate_shipping_address)); //For DE and NL specify street number in houseNo.
-			$zip = utf8_encode(utf8_decode($order->shipping_postcode));
-			$city = utf8_encode(utf8_decode($order->shipping_city));
-			$country = utf8_encode(utf8_decode($countries[$order->shipping_country]));
-			$houseNo = utf8_encode(utf8_decode($billmate_shipping_house_number)); //For DE and NL we need to specify houseNo.
-			$houseExt = utf8_encode(utf8_decode($billmate_shipping_house_extension)); //Only required for NL.
-			$countryCode = $order->shipping_country;
-
-		}
-		$orderValues['Customer']['Shipping'] = array(
-			'firstname' => $fname,
-			'lastname' => $lname,
-			'company' => $company,
-			'street' => $street,
-			'zip' => $zip,
-			'city' => $city,
-			'country' => $order->billing_country,
-			'phone' => $cellno
-		);
 
 		try {
 			$result = $k->addPayment($orderValues);
@@ -1518,6 +1490,13 @@ parse_str($_POST['post_data'], $datatemp);
 	function get_billmate_shop_country() {
 		return $this->shop_country;
 	}
+
+    private function woocommerce_clean($var = "") {
+        if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+            return wc_clean($var);
+        }
+        return woocommerce_clean($var);
+    }
 
 } // End class WC_Gateway_Billmate_Invoice
 
