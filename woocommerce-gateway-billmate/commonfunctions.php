@@ -1454,6 +1454,12 @@ if(!class_exists('BillmateProduct')) {
                 }
             }
 
+            if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+                $name = wc_clean($name);
+            } else {
+                $name = woocommerce_clean($name);
+            }
+
             return $name;
         }
     }
