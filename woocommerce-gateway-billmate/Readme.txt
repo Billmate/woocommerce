@@ -4,7 +4,7 @@ Donate link:
 Tags: woocomerce, billmate, payments, cardpayments, invoice, partpayment, recurring, bankpayment
 Requires at least: 4.0
 Tested up to: 4.7
-Stable tag: 3.0.2
+Stable tag: 3.0.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -87,6 +87,11 @@ If you would like to use our logo on your site then choose following:
 
 
 == Changelog ==
+
+= 3.0.3 (2017-06-12) =
+* Fix - Support discount 12% vat
+* Enhancement - Discount can be on item level or order level
+* Enhancement - Use order item name if standard product
 
 = 3.0.2 (2017-06-07) =
 * Fix - Improve compatibility with WC 3

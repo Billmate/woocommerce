@@ -593,120 +593,13 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 
 		endif;
 
+        $total = 0;
+        $totalTax = 0;
 
-
-		$total = 0;
-		$totalTax = 0;
-		$prepareDiscount = array();
-		if (sizeof($order->get_items())>0) : foreach ($order->get_items() as $item) :
-			$_product = $order->get_product_from_item( $item );
-			if ($_product->exists() && $item['qty']) :
-
-                /* Formatting the product data that will be sent as api requests */
-                $billmateProduct = new BillmateProduct($_product);
-
-				// is product taxable?
-				if ($_product->is_taxable())
-				{
-					$taxClass = $_product->get_tax_class();
-					$tax = new WC_Tax();
-					$rates = $tax->get_rates($taxClass);
-					$item_tax_percentage = 0;
-					foreach($rates as $row){
-						// Is it Compound Tax?
-						if(isset($row['compund']) && $row['compound'] == 'yes')
-							$item_tax_percentage += $row['rate'];
-						else
-							$item_tax_percentage = $row['rate'];
-					}
-				} else
-					$item_tax_percentage = 0;
-
-				// apply_filters to item price so we can filter this if needed
-				// apply_filters to item price so we can filter this if needed
-				$billmate_item_price_including_tax = round($order->get_item_total( $item, true )*100);
-				$billmate_item_standard_price = round($order->get_item_subtotal($item,true)*100);
-                $billmate_item_standard_price_without_tax = $billmate_item_standard_price / (1 + ((int)$item_tax_percentage / 100));
-				$discount = false;
-				if($billmate_item_price_including_tax != $billmate_item_standard_price){
-					$discount = true;
-				}
-				$item_price = apply_filters( 'billmate_item_price_including_tax', $billmate_item_price_including_tax);
-
-				if ( $_product->get_sku() ) {
-					$sku = $_product->get_sku();
-				} else {
-                    if(version_compare(WC_VERSION, '3.0.0', '>=')) {
-                        $sku = $_product->get_id();
-                    } else {
-                        $sku = $_product->id;
-                    }
-				}
-
-				$priceExcl = round($item_price - (100 * $order->get_item_tax($item,false)));
-
-				$orderValues['Articles'][] = array(
-					'quantity'   => (int)$item['qty'],
-					'artnr'    => $sku,
-					'title'    => $billmateProduct->getTitle(),
-					'aprice'    =>  ($discount) ? ($billmate_item_standard_price_without_tax) : ($priceExcl),
-					'taxrate'      => (int)$item_tax_percentage,
-					'discount' => ($discount) ? round((1 - ($billmate_item_price_including_tax/$billmate_item_standard_price)) * 100 ,0) : 0,
-					'withouttax' => $item['qty'] * ($priceExcl)
-				);
-				$totalTemp = ($item['qty'] * ($priceExcl));
-				$total += $totalTemp;
-				$totalTax += ($totalTemp * $item_tax_percentage/100);
-				if(isset($prepareDiscount[$item_tax_percentage])){
-					$prepareDiscount[$item_tax_percentage] += $totalTemp;
-				} else {
-					$prepareDiscount[$item_tax_percentage] = $totalTemp;
-				}
-
-			endif;
-		endforeach; endif;
-
-        /* Add additional fees that are not invoice fee to order API request as articles */
-        $orderFeesArticles = BillmateOrder::getOrderFeesAsOrderArticles();
-        $orderValues['Articles'] = array_merge($orderValues['Articles'], $orderFeesArticles);
-        foreach($orderFeesArticles AS $orderFeesArticle) {
-            $total += $orderFeesArticle['aprice'];
-            $totalTax += ($orderFeesArticle['aprice'] * ($orderFeesArticle['taxrate']/100));
-        }
-
-		// Discount
-        if(version_compare(WC_VERSION, '3.0.0', '>=')) {
-            $order_discount_total = $order->get_total_discount();
-        } else {
-            $order_discount_total = $order->order_discount;
-        }
-		if ($order_discount_total > 0) :
-
-			// apply_filters to order discount so we can filter this if needed
-			$billmate_order_discount = $order_discount_total;
-			$order_discount = apply_filters( 'billmate_order_discount', $billmate_order_discount );
-			$total_value = $total;
-			foreach($prepareDiscount as $key => $value){
-				$percent = $value/$total_value;
-
-				$discountAmount = ($percent * $order_discount) * (1-($key/100)/(1+($key/100)));
-
-				$orderValues['Articles'][] = array(
-					'quantity'   => (int)1,
-					'artnr'    => "",
-					'title'    => sprintf(__('Discount %s%% tax', 'billmate'),round($key,0)),
-					'aprice'    => -($discountAmount*100), //+$item->unittax
-					'taxrate'      =>(int) $key,
-					'discount' => (float)0,
-					'withouttax' => -($discountAmount*100)
-
-				);
-				$total -= ($discountAmount * 100);
-				$totalTax -= ($discountAmount * ($key/100))*100;
-
-			}
-
-		endif;
+        /* Articles, fees, discount */
+        $orderValues['Articles'] = $billmateOrder->getArticlesData();
+        $total += $billmateOrder->getArticlesTotal();
+        $totalTax += $billmateOrder->getArticlesTotalTax();
 
 		// Shipping
         if(version_compare(WC_VERSION, '3.0.0', '>=')) {
