@@ -973,11 +973,18 @@ if(!class_exists('BillmateOrder')){
         private $allowedCountries;
         private $paymentterms;
         private $customerPno;
+
+        private $articlesTotal;
+        private $articlesTotalTax;
+
         public function __construct($order) {
             $this->order = $order;
             $this->orderData = array();
             $this->allowedCountries = array();
             $this->paymentterms = 0;
+
+            $this->articlesTotal = 0;
+            $this->articlesTotalTax = 0;
         }
 
         public function setCustomerPno($pno = "") {
@@ -1154,6 +1161,226 @@ if(!class_exists('BillmateOrder')){
 
             $this->orderData['PaymentInfo']['yourreference'] = $this->orderData['Customer']['Billing']['firstname'].' '.$this->orderData['Customer']['Billing']['lastname'];
             return $this->orderData['PaymentInfo'];
+        }
+
+        public function getArticlesTotal() {
+            return $this->articlesTotal;
+        }
+
+        public function getArticlesTotalTax() {
+            return $this->articlesTotalTax;
+        }
+
+        public function getArticlesData() {
+            /* Return articles and discout to be used in Billmate API requests */
+            if(isset($this->orderData['Articles'])) {
+                return $this->orderData['Articles'];
+            }
+
+            /* Articles */
+            $total = 0;
+            $totalTax = 0;
+
+            $subtotal = 0;
+            $subtotalTax = 0;
+
+            $isOrderDiscount = true;    /* If true, all articles have discount, if false, discount is for individual articles */
+            $orderArticles = array();
+
+            if (sizeof($this->order->get_items())>0) {
+                foreach ($this->order->get_items() as $item) {
+                    $_product = $this->order->get_product_from_item( $item );
+
+                    if ($_product->exists() && $item['qty']) {
+
+                        /* Formatting the product data that will be sent as api requests */
+                        $billmateProduct = new BillmateProduct($_product);
+
+                        // is product taxable?
+                        if ($_product->is_taxable())
+                        {
+                            $taxClass = $_product->get_tax_class();
+                            $tax = new WC_Tax();
+                            $rates = $tax->get_rates($taxClass);
+                            $item_tax_percentage = 0;
+                            foreach($rates as $row){
+                                // Is it Compound Tax?
+                                if(isset($row['compund']) && $row['compound'] == 'yes')
+                                    $item_tax_percentage += $row['rate'];
+                                else
+                                    $item_tax_percentage = $row['rate'];
+                            }
+                        } else
+                            $item_tax_percentage = 0;
+
+                        // apply_filters to item price so we can filter this if needed
+                        $billmate_item_price_including_tax = round($this->order->get_item_total( $item, true )*100);
+                        $billmate_item_standard_price = round($this->order->get_item_subtotal($item,true)*100);
+                        $billmate_item_standard_price_without_tax = $billmate_item_standard_price / (1 + ((int)$item_tax_percentage / 100));
+                        $discount = false;
+                        if($billmate_item_price_including_tax != $billmate_item_standard_price){
+                            $discount = true;
+                        }
+                        $item_price = apply_filters( 'billmate_item_price_including_tax', $billmate_item_price_including_tax);
+
+                        if ( $_product->get_sku() ) {
+                            $sku = $_product->get_sku();
+                        } else {
+                            if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+                                $sku = $_product->get_id();
+                            } else {
+                                $sku = $_product->id;
+                            }
+                        }
+
+                        $priceExcl = round($item_price - (100 * $this->order->get_item_tax($item,false)));
+
+                        $subApric = round($billmate_item_standard_price_without_tax, 0);
+                        $_subtotal = $item['qty'] * $subApric;
+                        $_subtotalTax = ($_subtotal * $item_tax_percentage/100);
+                        $_subtotalIncTax = $_subtotal + $_subtotalTax;
+
+                        $_total = ($item['qty'] * ($priceExcl));
+                        $_totalTax = ($_total * $item_tax_percentage/100);
+                        $_totalIncTax = $_total + $_totalTax;
+
+                        $_discountTotal = $_subtotal - $_total;
+                        $_discountTotalTax = $_subtotalTax - $_totalTax;
+
+                        $orderArticle = array(
+                            'quantity'   => (int)$item['qty'],
+                            'artnr'    => $sku,
+                            'title'    => $billmateProduct->getTitle(),
+                            'aprice'    =>  ($discount) ? (round($billmate_item_standard_price_without_tax, 0)) : ($priceExcl),
+                            'taxrate'      => round($item_tax_percentage),
+                            'discount' => ($discount) ? round((1 - ($billmate_item_price_including_tax/$billmate_item_standard_price)) * 100 ,0) : 0,
+                            'withouttax' => $item['qty'] * ($priceExcl),
+
+                            'total' => $_total,
+                            'total_tax' => $_totalTax,
+                            'total_inc_tax' => $_totalIncTax,
+
+                            // Price with no discount
+                            'sub_aprice' => $subApric,
+                            'subtotal' => $_subtotal,
+                            'subtotal_tax' => $_subtotalTax,
+                            'subtotal_inc_tax' => $_subtotalIncTax,
+
+                            'discount_total' => $_discountTotal,
+                            'discount_total_tax' => $_discountTotalTax,
+                        );
+
+                        if($discount == false) {
+                            // This article does not have discount, discount is for individual articles
+                            $isOrderDiscount = false;
+                        }
+
+
+                        $orderArticles[] = $orderArticle;
+
+                        $totalTemp = ($item['qty'] * ($priceExcl));
+
+                        $total += $totalTemp;
+                        $totalTax += ($totalTemp * $item_tax_percentage/100);
+
+                        $subtotal += $_subtotal;
+                        $subtotalTax += $_subtotalTax;
+
+                    } // endif
+                } // endforeach
+            }   // endif
+
+            $total = 0;
+            $totalTax = 0;
+
+            $discountTotals = array();
+            $discountTotalTaxs = array();
+
+            foreach ($orderArticles AS $orderArticle) {
+                /* 
+                 * Use discounted price if product discount
+                 * If discount is for complete order, add discount later as new row 
+                 */
+                $taxrate = $orderArticle['taxrate'];
+
+                if(!isset($discountTotals[$taxrate])) {
+                    $discountTotals[$taxrate] = 0;
+                }
+
+                if(!isset($discountTotalTaxs[$taxrate])) {
+                    $discountTotalTaxs[$taxrate] = 0;
+                }
+
+                $article = array(
+                    'quantity'      => $orderArticle['quantity'],
+                    'artnr'         => $orderArticle['artnr'],
+                    'title'         => $orderArticle['title'],
+                    'aprice'        => $orderArticle['aprice'],
+                    'taxrate'       => $orderArticle['taxrate'],
+                    'discount'      => $orderArticle['discount'],
+                    'withouttax'    => $orderArticle['withouttax']
+                );
+                $_total = $orderArticle['withouttax'];
+                $_totalTax = $orderArticle['total_tax'];
+
+                if ($isOrderDiscount == true) {
+                    /* Discount is on total order and not on item level */
+                    $article = array(
+                        'quantity'      => $orderArticle['quantity'],
+                        'artnr'         => $orderArticle['artnr'],
+                        'title'         => $orderArticle['title'],
+                        'aprice'        => $orderArticle['sub_aprice'],
+                        'taxrate'       => $orderArticle['taxrate'],
+                        'discount'      => 0,
+                        'withouttax'    => $orderArticle['subtotal']
+                    );
+                    $_total = $orderArticle['subtotal'];
+                    $_totalTax = $orderArticle['subtotal_tax'];
+
+                    $discountTotals[$taxrate] += $orderArticle['discount_total'];
+                    $discountTotalTaxs[$taxrate] += $orderArticle['discount_total_tax'];
+                }
+
+                $this->orderData['Articles'][] = $article;
+
+                $total += $_total;
+                $totalTax += $_totalTax;
+            }
+
+            /* Additional fees */
+            $orderFeesArticles = BillmateOrder::getOrderFeesAsOrderArticles();
+            $this->orderData['Articles'] = array_merge($this->orderData['Articles'], $orderFeesArticles);
+            foreach($orderFeesArticles AS $orderFeesArticle) {
+                $total += $orderFeesArticle['aprice'];
+                $totalTax += ($orderFeesArticle['aprice'] * ($orderFeesArticle['taxrate']/100));
+            }
+
+            /* Order discount */
+            if ($isOrderDiscount == true AND count($discountTotals) > 0) {
+                // Order by taxrate ASC
+                ksort($discountTotals);
+                foreach($discountTotals AS $key => $discountAmount) {
+                    if($discountAmount > 0) {
+                        $this->orderData['Articles'][] = array(
+                            'quantity'   => (int)1,
+                            'artnr'    => "",
+                            'title'    => sprintf(__('Discount %s%% tax', 'billmate'),round($key,0)),
+                            'aprice'    => -abs($discountAmount),
+                            'taxrate'      => (int)$key,
+                            'discount' => (float)0,
+                            'withouttax' => -abs($discountAmount),
+                        );
+
+                        $total -= $discountAmount;
+                        $totalTax -= (isset($discountTotalTaxs[$key]) ? $discountTotalTaxs[$key] : 0);
+                    }
+                }
+            }
+
+            $this->articlesTotal = $total;
+            $this->articlesTotalTax = $totalTax;
+
+            return $this->orderData['Articles'];
         }
 
         private function is_wc3() {
