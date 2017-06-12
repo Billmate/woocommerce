@@ -1194,7 +1194,7 @@ if(!class_exists('BillmateOrder')){
                     if ($_product->exists() && $item['qty']) {
 
                         /* Formatting the product data that will be sent as api requests */
-                        $billmateProduct = new BillmateProduct($_product);
+                        $billmateProduct = new BillmateProduct($_product, $item);
 
                         // is product taxable?
                         if ($_product->is_taxable())
@@ -1431,16 +1431,29 @@ if(!class_exists('BillmateProduct')) {
     /* Formatting the product data that will be sent as api requests */
     class BillmateProduct {
         private $product;
+        private $orderItem;
 
-        public function __construct($product) {
+        public function __construct($product, $orderItem = array()) {
             $this->product = $product;
+            $this->orderItem = $orderItem;
         }
 
         public function getTitle() {
             $name = $this->product->get_title();
-            if($this->product->is_type('variation')) {
-                $name .= ' - ' . $this->product->get_formatted_variation_attributes(true);
+            if (isset($this->orderItem['name']) AND trim($this->orderItem['name']) != "") {
+                $name = $this->orderItem['name'];
             }
+
+            if($this->product->is_type('variation')) {
+                $name = $this->product->get_title();
+
+                if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+                    $name .= ' - ' . wc_get_formatted_variation($this->product, true);
+                } else {
+                    $name .= ' - ' . $this->product->get_formatted_variation_attributes(true);
+                }
+            }
+
             return $name;
         }
     }
