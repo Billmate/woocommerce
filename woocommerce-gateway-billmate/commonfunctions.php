@@ -1377,6 +1377,12 @@ if(!class_exists('BillmateOrder')){
                 }
             }
 
+            foreach ($this->orderData['Articles'] AS $i => $article) {
+                $this->orderData['Articles'][$i]['aprice'] = round($article['aprice']);
+                $this->orderData['Articles'][$i]['taxrate'] = round($article['taxrate']);
+                $this->orderData['Articles'][$i]['withouttax'] = round($article['withouttax']);
+            }
+
             $this->articlesTotal = $total;
             $this->articlesTotalTax = $totalTax;
 
