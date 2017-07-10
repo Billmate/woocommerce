@@ -262,7 +262,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		if (in_array($order_status, array('pending', 'cancelled', 'bm-incomplete', 'failed'))) {
 			//$order->update_status('completed', $payment_note);
 
-            if ($this->id != get_post_meta($order_id, '_payment_method')) {
+            if (version_compare(WC_VERSION, '3.0.0', '>=') AND $this->id != get_post_meta($order_id, '_payment_method')) {
                 /* Set as selected payment method if not set */
                 $order->set_payment_method($this->id);
                 $order->set_payment_method_title($this->title);
