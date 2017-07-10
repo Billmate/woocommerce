@@ -982,35 +982,12 @@ parse_str($_POST['post_data'], $datatemp);
         $total += $billmateOrder->getArticlesTotal();
         $totalTax += $billmateOrder->getArticlesTotalTax();
 
-		// Shipping
-        if(version_compare(WC_VERSION, '3.0.0', '>=')) {
-            $order_shipping_total = $order->get_shipping_total();
-            $order_shipping_tax = $order->get_shipping_tax();
-        } else {
-            $order_shipping_total = $order->order_shipping;
-            $order_shipping_tax = $order->order_shipping_tax;
+        $shippingPrices = $billmateOrder->getCartShipping();
+        if ($shippingPrices['price'] > 0) {
+            $orderValues['Cart']['Shipping'] = $billmateOrder->getCartShippingData();
+            $total += $shippingPrices['price'];
+            $totalTax += $shippingPrices['tax'];
         }
-
-		if ($order_shipping_total > 0) :
-
-			// We manually calculate the shipping taxrate percentage here
-			$calculated_shipping_tax_percentage = ($order_shipping_tax / $order_shipping_total) * 100; //25.00
-			$calculated_shipping_tax_decimal = ($order_shipping_tax / $order_shipping_total) + 1; //0.25
-
-			// apply_filters to Shipping so we can filter this if needed
-			$billmate_shipping_price_including_tax = $order_shipping_total * $calculated_shipping_tax_decimal;
-			$shipping_price = apply_filters( 'billmate_shipping_price_including_tax', $billmate_shipping_price_including_tax );
-
-			$orderValues['Cart']['Shipping'] = array(
-				'withouttax'    => ($shipping_price - $order_shipping_tax) * 100,
-				'taxrate'      => round($calculated_shipping_tax_percentage),
-
-			);
-			$total += ($shipping_price - $order_shipping_tax) * 100;
-			$totalTax += (($shipping_price-$order_shipping_tax) * ($calculated_shipping_tax_percentage / 100)) * 100;
-
-		endif;
-
 
 		// Invoice/handling fee
 
