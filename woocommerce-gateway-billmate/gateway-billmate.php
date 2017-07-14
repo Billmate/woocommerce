@@ -238,6 +238,16 @@ function init_billmate_gateway() {
 
     	// Loads the billmatecustom.css if it exists, loads with prio 999 so it loads at the end
     	add_action( 'wp_enqueue_scripts', array(&$this, 'billmate_load_custom_css'), 999 );
+
+        add_filter( 'plugin_action_links_'.plugin_basename(__FILE__), array($this, 'get_plugin_action_links'));
+    }
+
+    public static function get_plugin_action_links( $links ) {
+        return array_unique(array_merge(array(
+            '<a href="' . admin_url( 'options-general.php?page=billmate-settings' ) . '">' . __( 'Settings', 'billmate' ) . '</a>',
+            '<a href="http://billmate.se/plugins/manual/Installation_Manual_Woocommerce_Billmate.pdf" target="_BLANK">' . __( 'Docs', 'billmate' ) . '</a>',
+            '<a href="http://billmate.se/kontakt" target="_BLANK">' . __( 'Support', 'billmate' ) . '</a>'
+        ), $links));
     }
 
 
