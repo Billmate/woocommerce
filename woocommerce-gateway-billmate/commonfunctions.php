@@ -22,7 +22,7 @@ function wc_bm_errors($message){
     if(!is_admin()){
         if(version_compare(WC_VERSION, '2.0.0', '<')){
             $woocommerce->add_error( $message );
-        } else {
+        } elseif (function_exists('wc_add_notice')) {
             wc_add_notice( $message, 'error' );
         }
     } else {
@@ -1413,10 +1413,12 @@ if(!class_exists('BillmateOrder')){
                 $order_shipping_total = $this->order->get_shipping_total();
                 $order_shipping_tax = $this->order->get_shipping_tax();
 
-                // Get shipping tax rate from cart
-                $rates = current(WC_Tax::get_shipping_tax_rates());
-                if (is_array($rates) AND isset($rates['rate'])) {
-                    $taxrate = round($rates['rate']);
+                if (is_object(WC()->cart) == true AND method_exists(WC()->cart, 'get_cart_item_tax_classes') == true) {
+                    // Get shipping tax rate from cart
+                    $rates = current(WC_Tax::get_shipping_tax_rates());
+                    if (is_array($rates) AND isset($rates['rate'])) {
+                        $taxrate = round($rates['rate']);
+                    }
                 }
 
             } else {
@@ -1469,6 +1471,10 @@ if(!class_exists('BillmateOrder')){
             $billmateOrderArticles = array();
 
             if ( version_compare( WOOCOMMERCE_VERSION, '2.0', '>' ) ) {
+                if (is_object(WC()->cart) == false OR method_exists(WC()->cart, 'get_fees') == false) {
+                    return $billmateOrderArticles;
+                }
+
                 $fees = WC()->cart->get_fees();
                 foreach($fees as $fee){
                     if(strtolower($fee->id) != strtolower(__('Invoice fee','billmate')) AND strtolower($fee->name) != strtolower(__('Invoice fee','billmate'))) {
