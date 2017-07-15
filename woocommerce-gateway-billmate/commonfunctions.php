@@ -1,5 +1,5 @@
 <?php
-define('BILLPLUGIN_VERSION','3.0.3');
+define('BILLPLUGIN_VERSION','3.0.4');
 define('BILLMATE_CLIENT','PHP:Woocommerce:'.BILLPLUGIN_VERSION);
 define('BILLMATE_SERVER','2.1.9');
 
@@ -22,7 +22,7 @@ function wc_bm_errors($message){
     if(!is_admin()){
         if(version_compare(WC_VERSION, '2.0.0', '<')){
             $woocommerce->add_error( $message );
-        } else {
+        } elseif (function_exists('wc_add_notice')) {
             wc_add_notice( $message, 'error' );
         }
     } else {
@@ -1377,10 +1377,79 @@ if(!class_exists('BillmateOrder')){
                 }
             }
 
+            foreach ($this->orderData['Articles'] AS $i => $article) {
+                $this->orderData['Articles'][$i]['aprice'] = round($article['aprice']);
+                $this->orderData['Articles'][$i]['taxrate'] = round($article['taxrate']);
+                $this->orderData['Articles'][$i]['withouttax'] = round($article['withouttax']);
+            }
+
             $this->articlesTotal = $total;
             $this->articlesTotalTax = $totalTax;
 
             return $this->orderData['Articles'];
+        }
+
+        public function getCartShippingData() {
+            if (!isset($this->orderData['Cart'])) {
+                $this->orderData['Cart'] = array();
+            }
+            $price = $this->getCartShipping();
+            $this->orderData['Cart']['Shipping'] = array(
+                'withouttax' => $price['price'],
+                'taxrate' => $price['taxrate']
+            );
+
+            return $this->orderData['Cart']['Shipping'];
+        }
+
+        public function getCartShipping() {
+
+            $price = 0;
+            $taxrate = 0;
+            $tax = 0;
+            $shipping_price = 0;
+
+            if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+                $order_shipping_total = $this->order->get_shipping_total();
+                $order_shipping_tax = $this->order->get_shipping_tax();
+
+                if (is_object(WC()->cart) == true AND method_exists(WC()->cart, 'get_cart_item_tax_classes') == true) {
+                    // Get shipping tax rate from cart
+                    $rates = current(WC_Tax::get_shipping_tax_rates());
+                    if (is_array($rates) AND isset($rates['rate'])) {
+                        $taxrate = round($rates['rate']);
+                    }
+                }
+
+            } else {
+                $order_shipping_total = $this->order->order_shipping;
+                $order_shipping_tax = $this->order->order_shipping_tax;
+            }
+            if ($order_shipping_total > 0) {
+
+                // We manually calculate the shipping taxrate percentage here
+                $calculated_shipping_tax_percentage = ($order_shipping_tax / $order_shipping_total) * 100; //25.00
+                $calculated_shipping_tax_decimal = ($order_shipping_tax / $order_shipping_total) + 1; //0.25
+
+                // apply_filters to Shipping so we can filter this if needed
+                $billmate_shipping_price_including_tax = $order_shipping_total * $calculated_shipping_tax_decimal;
+                $shipping_price = apply_filters( 'billmate_shipping_price_including_tax', $billmate_shipping_price_including_tax );
+
+                $price = ($shipping_price - $order_shipping_tax) * 100;
+                $tax = (($shipping_price - $order_shipping_tax) * ($calculated_shipping_tax_percentage / 100)) * 100;
+
+                if ($taxrate < 1) {
+                    $taxrate = round($calculated_shipping_tax_percentage);
+                }
+            }
+
+            return array(
+                "price" => $price,
+                "taxrate" => $taxrate,
+                "tax" => $tax,
+                "price_with_tax" => ($shipping_price * 100)
+            );
+
         }
 
         private function is_wc3() {
@@ -1402,6 +1471,10 @@ if(!class_exists('BillmateOrder')){
             $billmateOrderArticles = array();
 
             if ( version_compare( WOOCOMMERCE_VERSION, '2.0', '>' ) ) {
+                if (is_object(WC()->cart) == false OR method_exists(WC()->cart, 'get_fees') == false) {
+                    return $billmateOrderArticles;
+                }
+
                 $fees = WC()->cart->get_fees();
                 foreach($fees as $fee){
                     if(strtolower($fee->id) != strtolower(__('Invoice fee','billmate')) AND strtolower($fee->name) != strtolower(__('Invoice fee','billmate'))) {

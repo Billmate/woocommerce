@@ -4,7 +4,7 @@ Donate link:
 Tags: woocomerce, billmate, payments, cardpayments, invoice, partpayment, recurring, bankpayment
 Requires at least: 4.0
 Tested up to: 4.7
-Stable tag: 3.0.3
+Stable tag: 3.0.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -87,6 +87,10 @@ If you would like to use our logo on your site then choose following:
 
 
 == Changelog ==
+
+= 3.0.4 (2017-07-15) =
+* Fix - WooCommerce Subscription 2.2.8 compatibility
+* Enhancement - Add links in plugin list
 
 = 3.0.3 (2017-06-12) =
 * Fix - Support discount 12% vat

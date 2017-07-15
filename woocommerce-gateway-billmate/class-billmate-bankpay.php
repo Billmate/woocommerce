@@ -228,7 +228,16 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			$order_status_terms = wp_get_object_terms( $order_id, 'shop_order_status', array('fields' => 'slugs') ); $order_status = $order_status_terms[0];
 		}
 
-		if( in_array($order_status, array('pending','cancelled','bm-incomplete')) ){
+		if (in_array($order_status, array('pending', 'cancelled', 'bm-incomplete', 'failed'))) {
+
+            if (version_compare(WC_VERSION, '3.0.0', '>=') AND $this->id != get_post_meta($order_id, '_payment_method')) {
+                /* Set as selected payment method if not set */
+                $order->set_payment_method($this->id);
+                $order->set_payment_method_title($this->title);
+                update_post_meta($order_id, '_payment_method', $this->id);
+                update_post_meta($order_id, '_payment_method_title', $this->method_title);
+            }
+
             if($data['status'] == 'Pending') {
                 if($checkout) {
                     $order->add_order_note(__($payment_note,'billmate'));
@@ -601,32 +610,14 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
         $total += $billmateOrder->getArticlesTotal();
         $totalTax += $billmateOrder->getArticlesTotalTax();
 
-		// Shipping
-        if(version_compare(WC_VERSION, '3.0.0', '>=')) {
-            $order_shipping_total = $order->get_shipping_total();
-            $order_shipping_tax = $order->get_shipping_tax();
-        } else {
-            $order_shipping_total = $order->order_shipping;
-            $order_shipping_tax = $order->order_shipping_tax;
+        $shippingPrices = $billmateOrder->getCartShipping();
+        if ($shippingPrices['price'] > 0) {
+            $orderValues['Cart']['Shipping'] = $billmateOrder->getCartShippingData();
+            $total += $shippingPrices['price'];
+            $totalTax += $shippingPrices['tax'];
         }
-		if ($order_shipping_total > 0) :
 
-			// We manually calculate the shipping taxrate percentage here
-			$calculated_shipping_tax_percentage = ($order_shipping_tax / $order_shipping_total) * 100; //25.00
-			$calculated_shipping_tax_decimal = ($order_shipping_tax / $order_shipping_total) + 1; //0.25
 
-			// apply_filters to Shipping so we can filter this if needed
-			$billmate_shipping_price_including_tax = $order_shipping_total * $calculated_shipping_tax_decimal;
-			$shipping_price = apply_filters( 'billmate_shipping_price_including_tax', $billmate_shipping_price_including_tax );
-
-			$orderValues['Cart']['Shipping'] = array(
-				'withouttax'    => ($shipping_price - $order_shipping_tax) * 100,
-				'taxrate'      => round($calculated_shipping_tax_percentage),
-
-			);
-			$total += ($shipping_price - $order_shipping_tax) * 100;
-			$totalTax += (($shipping_price - $order_shipping_tax) * ($calculated_shipping_tax_percentage/100)) * 100;
-		endif;
 		$round = (round(WC_Payment_Gateway::get_order_total() * 100)) - round($total + $totalTax,0);
 
 		$orderValues['Cart']['Total'] = array(
