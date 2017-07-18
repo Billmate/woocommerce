@@ -312,6 +312,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
     function billmate_update_address(){
         global $woocommerce;
+        global $wp_version;
 
         $connection = new BillMate($this->eid,$this->secret,true,$this->testmode == 'yes');
         $result = array("code" => "no hash");
@@ -367,8 +368,31 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                 } else {
                     $shipping_address = $billing_address;
                 }
-                $order->set_address($billing_address,'billing');
-                $order->set_address($shipping_address,'shipping');
+
+                $billingEmail = isset($result['Customer']['Billing']['email']) ? sanitize_text_field($result['Customer']['Billing']['email']) : '';
+                $isEmail = is_email($billingEmail);
+                if ($isEmail != false AND is_string($isEmail) AND $isEmail == $billingEmail) {
+                    // Email is valid, continue
+                    $order->set_address($billing_address,'billing');
+                    $order->set_address($shipping_address,'shipping');
+                } else {
+                    /* Email not valid */
+                    if (version_compare($wp_version, '2.8.0', '>=') AND version_compare(WC_VERSION, '3.1.0', '>=')) {
+                         /* To prevent " PHP Fatal error:  Uncaught exception 'WC_Data_Exception'  " for WP 4.8 and WC 3.1 when invalid email, do not use set_address for setting order billing email */
+
+                        if (isset($billing_address['email'])) {
+                            unset($billing_address['email']);
+                        }
+
+                        $order->set_address($billing_address, 'billing');
+                        $order->set_address($shipping_address, 'shipping');
+                        update_metadata('post', $order->get_id(), '_billing_email', $billingEmail);
+
+                    } else {
+                        $order->set_address($billing_address, 'billing');
+                        $order->set_address($shipping_address, 'shipping');
+                    }
+                }
             }
 
             switch ($result['PaymentData']['method']) {
