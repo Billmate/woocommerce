@@ -312,6 +312,285 @@ function init_billmate_gateway() {
 		}
 
 
+        public function common_check_ipn_response($config = array()) {
+
+            global $woocommerce;
+
+            $recurring =        false;
+            $cancel_url_hit =   false;
+            $accept_url_hit =   false;
+            $checkout =         false;
+            $k =                new Billmate($this->eid,$this->secret,true,$this->testmode,false);
+            $payment_note =     '';
+
+            if(!empty($_GET['method']) && $_GET['method'] == 'checkout')
+                $checkout = true;
+            if( !empty($_GET['payment']) && $_GET['payment'] == 'success' ) {
+                if(!empty($_GET['recurring']) && $_GET['recurring'] == 1){
+                    $recurring = true;
+                }
+                if( empty( $_POST ) ){
+                    $_POST = $_GET;
+                }
+                $input = file_get_contents('php://input');
+                if(is_array($input))
+                    $_POST = array_merge($_POST, $input);
+
+                $accept_url_hit = true;
+                $payment_note = 'Note: Payment Completed Accept Url.';
+            } elseif (!empty($_GET['payment']) && $_GET['payment'] == 'cancel'){
+                if( empty( $_POST ) ){
+                    $_POST = $_GET;
+                }
+                $input = file_get_contents('php://input');
+                if(is_array($input))
+                    $_POST = array_merge($_POST, $input);
+
+                $cancel_url_hit = true;
+                $payment_note = 'Note: Payment Cancelled.';
+            } else {
+                $_POST = (is_array($_GET) && isset($_GET['data'])) ? $_GET : file_get_contents("php://input");
+                $accept_url_hit = false;
+                $payment_note = 'Note: Payment Completed (callback success).';
+            }
+            if(is_array($_POST))
+            {
+                foreach($_POST as $key => $value)
+                    $_POST[$key] = stripslashes($value);
+            }
+
+            $data = $k->verify_hash($_POST);
+            $order_id = $data['orderid'];
+
+            if(function_exists('wc_seq_order_number_pro')){
+                $order_id = wc_seq_order_number_pro()->find_order_by_order_number( $data['orderid'] );
+
+            }
+            if(isset($GLOBALS['wc_seq_order_number'])){
+                $order_id = $GLOBALS['wc_seq_order_number']->find_order_by_order_number($order_id);
+            }
+            $order = new WC_Order( $order_id );
+
+
+            $method_id = ( isset( $config['method_id'] ) ) ? $config['method_id'] : $this->id;
+            $method_title = ( isset( $config['method_title'] ) ) ? $config['method_title'] : $this->method_title;
+            $transientPrefix = ( isset( $config['transientPrefix'] ) ) ? $config['transientPrefix'] : 'billmate_order_id_';
+            $checkoutMessageCancel = ( isset($config['checkoutMessageCancel']) ) ? $config['checkoutMessageCancel'] : '';
+            $checkoutMessageFail = ( isset($config['checkoutMessageFail']) ) ? $config['checkoutMessageFail'] : '';
+
+
+            // Save card token if paid with card and is recurring ( WooCommerce Subscription )
+            if ( $method_id == 'billmate_cardpay' AND $recurring == true ) {
+                update_post_meta($order_id, '_billmate_card_token', $data['number']);
+                update_post_meta($order_id, 'billmate_card_token', $data['number']);
+                if($order->get_total() == 0) {
+                    $result = $k->creditPayment(array('PaymentData' => array('number' => $data['number'], 'partcredit' => false)));
+                    $activateResult = $k->activatePayment(array('PaymentData' => array('number' => $result['number'])));
+                }
+            }
+
+            // Check if transient is set(Success url is processing)
+            if( false !== get_transient( $transientPrefix.$order_id ) ){
+                if(version_compare(WC_VERSION, '2.0.0', '<')) {
+                    $redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))));
+                } else {
+                    $redirect = $this->get_return_url($order);
+                }
+                if($accept_url_hit) {
+                    WC()->session->__unset( 'billmate_checkout_hash' );
+                    WC()->session->__unset( 'billmate_checkout_order' );
+                    wp_safe_redirect($redirect);
+                    exit;
+                } elseif($cancel_url_hit) {
+                    if(isset($data['status']) AND $data['status'] == 'Failed') {
+                        wc_bm_errors($checkoutMessageFail);
+                    } elseif(isset($data['status']) AND $data['status'] == 'Cancelled') {
+                        wc_bm_errors($checkoutMessageCancel);
+                    }
+
+                    wp_safe_redirect($woocommerce->cart->get_checkout_url());
+                    exit;
+
+                }
+                else
+                    wp_die('OK','ok',array('response' => 200));
+            }
+
+            // Set Transient if not exists to prevent multiple callbacks
+            set_transient( $transientPrefix.$order_id, true, 3600 );
+            if(isset($data['code']) || isset($data['error']) || ($cancel_url_hit) || $data['status'] == 'Failed'){
+                if($data['status'] == 'Failed') {
+                    $error_message = $checkoutMessageFail;
+                } else {
+                    $error_message = $checkoutMessageCancel;
+                }
+
+                $order->add_order_note( __($error_message, 'billmate') );
+
+                if($accept_url_hit) {
+                    delete_transient($transientPrefix.$order_id);
+                    wp_safe_redirect(add_query_arg('key', $order->order_key,
+                            add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_checkout_page_id')))));
+                    die();
+                    return false;
+                }
+                elseif($cancel_url_hit){
+                    wc_bm_errors($checkoutMessageCancel);
+                    delete_transient($transientPrefix.$order_id);
+                    wp_safe_redirect($woocommerce->cart->get_checkout_url());
+                    die();
+                }else{
+                    wp_die('OK','ok',array('response' => 200));
+                }
+            }
+
+            if( method_exists($order, 'get_status') ) {
+                $order_status = $order->get_status();
+            } else {
+                $order_status_terms = wp_get_object_terms( $order_id, 'shop_order_status', array('fields' => 'slugs') );
+                $order_status = $order_status_terms[0];
+            }
+
+
+            if (in_array($order_status, array('pending', 'cancelled', 'bm-incomplete', 'failed'))) {
+
+                // Make sure the selected payment method is saved on order
+                if ( version_compare(WC_VERSION, '3.0.0', '>=') AND $method_id != get_post_meta($order_id, '_payment_method') ) {
+                    $order->set_payment_method($method_id);
+                    $order->set_payment_method_title($method_title);
+                    update_post_meta($order_id, '_payment_method', $method_id);
+                    update_post_meta($order_id, '_payment_method_title', $method_title);
+                }
+
+                // Bank payment can be pending
+                if ( $data['status'] == 'Pending' AND $checkout == true) {
+                    $order->add_order_note(__($payment_note,'billmate'));
+                    $order->update_status('pending');
+                    delete_transient($transientPrefix.$order_id);
+                }
+
+                if($data['status'] == 'Paid') {
+
+                    if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+                        $orderId = $order->get_id();
+                    } else {
+                        $orderId = $order->id;
+                    }
+
+                    // If paid with Billmate Checkout, get payment method from Billmate order
+                    if ( $checkout == true AND version_compare(WC_VERSION, '3.0.0', '>=') AND $method_id != get_post_meta($order_id, '_payment_method') ) {
+                        $_method_title = $method_title;
+                        $billmateOrderNumber = (isset($data['number'])) ? $data['number'] : '';
+                        $billmateOrderMethod = 1;   // 8 = card, 16 = bank
+                        $billmateOrder = array();
+                        if ( $billmateOrderNumber != '' ) {
+                            $billmateOrder = $k->getPaymentinfo(array('number' => $billmateOrderNumber));
+
+                            if (isset($billmateOrder['PaymentData']['method'])) {
+                                $billmateOrderMethod = $billmateOrder['PaymentData']['method'];
+                            }
+
+                            if ( $billmateOrderMethod == '8' ) {
+                                $_method_title = __('Billmate Cardpay', 'billmate');
+                            }
+
+                            if( $billmateOrderMethod == '16' ) {
+                                $_method_title = __('Billmate Bank', 'billmate');
+                            }
+                        }
+                        $order->set_payment_method($method_id);
+                        $order->set_payment_method_title($_method_title);
+                        update_post_meta($order_id, '_payment_method', $method_id);
+                        update_post_meta($order_id, '_payment_method_title', $_method_title);
+                    }
+
+                    add_post_meta($orderId, 'billmate_invoice_id', $data['number']);
+                    $order->add_order_note(sprintf(__('Billmate Invoice id: %s','billmate'),$data['number']));
+
+                    if ($this->order_status == 'default') {
+                        if($checkout)
+                            $order->update_status('pending');
+                        $order->add_order_note(__($payment_note,'billmate'));
+                        $order->payment_complete();
+                    } else {
+                        if($checkout)
+                            $order->update_status('pending');
+                        $order->add_order_note(__($payment_note,'billmate'));
+                        $order->update_status($this->order_status);
+                    }
+                    delete_transient($transientPrefix.$order_id);
+
+                }
+                if($data['status'] == 'Failed'){
+                    $order->cancel_order('Failed payment');
+                    delete_transient($transientPrefix.$order_id);
+
+                    if($cancel_url_hit) {
+                        wc_bm_errors($checkoutMessageFail);
+                        wp_safe_redirect($woocommerce->cart->get_checkout_url());
+                        exit;
+                    }
+                    else
+                        wp_die('OK','ok',array('response' => 200));
+                }
+                if($data['status'] == 'Cancelled'){
+                    $order->cancel_order('Cancelled Order');
+                    delete_transient($transientPrefix.$order_id);
+
+                    if($cancel_url_hit) {
+                        wc_bm_errors($checkoutMessageCancel);
+                        wp_safe_redirect($woocommerce->cart->get_checkout_url());
+                        exit;
+                    }
+                    else
+                        wp_die('OK','ok',array('response' => 200));
+                }
+
+                if($cancel_url_hit) {
+                    /* In case of cancel and we not received cancel or failed status */
+                    wc_bm_errors($checkoutMessageCancel);
+                    delete_transient($transientPrefix.$order_id);
+                    wp_safe_redirect($woocommerce->cart->get_checkout_url());
+                    exit;
+                }
+
+                if( $accept_url_hit ){
+                    $redirect = '';
+                    $woocommerce->cart->empty_cart();
+                    delete_transient($transientPrefix.$order_id);
+                    if(version_compare(WC_VERSION, '2.0.0', '<')){
+                        $redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))));
+                    } else {
+                        $redirect = $this->get_return_url($order);
+                    }
+                    WC()->session->__unset( 'billmate_checkout_hash' );
+                    WC()->session->__unset( 'billmate_checkout_order' );
+                    wp_safe_redirect($redirect);
+                    exit;
+                }
+                wp_die('OK','ok',array('response' => 200));
+            }
+
+
+            if( $accept_url_hit ) {
+                // Remove cart
+                $woocommerce->cart->empty_cart();
+                if(version_compare(WC_VERSION, '2.0.0', '<')){
+                    $redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))));
+                } else {
+                    $redirect = $this->get_return_url($order);
+                }
+                WC()->session->__unset( 'billmate_checkout_hash' );
+                WC()->session->__unset( 'billmate_checkout_order' );
+                wp_safe_redirect($redirect);
+                exit;
+            }
+            delete_transient( $transientPrefix.$order_id );
+
+            wp_die('OK','ok',array('response' => 200));
+        }
+
+
 	} // End class WC_Gateway_Billmate
 
 

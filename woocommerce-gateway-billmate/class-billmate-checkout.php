@@ -34,6 +34,8 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
         $this->testmode				= ( isset( $this->settings['testmode'] ) ) ? $this->settings['testmode'] : '';
 
+        $this->order_status = (isset($this->settings['order_status'])) ? $this->settings['order_status'] : false;
+
         $this->errorCode = "";
         $this->errorMessage = "";
 
@@ -98,6 +100,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         add_filter('woocommerce_get_checkout_url',array($this,'change_to_bco'),20);
 
 
+        add_action( 'woocommerce_api_wc_gateway_billmate_checkout', array( $this, 'check_ipn_response' ) );
 
     }
 
@@ -777,6 +780,11 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             'orderid' => $orderId
         );
 
+        $orderValues['PaymentData']['accepturl'] = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Checkout&payment=success&method=checkout';
+        $orderValues['PaymentData']['callbackurl'] = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Checkout&method=checkout';
+        $orderValues['PaymentData']['cancelurl'] = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Checkout&payment=cancel&method=checkout';
+        $orderValues['PaymentData']['returnmethod'] = is_ssl() ? 'POST' : 'GET';
+
         $total = 0;
         $totalTax = 0;
 
@@ -952,6 +960,23 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             }
         }
 
+    }
+
+    function check_ipn_response() {
+
+        $checkoutMessageCancel = '';
+        $checkoutMessageFail = '';
+        $transientPrefix = 'billmate_order_id_';
+
+        $config = array(
+            'method_id' => $this->id,
+            'method_title' => $this->method_title,
+            'checkoutMessageCancel' => $checkoutMessageCancel,
+            'checkoutMessageFail' => $checkoutMessageFail,
+            'transientPrefix' => $transientPrefix,
+        );
+
+        $this->common_check_ipn_response( $config );
     }
 
     function init_form_fields() {

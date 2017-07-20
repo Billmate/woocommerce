@@ -149,13 +149,11 @@ var BillmateIframe = new function(){
             switch (json.event) {
                 case 'address_selected':
                     self.updateAddress(json.data);
-                    self.updatePaymentMethod(json.data);
                     //self.updateTotals();
                     break;
                 case 'payment_method_selected':
 
                     if (window.address_selected !== null) {
-                        self.updatePaymentMethod(json.data);
                         //self.updateTotals();
                     }
                     break;
