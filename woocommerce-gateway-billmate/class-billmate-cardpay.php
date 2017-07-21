@@ -398,31 +398,6 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
         $orderValues['Customer']['Billing'] = $billmateOrder->getCustomerBillingData();
         $orderValues['Customer']['Shipping'] = $billmateOrder->getCustomerShippingData();
 
-		if ( $this->shop_country == 'NL' || $this->shop_country == 'DE' ) :
-
-			require_once('split-address.php');
-
-			$billmate_billing_address				= $order->billing_address_1;
-			$splitted_address 					= splitAddress($billmate_billing_address);
-
-			$billmate_billing_address				= $splitted_address[0];
-			$billmate_billing_house_number		= $splitted_address[1];
-			$billmate_billing_house_extension		= $splitted_address[2];
-
-			$billmate_shipping_address			= $order->shipping_address_1;
-			$splitted_address 					= splitAddress($billmate_shipping_address);
-
-			$billmate_shipping_address			= $splitted_address[0];
-			$billmate_shipping_house_number		= $splitted_address[1];
-			$billmate_shipping_house_extension	= $splitted_address[2];
-
-            $orderValues['Customer']['Billing']['street'] = $billmate_billing_address;
-            $orderValues['Customer']['Shipping']['street'] = $billmate_shipping_address;
-
-		endif;
-
-
-
 		$orderValues['Card'] = array(
 			'accepturl' => $accept_url,
 			'callbackurl' => $callback_url,
@@ -543,30 +518,6 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
                 $orderValues['Customer']['Billing'] = $billmateOrder->getCustomerBillingData();
                 $orderValues['Customer']['Shipping'] = $billmateOrder->getCustomerShippingData();
 
-
-				if ( $this->shop_country == 'NL' || $this->shop_country == 'DE' ) :
-
-					require_once('split-address.php');
-
-					$billmate_billing_address				= $order->billing_address_1;
-					$splitted_address 					= splitAddress($billmate_billing_address);
-
-					$billmate_billing_address				= $splitted_address[0];
-					$billmate_billing_house_number		= $splitted_address[1];
-					$billmate_billing_house_extension		= $splitted_address[2];
-
-					$billmate_shipping_address			= $order->shipping_address_1;
-					$splitted_address 					= splitAddress($billmate_shipping_address);
-
-					$billmate_shipping_address			= $splitted_address[0];
-					$billmate_shipping_house_number		= $splitted_address[1];
-					$billmate_shipping_house_extension	= $splitted_address[2];
-
-                    $orderValues['Customer']['Billing']['street'] = $billmate_billing_address;
-                    $orderValues['Customer']['Shipping']['street'] = $billmate_shipping_address;
-
-				endif;
-
 				$orderValues['Card'] = array(
 					'accepturl' => $accept_url,
 					'callbackurl' => $callback_url,
@@ -676,33 +627,6 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
             $orderValues['Customer']['nr'] = $billmateOrder->getCustomerNrData();
             $orderValues['Customer']['Billing'] = $billmateOrder->getCustomerBillingData();
             $orderValues['Customer']['Shipping'] = $billmateOrder->getCustomerShippingData();
-
-            if ( $this->shop_country == 'NL' || $this->shop_country == 'DE' ) :
-
-				require_once('split-address.php');
-
-				$billmate_billing_address				= $order->billing_address_1;
-				$splitted_address 					= splitAddress($billmate_billing_address);
-
-				$billmate_billing_address				= $splitted_address[0];
-				$billmate_billing_house_number		= $splitted_address[1];
-				$billmate_billing_house_extension		= $splitted_address[2];
-
-				$billmate_shipping_address			= $order->shipping_address_1;
-				$splitted_address 					= splitAddress($billmate_shipping_address);
-
-				$billmate_shipping_address			= $splitted_address[0];
-				$billmate_shipping_house_number		= $splitted_address[1];
-				$billmate_shipping_house_extension	= $splitted_address[2];
-
-
-                $orderValues['Customer']['Billing']['street'] = $billmate_billing_address;
-                $orderValues['Customer']['Shipping']['street'] = $billmate_shipping_address;
-
-
-
-			endif;
-
 
             $total = 0;
             $totalTax = 0;

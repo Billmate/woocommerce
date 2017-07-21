@@ -1646,31 +1646,6 @@ parse_str($_POST['post_data'], $datatemp);
         $orderValues['Customer']['Billing'] = $billmateOrder->getCustomerBillingData();
         $orderValues['Customer']['Shipping'] = $billmateOrder->getCustomerShippingData();
 
-		// Split address into House number and House extension for NL & DE customers
-		if ( $this->shop_country == 'NL' || $this->shop_country == 'DE' ) :
-
-			require_once('split-address.php');
-
-			$billmate_billing_address				= $order->billing_address_1;
-			$splitted_address 					= splitAddress($billmate_billing_address);
-
-			$billmate_billing_address				= $splitted_address[0];
-			$billmate_billing_house_number		= $splitted_address[1];
-			$billmate_billing_house_extension		= $splitted_address[2];
-
-			$billmate_shipping_address			= $order->shipping_address_1;
-			$splitted_address 					= splitAddress($billmate_shipping_address);
-
-			$billmate_shipping_address			= $splitted_address[0];
-			$billmate_shipping_house_number		= $splitted_address[1];
-			$billmate_shipping_house_extension	= $splitted_address[2];
-
-            $orderValues['Customer']['Billing']['street'] = $billmate_billing_address;
-            $orderValues['Customer']['Shipping']['street'] = $billmate_shipping_address;
-
-		endif;
-		
-
 		try {
 
     		$result = $k->addPayment($orderValues);
