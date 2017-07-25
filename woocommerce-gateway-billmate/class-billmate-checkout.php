@@ -247,7 +247,14 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         $order = $this->get_order();
         $connection = new BillMate($this->eid,$this->secret,true,$this->testmode == 'yes');
 
-        $result = $connection->getCheckout(array('PaymentData' => array('hash' => WC()->session->get('billmate_checkout_hash'))));
+        $result = array();
+
+        $hash = WC()->session->get('billmate_checkout_hash');
+        if ( $hash != '' ) {
+            $result = $connection->getCheckout(array('PaymentData' => array('hash' => $hash)));
+        }
+
+
         if(is_object($order)) {
 
             if(version_compare(WC_VERSION, '3.0.0', '>=')) {
@@ -257,6 +264,42 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             }
 
             if (!isset($result['code']) AND isset($result['PaymentData']['order']['status'])) {
+
+                $_method_title = $this->method_title;
+                $method_id = $this->id;
+
+                $billmateOrderNumber = (isset($result['PaymentData']['order']['number'])) ? $result['PaymentData']['order']['number']  : '';
+                $billmateOrder = array();
+
+                if ( $billmateOrderNumber != '' ) {
+                    $billmateOrder = $connection->getPaymentinfo(array('number' => $billmateOrderNumber));
+                }
+
+                if ( isset($billmateOrder['PaymentData']['method_name']) AND $billmateOrder['PaymentData']['method_name'] != "" ) {
+                    $_method_title = $_method_title . ' (' . utf8_decode($billmateOrder['PaymentData']['method_name']). ')';
+                } else {
+                    $billmateOrderMethod = 1;   // 8 = card, 16 = bank
+                    if (isset($billmateOrder['PaymentData']['method'])) {
+                        $billmateOrderMethod = $billmateOrder['PaymentData']['method'];
+                    }
+
+                    if ( $billmateOrderMethod == '1' ) {
+                        $_method_title = __('Billmate Invoice', 'billmate');
+                    }
+
+                    if( $billmateOrderMethod == '4' ) {
+                        $_method_title = __('Billmate Part Payment', 'billmate');
+                    }
+                }
+
+                update_post_meta($order_id, '_payment_method', $method_id);
+                update_post_meta($order_id, '_payment_method_title', $_method_title);
+
+                if ( version_compare(WC_VERSION, '3.0.0', '>=') ) {
+                    $order->set_payment_method($method_id);
+                    $order->set_payment_method_title($_method_title);
+                }
+
                 switch (strtolower($result['PaymentData']['order']['status'])) {
                     case 'pending':
                         $order->update_status('pending');

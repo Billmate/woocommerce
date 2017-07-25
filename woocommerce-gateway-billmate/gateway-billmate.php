@@ -481,22 +481,28 @@ function init_billmate_gateway() {
                     if ( $checkout == true AND version_compare(WC_VERSION, '3.0.0', '>=') AND $method_id != get_post_meta($order_id, '_payment_method') ) {
                         $_method_title = $method_title;
                         $billmateOrderNumber = (isset($data['number'])) ? $data['number'] : '';
-                        $billmateOrderMethod = 1;   // 8 = card, 16 = bank
+
                         $billmateOrder = array();
                         if ( $billmateOrderNumber != '' ) {
                             $billmateOrder = $k->getPaymentinfo(array('number' => $billmateOrderNumber));
 
-                            if (isset($billmateOrder['PaymentData']['method'])) {
-                                $billmateOrderMethod = $billmateOrder['PaymentData']['method'];
+                            if ( isset($billmateOrder['PaymentData']['method_name']) AND $billmateOrder['PaymentData']['method_name'] != "" ) {
+                                $_method_title = $_method_title . ' (' .$billmateOrder['PaymentData']['method_name']. ')';
+                            } else {
+                                $billmateOrderMethod = 1;   // 8 = card, 16 = bank
+                                if (isset($billmateOrder['PaymentData']['method'])) {
+                                    $billmateOrderMethod = $billmateOrder['PaymentData']['method'];
+                                }
+
+                                if ( $billmateOrderMethod == '8' ) {
+                                    $_method_title = __('Billmate Cardpay', 'billmate');
+                                }
+
+                                if( $billmateOrderMethod == '16' ) {
+                                    $_method_title = __('Billmate Bank', 'billmate');
+                                }
                             }
 
-                            if ( $billmateOrderMethod == '8' ) {
-                                $_method_title = __('Billmate Cardpay', 'billmate');
-                            }
-
-                            if( $billmateOrderMethod == '16' ) {
-                                $_method_title = __('Billmate Bank', 'billmate');
-                            }
                         }
                         $order->set_payment_method($method_id);
                         $order->set_payment_method_title($_method_title);
