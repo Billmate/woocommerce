@@ -960,30 +960,28 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
         $round = (round($order->get_total() * 100)) - round($total + $totalTax,0);
 
-        /* Add handling fee if selected payment method is invoice and handling fee is missing */
-        if(isset($orderValues['PaymentData']) AND isset($orderValues['PaymentData']['method']) AND $orderValues['PaymentData']['method'] == "1" AND !isset($orderValues['Cart']['Handling'])) {
-            $invoice_fee = new WC_Gateway_Billmate_Invoice;
-            $tax = new WC_Tax();
-            $rate = $tax->get_rates($invoice_fee->invoice_fee_tax_class);
-            $rate = array_pop($rate);
-            $rate = round($rate['rate']);
-            $invoiceFee = $invoice_fee->invoice_fee * 100;
+        // Always add available handling fee to checkout order
+        $invoice_fee = new WC_Gateway_Billmate_Invoice;
+        $tax = new WC_Tax();
+        $rate = $tax->get_rates($invoice_fee->invoice_fee_tax_class);
+        $rate = array_pop($rate);
+        $rate = round($rate['rate']);
+        $invoiceFee = $invoice_fee->invoice_fee * 100;
 
-            if($invoiceFee > 0) {
-                $orderValues['Cart']['Handling'] = array(
-                    'withouttax' => $invoiceFee,
-                    'taxrate' => $rate
-                );
-                $rateTimes = 1;
-                if($rate > 0) {
-                    $rateTimes = 1 + ($rate / 100);
-                }
-
-                $invoiceFeeTotal = $invoiceFee;
-                $invoiceFeeTax = ($invoiceFee * $rateTimes) - $invoiceFee;
-                $total += $invoiceFeeTotal;
-                $totalTax += $invoiceFeeTax;
+        if($invoiceFee > 0) {
+            $orderValues['Cart']['Handling'] = array(
+                'withouttax' => $invoiceFee,
+                'taxrate' => $rate
+            );
+            $rateTimes = 1;
+            if($rate > 0) {
+                $rateTimes = 1 + ($rate / 100);
             }
+
+            $invoiceFeeTotal = $invoiceFee;
+            $invoiceFeeTax = ($invoiceFee * $rateTimes) - $invoiceFee;
+            $total += $invoiceFeeTotal;
+            $totalTax += $invoiceFeeTax;
         }
 
         $orderValues['Cart']['Total'] = array(
