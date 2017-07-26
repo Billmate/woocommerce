@@ -430,7 +430,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			'withtax' => round($total) + round($totalTax,0) + $round
 		);
 
-		$k = new Billmate($this->eid,$this->secret,true,$this->testmode,false);
+		$k = new Billmate( $this->eid, $this->secret, true, $this->testmode, false, $this->getRequestMeta() );
 		$result = $k->addPayment($orderValues);
 		if(isset($result['code'])){
 			wc_bm_errors(__($result['message'],'billmate'));
@@ -566,7 +566,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 					'rounding' => round($round),
 					'withtax' => round($total) + round($totalTax,0) + $round
 				);
-				$k = new Billmate($this->eid,$this->secret,true,$this->testmode,false);
+				$k = new Billmate( $this->eid, $this->secret, true, $this->testmode, false, $this->getRequestMeta() );
 				$result = $k->addPayment($orderValues);
 				if(isset($result['code'])){
 					wc_bm_errors(__($result['message']));
@@ -652,7 +652,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			'rounding' => round($round),
 			'withtax' => round($total + $totalTax + $round)
 		);
-		$k = new Billmate($this->eid,$this->secret,true,$this->testmode,false);
+		$k = new Billmate( $this->eid, $this->secret, true, $this->testmode, false, $this->getRequestMeta() );
 		$result = $k->addPayment($orderValues);
 		if(isset($result['code'])){
 			wc_bm_errors(__($result['message']));

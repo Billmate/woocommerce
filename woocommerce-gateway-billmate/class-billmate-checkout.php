@@ -176,7 +176,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
     }
     function billmate_set_method(){
 
-        $connection = new BillMate($this->eid,$this->secret,true,$this->testmode == 'yes');
+        $connection = $this->getBillmateConnection();
         $result = $connection->getCheckout(array('PaymentData' => array('hash' => WC()->session->get('billmate_checkout_hash'))));
         if(!isset($result['code'])) {
             $class = '';
@@ -245,7 +245,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
     
     function billmate_complete_order(){
         $order = $this->get_order();
-        $connection = new BillMate($this->eid,$this->secret,true,$this->testmode == 'yes');
+        $connection = $this->getBillmateConnection();
 
         $result = array();
 
@@ -360,7 +360,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         global $woocommerce;
         global $wp_version;
 
-        $connection = new BillMate($this->eid,$this->secret,true,$this->testmode == 'yes');
+        $connection = $this->getBillmateConnection();
         $result = array("code" => "no hash");
 
         $hash = WC()->session->get('billmate_checkout_hash');
@@ -508,7 +508,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         $woocommerce->cart->calculate_totals();
         $orderId = $this->create_order();
         $order = wc_get_order($orderId);
-        $billmate = new Billmate($this->eid,$this->secret,true, $this->testmode == 'yes',false);
+        $billmate = $this->getBillmateConnection();
 
         $result = $billmate->getCheckout(array('PaymentData' => array('hash' => WC()->session->get( 'billmate_checkout_hash' ))));
 
@@ -776,7 +776,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
     function get_url(){
         $orderId = $this->create_order();
         if( WC()->session->get( 'billmate_checkout_hash' )){
-            $billmate = new Billmate($this->eid,$this->secret,true, $this->testmode == 'yes',false);
+            $billmate = $this->getBillmateConnection();
 
             $checkout = $billmate->getCheckout(array('PaymentData' => array('hash' => WC()->session->get( 'billmate_checkout_hash' ))));
             if(!isset($checkout['code'])){
@@ -800,7 +800,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
     function initCheckout($orderId = null){
         global $woocommerce;
-        $billmate = new Billmate($this->eid,$this->secret,true, $this->testmode == 'yes',false);
+        $billmate = $this->getBillmateConnection();
         $order = new WC_order( $orderId );
 
         $billmateOrder = new BillmateOrder($order);
@@ -898,7 +898,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
     public function updateCheckout($result, $order)
     {
-        $billmate = new Billmate($this->eid,$this->secret,true, $this->testmode == 'yes',false);
+        $billmate = $this->getBillmateConnection();
 
         $billmateOrder = new BillmateOrder($order);
 
@@ -1123,6 +1123,10 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             "code" => $this->errorCode,
             "message" => $this->errorMessage
         );
+    }
+
+    public function getBillmateConnection() {
+        return new BillMate( $this->eid, $this->secret, true, $this->testmode == 'yes', false, $this->getRequestMeta() );
     }
 }
 class WC_Gateway_Billmate_Checkout_Extra{

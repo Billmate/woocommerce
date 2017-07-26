@@ -596,6 +596,19 @@ function init_billmate_gateway() {
             wp_die('OK','ok',array('response' => 200));
         }
 
+        public function getRequestMeta() {
+            global $wp_version;
+
+            // Meta to add to API requests, will be used for debug
+            $meta = array(
+                'PHP_VERSION' => phpversion(),
+                'WORDPRESS_VERSION' => $wp_version,
+                'WOOCOMMERCE_VERSION' => WC_VERSION
+            );
+
+            return $meta;
+        }
+
 
 	} // End class WC_Gateway_Billmate
 

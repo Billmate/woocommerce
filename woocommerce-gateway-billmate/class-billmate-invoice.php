@@ -616,7 +616,7 @@ parse_str($_POST['post_data'], $datatemp);
 		if(!defined('BILLMATE_LANGUAGE')) define('BILLMATE_LANGUAGE',strtolower($language[0]));
 
 
-		$k = new Billmate($this->eid,$this->secret,true, $this->testmode == 'yes',false);
+        $k = new Billmate( $this->eid, $this->secret, true, $this->testmode == 'yes', false, $this->getRequestMeta() );
 		try{
 			$addr = $k->getAddress(array('pno' => $billmate_pno));
 		}catch( Exception $ex ){
@@ -785,7 +785,7 @@ parse_str($_POST['post_data'], $datatemp);
 		if(!defined('BILLMATE_LANGUAGE')) define('BILLMATE_LANGUAGE',strtolower($language[0]));
 
 
-		$k = new Billmate($this->eid,$this->secret,true, $this->testmode == 'yes',false);
+        $k = new Billmate( $this->eid, $this->secret, true, $this->testmode == 'yes', false, $this->getRequestMeta() );
 		try{
 			$addr = $k->getAddress(array('pno' => $billmate_pno));
 		}catch( Exception $ex ){
@@ -957,7 +957,7 @@ parse_str($_POST['post_data'], $datatemp);
 		if(!defined('BILLMATE_LANGUAGE')) define('BILLMATE_LANGUAGE',strtolower($lang[0]));
 
 
-		$k = new Billmate($eid,$secret,true, $this->testmode == 'yes',false);
+        $k = new Billmate( $eid, $secret, true, $this->testmode == 'yes', false, $this->getRequestMeta() );
 		$goods_list = array();
 		$orderValues = array();
 		$prepareDiscount = array();
