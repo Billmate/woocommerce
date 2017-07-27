@@ -292,8 +292,8 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                     }
                 }
 
-                update_post_meta($order_id, '_payment_method', $method_id);
-                update_post_meta($order_id, '_payment_method_title', $_method_title);
+                update_post_meta($orderId, '_payment_method', $method_id);
+                update_post_meta($orderId, '_payment_method_title', $_method_title);
 
                 if ( version_compare(WC_VERSION, '3.0.0', '>=') ) {
                     $order->set_payment_method($method_id);
@@ -778,6 +778,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         if( WC()->session->get( 'billmate_checkout_hash' )){
             $billmate = $this->getBillmateConnection();
 
+            $this->updateCheckoutFromOrderId( $orderId );
             $checkout = $billmate->getCheckout(array('PaymentData' => array('hash' => WC()->session->get( 'billmate_checkout_hash' ))));
             if(!isset($checkout['code'])){
                 return $checkout['PaymentData']['url'];
@@ -798,9 +799,11 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
     }
 
-    function initCheckout($orderId = null){
+
+    /* Return variables to make an checkout request except customer data */
+    public function getCheckoutDataFromOrderId( $orderId = null ) {
+
         global $woocommerce;
-        $billmate = $this->getBillmateConnection();
         $order = new WC_order( $orderId );
 
         $billmateOrder = new BillmateOrder($order);
@@ -880,7 +883,33 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             'withtax' => round($total + $totalTax + $round)
         );
 
+        return $orderValues;
+    }
 
+    public function updateCheckoutFromOrderId( $orderId = null ) {
+        $orderValues = $this->getCheckoutDataFromOrderId($orderId);
+
+        $billmate = $this->getBillmateConnection();
+        $checkoutOrder = $billmate->getCheckout(array('PaymentData' => array('hash' => WC()->session->get('billmate_checkout_hash'))));
+
+        $checkoutOrderNumber = (isset($checkoutOrder['PaymentData']['number'])) ? $checkoutOrder['PaymentData']['number'] : 0;
+
+        $result = array();
+        if ( $checkoutOrderNumber > 0 ) {
+            if ( !isset($orderValues['PaymentData']) ) {
+                $orderValues['PaymentData'] = array();
+            }
+            $orderValues['PaymentData']['number'] = $checkoutOrderNumber;
+            $result = $billmate->updateCheckout($orderValues);
+        }
+
+        return $result;
+    }
+
+    function initCheckout($orderId = null){
+        $orderValues = $this->getCheckoutDataFromOrderId($orderId);
+
+        $billmate = $this->getBillmateConnection();
         $result = $billmate->initCheckout($orderValues);
 
         // Save checkout hash
