@@ -894,6 +894,13 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
         $checkoutOrderNumber = (isset($checkoutOrder['PaymentData']['number'])) ? $checkoutOrder['PaymentData']['number'] : 0;
 
+        if (isset($checkoutOrder['PaymentData']['method'])) {
+            if (!isset($orderValues['PaymentData'])) {
+                $orderValues['PaymentData'] = array();
+            }
+            $orderValues['PaymentData']['method'] = $checkoutOrder['PaymentData']['method'];
+        }
+
         $result = array();
         if ( $checkoutOrderNumber > 0 ) {
             if ( !isset($orderValues['PaymentData']) ) {
