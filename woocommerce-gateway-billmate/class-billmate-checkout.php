@@ -34,6 +34,8 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
         $this->testmode				= ( isset( $this->settings['testmode'] ) ) ? $this->settings['testmode'] : '';
 
+        $this->order_status = (isset($this->settings['order_status'])) ? $this->settings['order_status'] : false;
+
         $this->errorCode = "";
         $this->errorMessage = "";
 
@@ -98,6 +100,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         add_filter('woocommerce_get_checkout_url',array($this,'change_to_bco'),20);
 
 
+        add_action( 'woocommerce_api_wc_gateway_billmate_checkout', array( $this, 'check_ipn_response' ) );
 
     }
 
@@ -173,7 +176,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
     }
     function billmate_set_method(){
 
-        $connection = new BillMate($this->eid,$this->secret,true,$this->testmode == 'yes');
+        $connection = $this->getBillmateConnection();
         $result = $connection->getCheckout(array('PaymentData' => array('hash' => WC()->session->get('billmate_checkout_hash'))));
         if(!isset($result['code'])) {
             $class = '';
@@ -242,9 +245,16 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
     
     function billmate_complete_order(){
         $order = $this->get_order();
-        $connection = new BillMate($this->eid,$this->secret,true,$this->testmode == 'yes');
+        $connection = $this->getBillmateConnection();
 
-        $result = $connection->getCheckout(array('PaymentData' => array('hash' => WC()->session->get('billmate_checkout_hash'))));
+        $result = array();
+
+        $hash = WC()->session->get('billmate_checkout_hash');
+        if ( $hash != '' ) {
+            $result = $connection->getCheckout(array('PaymentData' => array('hash' => $hash)));
+        }
+
+
         if(is_object($order)) {
 
             if(version_compare(WC_VERSION, '3.0.0', '>=')) {
@@ -254,6 +264,42 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             }
 
             if (!isset($result['code']) AND isset($result['PaymentData']['order']['status'])) {
+
+                $_method_title = $this->method_title;
+                $method_id = $this->id;
+
+                $billmateOrderNumber = (isset($result['PaymentData']['order']['number'])) ? $result['PaymentData']['order']['number']  : '';
+                $billmateOrder = array();
+
+                if ( $billmateOrderNumber != '' ) {
+                    $billmateOrder = $connection->getPaymentinfo(array('number' => $billmateOrderNumber));
+                }
+
+                if ( isset($billmateOrder['PaymentData']['method_name']) AND $billmateOrder['PaymentData']['method_name'] != "" ) {
+                    $_method_title = $_method_title . ' (' . utf8_decode($billmateOrder['PaymentData']['method_name']). ')';
+                } else {
+                    $billmateOrderMethod = 1;   // 8 = card, 16 = bank
+                    if (isset($billmateOrder['PaymentData']['method'])) {
+                        $billmateOrderMethod = $billmateOrder['PaymentData']['method'];
+                    }
+
+                    if ( $billmateOrderMethod == '1' ) {
+                        $_method_title = __('Billmate Invoice', 'billmate');
+                    }
+
+                    if( $billmateOrderMethod == '4' ) {
+                        $_method_title = __('Billmate Part Payment', 'billmate');
+                    }
+                }
+
+                update_post_meta($orderId, '_payment_method', $method_id);
+                update_post_meta($orderId, '_payment_method_title', $_method_title);
+
+                if ( version_compare(WC_VERSION, '3.0.0', '>=') ) {
+                    $order->set_payment_method($method_id);
+                    $order->set_payment_method_title($_method_title);
+                }
+
                 switch (strtolower($result['PaymentData']['order']['status'])) {
                     case 'pending':
                         $order->update_status('pending');
@@ -312,8 +358,9 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
     function billmate_update_address(){
         global $woocommerce;
+        global $wp_version;
 
-        $connection = new BillMate($this->eid,$this->secret,true,$this->testmode == 'yes');
+        $connection = $this->getBillmateConnection();
         $result = array("code" => "no hash");
 
         $hash = WC()->session->get('billmate_checkout_hash');
@@ -367,8 +414,31 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                 } else {
                     $shipping_address = $billing_address;
                 }
-                $order->set_address($billing_address,'billing');
-                $order->set_address($shipping_address,'shipping');
+
+                $billingEmail = isset($result['Customer']['Billing']['email']) ? sanitize_text_field($result['Customer']['Billing']['email']) : '';
+                $isEmail = is_email($billingEmail);
+                if ($isEmail != false AND is_string($isEmail) AND $isEmail == $billingEmail) {
+                    // Email is valid, continue
+                    $order->set_address($billing_address,'billing');
+                    $order->set_address($shipping_address,'shipping');
+                } else {
+                    /* Email not valid */
+                    if (version_compare($wp_version, '2.8.0', '>=') AND version_compare(WC_VERSION, '3.1.0', '>=')) {
+                         /* To prevent " PHP Fatal error:  Uncaught exception 'WC_Data_Exception'  " for WP 4.8 and WC 3.1 when invalid email, do not use set_address for setting order billing email */
+
+                        if (isset($billing_address['email'])) {
+                            unset($billing_address['email']);
+                        }
+
+                        $order->set_address($billing_address, 'billing');
+                        $order->set_address($shipping_address, 'shipping');
+                        update_metadata('post', $order->get_id(), '_billing_email', $billingEmail);
+
+                    } else {
+                        $order->set_address($billing_address, 'billing');
+                        $order->set_address($shipping_address, 'shipping');
+                    }
+                }
             }
 
             switch ($result['PaymentData']['method']) {
@@ -438,7 +508,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         $woocommerce->cart->calculate_totals();
         $orderId = $this->create_order();
         $order = wc_get_order($orderId);
-        $billmate = new Billmate($this->eid,$this->secret,true, $this->testmode == 'yes',false);
+        $billmate = $this->getBillmateConnection();
 
         $result = $billmate->getCheckout(array('PaymentData' => array('hash' => WC()->session->get( 'billmate_checkout_hash' ))));
 
@@ -706,8 +776,9 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
     function get_url(){
         $orderId = $this->create_order();
         if( WC()->session->get( 'billmate_checkout_hash' )){
-            $billmate = new Billmate($this->eid,$this->secret,true, $this->testmode == 'yes',false);
+            $billmate = $this->getBillmateConnection();
 
+            $this->updateCheckoutFromOrderId( $orderId );
             $checkout = $billmate->getCheckout(array('PaymentData' => array('hash' => WC()->session->get( 'billmate_checkout_hash' ))));
             if(!isset($checkout['code'])){
                 return $checkout['PaymentData']['url'];
@@ -728,9 +799,11 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
     }
 
-    function initCheckout($orderId = null){
+
+    /* Return variables to make an checkout request except customer data */
+    public function getCheckoutDataFromOrderId( $orderId = null ) {
+
         global $woocommerce;
-        $billmate = new Billmate($this->eid,$this->secret,true, $this->testmode == 'yes',false);
         $order = new WC_order( $orderId );
 
         $billmateOrder = new BillmateOrder($order);
@@ -752,6 +825,11 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             'country' => $location['country'],
             'orderid' => $orderId
         );
+
+        $orderValues['PaymentData']['accepturl'] = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Checkout&payment=success&method=checkout';
+        $orderValues['PaymentData']['callbackurl'] = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Checkout&method=checkout';
+        $orderValues['PaymentData']['cancelurl'] = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Checkout&payment=cancel&method=checkout';
+        $orderValues['PaymentData']['returnmethod'] = is_ssl() ? 'POST' : 'GET';
 
         $total = 0;
         $totalTax = 0;
@@ -805,7 +883,40 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             'withtax' => round($total + $totalTax + $round)
         );
 
+        return $orderValues;
+    }
 
+    public function updateCheckoutFromOrderId( $orderId = null ) {
+        $orderValues = $this->getCheckoutDataFromOrderId($orderId);
+
+        $billmate = $this->getBillmateConnection();
+        $checkoutOrder = $billmate->getCheckout(array('PaymentData' => array('hash' => WC()->session->get('billmate_checkout_hash'))));
+
+        $checkoutOrderNumber = (isset($checkoutOrder['PaymentData']['number'])) ? $checkoutOrder['PaymentData']['number'] : 0;
+
+        if (isset($checkoutOrder['PaymentData']['method'])) {
+            if (!isset($orderValues['PaymentData'])) {
+                $orderValues['PaymentData'] = array();
+            }
+            $orderValues['PaymentData']['method'] = $checkoutOrder['PaymentData']['method'];
+        }
+
+        $result = array();
+        if ( $checkoutOrderNumber > 0 ) {
+            if ( !isset($orderValues['PaymentData']) ) {
+                $orderValues['PaymentData'] = array();
+            }
+            $orderValues['PaymentData']['number'] = $checkoutOrderNumber;
+            $result = $billmate->updateCheckout($orderValues);
+        }
+
+        return $result;
+    }
+
+    function initCheckout($orderId = null){
+        $orderValues = $this->getCheckoutDataFromOrderId($orderId);
+
+        $billmate = $this->getBillmateConnection();
         $result = $billmate->initCheckout($orderValues);
 
         // Save checkout hash
@@ -823,7 +934,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
     public function updateCheckout($result, $order)
     {
-        $billmate = new Billmate($this->eid,$this->secret,true, $this->testmode == 'yes',false);
+        $billmate = $this->getBillmateConnection();
 
         $billmateOrder = new BillmateOrder($order);
 
@@ -885,30 +996,28 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
         $round = (round($order->get_total() * 100)) - round($total + $totalTax,0);
 
-        /* Add handling fee if selected payment method is invoice and handling fee is missing */
-        if(isset($orderValues['PaymentData']) AND isset($orderValues['PaymentData']['method']) AND $orderValues['PaymentData']['method'] == "1" AND !isset($orderValues['Cart']['Handling'])) {
-            $invoice_fee = new WC_Gateway_Billmate_Invoice;
-            $tax = new WC_Tax();
-            $rate = $tax->get_rates($invoice_fee->invoice_fee_tax_class);
-            $rate = array_pop($rate);
-            $rate = round($rate['rate']);
-            $invoiceFee = $invoice_fee->invoice_fee * 100;
+        // Always add available handling fee to checkout order
+        $invoice_fee = new WC_Gateway_Billmate_Invoice;
+        $tax = new WC_Tax();
+        $rate = $tax->get_rates($invoice_fee->invoice_fee_tax_class);
+        $rate = array_pop($rate);
+        $rate = round($rate['rate']);
+        $invoiceFee = $invoice_fee->invoice_fee * 100;
 
-            if($invoiceFee > 0) {
-                $orderValues['Cart']['Handling'] = array(
-                    'withouttax' => $invoiceFee,
-                    'taxrate' => $rate
-                );
-                $rateTimes = 1;
-                if($rate > 0) {
-                    $rateTimes = 1 + ($rate / 100);
-                }
-
-                $invoiceFeeTotal = $invoiceFee;
-                $invoiceFeeTax = ($invoiceFee * $rateTimes) - $invoiceFee;
-                $total += $invoiceFeeTotal;
-                $totalTax += $invoiceFeeTax;
+        if($invoiceFee > 0) {
+            $orderValues['Cart']['Handling'] = array(
+                'withouttax' => $invoiceFee,
+                'taxrate' => $rate
+            );
+            $rateTimes = 1;
+            if($rate > 0) {
+                $rateTimes = 1 + ($rate / 100);
             }
+
+            $invoiceFeeTotal = $invoiceFee;
+            $invoiceFeeTax = ($invoiceFee * $rateTimes) - $invoiceFee;
+            $total += $invoiceFeeTotal;
+            $totalTax += $invoiceFeeTax;
         }
 
         $orderValues['Cart']['Total'] = array(
@@ -928,6 +1037,23 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             }
         }
 
+    }
+
+    function check_ipn_response() {
+
+        $checkoutMessageCancel = '';
+        $checkoutMessageFail = '';
+        $transientPrefix = 'billmate_order_id_';
+
+        $config = array(
+            'method_id' => $this->id,
+            'method_title' => $this->method_title,
+            'checkoutMessageCancel' => $checkoutMessageCancel,
+            'checkoutMessageFail' => $checkoutMessageFail,
+            'transientPrefix' => $transientPrefix,
+        );
+
+        $this->common_check_ipn_response( $config );
     }
 
     function init_form_fields() {
@@ -1033,6 +1159,10 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             "code" => $this->errorCode,
             "message" => $this->errorMessage
         );
+    }
+
+    public function getBillmateConnection() {
+        return new BillMate( $this->eid, $this->secret, true, $this->testmode == 'yes', false, $this->getRequestMeta() );
     }
 }
 class WC_Gateway_Billmate_Checkout_Extra{

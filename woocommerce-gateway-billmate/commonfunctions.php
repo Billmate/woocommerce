@@ -1,5 +1,5 @@
 <?php
-define('BILLPLUGIN_VERSION','3.0.4');
+define('BILLPLUGIN_VERSION','3.0.5');
 define('BILLMATE_CLIENT','PHP:Woocommerce:'.BILLPLUGIN_VERSION);
 define('BILLMATE_SERVER','2.1.9');
 
@@ -977,6 +977,8 @@ if(!class_exists('BillmateOrder')){
         private $articlesTotal;
         private $articlesTotalTax;
 
+        private $shop_country;
+
         public function __construct($order) {
             $this->order = $order;
             $this->orderData = array();
@@ -985,6 +987,18 @@ if(!class_exists('BillmateOrder')){
 
             $this->articlesTotal = 0;
             $this->articlesTotalTax = 0;
+
+            $this->fetch_shop_country();
+        }
+
+        // Return shop country code, SE if Sweden
+        public function fetch_shop_country() {
+            $this->shop_country = get_option('woocommerce_default_country');
+            // Check if woocommerce_default_country includes state as well. If it does, remove state
+            if (strstr($this->shop_country, ':')) {
+                $this->shop_country = current(explode(':', $this->shop_country));
+            }
+            return $this->shop_country;
         }
 
         public function setCustomerPno($pno = "") {
@@ -1081,6 +1095,16 @@ if(!class_exists('BillmateOrder')){
                 );
             }
 
+            if ( $this->shop_country == 'NL' || $this->shop_country == 'DE' ) {
+                require_once('split-address.php');
+                $billmate_billing_address           = $this->orderData['Customer']['Billing']['street'];
+                $splitted_address                   = splitAddress($billmate_billing_address);
+                $billmate_billing_address           = $splitted_address[0];
+                $billmate_billing_house_number      = $splitted_address[1];
+                $billmate_billing_house_extension   = $splitted_address[2];
+                $this->orderData['Customer']['Billing']['street'] = $billmate_billing_address;
+            }
+
             return $this->orderData['Customer']['Billing'];
         }
 
@@ -1138,6 +1162,16 @@ if(!class_exists('BillmateOrder')){
                     'country' => $this->order->shipping_country,
                     'phone' => $this->order->billing_phone
                 );
+            }
+
+            if ( $this->shop_country == 'NL' || $this->shop_country == 'DE' ) {
+                require_once('split-address.php');
+                $billmate_shipping_address          = $this->orderData['Customer']['Shipping']['street'];
+                $splitted_address                   = splitAddress($billmate_shipping_address);
+                $billmate_shipping_address          = $splitted_address[0];
+                $billmate_shipping_house_number     = $splitted_address[1];
+                $billmate_shipping_house_extension  = $splitted_address[2];
+                $this->orderData['Customer']['Shipping']['street'] = $billmate_shipping_address;
             }
 
             return $this->orderData['Customer']['Shipping'];
