@@ -521,8 +521,6 @@ function init_billmate_gateway() {
                             $order->update_status('pending');
                         $order->add_order_note(__($payment_note,'billmate'));
 
-                        if (true == $isTotalMatch) {
-
                         if($order->get_total() * 100 == $billmateOrderTotal) {
                             // Set order as paid if paid amount matches order total amount
                             $order->payment_complete();
