@@ -477,15 +477,16 @@ function init_billmate_gateway() {
                         $orderId = $order->id;
                     }
 
+                    $billmateOrderNumber = (isset($data['number'])) ? $data['number'] : '';
+                    $billmateOrder = array();
+                    if ( $billmateOrderNumber != '' ) {
+                        $billmateOrder = $k->getPaymentinfo(array('number' => $billmateOrderNumber));
+                    }
+
                     // If paid with Billmate Checkout, get payment method from Billmate order
                     if ( $checkout == true AND version_compare(WC_VERSION, '3.0.0', '>=') AND $method_id != get_post_meta($order_id, '_payment_method') ) {
                         $_method_title = $method_title;
-                        $billmateOrderNumber = (isset($data['number'])) ? $data['number'] : '';
-
-                        $billmateOrder = array();
                         if ( $billmateOrderNumber != '' ) {
-                            $billmateOrder = $k->getPaymentinfo(array('number' => $billmateOrderNumber));
-
                             if ( isset($billmateOrder['PaymentData']['method_name']) AND $billmateOrder['PaymentData']['method_name'] != "" ) {
                                 $_method_title = $_method_title . ' (' .$billmateOrder['PaymentData']['method_name']. ')';
                             } else {
@@ -513,11 +514,19 @@ function init_billmate_gateway() {
                     add_post_meta($orderId, 'billmate_invoice_id', $data['number']);
                     $order->add_order_note(sprintf(__('Billmate Invoice id: %s','billmate'),$data['number']));
 
+                    $billmateOrderTotal = isset($billmateOrder['Cart']['Total']['withtax']) ? $billmateOrder['Cart']['Total']['withtax'] : 0;
+
                     if ($this->order_status == 'default') {
                         if($checkout)
                             $order->update_status('pending');
                         $order->add_order_note(__($payment_note,'billmate'));
-                        $order->payment_complete();
+
+                        if (true == $isTotalMatch) {
+
+                        if($order->get_total() * 100 == $billmateOrderTotal) {
+                            // Set order as paid if paid amount matches order total amount
+                            $order->payment_complete();
+                        }
                     } else {
                         if($checkout)
                             $order->update_status('pending');
