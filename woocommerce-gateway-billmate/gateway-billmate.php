@@ -535,7 +535,11 @@ function init_billmate_gateway() {
 
                 }
                 if($data['status'] == 'Failed'){
-                    $order->cancel_order('Failed payment');
+                    if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+                        $order->update_status('cancelled', 'Failed payment');
+                    } else {
+                        $order->cancel_order('Failed payment');
+                    }
                     delete_transient($transientPrefix.$order_id);
 
                     if($cancel_url_hit) {
@@ -547,7 +551,11 @@ function init_billmate_gateway() {
                         wp_die('OK','ok',array('response' => 200));
                 }
                 if($data['status'] == 'Cancelled'){
-                    $order->cancel_order('Cancelled Order');
+                    if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+                        $order->update_status('cancelled', 'Cancelled Order');
+                    } else {
+                        $order->cancel_order('Cancelled Order');
+                    }
                     delete_transient($transientPrefix.$order_id);
 
                     if($cancel_url_hit) {
