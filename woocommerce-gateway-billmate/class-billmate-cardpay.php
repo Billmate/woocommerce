@@ -136,6 +136,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
         $transientPrefix = 'billmate_cardpay_order_id_';
 
         $config = array(
+            'testmode' => $this->testmode,
             'method_id' => $this->id,
             'method_title' => $this->method_title,
             'checkoutMessageCancel' => $checkoutMessageCancel,

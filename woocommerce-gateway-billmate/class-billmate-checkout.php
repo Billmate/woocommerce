@@ -950,22 +950,6 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
         // Shipping
         unset($orderValues['Cart']);
-        
-        /* Handling fee */
-        if(count($order->get_fees()) > 0 ):
-            foreach ($order->get_fees() as $fee){
-                if($fee['name'] == esc_attr(__('Invoice fee','billmate'))) {
-                    $orderValues['Cart']['Handling'] = array(
-                        'withouttax' => round($fee['line_total'] * 100),
-                        'taxrate' => ($fee['line_tax'] / $fee['line_total']) * 100
-                    );
-                    $total += $orderValues['Cart']['Handling']['withouttax'];
-                    $totalTax += $fee['line_tax'] * 100;
-                }
-
-            }
-        endif;
-
         if(version_compare(WC_VERSION, '3.0.0', '>=')) {
             $order_shipping_total = $order->get_shipping_total();
             $order_shipping_tax = $order->get_shipping_tax();
@@ -1046,6 +1030,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         $transientPrefix = 'billmate_order_id_';
 
         $config = array(
+            'testmode' => $this->testmode,
             'method_id' => $this->id,
             'method_title' => $this->method_title,
             'checkoutMessageCancel' => $checkoutMessageCancel,
