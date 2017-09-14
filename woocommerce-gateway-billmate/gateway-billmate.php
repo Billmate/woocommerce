@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce Billmate Gateway
 Plugin URI: http://woothemes.com/woocommerce
 Description: Receive payments on your WooCommerce store via Billmate. Invoice, partpayment, credit/debit card and direct bank transfers. Secure and 100&#37; free plugin.
-Version: 3.0.5
+Version: 3.0.6
 Author: Billmate
 Text Domain: billmate
 Author URI: https://billmate.se
@@ -316,11 +316,12 @@ function init_billmate_gateway() {
 
             global $woocommerce;
 
+            $testmode = (isset($config['testmode'])) ? $config['testmode'] : $this->testmode;
             $recurring =        false;
             $cancel_url_hit =   false;
             $accept_url_hit =   false;
             $checkout =         false;
-            $k =                new Billmate($this->eid,$this->secret,true,$this->testmode,false);
+            $k =                new Billmate($this->eid,$this->secret,true,$testmode == 'yes',false);
             $payment_note =     '';
 
             if(!empty($_GET['method']) && $_GET['method'] == 'checkout')
@@ -469,7 +470,7 @@ function init_billmate_gateway() {
                     delete_transient($transientPrefix.$order_id);
                 }
 
-                if($data['status'] == 'Paid') {
+                if($data['status'] == 'Paid' OR $data['status'] == 'Created') {
 
                     if(version_compare(WC_VERSION, '3.0.0', '>=')) {
                         $orderId = $order->get_id();
@@ -521,9 +522,85 @@ function init_billmate_gateway() {
                             $order->update_status('pending');
                         $order->add_order_note(__($payment_note,'billmate'));
 
-                        if($order->get_total() * 100 == $billmateOrderTotal) {
+                        $woocommerce_billmate_invoice_settings = get_option('woocommerce_billmate_invoice_settings');
+
+                        if(intval($order->get_total() * 100) == intval($billmateOrderTotal)) {
                             // Set order as paid if paid amount matches order total amount
                             $order->payment_complete();
+                        } else {
+                            // To pay not match, maybe add handling fee to WC order
+                            if (isset($billmateOrder['Cart']['Handling']['withouttax']) AND isset($billmateOrder['Cart']['Handling']['taxrate'])) {
+
+                                $feeTaxclass = 0;
+                                if (isset($woocommerce_billmate_invoice_settings['billmate_invoice_fee_tax_class'])) {
+                                    $feeTaxclass = $woocommerce_billmate_invoice_settings['billmate_invoice_fee_tax_class'];
+                                }
+
+                                $feeTaxrate = intval($billmateOrder['Cart']['Handling']['taxrate']);
+
+                                $feeAmount = intval($billmateOrder['Cart']['Handling']['withouttax']);
+                                if ($feeAmount > 0) {
+                                    $feeAmount /= 100;
+                                }
+
+                                $feeTax = 0;
+                                if ($feeTaxrate > 0) {
+                                    $feeTax = ($feeAmount * (1 + ($feeTaxrate/100))) - $feeAmount;
+                                }
+
+                                if($order->get_total() == ($billmateOrderTotal / 100) - $feeAmount - $feeTax) {
+                                    // Assume handling fee is missing, add handling fee and mark order as paid
+
+                                    // Handling fee tax rates
+                                    $tax = new WC_Tax();
+                                    $rates = $tax->get_rates($feeTaxclass);
+                                    $rate = $rates;
+                                    $rate = array_pop($rate);
+                                    $rate = $rate['rate'];
+
+                                    $feeTaxdata = array();
+                                    foreach($rates AS $i => $rate) {
+                                        $feeTaxdata[$i] = wc_format_decimal(0);
+                                        if ($rate['rate'] > 0) {
+                                            $feeTaxdata[$i] = wc_format_decimal(($feeAmount * (1 + ($rate['rate']/100))) - $feeAmount);
+                                        }
+                                    }
+
+                                    $fee            = new stdClass();
+                                    $fee->name      = __('Invoice fee','billmate');
+                                    $fee->tax_class = $feeTaxclass;
+                                    $fee->taxable   = ($feeTax > 0) ? true : false;
+                                    $fee->amount    = wc_format_decimal($feeAmount);
+                                    $fee->tax       = wc_format_decimal($feeTax);
+                                    $fee->tax_data  = $feeTaxdata;
+
+                                    if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+                                        $item = new WC_Order_Item_Fee();
+                                        $item->set_props( array(
+                                            'name'      => $fee->name,
+                                            'tax_class' => $fee->tax_class,
+                                            'total'     => $fee->amount,
+                                            'total_tax' => $fee->tax,
+                                            'taxes'     => array(
+                                                'total' => $fee->tax_data,
+                                            ),
+                                            'order_id'  => $orderId,
+                                        ));
+
+                                        $item->save();
+                                        $order->add_item( $item );
+                                        $item_id = $item->get_id();
+
+                                        $order->calculate_totals(); // Recalculate order totals after fee is added
+
+                                    } else {
+                                        $item_id = $order->add_fee( $fee );
+                                    }
+
+                                    $order->payment_complete();
+                                }
+
+                            }
                         }
                     } else {
                         if($checkout)
@@ -535,7 +612,11 @@ function init_billmate_gateway() {
 
                 }
                 if($data['status'] == 'Failed'){
-                    $order->cancel_order('Failed payment');
+                    if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+                        $order->update_status('cancelled', 'Failed payment');
+                    } else {
+                        $order->cancel_order('Failed payment');
+                    }
                     delete_transient($transientPrefix.$order_id);
 
                     if($cancel_url_hit) {
@@ -547,7 +628,11 @@ function init_billmate_gateway() {
                         wp_die('OK','ok',array('response' => 200));
                 }
                 if($data['status'] == 'Cancelled'){
-                    $order->cancel_order('Cancelled Order');
+                    if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+                        $order->update_status('cancelled', 'Cancelled Order');
+                    } else {
+                        $order->cancel_order('Cancelled Order');
+                    }
                     delete_transient($transientPrefix.$order_id);
 
                     if($cancel_url_hit) {

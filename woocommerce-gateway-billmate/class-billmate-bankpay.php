@@ -121,6 +121,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
         $transientPrefix = 'billmate_bankpay_order_id_';
 
         $config = array(
+            'testmode' => $this->testmode,
             'method_id' => $this->id,
             'method_title' => $this->method_title,
             'checkoutMessageCancel' => $checkoutMessageCancel,
@@ -258,7 +259,9 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			// if (!is_ssl()) return false;
 
 			// Currency check
-			 if (!in_array(get_option('woocommerce_currency'), array('SEK'))) return false;
+            if (!in_array(get_option('woocommerce_currency'), array('SEK')) OR get_woocommerce_currency() != 'SEK') {
+                return false;
+            }
 
 			// Base country check
 			//if (!in_array(get_option('woocommerce_default_country'), array('DK', 'DE', 'FI', 'NL', 'NO', 'SE'))) return false;
@@ -353,13 +356,9 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		$languageCode = $languageCode == 'SV' ? 'SE' : $languageCode;
 		$languageCode = $languageCode == 'EN' ? 'GB' : $languageCode;
 
-
-
-		//$cancel_url = html_entity_decode($woocommerce->cart->get_checkout_url());
-		$accept_url= trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Bankpay&payment=success';
-		//$callback_url= 'http://api.billmate.se/callback.php';
-		$callback_url = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Bankpay';
-		$cancel_url = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Bankpay&payment=cancel';
+        $accept_url     = billmate_add_query_arg(array('wc-api' => 'WC_Gateway_Billmate_Bankpay', 'payment' => 'success'));
+        $callback_url   = billmate_add_query_arg(array('wc-api' => 'WC_Gateway_Billmate_Bankpay'));
+        $cancel_url     = billmate_add_query_arg(array('wc-api' => 'WC_Gateway_Billmate_Bankpay', 'payment' => 'cancel'));
 
         $url = parse_url($callback_url);
 

@@ -440,7 +440,9 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
                 return true;
             }
 
-			if (!in_array(get_option('woocommerce_currency'), array('SEK'))) return false;
+            if (!in_array(get_option('woocommerce_currency'), array('SEK')) OR get_woocommerce_currency() != 'SEK') {
+                return false;
+            }
 
 			$allowed_countries = array_intersect(array('SE'),is_array($this->allowed_countries) ? $this->allowed_countries : array($this->allowed_countries));
 			$order_id = absint( get_query_var( 'order-pay' ) );
@@ -1798,7 +1800,9 @@ parse_str($_POST['post_data'], $datatemp);
 	function print_product_monthly_cost() {
 
 		if ( $this->enabled!="yes" ) return;
-		if (!in_array(get_option('woocommerce_currency'), array('SEK'))) return false;
+        if (!in_array(get_option('woocommerce_currency'), array('SEK')) OR get_woocommerce_currency() != 'SEK') {
+            return false;
+        }
 
 		//global $woocommerce, $product, $billmate_partpayment_shortcode_currency, $billmate_partpayment_shortcode_price, $billmate_partpayment_shortcode_img, $billmate_partpayment_shortcode_info_link;
 		global $woocommerce, $product, $billmate_partpayment_shortcode_currency, $billmate_partpayment_shortcode_price, $billmate_shortcode_img, $billmate_partpayment_country,$billmate_partpayment_eid;
@@ -1899,7 +1903,9 @@ parse_str($_POST['post_data'], $datatemp);
  	function print_product_monthly_cost_shop() {
 
  		if ( $this->enabled!="yes" ) return;
-	    if (!in_array(get_option('woocommerce_currency'), array('SEK'))) return false;
+        if (!in_array(get_option('woocommerce_currency'), array('SEK')) OR get_woocommerce_currency() != 'SEK') {
+            return false;
+        }
  		//global $woocommerce, $product, $billmate_partpayment_shortcode_currency, $billmate_partpayment_shortcode_price, $billmate_partpayment_shortcode_img, $billmate_partpayment_shortcode_info_link;
  		global $woocommerce, $product, $billmate_partpayment_shortcode_currency, $billmate_partpayment_shortcode_price, $billmate_shortcode_img, $billmate_partpayment_country;
 
