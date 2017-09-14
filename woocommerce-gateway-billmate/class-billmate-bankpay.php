@@ -354,13 +354,9 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 		$languageCode = $languageCode == 'SV' ? 'SE' : $languageCode;
 		$languageCode = $languageCode == 'EN' ? 'GB' : $languageCode;
 
-
-
-		//$cancel_url = html_entity_decode($woocommerce->cart->get_checkout_url());
-		$accept_url= trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Bankpay&payment=success';
-		//$callback_url= 'http://api.billmate.se/callback.php';
-		$callback_url = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Bankpay';
-		$cancel_url = trailingslashit (home_url()) . '?wc-api=WC_Gateway_Billmate_Bankpay&payment=cancel';
+        $accept_url     = billmate_add_query_arg(array('wc-api' => 'WC_Gateway_Billmate_Bankpay', 'payment' => 'success'));
+        $callback_url   = billmate_add_query_arg(array('wc-api' => 'WC_Gateway_Billmate_Bankpay'));
+        $cancel_url     = billmate_add_query_arg(array('wc-api' => 'WC_Gateway_Billmate_Bankpay', 'payment' => 'cancel'));
 
         $url = parse_url($callback_url);
 

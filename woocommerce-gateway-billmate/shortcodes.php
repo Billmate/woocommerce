@@ -257,4 +257,33 @@ function add_billmate_popup(){
 }
 
 
+// Return home url with added params
+function billmate_add_query_arg($args = array()) {
+    if (is_string($args)) {
+        parse_str(end(explode('?',$args)), $args);
+    }
+
+    $homeUrlParams = array();
+
+    $homeUrl = rtrim(home_url(), '/');
+    $homeUrlParamString = parse_url($homeUrl, PHP_URL_QUERY);
+    $baseUrl = current(explode("?", $homeUrl));
+
+    parse_str($homeUrlParamString, $homeUrlParams);
+    $homeUrlParams = array_merge($homeUrlParams, $args);
+    return trailingslashit($baseUrl)."?".http_build_query($homeUrlParams);
+}
+
+// Return home url with set params
+function billmate_set_query_arg($args = array()) {
+    if (is_string($args)) {
+        parse_str(end(explode('?',$args)), $args);
+    }
+
+    $args = (is_array($args)) ? $args : array($args);
+    $homeUrl = rtrim(home_url(), '/');
+    $baseUrl = current(explode("?", $homeUrl));
+    return trailingslashit($baseUrl)."?".http_build_query($args);
+}
+
 ?>
