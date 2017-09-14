@@ -290,13 +290,10 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
                 return true;
             }
 
-			// if (!is_ssl()) return false;
-
-			// Currency check
-			// if (!in_array(get_option('woocommerce_currency'), array('DKK', 'EUR', 'NOK', 'SEK'))) return false;
-
-			// Base country check
-			//if (!in_array(get_option('woocommerce_default_country'), array('DK', 'DE', 'FI', 'NL', 'NO', 'SE'))) return false;
+            $supportedCurrencies = array('SEK', 'DKK', 'NOK', 'GBP', 'EUR', 'USD');
+            if (in_array(get_option('woocommerce_currency'), $supportedCurrencies) == false OR in_array(get_woocommerce_currency(), $supportedCurrencies) == false) {
+                return false;
+            }
 
 			// Required fields check
 

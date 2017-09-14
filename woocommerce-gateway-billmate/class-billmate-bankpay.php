@@ -259,7 +259,9 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 			// if (!is_ssl()) return false;
 
 			// Currency check
-			 if (!in_array(get_option('woocommerce_currency'), array('SEK'))) return false;
+            if (!in_array(get_option('woocommerce_currency'), array('SEK')) OR get_woocommerce_currency() != 'SEK') {
+                return false;
+            }
 
 			// Base country check
 			//if (!in_array(get_option('woocommerce_default_country'), array('DK', 'DE', 'FI', 'NL', 'NO', 'SE'))) return false;
