@@ -181,16 +181,6 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         if(!isset($result['code'])) {
             $class = '';
 
-            if($result['PaymentData']['method'] == 1){
-
-                $invoice_fee = new WC_Gateway_Billmate_Invoice;
-                $tax = new WC_Tax();
-                $rate = $tax->get_rates($invoice_fee->invoice_fee_tax_class);
-                $rate = array_pop($rate);
-                $rate = $rate['rate'];
-
-                WC()->cart->add_fee(__('Invoice fee','billmate'),$invoice_fee->invoice_fee,true,$invoice_fee->invoice_fee_tax_class);
-            }
             $orderId = $this->create_order();
             $order = wc_get_order( $orderId );
             // Clear invoice fee
@@ -369,16 +359,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         }
 
         if($hash != "" AND isset($result['code']) == false){
-            if($result['PaymentData']['method'] == 1){
 
-                $invoice_fee = new WC_Gateway_Billmate_Invoice;
-                $tax = new WC_Tax();
-                $rate = $tax->get_rates($invoice_fee->invoice_fee_tax_class);
-                $rate = array_pop($rate);
-                $rate = $rate['rate'];
-
-                WC()->cart->add_fee(__('Invoice fee','billmate'),$invoice_fee->invoice_fee,true,$invoice_fee->invoice_fee_tax_class);
-            }
             $orderId = $this->create_order();
             $order = wc_get_order( $orderId );
 
@@ -938,7 +919,14 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
         $billmateOrder = new BillmateOrder($order);
 
-        $orderValues = $result;
+        $orderValues = array(
+            'Articles' => $result['Articles'],
+            'Cart' => $result['Cart'],
+            'PaymentData' => array(
+                'number' => $result['PaymentData']['number']
+            )
+        );
+
         $total = 0;
         $totalTax = 0;
         $previousTotal = $result['Cart']['Total']['withtax'];
@@ -981,27 +969,29 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         $round = (round($order->get_total() * 100)) - round($total + $totalTax,0);
 
         // Always add available handling fee to checkout order
-        $invoice_fee = new WC_Gateway_Billmate_Invoice;
-        $tax = new WC_Tax();
-        $rate = $tax->get_rates($invoice_fee->invoice_fee_tax_class);
-        $rate = array_pop($rate);
-        $rate = round($rate['rate']);
-        $invoiceFee = $invoice_fee->invoice_fee * 100;
+        if(!isset($orderValues['Cart']['Handling'])) {
+            $invoice_fee = new WC_Gateway_Billmate_Invoice;
+            $tax = new WC_Tax();
+            $rate = $tax->get_rates($invoice_fee->invoice_fee_tax_class);
+            $rate = array_pop($rate);
+            $rate = round($rate['rate']);
+            $invoiceFee = $invoice_fee->invoice_fee * 100;
 
-        if($invoiceFee > 0) {
-            $orderValues['Cart']['Handling'] = array(
-                'withouttax' => $invoiceFee,
-                'taxrate' => $rate
-            );
-            $rateTimes = 1;
-            if($rate > 0) {
-                $rateTimes = 1 + ($rate / 100);
+            if($invoiceFee > 0) {
+                $orderValues['Cart']['Handling'] = array(
+                    'withouttax' => $invoiceFee,
+                    'taxrate' => $rate
+                );
+                $rateTimes = 1;
+                if($rate > 0) {
+                    $rateTimes = 1 + ($rate / 100);
+                }
+
+                $invoiceFeeTotal = $invoiceFee;
+                $invoiceFeeTax = ($invoiceFee * $rateTimes) - $invoiceFee;
+                $total += $invoiceFeeTotal;
+                $totalTax += $invoiceFeeTax;
             }
-
-            $invoiceFeeTotal = $invoiceFee;
-            $invoiceFeeTax = ($invoiceFee * $rateTimes) - $invoiceFee;
-            $total += $invoiceFeeTotal;
-            $totalTax += $invoiceFeeTax;
         }
 
         $orderValues['Cart']['Total'] = array(

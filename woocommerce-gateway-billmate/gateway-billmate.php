@@ -548,7 +548,11 @@ function init_billmate_gateway() {
                                     $feeTax = ($feeAmount * (1 + ($feeTaxrate/100))) - $feeAmount;
                                 }
 
-                                if($order->get_total() == ($billmateOrderTotal / 100) - $feeAmount - $feeTax) {
+                                $compare = ($billmateOrderTotal / 100) - $feeAmount - $feeTax;
+                                $floatCompare = round(floatval($compare), 2);
+                                $floatGettotal = round(floatval($order->get_total()), 2);
+
+                                if ($floatGettotal == $floatCompare) {
                                     // Assume handling fee is missing, add handling fee and mark order as paid
 
                                     // Handling fee tax rates
