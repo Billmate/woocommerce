@@ -953,6 +953,7 @@ parse_str($_POST['post_data'], $datatemp);
 		$billmate_pclass_file = BILLMATE_DIR . 'srv/billmatepclasses.json';
 		if(!defined('BILLMATE_LANGUAGE')) define('BILLMATE_LANGUAGE',strtolower($lang[0]));
 
+        $method = (isset($this->settings['method']) AND $this->settings['method'] == '2') ? '2' : '1';
 
         $k = new Billmate( $eid, $secret, true, $this->testmode == 'yes', false, $this->getRequestMeta() );
 		$goods_list = array();
@@ -960,7 +961,7 @@ parse_str($_POST['post_data'], $datatemp);
 		$prepareDiscount = array();
 		$orderid = ltrim($order->get_order_number(),'#');
 		$orderValues['PaymentData'] = array(
-			'method' => 1,
+			'method' => $method,
 			'currency' => get_woocommerce_currency(),
 			'language' => $lang[0],
 			'country' => $country,

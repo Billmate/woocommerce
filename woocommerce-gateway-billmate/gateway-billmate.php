@@ -135,6 +135,13 @@ function billmate_gateway_admin_error_message($message = "") {
     }
 }
 
+function billmate_gateway_admin_info_message($message = "") {
+    $class = 'notice notice-info';
+    if($message != "") {
+        printf( '<div class="%1$s"><p>%2$s</p></div>', esc_attr( $class ), '<img style="height:14px;margin-right:6px;" src="https://online.billmate.se/wp-content/uploads/2013/03/billmate_247x50.png">'.esc_html( $message ) );
+    }
+}
+
 add_action( 'update_option_woocommerce_billmate_checkout_settings', 'billmate_gateway_admin_checkout_settings_update');
 function billmate_gateway_admin_checkout_settings_update() {
 
@@ -205,8 +212,140 @@ function billmate_gateway_admin_checkout_settings_update() {
             }
         }
     }
-
 }
+
+// Update invoice
+add_action( 'update_option_woocommerce_billmate_invoice_settings', 'billmate_gateway_admin_invoice_settings_update');
+function billmate_gateway_admin_invoice_settings_update($old_value) {
+    $settings = get_option("woocommerce_billmate_invoice_settings", array());
+    if (    ((   is_array($old_value) AND
+                isset($old_value['enabled']) AND
+                $old_value['enabled'] == 'no' AND
+                isset($settings['enabled']) AND
+                $settings['enabled'] == 'yes'
+            ) OR (
+                is_array($old_value) AND
+                isset($old_value['testmode']) AND
+                $old_value['testmode'] == 'yes' AND
+                isset($settings['enabled']) AND
+                $settings['enabled'] == 'yes'
+            )) AND $settings['testmode'] == 'no'
+    ) {
+        // Enabled and NOT test mode
+        $methods = billmate_get_available_payment_methods();
+
+        // If method 1 is not available and method 2 is, use method 2
+        if (!isset($methods['1']) AND isset($methods['2'])) {
+            $settings['method'] = '2';
+            update_option('woocommerce_billmate_invoice_settings', $settings);
+        } elseif (!isset($methods['1'])) {
+            $settings['enabled'] = 'no';
+            update_option('woocommerce_billmate_invoice_settings', $settings);
+        }
+
+        if (!isset($methods['1']) AND isset($methods['2'])) {
+            billmate_gateway_admin_info_message("Invoice Factoring is unavailable. Invoice Service is available and activated. For information about Invoice Factoring and Invoice Service please contact support@billmate.se .");
+        } elseif (!isset($methods['1'])) {
+            billmate_gateway_admin_error_message("Payment option is not available for your Billmate account. Please contact support@billmate.se for more information.");
+        }
+
+    }
+}
+
+// Update part payment
+add_action( 'update_option_woocommerce_billmate_partpayment_settings', 'billmate_gateway_admin_partpayment_settings_update');
+function billmate_gateway_admin_partpayment_settings_update($old_value) {
+    $settings = get_option("woocommerce_billmate_partpayment_settings", array());
+    if (    ((   is_array($old_value) AND
+                isset($old_value['enabled']) AND
+                $old_value['enabled'] == 'no' AND
+                isset($settings['enabled']) AND
+                $settings['enabled'] == 'yes'
+            ) OR (
+                is_array($old_value) AND
+                isset($old_value['testmode']) AND
+                $old_value['testmode'] == 'yes' AND
+                isset($settings['enabled']) AND
+                $settings['enabled'] == 'yes'
+            )) AND $settings['testmode'] == 'no'
+    ) {
+        // Enabled and NOT test mode
+        $methods = billmate_get_available_payment_methods();
+        if (!isset($methods['4'])) {
+            $settings['enabled'] = 'no';
+            update_option('woocommerce_billmate_partpayment_settings', $settings);
+            billmate_gateway_admin_error_message("Payment option is not available for your Billmate account. Please contact support@billmate.se for more information.");
+        }
+    }
+}
+
+// Update card
+add_action( 'update_option_woocommerce_billmate_cardpay_settings', 'billmate_gateway_admin_cardpay_settings_update');
+function billmate_gateway_admin_cardpay_settings_update($old_value) {
+    $settings = get_option("woocommerce_billmate_cardpay_settings", array());
+    if (    ((   is_array($old_value) AND
+                isset($old_value['enabled']) AND
+                $old_value['enabled'] == 'no' AND
+                isset($settings['enabled']) AND
+                $settings['enabled'] == 'yes'
+            ) OR (
+                is_array($old_value) AND
+                isset($old_value['testmode']) AND
+                $old_value['testmode'] == 'yes' AND
+                isset($settings['enabled']) AND
+                $settings['enabled'] == 'yes'
+            )) AND $settings['testmode'] == 'no'
+    ) {
+        // Enabled and NOT test mode
+        $methods = billmate_get_available_payment_methods();
+        if (!isset($methods['8'])) {
+            billmate_gateway_admin_error_message("Payment option is not available for your Billmate account. Please contact support@billmate.se for more information.");
+            $settings['enabled'] = 'no';
+            update_option('woocommerce_billmate_cardpay_settings', $settings);
+        }
+    }
+}
+
+// Update bank
+add_action( 'update_option_woocommerce_billmate_bankpay_settings', 'billmate_gateway_admin_bankpay_settings_update');
+function billmate_gateway_admin_bankpay_settings_update($old_value) {
+    $settings = get_option("woocommerce_billmate_bankpay_settings", array());
+    if (    ((   is_array($old_value) AND
+                isset($old_value['enabled']) AND
+                $old_value['enabled'] == 'no' AND
+                isset($settings['enabled']) AND
+                $settings['enabled'] == 'yes'
+            ) OR (
+                is_array($old_value) AND
+                isset($old_value['testmode']) AND
+                $old_value['testmode'] == 'yes' AND
+                isset($settings['enabled']) AND
+                $settings['enabled'] == 'yes'
+            )) AND $settings['testmode'] == 'no'
+    ) {
+        // Enabled and NOT test mode
+        $methods = billmate_get_available_payment_methods();
+        if (!isset($methods['16'])) {
+            billmate_gateway_admin_error_message("Payment option is not available for your Billmate account. Please contact support@billmate.se for more information.");
+            $settings['enabled'] = 'no';
+            update_option('woocommerce_billmate_bankpay_settings', $settings);
+        }
+    }
+}
+
+function billmate_get_available_payment_methods() {
+    $billmate = new Billmate(get_option('billmate_common_eid'), get_option('billmate_common_secret'), false);
+    $accountInfo =  $billmate->getAccountinfo(array());
+    $methods = array();
+
+    if (isset($accountInfo['paymentoptions'])) {
+        foreach ($accountInfo['paymentoptions'] AS $method => $row) {
+            $methods[$row['method']] = $row['method'];
+        }
+    }
+    return $methods;
+}
+
 
 function init_billmate_gateway() {
 
