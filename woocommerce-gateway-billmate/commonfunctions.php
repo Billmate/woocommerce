@@ -1447,7 +1447,7 @@ if(!class_exists('BillmateOrder')){
                 $order_shipping_total = $this->order->get_shipping_total();
                 $order_shipping_tax = $this->order->get_shipping_tax();
 
-                if (is_object(WC()->cart) == true AND method_exists(WC()->cart, 'get_cart_item_tax_classes') == true) {
+                if ($order_shipping_tax > 0 AND is_object(WC()->cart) == true AND method_exists(WC()->cart, 'get_cart_item_tax_classes') == true) {
                     // Get shipping tax rate from cart
                     $rates = current(WC_Tax::get_shipping_tax_rates());
                     if (is_array($rates) AND isset($rates['rate'])) {
