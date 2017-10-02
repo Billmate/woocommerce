@@ -242,6 +242,10 @@ function billmate_gateway_admin_invoice_settings_update($old_value) {
             $settings['enabled'] = 'no';
             update_option('woocommerce_billmate_invoice_settings', $settings);
         }
+        if (isset($settings['method']) AND $settings['method'] == '2' AND isset($methods['1'])) {
+            $settings['method'] = '1';
+            update_option('woocommerce_billmate_invoice_settings', $settings);
+        }
 
         if (!isset($methods['1']) AND isset($methods['2'])) {
             billmate_gateway_admin_info_message("Invoice Factoring is unavailable. Invoice Service is available and activated. For information about Invoice Factoring and Invoice Service please contact support@billmate.se .");
