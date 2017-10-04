@@ -357,9 +357,14 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 
 	   	<?php if ($this->testmode=='yes') : ?><p><?php _e('TEST MODE ENABLED', 'billmate'); ?></p><?php endif; ?>
 		<?php if ($billmate_description) : ?><p><?php echo $billmate_description; ?></p><?php endif; ?>
-		<?php if(isset($_GET['pay_for_order']) && isset($_SESSION['address_verification']) && (isset($_POST['billmate_invo_pno']) && $_POST['billmate_invo_pno'] != "")): ?>
-			<?php echo $_SESSION['address_verification']; ?>
-		<?php endif; ?>
+
+        <?php
+        if(isset($_GET['pay_for_order']) && isset($_SESSION['address_verification']) && (isset($_POST['billmate_invo_pno']) && $_POST['billmate_invo_pno'] != "")) {
+            echo $_SESSION['address_verification'];
+            unset($_SESSION['address_verification']);
+        }
+        ?>
+
 		<?php if ($this->invoice_fee>0): ?>
 
 			<p>
@@ -567,8 +572,6 @@ parse_str($_POST['post_data'], $datatemp);
 
 	public function validate_fields()
 	{
-		if(!isset($_GET['pay_for_order']))
-			$this->getAddress();
 
 	}
 
@@ -743,6 +746,9 @@ parse_str($_POST['post_data'], $datatemp);
 
 	public function getAddressPayment(&$order)
 	{
+
+        $billmateOrder = new BillmateOrder($order);
+
 		// Collect the dob different depending on country
 		if ( $this->shop_country == 'NL' || $this->shop_country == 'DE' ) :
 			$billmate_pno_day 			= isset($_POST['billmate_invo_date_of_birth_day']) ? $this->woocommerce_clean($_POST['billmate_invo_date_of_birth_day']) : '';
@@ -758,7 +764,7 @@ parse_str($_POST['post_data'], $datatemp);
 		$billmate_gender 					= isset($_POST['billmate_invo_gender']) ? $this->woocommerce_clean($_POST['billmate_invo_gender']) : '';
 		$billmate_de_consent_terms		= isset($_POST['billmate_invo_de_consent_terms']) ? $this->woocommerce_clean($_POST['billmate_invo_de_consent_terms']) : '';
 		// Split address into House number and House extension for NL & DE customers
-		if ( $this->shop_country == 'NL' || $this->shop_country == 'DE' ) :
+		if ( $this->shop_country == 'NL' || $this->shop_country == 'DE' ) {
 			require_once('split-address.php');
 			$billmate_billing_address				= $order->billing_address_1;
 			$splitted_address 					= splitAddress($billmate_billing_address);
@@ -770,14 +776,25 @@ parse_str($_POST['post_data'], $datatemp);
 			$billmate_shipping_address			= $splitted_address[0];
 			$billmate_shipping_house_number		= $splitted_address[1];
 			$billmate_shipping_house_extension	= $splitted_address[2];
-		else :
-			$billmate_billing_address				= $order->billing_address_1;
-			$billmate_billing_house_number		= '';
-			$billmate_billing_house_extension		= '';
-			$billmate_shipping_address			= !empty($order->shipping_address_1) ? $order->shipping_address_1 : $billmate_billing_address;
-			$billmate_shipping_house_number		= '';
-			$billmate_shipping_house_extension	= '';
-		endif;
+        } else {
+
+            if ($billmateOrder->is_wc3()) {
+                $billmate_billing_address           = $order->get_billing_address_1();
+                $billmate_billing_house_number      = '';
+                $billmate_billing_house_extension   = '';
+                $billmate_shipping_address          = $order->get_shipping_address_1();
+                $billmate_shipping_address          = ($billmate_shipping_address != '') ? $billmate_shipping_address : $billmate_billing_address;
+                $billmate_shipping_house_number     = '';
+                $billmate_shipping_house_extension  = '';
+            } else {
+                $billmate_billing_address           = $order->billing_address_1;
+                $billmate_billing_house_number      = '';
+                $billmate_billing_house_extension   = '';
+                $billmate_shipping_address          = !empty($order->shipping_address_1) ? $order->shipping_address_1 : $billmate_billing_address;
+                $billmate_shipping_house_number     = '';
+                $billmate_shipping_house_extension  = '';
+            }
+        }
 		$language = explode('_',get_locale());
 		if(!defined('BILLMATE_LANGUAGE')) define('BILLMATE_LANGUAGE',strtolower($language[0]));
 
@@ -801,40 +818,75 @@ parse_str($_POST['post_data'], $datatemp);
 		foreach($addr as $key => $value){
 			$addr[$key] = utf8_encode(utf8_decode($value));
 		}
-		$fullname = $order->billing_first_name.' '.$order->billing_last_name;
-		$firstArr = explode(' ', $order->billing_last_name);
-		$lastArr  = explode(' ', $order->billing_first_name);
 
-		$usership = $order->billing_first_name.' '.$order->billing_last_name.' '.$order->billing_company;
-		$userbill = (isset($order->shipping_first_name) && isset($order->shipping_last_name) && isset($order->shipping_company)) ? $order->shipping_first_name.' '.$order->shipping_last_name.' '.$order->shipping_company : $usership;
+        if ($billmateOrder->is_wc3()) {
+            $billing_first_name     = $order->get_billing_first_name();
+            $billing_last_name      = $order->get_billing_last_name();
+            $billing_company        = $order->get_billing_company();
+            $billing_address_1      = $order->get_billing_address_1();
+            $billing_postcode       = $order->get_billing_postcode();
+            $billing_city           = $order->get_billing_city();
+            $billing_country        = $order->get_billing_country();
+
+            $shipping_first_name    = $order->get_shipping_first_name();
+            $shipping_last_name     = $order->get_shipping_last_name();
+            $shipping_company       = $order->get_shipping_company();
+            $shipping_address_1     = $order->get_shipping_address_1();
+            $shipping_postcode      = $order->get_shipping_postcode();
+            $shipping_city          = $order->get_shipping_city();
+            $shipping_country       = $order->get_shipping_country();
+
+            $usership = $billing_first_name.' '.$billing_last_name.' '.$billing_company;
+            $userbill = $shipping_first_name.' '.$shipping_last_name.' '.$shipping_company;
+            $userbill = (trim($userbill) != '') ? $userbill : $usership;
+        } else {
+            $billing_first_name     = $order->billing_first_name;
+            $billing_last_name      = $order->billing_last_name;
+            $billing_company        = $order->billing_company;
+            $billing_address_1      = $order->billing_address_1;
+            $billing_postcode       = $order->billing_postcode;
+            $billing_city           = $order->billing_city;
+            $billing_country        = $order->billing_country;
+
+            $shipping_first_name    = $order->shipping_first_name;
+            $shipping_last_name     = $order->shipping_last_name;
+            $shipping_company       = $order->shipping_company;
+            $shipping_address_1     = $order->shipping_address_1;
+            $shipping_postcode      = $order->shipping_postcode;
+            $shipping_city          = $order->shipping_city;
+            $shipping_country       = $order->shipping_country;
+
+            $usership = $order->billing_first_name.' '.$order->billing_last_name.' '.$order->billing_company;
+            $userbill = (isset($order->shipping_first_name) && isset($order->shipping_last_name) && isset($order->shipping_company)) ? $order->shipping_first_name.' '.$order->shipping_last_name.' '.$order->shipping_company : $usership;
+        }
 
 		if( strlen( $addr['firstname'] )) {
 			$name = $addr['firstname'];
 			$lastname = $addr['lastname'];
 			$company = '';
 			$apiName =  $addr['firstname'].' '.$addr['lastname'];
-            $usership = $order->billing_first_name.' '.$order->billing_last_name;
+            $usership = $billing_first_name.' '.$billing_last_name;
 			$displayname = $addr['firstname'].' '.$addr['lastname'];
 		} else {
 			$name = $_POST['billing_first_name'];
 			$lastname = $_POST['billing_last_name'];
 			$company  =  $addr['company'];
-            $usership = $order->billing_first_name.' '.$order->billing_last_name.' '.$order->billing_company;
+            $usership = $billing_first_name.' '.$billing_last_name.' '.$billing_company;
 			$apiName =  $name.' '.$lastname.' '.$addr['company'];
-			$displayname = $order->billing_first_name.' '.$order->billing_last_name.'<br/>'.$addr['company'];
+            $displayname = $billing_first_name.' '.$billing_last_name.'<br/>'.$addr['company'];
 		}
 
-		$addressNotMatched  = !isEqual( $usership,  $apiName) ||
-			!isEqual($addr['street'], $billmate_billing_address ) ||
-			!isEqual($addr['zip'], $order->billing_postcode) ||
-			!isEqual($addr['city'], $order->billing_city) ||
-			!isEqual(strtoupper($addr['country']), strtoupper($order->billing_country));
-		if(isset($order->shipping_address_1) && isset($order->shipping_postcode) && isset($order->shipping_city) && isset($order->shipping_country)) {
-			$shippingAndBilling = !isEqual($usership, $userbill) ||
-				!isEqual($order->billing_address_1, $order->shipping_address_1) ||
-				!isEqual($order->billing_postcode, $order->shipping_postcode) ||
-				!isEqual($order->billing_city, $order->shipping_city) ||
-				!isEqual($order->billing_country, $order->shipping_country);
+        $addressNotMatched  = !isEqual( $usership,  $apiName) ||
+            !isEqual($addr['street'], $billmate_billing_address ) ||
+            !isEqual($addr['zip'], $billing_postcode) ||
+            !isEqual($addr['city'], $billing_city) ||
+            !isEqual(strtoupper($addr['country']), strtoupper($billing_country));
+        if(isset($shipping_address_1) && isset($shipping_postcode) && isset($shipping_city) && isset($shipping_country)) {
+            $shippingAndBilling = !isEqual($usership, $userbill) ||
+                !isEqual($billing_address_1, $shipping_address_1) ||
+                !isEqual($billing_postcode, $shipping_postcode) ||
+                !isEqual($billing_city, $shipping_city) ||
+                !isEqual($billing_country, $shipping_country);
 
 		} else {
 			$shippingAndBilling = false;
@@ -863,29 +915,52 @@ parse_str($_POST['post_data'], $datatemp);
 					return false;
 				}
 			} else {
-				$order->billing_first_name = $order->shipping_first_name = $name;
-				$order->billing_last_name = $order->shipping_last_name = $lastname;
-				$order->billing_company = $order->shipping_company = $company;
-				$order->billing_address_1 =  $order->shipping_address_1 = $addr['street'];
-				$order->billing_postcode =  $order->shipping_postcode = $addr['zip'];
-				$order->billing_city =  $order->shipping_city = $addr['city'];
-				$order->billing_country =  $order->shipping_country = $addr['country'];
-				$address = array(
-					'first_name' => $name,
-					'last_name'  => $lastname,
-					'company'    => $company,
-					'email'      => $order->billing_email,
-					'phone'      => $order->billing_phone,
-					'address_1'  => $addr['street'],
-					'address_2'  => '',
-					'city'       => $addr['city'],
-					'state'      => '',
-					'postcode'   => $addr['zip'],
-					'country'    => $addr['country']
-				);
-				$order->set_address($address,'billing');
-				$order->set_address($address,'shipping');
-				return true;
+                if ($billmateOrder->is_wc3()) {
+
+                    $order->set_billing_first_name($name);
+                    $order->set_billing_last_name($lastname);
+                    $order->set_billing_company($company);
+                    $order->set_billing_address_1($addr['street']);
+                    $order->set_billing_postcode($addr['zip']);
+                    $order->set_billing_city($addr['city']);
+                    $order->set_billing_country($addr['country']);
+
+                    $order->set_shipping_first_name($name);
+                    $order->set_shipping_last_name($lastname);
+                    $order->set_shipping_company($company);
+                    $order->set_shipping_address_1($addr['street']);
+                    $order->set_shipping_postcode($addr['zip']);
+                    $order->set_shipping_city($addr['city']);
+                    $order->set_shipping_country($addr['country']);
+
+                    $order->save();
+
+                } else {
+
+                    $order->billing_first_name = $order->shipping_first_name = $name;
+                    $order->billing_last_name = $order->shipping_last_name = $lastname;
+                    $order->billing_company = $order->shipping_company = $company;
+                    $order->billing_address_1 =  $order->shipping_address_1 = $addr['street'];
+                    $order->billing_postcode =  $order->shipping_postcode = $addr['zip'];
+                    $order->billing_city =  $order->shipping_city = $addr['city'];
+                    $order->billing_country =  $order->shipping_country = $addr['country'];
+                    $address = array(
+                        'first_name' => $name,
+                        'last_name'  => $lastname,
+                        'company'    => $company,
+                        'email'      => $order->billing_email,
+                        'phone'      => $order->billing_phone,
+                        'address_1'  => $addr['street'],
+                        'address_2'  => '',
+                        'city'       => $addr['city'],
+                        'state'      => '',
+                        'postcode'   => $addr['zip'],
+                        'country'    => $addr['country']
+                    );
+                    $order->set_address($address,'billing');
+                    $order->set_address($address,'shipping');
+                }
+                return true;
 			}
 		}
 	}
@@ -1087,14 +1162,6 @@ parse_str($_POST['post_data'], $datatemp);
 			'withtax' => round($total + $totalTax + $round)
 		);
 
-		if(!isset($_GET['pay_for_order']))
-			$this->getAddress();
-		else {
-			if (!$this->getAddressPayment($order)){
-				return array('result' => 'error');
-			}
-		}
-
         $orderValues['Customer'] = array();
         $orderValues['Customer']['pno'] = $billmateOrder->getCustomerPnoData();
         $orderValues['Customer']['nr'] = $billmateOrder->getCustomerNrData();
@@ -1108,14 +1175,23 @@ parse_str($_POST['post_data'], $datatemp);
 			}
 			if(isset($result['code'])){
 				switch($result['code']){
-					/*case '1001':
-						$order->add_order_note( __('Billmate payment denied.', 'billmate') );
-						wc_bm_errors( __('Billmate payment denied.', 'billmate') );
-						return;
-						break;*/
 
-					//case '1001':
-					//case '2207':
+                    case '2401':
+                    case '2402':
+                    case '2403':
+                    case '2404':
+                    case '2405':
+                        // Address not matching
+                        if(!isset($_GET['pay_for_order'])) {
+                            $this->getAddress();
+                            die();
+                        } else {
+                            if(!$this->getAddressPayment($order)){
+                                return array('result' => 'error');
+                            }
+                        }
+                    break;
+
 					case '9015':
 					case '9016':
 						wc_bm_errors( '<i data-error-code="'.$result['code'].'"></i>'.__($result['message'], 'billmate') );
@@ -1135,104 +1211,88 @@ parse_str($_POST['post_data'], $datatemp);
 			}
 
 			// Retreive response
-			$invno = $result['number'];
-			switch($result['status']) {
-				case 'OK':
-				case 'Created':
-					$order->add_order_note( __('Billmate payment completed. Billmate Invoice number:', 'billmate') . $invno );
-					add_post_meta($order_id,'billmate_invoice_id',$invno);
+            $invno = (isset($result['number'])) ? $result['number'] : '';
 
-					// Payment complete
-					if($this->order_status == 'default')
-					{
-						$order->payment_complete();
-					} else {
-						$order->update_status($this->order_status);
-					}
+            if (!isset($result['code']) AND isset($result['status'])) {
+                switch($result['status']) {
+                    case 'OK':
+                    case 'Created':
+                        $order->add_order_note( __('Billmate payment completed. Billmate Invoice number:', 'billmate') . $invno );
+                        add_post_meta($order_id,'billmate_invoice_id',$invno);
 
-					// Remove cart
-					$woocommerce->cart->empty_cart();
+                        // Payment complete
+                        if ($this->order_status == 'default') {
+                            $order->payment_complete();
+                        } else {
+                            $order->update_status($this->order_status);
+                        }
 
-					if(version_compare(WC_VERSION, '2.0.0', '<')){
-						$redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))));
-					} else {
-						$redirect = $this->get_return_url($order);
-					}
+                        // Remove cart
+                        $woocommerce->cart->empty_cart();
+                        if (version_compare(WC_VERSION, '2.0.0', '<')) {
+                            $redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))));
+                        } else {
+                            $redirect = $this->get_return_url($order);
+                        }
 
-					// Return thank you redirect
-					return array(
-						'result' 	=> 'success',
-						'redirect'	=> $redirect
-					);
+                        // Return thank you redirect
+                        return array(
+                            'result'    => 'success',
+                            'redirect'  => $redirect
+                        );
 
-					break;
-				case 'Pending':
-					$order->add_order_note( __('Order is PENDING APPROVAL by Billmate. Please visit Billmate Online for the latest status on this order. Billmate Invoice number: ', 'billmate') . $invno );
-					add_post_meta($order_id,'billmate_invoice_id',$invno);
-					// Payment complete
-					if($this->order_status == 'default')
-					{
-						$order->payment_complete();
-					} else {
-						$order->update_status($this->order_status);
-					}
+                        break;
+                    case 'Pending':
+                        $order->add_order_note( __('Order is PENDING APPROVAL by Billmate. Please visit Billmate Online for the latest status on this order. Billmate Invoice number: ', 'billmate') . $invno );
+                        add_post_meta($order_id,'billmate_invoice_id',$invno);
+                        // Payment complete
+                        if ($this->order_status == 'default') {
+                            $order->payment_complete();
+                        } else {
+                            $order->update_status($this->order_status);
+                        }
 
-					// Remove cart
-					$woocommerce->cart->empty_cart();
-					if(version_compare(WC_VERSION, '2.0.0', '<')){
-						$redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))));
-					} else {
-						$redirect = $this->get_return_url($order);
-					}
+                        // Remove cart
+                        $woocommerce->cart->empty_cart();
+                        if (version_compare(WC_VERSION, '2.0.0', '<')) {
+                            $redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))));
+                        } else {
+                            $redirect = $this->get_return_url($order);
+                        }
 
+                        // Return thank you redirect
+                        return array(
+                            'result'    => 'success',
+                            'redirect'  => $redirect
+                        );
+                        break;
+                    default:
+                        // Unknown response
+                        $order->add_order_note( __('Unknown response from Billmate.', 'billmate') );
+                        wc_bm_errors( __('Unknown response from Billmate.', 'billmate') );
+                        return;
+                        break;
+                }
+            }
 
-					// Return thank you redirect
-					return array(
-						'result' 	=> 'success',
-						'redirect'	=> $redirect
-					);
+        } catch(Exception $e) {
+            //The purchase was denied or something went wrong, print the message:
+            if(!isset($_GET['pay_for_order'])) {
+                if(version_compare(WC_VERSION,'2.4.0','<')) {
+                    echo '<ul class="woocommerce-error"><li>'.sprintf(__('%s (Error code: %s)', 'billmate'), utf8_encode($e->getMessage()), $e->getCode() ).'<script type="text/javascript">jQuery("#billmategeturl").remove();</script></li></ul>';
 
-					break;
-				/*case BillmateFlags::DENIED:
-                    //Order is denied, store it in a database.
-                    $order->add_order_note( __('Billmate payment denied.', 'billmate') );
-                    wc_bm_errors( __('Billmate payment denied.', 'billmate') );
-                    return;
-                    break;*/
-				default:
-					//Unknown response, store it in a database.
-					$order->add_order_note( __('Unknown response from Billmate.', 'billmate') );
-					wc_bm_errors( __('Unknown response from Billmate.', 'billmate') );
-					return;
-					break;
-			}
+                    die();
+                } else {
+                    $code['messages'] =  '<ul class="woocommerce-error"><li>'.sprintf(__('%s (Error code: %s)', 'billmate'), utf8_encode($e->getMessage()), $e->getCode() ).'<script type="text/javascript">jQuery("#billmategeturl").remove();</script></li></ul>';
 
-
-		}
-
-		catch(Exception $e) {
-    		//The purchase was denied or something went wrong, print the message:
-			switch($e->getCode()){
-				case '9015':
-				case '9016':
-				if(version_compare(WC_VERSION,'2.4.0','<')) {
-					echo '<ul class="woocommerce-error"><li>'.sprintf(__('%s (Error code: %s)', 'billmate'), utf8_encode($e->getMessage()), $e->getCode() ).'<script type="text/javascript">jQuery("#billmategeturl").remove();</script></li></ul>';
-
-					die;
-				} else {
-					$code['messages'] =  '<ul class="woocommerce-error"><li>'.sprintf(__('%s (Error code: %s)', 'billmate'), utf8_encode($e->getMessage()), $e->getCode() ).'<script type="text/javascript">jQuery("#billmategeturl").remove();</script></li></ul>';
-
-					echo json_encode($code);
-					die;
-				}
-				default:
-					throw new Exception(utf8_encode($e->getMessage()),$e->getCode());
-					break;
-			}
-
-		}
-
-	}
+                    echo json_encode($code);
+                    die();
+                }
+            } else {
+                echo '<ul class="woocommerce-error"><li>'.sprintf(__('%s (Error code: %s)', 'billmate'), utf8_encode($e->getMessage()), $e->getCode() ).'<script type="text/javascript">jQuery("#billmategeturl").remove(); </script></li></ul>';
+            }
+        }
+    }
 
 	/**
 	 * receipt_page

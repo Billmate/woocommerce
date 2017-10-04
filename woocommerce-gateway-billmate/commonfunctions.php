@@ -1486,7 +1486,7 @@ if(!class_exists('BillmateOrder')){
 
         }
 
-        private function is_wc3() {
+        public function is_wc3() {
             return version_compare(WC_VERSION, '3.0.0', '>=');
         }
 
