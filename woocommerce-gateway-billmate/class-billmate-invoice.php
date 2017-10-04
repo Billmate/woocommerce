@@ -1133,21 +1133,30 @@ parse_str($_POST['post_data'], $datatemp);
 				update_post_meta( $order->id, '_order_tax', $new_order_tax );
 
 			} else {
-				$tax = new WC_Tax();
 
-				$invoicetax = $tax->get_rates($this->invoice_fee_tax_class);
-				$rate = array_pop($invoicetax);
-
-
-				$rate = $rate['rate'];
-				$orderValues['Cart']['Handling'] = array(
-					'withouttax'    => round($this->invoice_fee*100),
-					'taxrate'      => (int)$rate,
-				);
-
-				$total += $this->invoice_fee * 100;
-				$totalTax += (($rate/100) * $this->invoice_fee)*100;
-				$woocommerce->cart->add_fee(__('Invoice fee','billmate'),$this->invoice_fee,true,$this->invoice_fee_tax_class);
+                if (isset($_GET['pay_for_order'])) {
+                    // Cart unavailable
+                    $handling = $this->maybe_add_handling_to_order($order);
+                    $orderValues['Cart']['Handling'] = array(
+                        'withouttax'    => $handling['price'],
+                        'taxrate'       => $handling['taxrate'],
+                    );
+                    $total      += $handling['price'];
+                    $totalTax   += $handling['tax'];
+                } else {
+                    // Cart available
+                    $tax = new WC_Tax();
+                    $invoicetax = $tax->get_rates($this->invoice_fee_tax_class);
+                    $rate = array_pop($invoicetax);
+                    $rate = $rate['rate'];
+                    $orderValues['Cart']['Handling'] = array(
+                        'withouttax'    => round($this->invoice_fee*100),
+                        'taxrate'      => (int)$rate,
+                    );
+                    $total += $this->invoice_fee * 100;
+                    $totalTax += (($rate/100) * $this->invoice_fee)*100;
+                    $woocommerce->cart->add_fee(__('Invoice fee','billmate'),$this->invoice_fee,true,$this->invoice_fee_tax_class);
+                }
 
 			} // End version check
 
@@ -1292,6 +1301,159 @@ parse_str($_POST['post_data'], $datatemp);
                 echo '<ul class="woocommerce-error"><li>'.sprintf(__('%s (Error code: %s)', 'billmate'), utf8_encode($e->getMessage()), $e->getCode() ).'<script type="text/javascript">jQuery("#billmategeturl").remove(); </script></li></ul>';
             }
         }
+    }
+
+
+    /*
+     * Return array with handling fee to use in API request
+     * Add available handling fee to order if order do not have handling
+     */
+    private function maybe_add_handling_to_order( &$order ) {
+        global $woocommerce;
+
+        $handling = array(
+            'price' => 0,
+            'tax' => 0,
+            'taxrate' => 0,
+            'total' => 0
+        );
+
+        if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+            $orderId = $order->get_id();
+        } else {
+            $orderId = $order->id;
+        }
+
+        // Get the invoice fee product if invoice fee is used
+        if ( $this->invoice_fee > 0 ) {
+
+            if ( version_compare( WOOCOMMERCE_VERSION, '2.0', '<' ) ) {
+                $tax = new WC_Tax();
+                $rate = array_pop($tax->get_rates($this->invoice_fee_tax_class));
+                $rate = $rate['rate'];
+
+                $handling['price'] = round($this->invoice_fee*100);
+                $handling['tax'] = (($rate/100) * $this->invoice_fee)*100;
+                $handling['taxrate'] = round($rate);
+                $handling['total'] = $handling['price'] + $handling['tax'];
+
+                $originalarray = unserialize($order->order_custom_fields['_order_items'][0]);
+
+                $addfee[] = array (
+                    'id' => $this->invoice_fee_id,
+                    'variation_id' => '',
+                    'name' => __('Invoice fee','billmate'),
+                    'qty' => '1',
+                    'item_meta' =>
+                        array (
+                        ),
+                    'line_subtotal' => $this->invoice_fee,
+                    'line_subtotal_tax' => ($this->invoice_fee * ($rate/100)),
+                    'line_total' => $this->invoice_fee,
+                    'line_tax' => ($this->invoice_fee * ($rate/100)),
+                    'tax_class' => $product->get_tax_class(),
+                );
+
+                // Merge the invoice fee product to order items
+                $newarray = array_merge($originalarray, $addfee);
+
+                // Update order items with the added invoice fee product
+                update_post_meta( $order->id, '_order_items', $newarray );
+
+                // Update _order_total
+                $old_order_total = $order->order_custom_fields['_order_total'][0];
+                $new_order_total = $old_order_total+$this->invoice_fee;
+                update_post_meta( $order->id, '_order_total', $new_order_total );
+
+                // Update _order_tax
+                $invoice_fee_tax = $product->get_price()-$product->get_price_excluding_tax();
+                $old_order_tax = $order->order_custom_fields['_order_tax'][0];
+                $new_order_tax = $old_order_tax+($this->invoice_fee*($rate/100));
+                update_post_meta( $order->id, '_order_tax', $new_order_tax );
+
+            } else {
+
+                $fees = $order->get_fees();
+                $hasFee = false;
+                foreach ($fees AS $fee) {
+                    $_feeName = '';
+                    if (version_compare(WC_VERSION, '3.0.0', '>=')) {
+                        $_feeName =  $fee['name'];
+                    } else {
+                        $_feeName = $fee->get_name();
+                    }
+
+                    if ($_feeName == __('Invoice fee','billmate')) {
+                        $hasFee = true;
+                    }
+                }
+
+                $feeTaxclass = $this->invoice_fee_tax_class;
+                $feeAmount = $this->invoice_fee;
+
+                // Handling fee tax rates
+                $tax = new WC_Tax();
+                $rates = $tax->get_rates($feeTaxclass);
+                $rate = $rates;
+                $rate = array_pop($rate);
+                $rate = $rate['rate'];
+
+                $feeTax = 0;
+                if ($rate > 0) {
+                    $feeTax = ($feeAmount * (1 + ($rate/100))) - $feeAmount;
+                }
+
+                $feeTaxdata = array();
+                foreach($rates AS $i => $_rate) {
+                    $feeTaxdata[$i] = wc_format_decimal(0);
+                    if ($_rate['rate'] > 0) {
+                        $feeTaxdata[$i] = wc_format_decimal(($feeAmount * (1 + ($_rate['rate']/100))) - $feeAmount);
+                    }
+                }
+
+                $fee            = new stdClass();
+                $fee->name      = __('Invoice fee','billmate');
+                $fee->tax_class = $feeTaxclass;
+                $fee->taxable   = ($feeTax > 0) ? true : false;
+                $fee->amount    = wc_format_decimal($feeAmount);
+                $fee->tax       = wc_format_decimal($feeTax);
+                $fee->tax_data  = $feeTaxdata;
+
+                $handling['price']      = round($fee->amount * 100);
+                $handling['tax']        = round($feeTax * 100);
+                $handling['taxrate']    = round($rate);
+                $handling['total']      = $handling['price'] + $handling['tax'];
+
+                if (version_compare(WC_VERSION, '3.0.0', '>=')) {
+                    if ($hasFee == false) {
+                        $item = new WC_Order_Item_Fee();
+                        $item->set_props( array(
+                            'name'      => $fee->name,
+                            'tax_class' => $fee->tax_class,
+                            'total'     => $fee->amount,
+                            'total_tax' => $fee->tax,
+                            'taxes'     => array(
+                                'total' => $fee->tax_data,
+                            ),
+                            'order_id'  => $orderId,
+                        ));
+
+                        $item->save();
+                        $order->add_item( $item );
+                        $item_id = $item->get_id();
+                        $order->calculate_totals();
+                    }
+
+                } else {
+                    if ($hasFee == false) {
+                        $item_id = $order->add_fee( $fee );
+                        $order->calculate_totals();
+                    }
+                }
+            } // End version check
+        } // End invoice_fee_price > 0
+
+        return $handling;
     }
 
 	/**
