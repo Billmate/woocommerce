@@ -27,6 +27,7 @@ class BillmateCommon {
 	{
 		if(get_option('billmate_common_activateonstatus') == 'active') {
 
+            $orderNote = "";
 
 			$paymentMethod = get_post_meta($order_id,'_payment_method');
 			$method = false;
@@ -43,24 +44,49 @@ class BillmateCommon {
 				case 'billmate_cardpay':
 					$method = new WC_Gateway_Billmate_Cardpay();
 					break;
+                case 'billmate_checkout':
+                    $method = new WC_Gateway_Billmate_Checkout();
+                    break;
 			}
+
 			if($method !== false) {
-				$billmate = new BillMate(get_option('billmate_common_eid'), get_option('billmate_common_secret'), true,
-					$method->testmode == 'yes', false);
+
+				$billmate = new BillMate(get_option('billmate_common_eid'), get_option('billmate_common_secret'), true, $method->testmode == 'yes', false);
 				$order = new WC_Order($order_id);
+
 				if ($billmateInvoiceId = get_post_meta($order_id, 'billmate_invoice_id', true)) {
-					$paymentInfo = $billmate->getPaymentinfo(array('number' => $billmateInvoiceId));
-					if ($paymentInfo['PaymentData']['status'] == 'Created') {
+
+                    $paymentInfo = $billmate->getPaymentinfo(array('number' => $billmateInvoiceId));
+                    if (    is_array($paymentInfo) AND
+                            isset($paymentInfo['PaymentData']) AND
+                            is_array($paymentInfo['PaymentData']) AND
+                            isset($paymentInfo['PaymentData']['status']) AND
+                            $paymentInfo['PaymentData']['status'] == 'Created'
+                    ) {
 						$result = $billmate->activatePayment(array('PaymentData' => array('number' => $billmateInvoiceId)));
+                        $result['message'] = utf8_encode($result['message']);
 						if (isset($result['code'])) {
-							$order->add_order_note(printf(__('The order payment couldnt be activated, error code: %s error message: %s',
-								'billmate'), $result['code'], $result['message']));
+                            $orderNote = sprintf(__('The order payment couldnt be activated, error code: %s error message: %s', 'billmate'), $result['code'], $result['message']);
 						} else {
-							$order->add_order_note(__('The order payment activated successfully', 'billmate'));
+                            $orderNote = __('The order payment activated successfully', 'billmate');
 						}
-					}
-				}
-			}
+					} elseif (isset($paymentInfo['code'])) {
+                        $paymentInfo['message'] = utf8_encode($paymentInfo['message']);
+                        $orderNote = sprintf(__('The order payment couldnt be activated, error code: %s error message: %s', 'billmate'), $paymentInfo['code'], $paymentInfo['message']);
+                    }
+
+				} else {
+                    // billmate_invoice_id is missing
+                    $orderNote = 'The order payment could not be activated, please activate order in online.billmate.se';
+                }
+			} else {
+                // Method is false
+                $orderNote = 'The order payment could not be activated, please activate order in online.billmate.se';
+            }
+
+            if ($orderNote != '') {
+                $order->add_order_note($orderNote);
+            }
 		}
 	}
 	public function clear_pno($result,$order_id = null)

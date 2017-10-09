@@ -4,7 +4,7 @@ Donate link:
 Tags: woocomerce, billmate, payments, cardpayments, invoice, partpayment, recurring, bankpayment
 Requires at least: 4.0
 Tested up to: 4.8.1
-Stable tag: 3.0.6
+Stable tag: 3.0.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -87,6 +87,16 @@ If you would like to use our logo on your site then choose following:
 
 
 == Changelog ==
+
+= 3.0.7 (2017-10-06) =
+* Fix - Add missing handling fee on order paid with checkout and rely on callback
+* Enhancement - Use method 2 if 1 is unavailable
+* Fix - handle shipping with no tax
+* Enhancement - Prevent cache of checkout page
+* Enhancement - Improve error messages on order note if order activation not success
+* Enhancement - Change order of getAddress to be done after try first with addPayment
+* Fix - Add handling fee to store order when pay_for_order isset
+* Fix - Display partpayment info on product page once
 
 = 3.0.6 (2017-09-14) =
 * Improve - Improve the selected currency check when display payment methods

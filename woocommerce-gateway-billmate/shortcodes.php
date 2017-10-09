@@ -49,6 +49,10 @@ function return_billmate_price() {
 }
 function get_billmate_checkout(){
 
+    if (!defined('DONOTCACHEPAGE')) {
+        define('DONOTCACHEPAGE', 1);
+    }
+
 	$checkout = new WC_Gateway_Billmate_Checkout();
 	
     if(isset(WC()->cart) AND is_object(WC()->cart) AND method_exists(WC()->cart, "is_empty") AND !WC()->cart->is_empty()) {
