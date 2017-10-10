@@ -64,7 +64,7 @@ class BillmateCommon {
                             $paymentInfo['PaymentData']['status'] == 'Created'
                     ) {
 						$result = $billmate->activatePayment(array('PaymentData' => array('number' => $billmateInvoiceId)));
-                        $result['message'] = utf8_encode($result['message']);
+                        $result['message'] = isset($result['message']) ? utf8_encode($result['message']) : '';
 						if (isset($result['code'])) {
                             $orderNote = sprintf(__('The order payment couldnt be activated, error code: %s error message: %s', 'billmate'), $result['code'], $result['message']);
 						} else {
@@ -79,14 +79,11 @@ class BillmateCommon {
                     // billmate_invoice_id is missing
                     $orderNote = 'The order payment could not be activated, please activate order in online.billmate.se';
                 }
-			} else {
-                // Method is false
-                $orderNote = 'The order payment could not be activated, please activate order in online.billmate.se';
-            }
 
-            if ($orderNote != '') {
-                $order->add_order_note($orderNote);
-            }
+                if ($orderNote != '') {
+                    $order->add_order_note($orderNote);
+                }
+			}
 		}
 	}
 	public function clear_pno($result,$order_id = null)
