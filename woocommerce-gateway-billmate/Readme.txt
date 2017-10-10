@@ -4,7 +4,7 @@ Donate link:
 Tags: woocomerce, billmate, payments, cardpayments, invoice, partpayment, recurring, bankpayment
 Requires at least: 4.0
 Tested up to: 4.8.1
-Stable tag: 3.0.7
+Stable tag: 3.0.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -87,6 +87,9 @@ If you would like to use our logo on your site then choose following:
 
 
 == Changelog ==
+
+= 3.0.8 (2017-10-10) =
+* Fix - Fix order completed when not paid with Billmate
 
 = 3.0.7 (2017-10-06) =
 * Fix - Add missing handling fee on order paid with checkout and rely on callback
