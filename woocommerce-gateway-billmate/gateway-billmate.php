@@ -527,9 +527,108 @@ function init_billmate_gateway() {
             if ( $method_id == 'billmate_cardpay' AND $recurring == true ) {
                 update_post_meta($order_id, '_billmate_card_token', $data['number']);
                 update_post_meta($order_id, 'billmate_card_token', $data['number']);
-                if($order->get_total() == 0) {
+
+
+                /**
+                 * Save card token on available subscription parent
+                 */
+                $subscription_parent_id = '';
+                if (function_exists('wcs_get_subscriptions_for_order')) {
+                    $orderParentId = $order->get_parent_id();
+                    $parentOrder = new WC_Order( $orderParentId );
+                    $subscriptions = wcs_get_subscriptions_for_order($parentOrder);
+                    if (is_array($subscriptions) AND count($subscriptions) > 0) {
+                        $subscription = end($subscriptions);
+                        if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+                            $parent_order = $subscription->get_parent();
+                            $subscription_parent_id = $parent_order->get_id();
+                        } else {
+                            $subscription_parent_id = $subscription->order->id;
+                        }
+                    }
+                }
+
+                if (function_exists('wcs_get_subscriptions_for_renewal_order')) {
+                    $subscriptions = wcs_get_subscriptions_for_renewal_order( $order );
+                    if (is_array($subscriptions) AND count($subscriptions) > 0) {
+                        $subscription = end($subscriptions);
+
+                        if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+                            $parent_order = $subscription->get_parent();
+                            $subscription_parent_id = $parent_order->get_id();
+                        } else {
+                            $subscription_parent_id = $subscription->order->id;
+                        }
+                    }
+                }
+
+                if ('' != $subscription_parent_id) {
+                    update_post_meta($subscription_parent_id, '_billmate_card_token', $data['number']);
+                    update_post_meta($subscription_parent_id, 'billmate_card_token', $data['number']);
+                }
+
+
+                /**
+                 * When true, the order is a subscription initiation order and should be credited
+                 * @var bool
+                 */
+                $isCreditSubscriptionInitOrder = false;
+
+                if ($order->get_total() == 0) {
+                    $isCreditSubscriptionInitOrder = true;
+                } else {
+
+                    /**
+                     * When changing card values for active subscription an initiation order is created
+                     * But the $order contain a live sunscription order and total value is over 0
+                     * To know that this order should be credited as well, get paymentinfo and check if the order
+                     * - Have only 1 article
+                     * - Article price is 100 and 0 vat
+                     * - Article name match __('Transaction to be credited', 'billmate')
+                     * - Amount to pay is 100
+                     */
+
+                    $billmateOrderNumber = (isset($data['number'])) ? $data['number'] : '';
+                    $billmateOrder = isset($billmateOrder) ? $billmateOrder : array();
+                    if (!isset($billmateOrder['PaymentData']) AND $billmateOrderNumber != '') {
+                        $billmateOrder = $k->getPaymentinfo(array('number' => $billmateOrderNumber));
+                    }
+
+                    if (
+                        isset($billmateOrder['Articles']) AND
+                        is_array($billmateOrder['Articles']) AND
+                        count($billmateOrder['Articles']) == 1 AND
+                        isset($billmateOrder['Articles'][0]) AND
+                        is_array($billmateOrder['Articles'][0]) AND
+                        isset($billmateOrder['Articles'][0]['artnr']) AND
+                        isset($billmateOrder['Articles'][0]['title']) AND
+                        isset($billmateOrder['Articles'][0]['aprice']) AND
+                        isset($billmateOrder['Articles'][0]['taxrate']) AND
+                        isset($billmateOrder['Articles'][0]['withouttax']) AND
+                        isset($billmateOrder['Cart']) AND
+                        is_array($billmateOrder['Cart']) AND
+                        isset($billmateOrder['Cart']['Total']) AND
+                        is_array($billmateOrder['Cart']['Total']) AND
+                        $billmateOrder['Articles'][0]['artnr'] == '' AND
+                        $billmateOrder['Articles'][0]['title'] == __('Transaction to be credited', 'billmate') AND
+                        $billmateOrder['Articles'][0]['aprice'] == 100 AND
+                        $billmateOrder['Articles'][0]['taxrate'] == 0 AND
+                        $billmateOrder['Articles'][0]['withouttax'] == 100 AND
+                        $billmateOrder['Cart']['Total']['withouttax'] == 100 AND
+                        $billmateOrder['Cart']['Total']['tax'] == 0 AND
+                        $billmateOrder['Cart']['Total']['withtax'] == 100
+                        ) {
+
+                        /** Order matches expectation of a subscription initiation order and will be credited */
+                        $isCreditSubscriptionInitOrder = true;
+                    }
+                }
+
+                if ($isCreditSubscriptionInitOrder == true) {
                     $result = $k->creditPayment(array('PaymentData' => array('number' => $data['number'], 'partcredit' => false)));
-                    $activateResult = $k->activatePayment(array('PaymentData' => array('number' => $result['number'])));
+                    if (isset($result['number']) AND $result['number'] != '') {
+                        $activateResult = $k->activatePayment(array('PaymentData' => array('number' => $result['number'])));
+                    }
                 }
             }
 
@@ -622,8 +721,8 @@ function init_billmate_gateway() {
                     }
 
                     $billmateOrderNumber = (isset($data['number'])) ? $data['number'] : '';
-                    $billmateOrder = array();
-                    if ( $billmateOrderNumber != '' ) {
+                    $billmateOrder = isset($billmateOrder) ? $billmateOrder : array();
+                    if (!isset($billmateOrder['PaymentData']) AND $billmateOrderNumber != '') {
                         $billmateOrder = $k->getPaymentinfo(array('number' => $billmateOrderNumber));
                     }
 
@@ -667,7 +766,11 @@ function init_billmate_gateway() {
 
                         $woocommerce_billmate_invoice_settings = get_option('woocommerce_billmate_invoice_settings');
 
-                        if(intval($order->get_total() * 100) == intval($billmateOrderTotal)) {
+                        $storeOrderTotalCompare     = intval( strval( $order->get_total() * 100 ) );
+                        $billmateOrderTotalCompare  = intval($billmateOrderTotal);
+
+                        if ($storeOrderTotalCompare == $billmateOrderTotalCompare) {
+
                             // Set order as paid if paid amount matches order total amount
                             $order->payment_complete();
                         } else {

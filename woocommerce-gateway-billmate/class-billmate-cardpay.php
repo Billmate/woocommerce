@@ -93,6 +93,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			'subscription_reactivation',
 			'subscription_amount_changes',
 			'subscription_payment_method_change_admin',
+            'subscription_payment_method_change_customer',
 			'subscription_date_changes'
 		);
 
@@ -274,7 +275,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 
 	function is_available() {
 		global $woocommerce;
-		
+
 		if ($this->enabled=="yes") :
 
             if(is_checkout() == false && is_checkout_pay_page() == false) {
@@ -481,6 +482,18 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
             if (wcs_order_contains_subscription($order)) {
                 $isSubscriptionOrder = true;
             }
+
+
+            if (wcs_order_contains_subscription($order, array( 'parent', 'renewal', 'resubscribe', 'switch'))) {
+                $isSubscriptionOrder = true;
+            } else {
+                /** Order is no subscription, check parent order if subscription in case of changing card information */
+                $_orderParentId = $order->get_parent_id();
+                if (is_numeric($_orderParentId) AND $_orderParentId > 0 AND wcs_order_contains_subscription($_orderParentId, array( 'parent', 'renewal', 'resubscribe', 'switch'))) {
+                    $isSubscriptionOrder = true;
+                }
+            }
+
         } else {
             if (class_exists('WC_Subscriptions_Order') && WC_Subscriptions_Order::order_contains_subscription($order_id)) {
                 $isSubscriptionOrder = true;
@@ -541,19 +554,28 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
                 }
 
 
-				if($order->get_total() == 0){
-					$orderValues['Articles'][] = array(
-						'quantity'   => (int)1,
-						'artnr'    => "",
-						'title'    => __('Transaction to be credited', 'billmate'),
-						'aprice'    => 100, //+$item->unittax
-						'taxrate'      => 0,
-						'discount' => (float)0,
-						'withouttax' => 100
+                /**
+                 * When initiate subscription or update card info for active subscription.
+                 * This order will be automatic credited when customer return to store
+                 */
+                if ($order->get_total() == 0 OR 0 == WC_Payment_Gateway::get_order_total()) {
+                    $orderValues['Articles'] = array();
+                    $orderValues['Articles'][] = array(
+                        'quantity'    => (int)1,
+                        'artnr'       => "",
+                        'title'       => __('Transaction to be credited', 'billmate'),
+                        'aprice'      => 100,
+                        'taxrate'     => 0,
+                        'discount'    => (float)0,
+                        'withouttax'  => 100
+                    );
+                    if (isset($orderValues['Cart']) AND is_array($orderValues['Cart']) AND isset($orderValues['Cart']['Shipping'])) {
+                        unset($orderValues['Cart']['Shipping']);
+                    }
+                    $total = 100;
+                    $totalTax = 0;
+                }
 
-					);
-					$total += 100;
-				}
 
 				$checkoutTotal = WC_Payment_Gateway::get_order_total();
 				$round = (round($checkoutTotal * 100)) - round($total + $totalTax,0);
