@@ -608,24 +608,23 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			if(!defined('BILLMATE_LANGUAGE')) define('BILLMATE_LANGUAGE',strtolower($language[0]));
 
 
+
+            $languageCode = strtoupper($language[0]);
+            $languageCode = $languageCode == 'DA' ? 'DK' : $languageCode;
+            $languageCode = $languageCode == 'SV' ? 'SE' : $languageCode;
+            $languageCode = $languageCode == 'EN' ? 'GB' : $languageCode;
+            $languageCode = ($languageCode == 'NB' OR $languageCode == 'NN' ) ? 'NO' : $languageCode;
+
 			$orderValues = array();
 			$orderValues['PaymentData'] = array(
 				'method' => 8,
 				'currency' => get_woocommerce_currency(),
-				'language' => strtolower($language[0]),
+				'language' => strtolower($languageCode),
 				'country' => $this->billmate_country,
 				'autoactivate' => ( $this->authentication_method == 'sales') ? 1 : 0,
 				'orderid' => preg_replace('/#/','',$order->get_order_number()),
 				'logo' => (strlen($this->logo)> 0) ? $this->logo : ''
 			);
-
-
-            $orderValues['PaymentInfo'] = $billmateOrder->getPaymentInfoData();
-
-			$languageCode = $language[0];
-			$languageCode = $languageCode == 'DA' ? 'DK' : $languageCode;
-			$languageCode = $languageCode == 'SV' ? 'SE' : $languageCode;
-			$languageCode = $languageCode == 'EN' ? 'GB' : $languageCode;
 
             $accept_url     = billmate_add_query_arg(array('wc-api' => 'WC_Gateway_Billmate_Cardpay', 'payment' => 'success'));
             $callback_url   = billmate_set_query_arg(array('wc-api' => 'WC_Gateway_Billmate_Cardpay'));
