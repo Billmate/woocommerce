@@ -1531,6 +1531,23 @@ if(!class_exists('BillmateOrder')){
             }
             return $billmateOrderArticles;
         }
+
+        /**
+         * Maybe convert price to customer selected currency if available
+         * @param float|int
+         * @return float|int
+         */
+        public static function maybeConvertCurrency($price) {
+            /** When WPML multi currency is available use selected currency rate on $invoice_fee_withtax that will be displayed to customer */
+            if (function_exists('has_filter') AND has_filter('wcml_raw_price_amount')) {
+                $price = apply_filters('wcml_raw_price_amount', $price);
+            }
+            return $price;
+        }
+
+        public static function formatPrice($price = 0) {
+            return round($price * 100);
+        }
     }
 }
 

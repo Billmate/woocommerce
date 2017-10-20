@@ -374,7 +374,17 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 				$rate = array_pop($rate);
 				$rate = $rate['rate'];
 				$taxAmount = ($rate/100) * $this->invoice_fee;
-				printf(__('An invoice fee of %1$s will be added to your order.', 'billmate'), wc_price($this->invoice_fee+$taxAmount)); ?>
+
+                $invoice_fee = $this->invoice_fee;
+                $invoice_fee_withtax = $invoice_fee;
+                if ($rate > 0) {
+                    $invoice_fee_withtax = $invoice_fee * (1 + ($rate / 100));
+                }
+
+                $invoice_fee_withtax = BillmateOrder::maybeConvertCurrency($invoice_fee_withtax);
+
+                printf(__('An invoice fee of %1$s will be added to your order.', 'billmate'), wc_price($invoice_fee_withtax));
+            ?>
 			</p>
 		<?php endif; ?>
 
@@ -1067,6 +1077,12 @@ parse_str($_POST['post_data'], $datatemp);
 		// Get the invoice fee product if invoice fee is used
 		if ( $this->invoice_fee > 0 ) {
 
+
+            /** Invoice fee formatted with currency and for addPayment request */
+            $invoice_fee_formatted = $this->invoice_fee;
+            $invoice_fee_formatted = BillmateOrder::maybeConvertCurrency($invoice_fee_formatted);
+            $invoice_fee_formatted = BillmateOrder::formatPrice($invoice_fee_formatted);
+
 			// We have already checked that the product exists in billmate_invoice_init()
 			// Version check - 1.6.6 or 2.0
 			if ( function_exists( 'get_product' ) ) {
@@ -1085,13 +1101,15 @@ parse_str($_POST['post_data'], $datatemp);
 				$rate = array_pop($tax->get_rates($this->invoice_fee_tax_class));
 				$rate = $rate['rate'];
 
-				$orderValues['Cart']['Handling'] = array(
-					'withouttax'    => round($this->invoice_fee*100),
-					'taxrate'      => (int)$rate,
-				);
+                $orderValues['Cart']['Handling'] = array(
+                    'withouttax'    => $invoice_fee_formatted,
+                    'taxrate'       => (int)$rate
+                );
 
-				$total += $this->invoice_fee * 100;
-				$totalTax += (($rate/100) * $this->invoice_fee)*100;
+                $total += $invoice_fee_formatted;
+                if ($rate > 0) {
+                    $totalTax += $invoice_fee_formatted * ($rate/100);
+                }
 
 				// Add the invoice fee to the order
 				// Get all order items and unserialize the array
@@ -1137,24 +1155,39 @@ parse_str($_POST['post_data'], $datatemp);
                 if (isset($_GET['pay_for_order'])) {
                     // Cart unavailable
                     $handling = $this->maybe_add_handling_to_order($order);
+                    $invoice_fee_formatted = BillmateOrder::formatPrice($handling['price']);
+
                     $orderValues['Cart']['Handling'] = array(
-                        'withouttax'    => $handling['price'],
-                        'taxrate'       => $handling['taxrate'],
+                        'withouttax'    => $invoice_fee_formatted,
+                        'taxrate'       => $handling['taxrate']
                     );
-                    $total      += $handling['price'];
-                    $totalTax   += $handling['tax'];
+
+                    $total += $invoice_fee_formatted;
+                    if ($handling['taxrate'] > 0) {
+                        $totalTax += $invoice_fee_formatted * ($handling['taxrate'] / 100);
+                    }
+
+
                 } else {
                     // Cart available
                     $tax = new WC_Tax();
                     $invoicetax = $tax->get_rates($this->invoice_fee_tax_class);
                     $rate = array_pop($invoicetax);
                     $rate = $rate['rate'];
+
+                    $invoice_fee_formatted = BillmateOrder::maybeConvertCurrency($this->invoice_fee);
+                    $invoice_fee_formatted = BillmateOrder::formatPrice($invoice_fee_formatted);
+
                     $orderValues['Cart']['Handling'] = array(
-                        'withouttax'    => round($this->invoice_fee*100),
-                        'taxrate'      => (int)$rate,
+                        'withouttax'    => $invoice_fee_formatted,
+                        'taxrate'       => (int)$rate,
                     );
-                    $total += $this->invoice_fee * 100;
-                    $totalTax += (($rate/100) * $this->invoice_fee)*100;
+
+                    $total += $invoice_fee_formatted;
+                    if ($rate > 0) {
+                        $totalTax += $invoice_fee_formatted * ($rate / 100);
+                    }
+
                     $woocommerce->cart->add_fee(__('Invoice fee','billmate'),$this->invoice_fee,true,$this->invoice_fee_tax_class);
                 }
 
@@ -1324,33 +1357,41 @@ parse_str($_POST['post_data'], $datatemp);
             $orderId = $order->id;
         }
 
+        $invoice_fee = $this->invoice_fee;
+        $invoice_fee = BillmateOrder::maybeConvertCurrency($invoice_fee);
+        $invoice_fee_tax_class = $this->invoice_fee_tax_class;
+
         // Get the invoice fee product if invoice fee is used
-        if ( $this->invoice_fee > 0 ) {
+        if ( $invoice_fee > 0 ) {
 
             if ( version_compare( WOOCOMMERCE_VERSION, '2.0', '<' ) ) {
                 $tax = new WC_Tax();
-                $rate = array_pop($tax->get_rates($this->invoice_fee_tax_class));
+                $rate = array_pop($tax->get_rates($invoice_fee_tax_class));
                 $rate = $rate['rate'];
 
-                $handling['price'] = round($this->invoice_fee*100);
-                $handling['tax'] = (($rate/100) * $this->invoice_fee)*100;
-                $handling['taxrate'] = round($rate);
-                $handling['total'] = $handling['price'] + $handling['tax'];
+                $handling['price']      = $invoice_fee;
+                $handling['taxrate']    = round($rate);
+                $handling['total']      = $invoice_fee;
+
+                if ($rate > 0) {
+                    $handling['tax']    = $invoice_fee * ($rate / 100);
+                    $handling['total']  = $invoice_fee * (1 + ($rate / 100));
+                }
 
                 $originalarray = unserialize($order->order_custom_fields['_order_items'][0]);
 
                 $addfee[] = array (
-                    'id' => $this->invoice_fee_id,
+                    'id' => $invoice_fee_id,
                     'variation_id' => '',
                     'name' => __('Invoice fee','billmate'),
                     'qty' => '1',
                     'item_meta' =>
                         array (
                         ),
-                    'line_subtotal' => $this->invoice_fee,
-                    'line_subtotal_tax' => ($this->invoice_fee * ($rate/100)),
-                    'line_total' => $this->invoice_fee,
-                    'line_tax' => ($this->invoice_fee * ($rate/100)),
+                    'line_subtotal' => $invoice_fee,
+                    'line_subtotal_tax' => ($invoice_fee * ($rate/100)),
+                    'line_total' => $invoice_fee,
+                    'line_tax' => ($invoice_fee * ($rate/100)),
                     'tax_class' => $product->get_tax_class(),
                 );
 
@@ -1362,13 +1403,13 @@ parse_str($_POST['post_data'], $datatemp);
 
                 // Update _order_total
                 $old_order_total = $order->order_custom_fields['_order_total'][0];
-                $new_order_total = $old_order_total+$this->invoice_fee;
+                $new_order_total = $old_order_total+$invoice_fee;
                 update_post_meta( $order->id, '_order_total', $new_order_total );
 
                 // Update _order_tax
                 $invoice_fee_tax = $product->get_price()-$product->get_price_excluding_tax();
                 $old_order_tax = $order->order_custom_fields['_order_tax'][0];
-                $new_order_tax = $old_order_tax+($this->invoice_fee*($rate/100));
+                $new_order_tax = $old_order_tax+($invoice_fee*($rate/100));
                 update_post_meta( $order->id, '_order_tax', $new_order_tax );
 
             } else {
@@ -1388,8 +1429,8 @@ parse_str($_POST['post_data'], $datatemp);
                     }
                 }
 
-                $feeTaxclass = $this->invoice_fee_tax_class;
-                $feeAmount = $this->invoice_fee;
+                $feeTaxclass = $invoice_fee_tax_class;
+                $feeAmount = $invoice_fee;
 
                 // Handling fee tax rates
                 $tax = new WC_Tax();
@@ -1419,10 +1460,14 @@ parse_str($_POST['post_data'], $datatemp);
                 $fee->tax       = wc_format_decimal($feeTax);
                 $fee->tax_data  = $feeTaxdata;
 
-                $handling['price']      = round($fee->amount * 100);
-                $handling['tax']        = round($feeTax * 100);
-                $handling['taxrate']    = round($rate);
-                $handling['total']      = $handling['price'] + $handling['tax'];
+                $handling['taxrate'] = round($rate);
+                $handling['price'] = $invoice_fee;
+                $handling['total'] = $invoice_fee;
+
+                if ($rate > 0) {
+                    $handling['tax'] = $invoice_fee * ($rate / 100);
+                    $handling['total'] = $invoice_fee * (1 + ($rate / 100));
+                }
 
                 if (version_compare(WC_VERSION, '3.0.0', '>=')) {
                     if ($hasFee == false) {
@@ -1568,14 +1613,17 @@ class WC_Gateway_Billmate_Invoice_Extra {
 		 // Only run this if Billmate Invoice is the choosen payment method and this is WC +2.0
 		 if (isset($_POST['payment_method']) && $_POST['payment_method'] == 'billmate_invoice' && version_compare( WOOCOMMERCE_VERSION, '2.0', '>=' )) {
 
-		 	$invoice_fee = new WC_Gateway_Billmate_Invoice;
-			 $tax = new WC_Tax();
-			 $rate = $tax->get_rates($invoice_fee->invoice_fee_tax_class);
-			 $rate = array_pop($rate);
-			 $rate = $rate['rate'];
+            $billmateInvoice        = new WC_Gateway_Billmate_Invoice();
+            $invoice_fee            = $billmateInvoice->invoice_fee;
+            $invoice_fee_tax_class  = $billmateInvoice->invoice_fee_tax_class;
 
-			$woocommerce->cart->add_fee(__('Invoice fee','billmate'),$invoice_fee->invoice_fee,true,$invoice_fee->invoice_fee_tax_class);
+            $tax = new WC_Tax();
+            $rate = $tax->get_rates($invoice_fee_tax_class);
+            $rate = array_pop($rate);
+            $rate = $rate['rate'];
 
+            $invoice_fee = BillmateOrder::maybeConvertCurrency($invoice_fee);
+            $woocommerce->cart->add_fee(__('Invoice fee','billmate'), $invoice_fee, true, $invoice_fee_tax_class);
 		}
 	} // End function add_invoice_fee_process
 
