@@ -1454,11 +1454,14 @@ if(!class_exists('BillmateOrder')){
              * We know that $order_shipping_tax is not rounded and is accurate
              * Get $order_shipping_total based on tax and taxrate
              */
-            if ($taxrate > 0) {
-                $order_shipping_total = $order_shipping_tax / ($taxrate / 100);
-            } else {
-                /** No taxrate available, get taxrate based on $order_shipping_total and $order_shipping_tax */
-                $taxrate = ($order_shipping_tax / $order_shipping_total) * 100;
+
+            if ($order_shipping_total > 0 AND $order_shipping_tax > 0) {
+                if ($taxrate > 0) {
+                    $order_shipping_total = $order_shipping_tax / ($taxrate / 100);
+                } else {
+                    /** No taxrate available, get taxrate based on $order_shipping_total and $order_shipping_tax */
+                    $taxrate = ($order_shipping_tax / $order_shipping_total) * 100;
+                }
             }
 
             return array(
