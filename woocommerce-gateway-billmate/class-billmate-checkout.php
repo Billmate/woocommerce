@@ -793,6 +793,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         $terms = get_post($this->terms_url);
         $orderValues['CheckoutData'] = array(
             'windowmode' => 'iframe',
+            'redirectOnSuccess' => 'true',
             'sendreciept' => 'yes',
             'terms' => $terms->guid
         );
