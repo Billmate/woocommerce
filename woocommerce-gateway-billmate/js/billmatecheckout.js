@@ -6,6 +6,7 @@ window.address_selected = null;
 window.hash = null;
 window.latestScroll = null;
 
+jQuery(document).ready(function(){
 var BillmateIframe = new function(){
     var self = this;
     var childWindow = null;
@@ -164,8 +165,9 @@ var BillmateIframe = new function(){
                     jQuery('#checkout').height(json.data);
                     break;
                 case 'content_scroll_position':
-                    window.latestScroll = jQuery(document).find( "#checkout" ).offset().top + json.data;
-                    jQuery('html, body').animate({scrollTop: jQuery(document).find( "#checkout" ).offset().top + json.data}, 400);
+                    if (jQuery(document).scrollTop() > 0) {
+                        jQuery('html, body').animate({scrollTop: jQuery(document).find( "#checkout" ).offset().top + json.data}, 400);
+                    }
                     break;
                 case 'checkout_loaded':
                     self.hideCheckoutLoading();
@@ -203,9 +205,10 @@ var BillmateIframe = new function(){
 
 };
 
-var b_iframe = BillmateIframe;
-b_iframe.initListeners();
-jQuery(document).ready(function(){
+
+    var b_iframe = BillmateIframe;
+    b_iframe.initListeners();
+
     jQuery(document).on('click','.billmate-item-remove',function(e){
         e.preventDefault();
 
