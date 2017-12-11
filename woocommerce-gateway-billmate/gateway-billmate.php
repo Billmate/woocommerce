@@ -759,9 +759,17 @@ function init_billmate_gateway() {
 
                     $billmateOrderTotal = isset($billmateOrder['Cart']['Total']['withtax']) ? $billmateOrder['Cart']['Total']['withtax'] : 0;
 
-                    if ($this->order_status == 'default') {
-                        if($checkout)
+
+
+                    $checkoutSettings = get_option("woocommerce_billmate_checkout_settings", array());
+                    if (    $this->order_status == 'default'
+                            || ($checkout == true && $this->order_status != $checkoutSettings['order_status'])
+                    ) {
+
+                        if($checkout) {
                             $order->update_status('pending');
+                        }
+
                         $order->add_order_note(__($payment_note,'billmate'));
 
                         $woocommerce_billmate_invoice_settings = get_option('woocommerce_billmate_invoice_settings');
@@ -769,9 +777,13 @@ function init_billmate_gateway() {
                         $storeOrderTotalCompare     = intval( strval( $order->get_total() * 100 ) );
                         $billmateOrderTotalCompare  = intval($billmateOrderTotal);
 
-                        if ($storeOrderTotalCompare == $billmateOrderTotalCompare) {
 
+                        if ($storeOrderTotalCompare == $billmateOrderTotalCompare) {
                             // Set order as paid if paid amount matches order total amount
+                            if ($this->order_status != 'default') {
+                                $order->update_status($this->order_status);
+                                $order->save();
+                            }
                             $order->payment_complete();
                         } else {
                             // To pay not match, maybe add handling fee to WC order
@@ -797,6 +809,7 @@ function init_billmate_gateway() {
                                 $compare = ($billmateOrderTotal / 100) - $feeAmount - $feeTax;
                                 $floatCompare = round(floatval($compare), 2);
                                 $floatGettotal = round(floatval($order->get_total()), 2);
+
 
                                 if ($floatGettotal == $floatCompare) {
                                     // Assume handling fee is missing, add handling fee and mark order as paid
@@ -848,6 +861,11 @@ function init_billmate_gateway() {
                                     }
 
                                     $order->payment_complete();
+
+                                    if ($this->order_status != 'default') {
+                                        $order->update_status($this->order_status);
+                                        $order->save();
+                                    }
                                 }
 
                             }
@@ -857,6 +875,7 @@ function init_billmate_gateway() {
                             $order->update_status('pending');
                         $order->add_order_note(__($payment_note,'billmate'));
                         $order->update_status($this->order_status);
+                        $order->save();
                     }
                     delete_transient($transientPrefix.$order_id);
 
