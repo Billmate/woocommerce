@@ -1431,11 +1431,32 @@ if(!class_exists('BillmateOrder')){
 
         public function getCartShipping() {
 
-            $taxrate = 0;
+            $taxrate        = 0;
+            $shipping_total = 0;
+            $shipping_tax   = 0;
 
             if(version_compare(WC_VERSION, '3.0.0', '>=')) {
                 $order_shipping_total   = $this->order->get_shipping_total();
                 $order_shipping_tax     = $this->order->get_shipping_tax();
+
+                $cart_shipping_total    = WC()->cart->shipping_total;
+                $cart_shipping_tax      = WC()->cart->shipping_tax_total;
+
+                $shipping_total     = $order_shipping_total;
+                $shipping_tax       = $order_shipping_tax;
+
+                /*
+                 * When shipping is available in cart and total is same as order, use cart tax
+                 * In this case cart shipping tax is more accurate than order shipping tax
+                 */
+                if (    $cart_shipping_total > 0
+                        && $order_shipping_total > 0
+                        && $shipping_tax > 0
+                        && $order_shipping_tax > 0
+                        && $cart_shipping_total == $order_shipping_total
+                ) {
+                    $shipping_tax = $cart_shipping_tax;
+                }
 
                 if ($order_shipping_tax > 0 AND is_object(WC()->cart) == true AND method_exists(WC()->cart, 'get_cart_item_tax_classes') == true) {
                     // Get shipping tax rate from cart
@@ -1445,8 +1466,8 @@ if(!class_exists('BillmateOrder')){
                     }
                 }
             } else {
-                $order_shipping_total   = $this->order->order_shipping;
-                $order_shipping_tax     = $this->order->order_shipping_tax;
+                $shipping_total   = $this->order->order_shipping;
+                $shipping_tax     = $this->order->order_shipping_tax;
             }
 
             /**
@@ -1454,21 +1475,20 @@ if(!class_exists('BillmateOrder')){
              * We know that $order_shipping_tax is not rounded and is accurate
              * Get $order_shipping_total based on tax and taxrate
              */
-
-            if ($order_shipping_total > 0 AND $order_shipping_tax > 0) {
+            if ($shipping_total > 0 AND $shipping_tax > 0) {
                 if ($taxrate > 0) {
-                    $order_shipping_total = $order_shipping_tax / ($taxrate / 100);
+                    $shipping_total = $shipping_tax / ($taxrate / 100);
                 } else {
-                    /** No taxrate available, get taxrate based on $order_shipping_total and $order_shipping_tax */
-                    $taxrate = ($order_shipping_tax / $order_shipping_total) * 100;
+                    /** No taxrate available, get taxrate based on $shipping_total and $shipping_tax */
+                    $taxrate = ($shipping_tax / $shipping_total) * 100;
                 }
             }
 
             return array(
-                "price"             => round($order_shipping_total * 100),
+                "price"             => round($shipping_total * 100),
                 "taxrate"           => round($taxrate),
-                'tax'               => round($order_shipping_tax * 100),
-                "price_with_tax"    => round(($order_shipping_total + $order_shipping_tax) * 100)
+                'tax'               => round($shipping_tax * 100),
+                "price_with_tax"    => round(($shipping_total + $shipping_tax) * 100)
             );
         }
 
