@@ -1265,9 +1265,11 @@ if(!class_exists('BillmateOrder')){
                         $_discountTotal     = 0;
                         $_discountTotalTax  = 0;
 
-                        if ($_aprice_without_tax != $_sub_aprice_without_tax) {
-                            /** Item total and item subtotal not match Assume discount and get discount in percentage */
-                            $_discount = (1 - ($_aprice_without_tax / $_sub_aprice_without_tax)) * 100;
+                        if ($_total != $_subtotal) {
+                            /* Assume discount when total and subtotal not match */
+                            if ($_total > 0) {
+                                $_discount = (1 - ($_total / $_subtotal)) * 100;
+                            }
                             $_discount_total = $_subtotal - $_total;
                             $_discount_total_tax = $_subtotal_tax - $_total_tax;
                         } else {
@@ -1382,8 +1384,26 @@ if(!class_exists('BillmateOrder')){
                 $totalTax += ($orderFeesArticle['aprice'] * ($orderFeesArticle['taxrate']/100));
             }
 
+            /**
+             * Check if order items have multiple taxrates
+             * Will be used when determine if use own calculated discount or from store
+             */
+            $isOneTaxrate = true;
+            $orderTaxrate = 0;
+            foreach ($orderArticles AS $orderArticle) {
+                if ($orderTaxrate < 1) {
+                    $orderTaxrate = $orderArticle['taxrate'];
+                }
+                if ($orderTaxrate != $orderArticle['taxrate']) {
+                    $isOneTaxrate = false;
+                }
+            }
+
             /* Order discount */
-            if ($isOrderDiscount == true AND count($discountTotals) > 0) {
+            if (    $isOrderDiscount == true
+                    && count($discountTotals) > 0
+                    && $isOneTaxrate ==  false
+            ) {
                 // Order by taxrate ASC
                 ksort($discountTotals);
                 foreach($discountTotals AS $key => $discountAmount) {
@@ -1402,6 +1422,27 @@ if(!class_exists('BillmateOrder')){
                         $totalTax -= (isset($discountTotalTaxs[$key]) ? $discountTotalTaxs[$key] : 0);
                     }
                 }
+            }
+
+            /** Use woocommerce discount when discount affect all order items and all items have same taxrate */
+            if (    $isOrderDiscount == true
+                    && $this->order->get_discount_total() > 0
+                    && $isOneTaxrate == true
+            ) {
+                $discountAmount = $this->order->get_discount_total();
+                $discountAmount = round($discountAmount * 100);
+                $this->orderData['Articles'][] = array(
+                    'quantity'      => (int)1,
+                    'artnr'         => "",
+                    'title'         => sprintf(__('Discount %s%% tax', 'billmate'),round($taxrate,0)),
+                    'aprice'        => abs($discountAmount),
+                    'taxrate'       => $orderTaxrate,
+                    'discount'      => (float)0,
+                    'withouttax'    => -abs($discountAmount),
+                );
+
+                $total      -= $discountAmount;
+                $totalTax   -= round($this->order->get_discount_tax() * 100);
             }
 
             foreach ($this->orderData['Articles'] AS $i => $article) {
@@ -1578,6 +1619,12 @@ if(!class_exists('BillmateOrder')){
             if ($price > 0 AND $taxrate > 0) {
                 $price_with_tax *= (1 + ($taxrate / 100));
                 $tax = $price_with_tax - $price;
+            }
+
+            $price_with_tax = wc_format_decimal( $price_with_tax, get_option( 'woocommerce_price_num_decimals' ) );
+            if ($taxrate > 0) {
+                $price  = $price_with_tax / (1 + ($taxrate/100));
+                $tax    = $price_with_tax - $price;
             }
 
             return array(
