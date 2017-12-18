@@ -763,7 +763,7 @@ function init_billmate_gateway() {
 
                     $checkoutSettings = get_option("woocommerce_billmate_checkout_settings", array());
                     if (    $this->order_status == 'default'
-                            || ($checkout == true && $this->order_status != $checkoutSettings['order_status'])
+                            || ($checkout == true && $order->get_status() != $checkoutSettings['order_status'])
                     ) {
 
                         if($checkout) {
