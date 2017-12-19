@@ -77,7 +77,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		$billmate_language = 'SV';
 		$billmate_currency = 'SEK';
 		$billmate_invoice_terms = '';
-		$billmate_invoice_icon = plugins_url( '/images/bm_kort_l.png', __FILE__ );
+		$billmate_invoice_icon = plugins_url( '/images/bm_cards.png', __FILE__ );
 
 		// Apply filters to Country and language
 		$this->billmate_country 		= apply_filters( 'billmate_country', $billmate_country );
@@ -93,6 +93,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			'subscription_reactivation',
 			'subscription_amount_changes',
 			'subscription_payment_method_change_admin',
+            'subscription_payment_method_change_customer',
 			'subscription_date_changes'
 		);
 
@@ -274,7 +275,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 
 	function is_available() {
 		global $woocommerce;
-		
+
 		if ($this->enabled=="yes") :
 
             if(is_checkout() == false && is_checkout_pay_page() == false) {
@@ -481,6 +482,18 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
             if (wcs_order_contains_subscription($order)) {
                 $isSubscriptionOrder = true;
             }
+
+
+            if (wcs_order_contains_subscription($order, array( 'parent', 'renewal', 'resubscribe', 'switch'))) {
+                $isSubscriptionOrder = true;
+            } else {
+                /** Order is no subscription, check parent order if subscription in case of changing card information */
+                $_orderParentId = $order->get_parent_id();
+                if (is_numeric($_orderParentId) AND $_orderParentId > 0 AND wcs_order_contains_subscription($_orderParentId, array( 'parent', 'renewal', 'resubscribe', 'switch'))) {
+                    $isSubscriptionOrder = true;
+                }
+            }
+
         } else {
             if (class_exists('WC_Subscriptions_Order') && WC_Subscriptions_Order::order_contains_subscription($order_id)) {
                 $isSubscriptionOrder = true;
@@ -541,19 +554,28 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
                 }
 
 
-				if($order->get_total() == 0){
-					$orderValues['Articles'][] = array(
-						'quantity'   => (int)1,
-						'artnr'    => "",
-						'title'    => __('Transaction to be credited', 'billmate'),
-						'aprice'    => 100, //+$item->unittax
-						'taxrate'      => 0,
-						'discount' => (float)0,
-						'withouttax' => 100
+                /**
+                 * When initiate subscription or update card info for active subscription.
+                 * This order will be automatic credited when customer return to store
+                 */
+                if ($order->get_total() == 0 OR 0 == WC_Payment_Gateway::get_order_total()) {
+                    $orderValues['Articles'] = array();
+                    $orderValues['Articles'][] = array(
+                        'quantity'    => (int)1,
+                        'artnr'       => "",
+                        'title'       => __('Transaction to be credited', 'billmate'),
+                        'aprice'      => 100,
+                        'taxrate'     => 0,
+                        'discount'    => (float)0,
+                        'withouttax'  => 100
+                    );
+                    if (isset($orderValues['Cart']) AND is_array($orderValues['Cart']) AND isset($orderValues['Cart']['Shipping'])) {
+                        unset($orderValues['Cart']['Shipping']);
+                    }
+                    $total = 100;
+                    $totalTax = 0;
+                }
 
-					);
-					$total += 100;
-				}
 
 				$checkoutTotal = WC_Payment_Gateway::get_order_total();
 				$round = (round($checkoutTotal * 100)) - round($total + $totalTax,0);
@@ -586,24 +608,23 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 			if(!defined('BILLMATE_LANGUAGE')) define('BILLMATE_LANGUAGE',strtolower($language[0]));
 
 
+
+            $languageCode = strtoupper($language[0]);
+            $languageCode = $languageCode == 'DA' ? 'DK' : $languageCode;
+            $languageCode = $languageCode == 'SV' ? 'SE' : $languageCode;
+            $languageCode = $languageCode == 'EN' ? 'GB' : $languageCode;
+            $languageCode = ($languageCode == 'NB' OR $languageCode == 'NN' ) ? 'NO' : $languageCode;
+
 			$orderValues = array();
 			$orderValues['PaymentData'] = array(
 				'method' => 8,
 				'currency' => get_woocommerce_currency(),
-				'language' => strtolower($language[0]),
+				'language' => strtolower($languageCode),
 				'country' => $this->billmate_country,
 				'autoactivate' => ( $this->authentication_method == 'sales') ? 1 : 0,
 				'orderid' => preg_replace('/#/','',$order->get_order_number()),
 				'logo' => (strlen($this->logo)> 0) ? $this->logo : ''
 			);
-
-
-            $orderValues['PaymentInfo'] = $billmateOrder->getPaymentInfoData();
-
-			$languageCode = $language[0];
-			$languageCode = $languageCode == 'DA' ? 'DK' : $languageCode;
-			$languageCode = $languageCode == 'SV' ? 'SE' : $languageCode;
-			$languageCode = $languageCode == 'EN' ? 'GB' : $languageCode;
 
             $accept_url     = billmate_add_query_arg(array('wc-api' => 'WC_Gateway_Billmate_Cardpay', 'payment' => 'success'));
             $callback_url   = billmate_set_query_arg(array('wc-api' => 'WC_Gateway_Billmate_Cardpay'));

@@ -1,5 +1,5 @@
 <?php
-define('BILLPLUGIN_VERSION','3.0.8');
+define('BILLPLUGIN_VERSION','3.1.0');
 define('BILLMATE_CLIENT','PHP:Woocommerce:'.BILLPLUGIN_VERSION);
 define('BILLMATE_SERVER','2.1.9');
 
@@ -1215,9 +1215,6 @@ if(!class_exists('BillmateOrder')){
             $total = 0;
             $totalTax = 0;
 
-            $subtotal = 0;
-            $subtotalTax = 0;
-
             $isOrderDiscount = true;    /* If true, all articles have discount, if false, discount is for individual articles */
             $orderArticles = array();
 
@@ -1230,95 +1227,93 @@ if(!class_exists('BillmateOrder')){
                         /* Formatting the product data that will be sent as api requests */
                         $billmateProduct = new BillmateProduct($_product, $item);
 
-                        // is product taxable?
-                        if ($_product->is_taxable())
-                        {
-                            $taxClass = $_product->get_tax_class();
-                            $tax = new WC_Tax();
-                            $rates = $tax->get_rates($taxClass);
-                            $item_tax_percentage = 0;
-                            foreach($rates as $row){
-                                // Is it Compound Tax?
-                                if(isset($row['compund']) && $row['compound'] == 'yes')
-                                    $item_tax_percentage += $row['rate'];
-                                else
-                                    $item_tax_percentage = $row['rate'];
-                            }
-                        } else
-                            $item_tax_percentage = 0;
+                        $item_tax_percentage    = $billmateProduct->getTaxRate();
+                        $sku                    = $billmateProduct->getSku();
 
-                        // apply_filters to item price so we can filter this if needed
-                        $billmate_item_price_including_tax = round($this->order->get_item_total( $item, true )*100);
-                        $billmate_item_standard_price = round($this->order->get_item_subtotal($item,true)*100);
-                        $billmate_item_standard_price_without_tax = $billmate_item_standard_price / (1 + ((int)$item_tax_percentage / 100));
-                        $discount = false;
-                        if($billmate_item_price_including_tax != $billmate_item_standard_price){
-                            $discount = true;
+                        /** Start with price including tax */
+                        $_quantity              = (int)$item['qty'];
+                        $_aprice_with_tax       = $this->order->get_item_total($item, true);
+                        $_aprice_without_tax    = $_aprice_with_tax;
+                        $_aprice_tax            = 0;
+
+                        $_total                 = $this->order->get_line_total($item, true);
+                        $_total_inc_tax         = $_total;
+                        $_total_tax             = 0;
+
+                        /* Subtotal is article original price and not affected by discount */
+                        $_sub_aprice                = $this->order->get_item_subtotal($item,true);
+                        $_sub_aprice_without_tax    = $_sub_aprice;
+
+                        $_subtotal                  = $this->order->get_line_subtotal($item,true);
+                        $_subtotal_inc_tax          = $_subtotal;
+                        $_subtotal_tax              = 0;
+
+                        if ($item_tax_percentage > 0) {
+                            $_aprice_without_tax /= (1 + ($item_tax_percentage / 100));
+                            $_aprice_tax = $_aprice_with_tax - $_aprice_without_tax;
+
+                            $_total /= (1 + ($item_tax_percentage / 100));
+                            $_total_tax = $_total_inc_tax - $_total;
+
+                            $_sub_aprice_without_tax /= (1 + ($item_tax_percentage / 100));
+
+                            $_subtotal /= (1 + ($item_tax_percentage / 100));
+                            $_subtotal_tax = $_subtotal_inc_tax - $_subtotal;
                         }
-                        $item_price = apply_filters( 'billmate_item_price_including_tax', $billmate_item_price_including_tax);
 
-                        if ( $_product->get_sku() ) {
-                            $sku = $_product->get_sku();
+                        $_discount          = 0; /* Discount percentage */
+                        $_discountTotal     = 0;
+                        $_discountTotalTax  = 0;
+
+                        if ($_total != $_subtotal) {
+                            /* Assume discount when total and subtotal not match */
+                            if ($_total > 0) {
+                                $_discount = (1 - ($_total / $_subtotal)) * 100;
+                            }
+                            $_discount_total = $_subtotal - $_total;
+                            $_discount_total_tax = $_subtotal_tax - $_total_tax;
                         } else {
-                            if(version_compare(WC_VERSION, '3.0.0', '>=')) {
-                                $sku = $_product->get_id();
-                            } else {
-                                $sku = $_product->id;
-                            }
-                        }
-
-                        $priceExcl = round($item_price - (100 * $this->order->get_item_tax($item,false)));
-
-                        $subApric = round($billmate_item_standard_price_without_tax, 0);
-                        $_subtotal = $item['qty'] * $subApric;
-                        $_subtotalTax = ($_subtotal * $item_tax_percentage/100);
-                        $_subtotalIncTax = $_subtotal + $_subtotalTax;
-
-                        $_total = ($item['qty'] * ($priceExcl));
-                        $_totalTax = ($_total * $item_tax_percentage/100);
-                        $_totalIncTax = $_total + $_totalTax;
-
-                        $_discountTotal = $_subtotal - $_total;
-                        $_discountTotalTax = $_subtotalTax - $_totalTax;
-
-                        $orderArticle = array(
-                            'quantity'   => (int)$item['qty'],
-                            'artnr'    => $sku,
-                            'title'    => $billmateProduct->getTitle(),
-                            'aprice'    =>  ($discount) ? (round($billmate_item_standard_price_without_tax, 0)) : ($priceExcl),
-                            'taxrate'      => round($item_tax_percentage),
-                            'discount' => ($discount) ? round((1 - ($billmate_item_price_including_tax/$billmate_item_standard_price)) * 100 ,0) : 0,
-                            'withouttax' => $item['qty'] * ($priceExcl),
-
-                            'total' => $_total,
-                            'total_tax' => $_totalTax,
-                            'total_inc_tax' => $_totalIncTax,
-
-                            // Price with no discount
-                            'sub_aprice' => $subApric,
-                            'subtotal' => $_subtotal,
-                            'subtotal_tax' => $_subtotalTax,
-                            'subtotal_inc_tax' => $_subtotalIncTax,
-
-                            'discount_total' => $_discountTotal,
-                            'discount_total_tax' => $_discountTotalTax,
-                        );
-
-                        if($discount == false) {
-                            // This article does not have discount, discount is for individual articles
+                            /* This article does not have discount, discount is for individual articles */
                             $isOrderDiscount = false;
                         }
 
+                        /** Discount cant be lower than 0 */
+                        $_discount              = ($_discount < 0)              ? 0 : $_discount;
+                        $_discount_total        = ($_discount_total < 0)        ? 0 : $_discount_total;
+                        $_discount_total_tax    = ($_discount_total_tax < 0)    ? 0 : $_discount_total_tax;
+
+                        $orderArticle = array(
+                            'quantity'              => $_quantity,
+                            'artnr'                 => $sku,
+                            'title'                 => $billmateProduct->getTitle(),
+                            'aprice'                => round($_aprice_without_tax * 100),
+                            'taxrate'               => round($item_tax_percentage),
+                            'discount'              => $_discount,
+                            'withouttax'            => round($_total * 100),
+                            'total'                 => round($_total * 100),
+                            'total_tax'             => round($_total_tax * 100),
+                            'total_inc_tax'         => round($_total_inc_tax * 100),
+
+                            /** Price with no discount */
+                            'sub_aprice'            => round($_sub_aprice_without_tax * 100),
+                            'subtotal'              => round($_subtotal * 100),
+                            'subtotal_tax'          => round($_subtotal_tax * 100),
+                            'subtotal_inc_tax'      => round($_subtotal_inc_tax * 100),
+
+                            'discount_total'        => round($_discount_total * 100),
+                            'discount_total_tax'    => round($_discount_total_tax * 100),
+
+                            'aprice_with_tax'       => round($_aprice_with_tax * 100),
+                            'sub_aprice_with_tax'   => round($_sub_aprice * 100)
+                        );
 
                         $orderArticles[] = $orderArticle;
 
-                        $totalTemp = ($item['qty'] * ($priceExcl));
-
-                        $total += $totalTemp;
-                        $totalTax += ($totalTemp * $item_tax_percentage/100);
-
-                        $subtotal += $_subtotal;
-                        $subtotalTax += $_subtotalTax;
+                        /* Add to order total */
+                        $total          += $_total          * 100;
+                        $totalTax       += $_total_tax      * 100;
+                        $subtotal       += $_subtotal       * 100;
+                        $subtotalTax    += $_subtotal_tax   * 100;
 
                     } // endif
                 } // endforeach
@@ -1349,7 +1344,7 @@ if(!class_exists('BillmateOrder')){
                     'quantity'      => $orderArticle['quantity'],
                     'artnr'         => $orderArticle['artnr'],
                     'title'         => $orderArticle['title'],
-                    'aprice'        => $orderArticle['aprice'],
+                    'aprice'        => $orderArticle['sub_aprice'],
                     'taxrate'       => $orderArticle['taxrate'],
                     'discount'      => $orderArticle['discount'],
                     'withouttax'    => $orderArticle['withouttax']
@@ -1389,8 +1384,26 @@ if(!class_exists('BillmateOrder')){
                 $totalTax += ($orderFeesArticle['aprice'] * ($orderFeesArticle['taxrate']/100));
             }
 
+            /**
+             * Check if order items have multiple taxrates
+             * Will be used when determine if use own calculated discount or from store
+             */
+            $isOneTaxrate = true;
+            $orderTaxrate = 0;
+            foreach ($orderArticles AS $orderArticle) {
+                if ($orderTaxrate < 1) {
+                    $orderTaxrate = $orderArticle['taxrate'];
+                }
+                if ($orderTaxrate != $orderArticle['taxrate']) {
+                    $isOneTaxrate = false;
+                }
+            }
+
             /* Order discount */
-            if ($isOrderDiscount == true AND count($discountTotals) > 0) {
+            if (    $isOrderDiscount == true
+                    && count($discountTotals) > 0
+                    && $isOneTaxrate ==  false
+            ) {
                 // Order by taxrate ASC
                 ksort($discountTotals);
                 foreach($discountTotals AS $key => $discountAmount) {
@@ -1409,6 +1422,27 @@ if(!class_exists('BillmateOrder')){
                         $totalTax -= (isset($discountTotalTaxs[$key]) ? $discountTotalTaxs[$key] : 0);
                     }
                 }
+            }
+
+            /** Use woocommerce discount when discount affect all order items and all items have same taxrate */
+            if (    $isOrderDiscount == true
+                    && $this->order->get_discount_total() > 0
+                    && $isOneTaxrate == true
+            ) {
+                $discountAmount = $this->order->get_discount_total();
+                $discountAmount = round($discountAmount * 100);
+                $this->orderData['Articles'][] = array(
+                    'quantity'      => (int)1,
+                    'artnr'         => "",
+                    'title'         => sprintf(__('Discount %s%% tax', 'billmate'),round($taxrate,0)),
+                    'aprice'        => abs($discountAmount),
+                    'taxrate'       => $orderTaxrate,
+                    'discount'      => (float)0,
+                    'withouttax'    => -abs($discountAmount),
+                );
+
+                $total      -= $discountAmount;
+                $totalTax   -= round($this->order->get_discount_tax() * 100);
             }
 
             foreach ($this->orderData['Articles'] AS $i => $article) {
@@ -1438,14 +1472,32 @@ if(!class_exists('BillmateOrder')){
 
         public function getCartShipping() {
 
-            $price = 0;
-            $taxrate = 0;
-            $tax = 0;
-            $shipping_price = 0;
+            $taxrate        = 0;
+            $shipping_total = 0;
+            $shipping_tax   = 0;
 
             if(version_compare(WC_VERSION, '3.0.0', '>=')) {
-                $order_shipping_total = $this->order->get_shipping_total();
-                $order_shipping_tax = $this->order->get_shipping_tax();
+                $order_shipping_total   = $this->order->get_shipping_total();
+                $order_shipping_tax     = $this->order->get_shipping_tax();
+
+                $cart_shipping_total    = WC()->cart->shipping_total;
+                $cart_shipping_tax      = WC()->cart->shipping_tax_total;
+
+                $shipping_total     = $order_shipping_total;
+                $shipping_tax       = $order_shipping_tax;
+
+                /*
+                 * When shipping is available in cart and total is same as order, use cart tax
+                 * In this case cart shipping tax is more accurate than order shipping tax
+                 */
+                if (    $cart_shipping_total > 0
+                        && $order_shipping_total > 0
+                        && $shipping_tax > 0
+                        && $order_shipping_tax > 0
+                        && $cart_shipping_total == $order_shipping_total
+                ) {
+                    $shipping_tax = $cart_shipping_tax;
+                }
 
                 if ($order_shipping_tax > 0 AND is_object(WC()->cart) == true AND method_exists(WC()->cart, 'get_cart_item_tax_classes') == true) {
                     // Get shipping tax rate from cart
@@ -1454,36 +1506,31 @@ if(!class_exists('BillmateOrder')){
                         $taxrate = round($rates['rate']);
                     }
                 }
-
             } else {
-                $order_shipping_total = $this->order->order_shipping;
-                $order_shipping_tax = $this->order->order_shipping_tax;
+                $shipping_total   = $this->order->order_shipping;
+                $shipping_tax     = $this->order->order_shipping_tax;
             }
-            if ($order_shipping_total > 0) {
 
-                // We manually calculate the shipping taxrate percentage here
-                $calculated_shipping_tax_percentage = ($order_shipping_tax / $order_shipping_total) * 100; //25.00
-                $calculated_shipping_tax_decimal = ($order_shipping_tax / $order_shipping_total) + 1; //0.25
-
-                // apply_filters to Shipping so we can filter this if needed
-                $billmate_shipping_price_including_tax = $order_shipping_total * $calculated_shipping_tax_decimal;
-                $shipping_price = apply_filters( 'billmate_shipping_price_including_tax', $billmate_shipping_price_including_tax );
-
-                $price = ($shipping_price - $order_shipping_tax) * 100;
-                $tax = (($shipping_price - $order_shipping_tax) * ($calculated_shipping_tax_percentage / 100)) * 100;
-
-                if ($taxrate < 1) {
-                    $taxrate = round($calculated_shipping_tax_percentage);
+            /**
+             * We dont know if $order_shipping_total is rounded or not
+             * We know that $order_shipping_tax is not rounded and is accurate
+             * Get $order_shipping_total based on tax and taxrate
+             */
+            if ($shipping_total > 0 AND $shipping_tax > 0) {
+                if ($taxrate > 0) {
+                    $shipping_total = $shipping_tax / ($taxrate / 100);
+                } else {
+                    /** No taxrate available, get taxrate based on $shipping_total and $shipping_tax */
+                    $taxrate = ($shipping_tax / $shipping_total) * 100;
                 }
             }
 
             return array(
-                "price" => $price,
-                "taxrate" => $taxrate,
-                "tax" => $tax,
-                "price_with_tax" => ($shipping_price * 100)
+                "price"             => round($shipping_total * 100),
+                "taxrate"           => round($taxrate),
+                'tax'               => round($shipping_tax * 100),
+                "price_with_tax"    => round(($shipping_total + $shipping_tax) * 100)
             );
-
         }
 
         public function is_wc3() {
@@ -1531,6 +1578,65 @@ if(!class_exists('BillmateOrder')){
             }
             return $billmateOrderArticles;
         }
+
+        /**
+         * Maybe convert price to customer selected currency if available
+         * @param float|int
+         * @return float|int
+         */
+        public static function maybeConvertCurrency($price) {
+            /** When WPML multi currency is available use selected currency rate on $invoice_fee_withtax that will be displayed to customer */
+            if (function_exists('has_filter') AND has_filter('wcml_raw_price_amount')) {
+                $price = apply_filters('wcml_raw_price_amount', $price);
+            }
+            return $price;
+        }
+
+        public static function formatPrice($price = 0) {
+            return round($price * 100);
+        }
+
+
+        public static function getTaxRateFromClass($tax_class) {
+            $tax = new WC_Tax();
+            $rate = $tax->get_rates($tax_class);
+            $rate = array_pop($rate);
+            $rate = $rate['rate'];
+            return $rate;
+        }
+
+        public static function getFormattedInvoiceFee() {
+            $price_with_tax = 0;
+            $price          = 0;
+            $taxrate        = 0;
+            $tax            = 0;
+
+            $invoice_fee    = new WC_Gateway_Billmate_Invoice;
+            $taxrate        = self::getTaxRateFromClass($invoice_fee->invoice_fee_tax_class);
+            $price          = self::maybeConvertCurrency($invoice_fee->invoice_fee);
+            $price_with_tax = $price;
+
+            if ($price > 0 AND $taxrate > 0) {
+                $price_with_tax *= (1 + ($taxrate / 100));
+                $tax = $price_with_tax - $price;
+            }
+
+            $price_with_tax = wc_format_decimal( $price_with_tax, get_option( 'woocommerce_price_num_decimals' ) );
+            if ($taxrate > 0) {
+                $price  = $price_with_tax / (1 + ($taxrate/100));
+                $tax    = $price_with_tax - $price;
+            }
+
+            return array(
+                'price_with_tax'    => self::formatPrice($price_with_tax),
+                'price'             => self::formatPrice($price),
+                'taxrate'           => round($taxrate),
+                'tax'               => self::formatPrice($tax),
+                'raw_price'         => $invoice_fee->invoice_fee,
+                'raw_tax_class'     => $invoice_fee->invoice_fee_tax_class
+            );
+        }
+
     }
 }
 
@@ -1569,5 +1675,45 @@ if(!class_exists('BillmateProduct')) {
 
             return $name;
         }
+
+
+        public function getSku()
+        {
+            if ( $this->product->get_sku() ) {
+                $sku = $this->product->get_sku();
+            } else {
+                if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+                    $sku = $this->product->get_id();
+                } else {
+                    $sku = $this->product->id;
+                }
+            }
+            return $sku;
+        }
+
+
+        public function getTaxRate()
+        {
+            $item_tax_percentage = 0;
+
+            // is product taxable?
+            if ($this->product->is_taxable()) {
+                $taxClass = $this->product->get_tax_class();
+                $tax = new WC_Tax();
+                $rates = $tax->get_rates($taxClass);
+                $item_tax_percentage = 0;
+                foreach ($rates as $row) {
+                    // Is it Compound Tax?
+                    if (isset($row['compund']) && $row['compound'] == 'yes') {
+                        $item_tax_percentage += $row['rate'];
+                    } else {
+                        $item_tax_percentage = $row['rate'];
+                    }
+                }
+            }
+            return $item_tax_percentage;
+        }
+
+
     }
 }
