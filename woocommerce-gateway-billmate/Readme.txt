@@ -3,8 +3,8 @@ Contributors: Billmate
 Donate link:
 Tags: woocomerce, billmate, payments, cardpayments, invoice, partpayment, recurring, bankpayment
 Requires at least: 4.0
-Tested up to: 4.8.1
-Stable tag: 3.0.8
+Tested up to: 4.9.1
+Stable tag: 3.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -87,6 +87,16 @@ If you would like to use our logo on your site then choose following:
 
 
 == Changelog ==
+
+= 3.1.0 (2017-12-19) =
+* Fix - BC add handling fee on store order when set orderstatus is not default
+* Fix - BC support for autoactivate order on creation
+* Fix - Tax calculation when free shipping
+* Enhancement - Improve rounding accuracy for prices set including tax and zero decimals
+* Enhancement - WooCommerce subscription support for change card information and manually pay failed subscription order
+* Enhancement - Invoice fee support for WPML currency
+* Enhancement - Improve shipping tax calculation
+* Enhancement - Replace Cardpayment logo
 
 = 3.0.8 (2017-10-10) =
 * Fix - Fix order completed when not paid with Billmate
