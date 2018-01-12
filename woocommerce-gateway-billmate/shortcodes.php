@@ -60,7 +60,7 @@ function get_billmate_checkout(){
         $wpLanguage = strtolower(current(explode('_',get_locale())));
 
         if($checkoutUrl != "") {
-		  return '<div id="checkoutdiv"><iframe id="checkout" src="' . $checkoutUrl . '" sandbox="allow-same-origin allow-scripts allow-modals allow-popups allow-forms allow-top-navigation" style="width:100%;min-height:800px;border:none;" scrolling="no"></iframe><div class="billmateoverlay"></div><div class="billmateloading"></div></div>';
+		  return '<div id="checkoutdiv"><iframe id="checkout" src="' . $checkoutUrl . '" sandbox="allow-same-origin allow-scripts allow-modals allow-popups allow-forms allow-top-navigation" style="width:100%;min-height:800px;border:none;" scrolling="no"></iframe>';
         } else {
             $checkoutError = $checkout->get_error();
             if($wpLanguage != "sv") {
