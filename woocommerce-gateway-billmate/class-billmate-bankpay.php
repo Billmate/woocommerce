@@ -123,7 +123,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
         $config = array(
             'testmode' => $this->testmode,
             'method_id' => $this->id,
-            'method_title' => $this->method_title,
+            'method_title' => $this->title,
             'checkoutMessageCancel' => $checkoutMessageCancel,
             'checkoutMessageFail' => $checkoutMessageFail,
             'transientPrefix' => $transientPrefix,

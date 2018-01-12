@@ -737,14 +737,6 @@ function init_billmate_gateway() {
                                 if (isset($billmateOrder['PaymentData']['method'])) {
                                     $billmateOrderMethod = $billmateOrder['PaymentData']['method'];
                                 }
-
-                                if ( $billmateOrderMethod == '8' ) {
-                                    $_method_title = __('Billmate Cardpay', 'billmate');
-                                }
-
-                                if( $billmateOrderMethod == '16' ) {
-                                    $_method_title = __('Billmate Bank', 'billmate');
-                                }
                             }
 
                         }
