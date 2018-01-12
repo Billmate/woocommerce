@@ -777,8 +777,10 @@ function init_billmate_gateway() {
                         $storeOrderTotalCompare     = intval( strval( $order->get_total() * 100 ) );
                         $billmateOrderTotalCompare  = intval($billmateOrderTotal);
 
-
-                        if ($storeOrderTotalCompare == $billmateOrderTotalCompare) {
+                        // Allow diff in case of store rounding
+                        if (    $storeOrderTotalCompare - 300 <= $billmateOrderTotalCompare
+                                && $storeOrderTotalCompare + 300 >= $billmateOrderTotalCompare
+                        ) {
                             // Set order as paid if paid amount matches order total amount
                             if ($this->order_status != 'default') {
                                 $order->update_status($this->order_status);
@@ -810,8 +812,8 @@ function init_billmate_gateway() {
                                 $floatCompare = round(floatval($compare), 2);
                                 $floatGettotal = round(floatval($order->get_total()), 2);
 
-
-                                if ($floatGettotal == $floatCompare) {
+                                // Allow diff in case of store rounding
+                                if ($floatGettotal - 3 <= $floatCompare && $floatGettotal + 3 >= $floatCompare) {
                                     // Assume handling fee is missing, add handling fee and mark order as paid
 
                                     // Handling fee tax rates
