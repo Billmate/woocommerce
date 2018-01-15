@@ -10,6 +10,7 @@ jQuery(document).ready(function(){
 var BillmateIframe = new function(){
     var self = this;
     var childWindow = null;
+    var timerPostMessage;
 
     this.updateAddress = function (data) {
         // When address in checkout updates;
@@ -183,11 +184,21 @@ var BillmateIframe = new function(){
     }
 
     this.lock = function() {
-        this.checkoutPostMessage('lock');
+        that = this;
+        clearTimeout(this.timerPostMessage);
+        var wait = setTimeout(function() {
+            that.checkoutPostMessage('lock');
+        }, 500);
+        this.timerPostMessage = wait;
     }
 
     this.unlock = function() {
-        this.checkoutPostMessage('unlock');
+        that = this;
+        clearTimeout(this.timerPostMessage);
+        var wait = setTimeout(function() {
+            that.checkoutPostMessage('unlock');
+        }, 500);
+        this.timerPostMessage = wait;
     }
 
     var showCheckoutLoadingCounter = 0;
