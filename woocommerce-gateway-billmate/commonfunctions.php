@@ -1209,6 +1209,8 @@ if(!class_exists('BillmateOrder')){
             /* Return articles and discout to be used in Billmate API requests */
             if(isset($this->orderData['Articles'])) {
                 return $this->orderData['Articles'];
+            } else {
+                $this->orderData['Articles'] = array();
             }
 
             /* Articles */

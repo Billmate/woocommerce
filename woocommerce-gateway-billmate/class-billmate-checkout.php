@@ -575,6 +575,15 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         if(isset($order)){
             $order->remove_order_items();
 
+            /** WooCommerce >= 3.0 */
+            if (is_callable(array(WC()->checkout, 'create_order_line_items'))) {
+                $order_items = $order->get_items( array( 'line_item' ) );
+                if (empty($order_items)) {
+                    WC()->checkout->create_order_line_items($order, WC()->cart);
+                }
+            }
+
+            /** WooCommerce < 3.0 */
             $order_items = $order->get_items( array( 'line_item' ) );
             if ( empty( $order_items ) ) {
                 foreach ( WC()->cart->get_cart() as $key => $values ) {
