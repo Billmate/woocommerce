@@ -10,6 +10,7 @@ jQuery(document).ready(function(){
 var BillmateIframe = new function(){
     var self = this;
     var childWindow = null;
+    var timerPostMessage;
 
     this.updateAddress = function (data) {
         // When address in checkout updates;
@@ -40,7 +41,6 @@ var BillmateIframe = new function(){
                 if(response.hasOwnProperty("success") && response.success) {
                     window.address_selected = true;
                 }
-                self.hideCheckoutLoading();
                 self.updateCheckout();
             }
         });
@@ -105,32 +105,25 @@ var BillmateIframe = new function(){
 
         /* Listen to WooCommerce checkout elements */
         jQuery(document).on('click', "input[name='update_cart']", function() {
-            jQuery('#checkoutdiv').addClass('loading');
-            jQuery("#checkoutdiv.loading .billmateoverlay").height(jQuery("#checkoutdiv").height());
+            self.lock();
         });
         jQuery( document ).on('click', 'div.woocommerce > form input[type=submit]', function() {
-                jQuery('#checkoutdiv').addClass('loading');
-                jQuery("#checkoutdiv.loading .billmateoverlay").height(jQuery("#checkoutdiv").height());
+            self.lock();
         });
         jQuery( document ).on('keypress', 'div.woocommerce > form input[type=number]', function() {
-                jQuery('#checkoutdiv').addClass('loading');
-                jQuery("#checkoutdiv.loading .billmateoverlay").height(jQuery("#checkoutdiv").height());
+            self.lock();
         });
         jQuery( document ).on('submit', 'div.woocommerce:not(.widget_product_search) > form', function() {
-                jQuery('#checkoutdiv').addClass('loading');
-                jQuery("#checkoutdiv.loading .billmateoverlay").height(jQuery("#checkoutdiv").height());
+            self.lock();
         });
         jQuery( document ).on('click', 'a.woocommerce-remove-coupon', function() {
-                jQuery('#checkoutdiv').addClass('loading');
-                jQuery("#checkoutdiv.loading .billmateoverlay").height(jQuery("#checkoutdiv").height());
+            self.lock();
         });
         jQuery( document ).on('click', 'td.product-remove > a', function() {
-                jQuery('#checkoutdiv').addClass('loading');
-                jQuery("#checkoutdiv.loading .billmateoverlay").height(jQuery("#checkoutdiv").height());
+            self.lock();
         });
         jQuery( document ).on('change', 'select.shipping_method, input[name^=shipping_method]', function() {
-                jQuery('#checkoutdiv').addClass('loading');
-                jQuery("#checkoutdiv.loading .billmateoverlay").height(jQuery("#checkoutdiv").height());
+            self.lock();
         });
 
         /* Updated cart totals */
@@ -180,26 +173,50 @@ var BillmateIframe = new function(){
 
     };
 
-    this.updateCheckout = function(){
+    this.checkoutPostMessage = function(message) {
         var win = document.getElementById('checkout').contentWindow;
-        win.postMessage(JSON.stringify({event: 'update_checkout'}),'*')
+        win.postMessage(message,'*')
+    }
+
+    this.updateCheckout = function(){
+        this.lock();
+        this.checkoutPostMessage('update');
+    }
+
+    this.lock = function() {
+        that = this;
+        clearTimeout(this.timerPostMessage);
+        var wait = setTimeout(function() {
+            that.checkoutPostMessage('lock');
+        }, 500);
+        this.timerPostMessage = wait;
+    }
+
+    this.unlock = function() {
+        that = this;
+        clearTimeout(this.timerPostMessage);
+        var wait = setTimeout(function() {
+            that.checkoutPostMessage('unlock');
+        }, 500);
+        this.timerPostMessage = wait;
     }
 
     var showCheckoutLoadingCounter = 0;
     this.showCheckoutLoading = function() {
-        showCheckoutLoadingCounter++;
-        jQuery('#checkoutdiv').addClass('loading');
-        jQuery("#checkoutdiv.loading .billmateoverlay").height(jQuery("#checkoutdiv").height());
-    }
-
-    this.hideCheckoutLoading = function() {
-        showCheckoutLoadingCounter--;
         if(showCheckoutLoadingCounter < 1) {
             showCheckoutLoadingCounter = 0;
         }
 
+        showCheckoutLoadingCounter++;
+        self.lock();
+    }
+
+    this.hideCheckoutLoading = function() {
+        showCheckoutLoadingCounter--;
+
         if(showCheckoutLoadingCounter < 1) {
-            jQuery('#checkoutdiv').removeClass('loading');
+            showCheckoutLoadingCounter = 0;
+            self.unlock();
         }
     }
 

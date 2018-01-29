@@ -1,5 +1,5 @@
 <?php
-define('BILLPLUGIN_VERSION','3.1.0');
+define('BILLPLUGIN_VERSION','3.1.1');
 define('BILLMATE_CLIENT','PHP:Woocommerce:'.BILLPLUGIN_VERSION);
 define('BILLMATE_SERVER','2.1.9');
 
@@ -1209,6 +1209,8 @@ if(!class_exists('BillmateOrder')){
             /* Return articles and discout to be used in Billmate API requests */
             if(isset($this->orderData['Articles'])) {
                 return $this->orderData['Articles'];
+            } else {
+                $this->orderData['Articles'] = array();
             }
 
             /* Articles */

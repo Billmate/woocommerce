@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce Billmate Gateway
 Plugin URI: http://woothemes.com/woocommerce
 Description: Receive payments on your WooCommerce store via Billmate. Invoice, partpayment, credit/debit card and direct bank transfers. Secure and 100&#37; free plugin.
-Version: 3.1.0
+Version: 3.1.1
 Author: Billmate
 Text Domain: billmate
 Author URI: https://billmate.se
@@ -737,14 +737,6 @@ function init_billmate_gateway() {
                                 if (isset($billmateOrder['PaymentData']['method'])) {
                                     $billmateOrderMethod = $billmateOrder['PaymentData']['method'];
                                 }
-
-                                if ( $billmateOrderMethod == '8' ) {
-                                    $_method_title = __('Billmate Cardpay', 'billmate');
-                                }
-
-                                if( $billmateOrderMethod == '16' ) {
-                                    $_method_title = __('Billmate Bank', 'billmate');
-                                }
                             }
 
                         }
@@ -777,8 +769,10 @@ function init_billmate_gateway() {
                         $storeOrderTotalCompare     = intval( strval( $order->get_total() * 100 ) );
                         $billmateOrderTotalCompare  = intval($billmateOrderTotal);
 
-
-                        if ($storeOrderTotalCompare == $billmateOrderTotalCompare) {
+                        // Allow diff in case of store rounding
+                        if (    $storeOrderTotalCompare - 300 <= $billmateOrderTotalCompare
+                                && $storeOrderTotalCompare + 300 >= $billmateOrderTotalCompare
+                        ) {
                             // Set order as paid if paid amount matches order total amount
                             if ($this->order_status != 'default') {
                                 $order->update_status($this->order_status);
@@ -810,8 +804,8 @@ function init_billmate_gateway() {
                                 $floatCompare = round(floatval($compare), 2);
                                 $floatGettotal = round(floatval($order->get_total()), 2);
 
-
-                                if ($floatGettotal == $floatCompare) {
+                                // Allow diff in case of store rounding
+                                if ($floatGettotal - 3 <= $floatCompare && $floatGettotal + 3 >= $floatCompare) {
                                     // Assume handling fee is missing, add handling fee and mark order as paid
 
                                     // Handling fee tax rates
