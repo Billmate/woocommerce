@@ -7,7 +7,7 @@ By Billmate AB - [https://billmate.se](https://billmate.se/ "billmate.se")
 [Installation manual in Swedish](https://billmate.se/plugins/manual/Installationsmanual_Woocommerce_Billmate.pdf)
 
 ## Description 
-Billmate Gateway is a payment plugin for WooCommerce that gives your customers the abilty to pay with their favourite payment options. This plugin supports the WooCommerce standard checkout as well as the improved checkout experience that Billmate Checkout brings. Billmate Checkout integrates via a iframe soloution. 
+Billmate Gateway is a payment plugin for WooCommerce that gives your customers the ability to pay with their favorite payment options. This plugin supports the WooCommerce standard checkout as well as the improved checkout experience that Billmate Checkout brings. Billmate Checkout integrates via a iframe solution.
 
 ## Available payment methods
 * Invoice
@@ -16,7 +16,7 @@ Billmate Gateway is a payment plugin for WooCommerce that gives your customers t
 * Bank (Direct Bank payment through [Trustly](https://www.trustly.com))
 
 ## Important note
-The invoice and part payment plugin only works if the currency is set to Swedish Krona (SEK) and the Base country is set to Sweden.
+The invoice and part payment plugin only work if the currency is set to Swedish Krona (SEK) and the Base country is set to Sweden.
 
 ## Compatibility WordPress versions
 4.5.4 - 4.9.1
@@ -25,7 +25,7 @@ The invoice and part payment plugin only works if the currency is set to Swedish
 2.5.5 - 3.2.6
 
 ## Installation
-The simplest way to install this module is through the Wordpress Plugin Directory. However if you want to install manually, follow the steps below-
+The simplest way to install this module is through the WordPress Plugin Directory. However, if you want to install manually, follow the steps below-
 1. Download and unzip the latest release zip file.
 2. If you use the WordPress plugin uploader to install this plugin skip to step 4.
 3. Upload the entire plugin directory to your /wp-content/plugins/ directory.
