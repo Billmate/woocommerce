@@ -1,5 +1,50 @@
 # Changelog
 
+## 3.1.0 (2017-12-19)
+* Fix - BC add handling fee on store order when set orderstatus is not default
+* Fix - BC support for autoactivate order on creation
+* Fix - Tax calculation when free shipping
+* Enhancement - Improve rounding accuracy for prices set including tax and zero decimals
+* Enhancement - WooCommerce subscription support for change card information and manually pay failed subscription order
+* Enhancement - Invoice fee support for WPML currency
+* Enhancement - Improve shipping tax calculation
+* Enhancement - Replace Cardpayment logo
+
+
+## 3.0.8 (2017-10-10)
+* Fix - Fix order completed when not paid with Billmate
+
+## 3.0.7 (2017-10-09)
+* Fix - Add missing handling fee on order paid with checkout and rely on callback
+* Enhancement - Use method 2 if 1 is unavailable
+* Fix - handle shipping with no tax
+* Enhancement - Prevent cache of checkout page
+* Enhancement - Improve error messages on order note if order activation not success
+* Enhancement - Change order of getAddress to be done after try first with addPayment
+* Fix - Add handling fee to store order when pay_for_order isset
+* Fix - Display partpayment info on product page once
+
+## 3.0.6 (2017-09-14)
+* Improve - Improve the selected currency check when display payment methods
+* Improve - Support for additional get parameters
+* Improve - Support for activate Billmate Checkout invoice on callback
+
+## 3.0.5 (2017-07-28)
+* Fix - Improve Billmate Checkout speed and communication
+
+## 3.0.4 (2017-07-15)
+* Fix - WooCommerce Subscription 2.2.8 compatibility
+* Enhancement - Add links in plugin list
+
+## 3.0.3 (2017-06-12)
+* Fix - Support discount 12% vat
+* Enhancement - Discount can be on item level or order level
+* Enhancement - Use order item name if standard product
+
+## 3.0.2 (2017-06-07)
+* Fix - Improve compatibility with WC 3
+* Fix - Improve Billmate Checkout
+
 ## 3.0.1 (2017-05-16)
 * Fix - Improve compatibility with WC 3
 * Fix - Improve compatibility with PHP 7
