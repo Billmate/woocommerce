@@ -4,7 +4,7 @@
 * Fix - Bank payments now always use the same string where it's referenced.
 * Fix - Rounding improvements. Under some rare circumstances the amount can be different from payment window to callback and/or accept url. 
 * Enhancement - Improved loading animation for Checkout - The loading animation is more precise triggered when needed.
-* Feature - Support for plugin "Procut Add-Ons" in combination with Billmate Checkout.
+* Feature - Support for plugin "Product Add-Ons" in combination with Billmate Checkout.
 
 ## 3.1.0 (2017-12-19)
 * Fix - BC add handling fee on store order when set orderstatus is not default
