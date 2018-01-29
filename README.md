@@ -1,4 +1,4 @@
-# Billmate Payment Gateway for WooCommerce
+#Billmate Payment Gateway for WooCommerce
 By Billmate AB - [https://billmate.se](https://billmate.se/ "billmate.se")
 
 ## Documentation
@@ -46,14 +46,17 @@ Copy the code below for the size that fits your needs.
 
 ### Large
 <a href="https://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_l.png" alt="Billmate Payment Gateway" /></a>
+
 `<a href="https://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_l.png" alt="Billmate Payment Gateway" /></a>`
 
 ### Medium
 <a href="https://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_m.png" alt="Billmate Payment Gateway" /></a>
+
 `<a href="https://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_m.png" alt="Billmate Payment Gateway" /></a>`
 
 ### Small
 <a href="https://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_s.png" alt="Billmate Payment Gateway" /></a>
+
 `<a href="https://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_s.png" alt="Billmate Payment Gateway" /></a>`
 
 ## Testing
