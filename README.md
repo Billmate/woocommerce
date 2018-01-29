@@ -6,27 +6,26 @@ By Billmate AB - [https://billmate.se](https://billmate.se/ "billmate.se")
 
 [Installation manual in Swedish](https://billmate.se/plugins/manual/Installationsmanual_Woocommerce_Billmate.pdf)
 
-## Description
-Billmate Gateway is a plugin that extends WooCommerce, allowing your customers to get their products first and pay by invoice to Billmate later (https://billmate.se/). This plugin utilizes Billmate Invoice, Billmate Card, Billmate Bank and Billmate Part Payment (Standard Integration type).
+## Description 
+Billmate Gateway is a payment plugin for WooCommerce that gives your customers the abilty to pay with their favourite payment options. This plugin supports the WooCommerce standard checkout as well as the improved checkout experience that Billmate Checkout brings. Billmate Checkout integrates via a iframe soloution. 
 
-When the order is passed to Billmate a credit record of the customer is made. If the check turns out all right, Billmate creates an invoice in their system. After you (as the merchant) completes the order in WooCommerce, you need to log in to Billmate to approve/send the invoice.
-
-Billmate is a great payment alternative for merchants and customers in Sweden.
-
+## Available payment methods
+* Invoice
+* Part payment
+* Card
+* Bank (Direct Bank payment through [Trustly](https://www.trustly.com))
 
 ## Important note
 The invoice and part payment plugin only works if the currency is set to Swedish Krona (SEK) and the Base country is set to Sweden.
 
-## COMPATIBILITY WordPress versions
+## Compatibility WordPress versions
 4.5.4 - 4.9.1
 
-## COMPATIBILITY WooCommerce versions
+## Compatibility WooCommerce versions
 2.5.5 - 3.2.6
 
-## COMPATIBILITY WooCommerce checkout
-* WooCommerce default checkout 2.5.5 - 3.2.6
-
 ## Installation
+The simplest way to install this module is through the Wordpress Plugin Directory. However if you want to install manually, follow the steps below-
 1. Download and unzip the latest release zip file.
 2. If you use the WordPress plugin uploader to install this plugin skip to step 4.
 3. Upload the entire plugin directory to your /wp-content/plugins/ directory.
@@ -35,8 +34,8 @@ The invoice and part payment plugin only works if the currency is set to Swedish
 6. Go to --> WooCommerce --> Settings --> Payment Gateways and configure your Billmate settings.
 7. Billmate Part Payment: Click the button "Update paymentplans" on the settings page to fetch your shops PClasses and store them in the database.
 
-## Can I use Wordfence or other Firewall plugin?
-You need to make sure our callback IP, 54.194.217.63, is whitelisted  in Wordfence. Navigate to "Wordfence -> Options" and scroll down to "Other Options". Add our ip-number next to "Whitelisted IP addresses that bypass all rules" and it should go.
+## Can I use Wordfence or any other Firewall plugin?
+You need to make sure our callback IP, 54.194.217.63, is whitelisted  in Wordfence. Navigate to "Wordfence -> Options" and scroll down to "Other Options". Add our ip-number next to "Whitelisted IP addresses that bypass all rules" and it should work. If not, please contact our support, support@billmate.se.
 
 ## How to place Billmate logo on your site.
 Copy the code below for the size that fits your needs.
