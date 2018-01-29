@@ -37,6 +37,10 @@ The simplest way to install this module is through the WordPress Plugin Director
 ## Can I use Wordfence or any other Firewall plugin?
 You need to make sure our callback IP, 54.194.217.63, is whitelisted  in Wordfence. Navigate to "Wordfence -> Options" and scroll down to "Other Options". Add our ip-number next to "Whitelisted IP addresses that bypass all rules" and it should work. If not, please contact our support, support@billmate.se.
 
+## Verified compatible external plugins
+* [WooCommerce Subsciption](https://woocommerce.com/products/woocommerce-subscriptions/ "WooCommerce Subsciption")
+* [Product Add-Ons](https://woocommerce.com/products/product-add-ons/ "Product Add-Ons")
+
 ## How to place Billmate logo on your site.
 Copy the code below for the size that fits your needs.
 
