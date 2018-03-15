@@ -12,9 +12,32 @@ var BillmateIframe = new function(){
     var childWindow = null;
     var timerPostMessage;
 
+    var currentCustomerBillingZip;
+
     this.updateAddress = function (data) {
         // When address in checkout updates;
         data.action = 'billmate_update_address';
+
+        if (data.hasOwnProperty('Customer') && data.hasOwnProperty('billingAddress')) {
+            data.Customer.Billing = data.billingAddress;
+        }
+
+        /**
+         * Support WooCommerce Shipping calculation
+         */
+         if (   jQuery('form.woocommerce-shipping-calculator').length > 0
+                && jQuery('#calc_shipping_postcode').length > 0) {
+            zip = '';
+            if (data.hasOwnProperty('Customer') && data.Customer.hasOwnProperty('Billing') && data.Customer.Billing.hasOwnProperty('zip')) {
+                zip = data.Customer.Billing.zip.replace(/[^0-9\.]/g, '');
+            }
+            if (zip != '' && (zip != this.currentCustomerBillingZip || zip != jQuery('#calc_shipping_postcode').val())) {
+                this.currentCustomerBillingZip = zip;
+                jQuery('#calc_shipping_postcode').val(zip);
+                jQuery('form.woocommerce-shipping-calculator').submit();
+            }
+         }
+
         self.showCheckoutLoading();
         jQuery.ajax({
             url : billmate.ajax_url,

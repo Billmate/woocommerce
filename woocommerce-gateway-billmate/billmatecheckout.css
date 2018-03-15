@@ -8,6 +8,7 @@
     overflow: auto;
 }
 
+form.woocommerce-shipping-calculator,
 .wc-proceed-to-checkout {
     display:none!important;
     height: 0px !important;
