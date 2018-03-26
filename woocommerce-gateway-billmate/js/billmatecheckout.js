@@ -28,8 +28,11 @@ var BillmateIframe = new function(){
          if (   jQuery('form.woocommerce-shipping-calculator').length > 0
                 && jQuery('#calc_shipping_postcode').length > 0) {
             zip = '';
-            if (data.hasOwnProperty('Customer') && data.Customer.hasOwnProperty('Billing') && data.Customer.Billing.hasOwnProperty('zip')) {
+            if (data.hasOwnProperty('Customer') && data.Customer.hasOwnProperty('Billing') && data.Customer.Billing.hasOwnProperty('zip') && data.Customer.Billing.zip != '') {
                 zip = data.Customer.Billing.zip.replace(/[^0-9\.]/g, '');
+            }
+            if (data.hasOwnProperty('Customer') && data.Customer.hasOwnProperty('Shipping') && data.Customer.Shipping.hasOwnProperty('zip') && data.Customer.Shipping.zip != '') {
+                zip = data.Customer.Shipping.zip.replace(/[^0-9\.]/g, '');
             }
             if (zip != '' && (zip != this.currentCustomerBillingZip || zip != jQuery('#calc_shipping_postcode').val())) {
                 this.currentCustomerBillingZip = zip;
