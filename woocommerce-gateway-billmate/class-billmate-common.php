@@ -17,11 +17,89 @@ class BillmateCommon {
         add_action('wp_ajax_nopriv_getaddress',array($this,'getaddress'));
         add_action('wp_ajax_getaddress',array($this,'getaddress'));
         add_action('woocommerce_checkout_before_customer_details',array($this,'get_address_fields'));
-		add_action( 'woocommerce_order_status_completed',array($this,'activate_invoice'));
+        add_action( 'woocommerce_order_status_completed',array($this,'activate_invoice'));
+        add_action( 'woocommerce_order_status_cancelled',array($this,'cancel_invoice'));
+		add_action( 'woocommerce_order_status_refunded',array($this,'cancel_invoice'));
 		add_filter('woocommerce_payment_successful_result',array($this,'clear_pno'));
 
 
 	}
+
+    /**
+     * cancelPayment if Billmate order is not already activated
+     * creditPayment if Billmate order is activated
+     */
+    public function cancel_invoice($order_id) {
+
+        if (get_option('billmate_common_cancelonstatus') == 'active') {
+
+            $billmateInvoiceId  = get_post_meta($order_id, 'billmate_invoice_id', true);
+            $paymentMethod      = get_post_meta($order_id,'_payment_method');
+
+            $method = false;
+            switch($paymentMethod[0]){
+                case 'billmate_partpayment':
+                    $method = new WC_Gateway_Billmate_Partpayment();
+                    break;
+                case 'billmate_invoice':
+                    $method = new WC_Gateway_Billmate_Invoice();
+                    break;
+                case 'billmate_bankpay':
+                    $method = new WC_Gateway_Billmate_Bankpay();
+                    break;
+                case 'billmate_cardpay':
+                    $method = new WC_Gateway_Billmate_Cardpay();
+                    break;
+                case 'billmate_checkout':
+                    $method = new WC_Gateway_Billmate_Checkout();
+                    break;
+            }
+
+            if($method !== false) {
+                $billmate = new BillMate(get_option('billmate_common_eid'), get_option('billmate_common_secret'), true, $method->testmode == 'yes', false);
+                $order = new WC_Order($order_id);
+
+                if ($billmateInvoiceId = get_post_meta($order_id, 'billmate_invoice_id', true)) {
+
+                    $paymentInfo = $billmate->getPaymentinfo(array('number' => $billmateInvoiceId));
+
+                    if (    is_array($paymentInfo)
+                            && isset($paymentInfo['PaymentData'])
+                            && is_array($paymentInfo['PaymentData'])
+                            && isset($paymentInfo['PaymentData']['status'])
+                    ) {
+                        if ($paymentInfo['PaymentData']['status'] == 'Created') {
+                            // Created Billmate order Try cancelPayment
+                            $result = $billmate->cancelPayment(array('PaymentData' => array('number' => $billmateInvoiceId)));
+                            $result['message'] = isset($result['message']) ? utf8_encode($result['message']) : '';
+                            if (isset($result['code'])) {
+                                $orderNote = sprintf(__('Billmate: The order payment couldnt be cancelled, error code: %s error message: %s', 'billmate'), $result['code'], $result['message']);
+                            } else {
+                                $orderNote = __('Billmate: The order payment cancelled successfully', 'billmate');
+                            }
+                        } else {
+                            // Not created Try creditPayment
+                            $result = $billmate->creditPayment(array('PaymentData' => array('number' => $billmateInvoiceId)));
+                            $result['message'] = isset($result['message']) ? utf8_encode($result['message']) : '';
+                            if (isset($result['code'])) {
+                                $orderNote = sprintf(__('Billmate: The order payment couldnt be credited, error code: %s error message: %s', 'billmate'), $result['code'], $result['message']);
+                            } else {
+                                $orderNote = __('Billmate: The order payment credited successfully', 'billmate');
+                            }
+                        }
+
+                    } elseif (isset($paymentInfo['code'])) {
+                        $paymentInfo['message'] = utf8_encode($paymentInfo['message']);
+                        $orderNote = sprintf(__('Billmate: The order payment couldnt be activated, error code: %s error message: %s', 'billmate'), $paymentInfo['code'], $paymentInfo['message']);
+                    }
+
+                    if ($orderNote != '') {
+                        $order->add_order_note($orderNote);
+                    }
+                }
+            }
+        }
+    }
 
 	public function activate_invoice($order_id)
 	{
@@ -66,13 +144,13 @@ class BillmateCommon {
 						$result = $billmate->activatePayment(array('PaymentData' => array('number' => $billmateInvoiceId)));
                         $result['message'] = isset($result['message']) ? utf8_encode($result['message']) : '';
 						if (isset($result['code'])) {
-                            $orderNote = sprintf(__('The order payment couldnt be activated, error code: %s error message: %s', 'billmate'), $result['code'], $result['message']);
+                            $orderNote = sprintf(__('Billmate: The order payment couldnt be activated, error code: %s error message: %s', 'billmate'), $result['code'], $result['message']);
 						} else {
-                            $orderNote = __('The order payment activated successfully', 'billmate');
+                            $orderNote = __('Billmate: The order payment activated successfully', 'billmate');
 						}
 					} elseif (isset($paymentInfo['code'])) {
                         $paymentInfo['message'] = utf8_encode($paymentInfo['message']);
-                        $orderNote = sprintf(__('The order payment couldnt be activated, error code: %s error message: %s', 'billmate'), $paymentInfo['code'], $paymentInfo['message']);
+                        $orderNote = sprintf(__('Billmate: The order payment couldnt be activated, error code: %s error message: %s', 'billmate'), $paymentInfo['code'], $paymentInfo['message']);
                     }
 
 				} else {
@@ -173,6 +251,11 @@ class BillmateCommon {
 			'billmate_common_activateonstatus',
 			array($this,'sanitize')
 		);
+        register_setting(
+            'billmate_common',
+            'billmate_common_cancelonstatus',
+            array($this,'sanitize')
+        );
 		add_settings_section(
 			'setting_credentials', // ID
 			__('Common Billmate Settings','billmate'), // Title
@@ -209,6 +292,13 @@ class BillmateCommon {
 			'billmate-settings',
 			'setting_credentials'
 		);
+        add_settings_field(
+            'billmate_common_cancelonstatus',
+            __('Cancel/credit Orders in Billmate Online when orderstatus is cancelled/refunded','billmate'),
+            array($this,'cancelonstatus_callback'),
+            'billmate-settings',
+            'setting_credentials'
+        );
 		add_settings_field(
 			'billmate_common_logo',
 			__('Logo to be displayed in the invoice','billmate'),
@@ -248,6 +338,18 @@ class BillmateCommon {
 		echo '<option value="active"'.$active.'>'.__('Active','billmate').'</option>';
 		echo '</select>';
 	}
+
+    public function cancelonstatus_callback()
+    {
+        $value = get_option('billmate_common_cancelonstatus','');
+        $inactive = ($value == 'inactive') ? 'selected="selected"' : '';
+        $active = ($value == 'active') ? 'selected="selected"' : '';
+        echo '<select name="billmate_common_cancelonstatus" id="billmate_common_cancelonstatus">';
+        echo '<option value="inactive"'.$inactive.'>'.__('Inactive','billmate').'</option>';
+        echo '<option value="active"'.$active.'>'.__('Active','billmate').'</option>';
+        echo '</select>';
+    }
+
     public function getaddress_callback()
     {
         $value = get_option('billmate_common_getaddress','');
