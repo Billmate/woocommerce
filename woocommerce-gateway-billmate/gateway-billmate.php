@@ -917,7 +917,7 @@ function init_billmate_gateway() {
 
                 if( $accept_url_hit ){
                     $redirect = '';
-                    $woocommerce->cart->empty_cart();
+                    WC()->cart->empty_cart();
                     delete_transient($transientPrefix.$order_id);
                     if(version_compare(WC_VERSION, '2.0.0', '<')){
                         $redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))));
@@ -935,7 +935,7 @@ function init_billmate_gateway() {
 
             if( $accept_url_hit ) {
                 // Remove cart
-                $woocommerce->cart->empty_cart();
+                WC()->cart->empty_cart();
                 if(version_compare(WC_VERSION, '2.0.0', '<')){
                     $redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))));
                 } else {
