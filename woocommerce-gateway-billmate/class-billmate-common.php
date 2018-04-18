@@ -84,6 +84,10 @@ class BillmateCommon {
                             if (isset($result['code'])) {
                                 $orderNote = sprintf(__('Billmate: The order payment couldnt be credited, error code: %s error message: %s', 'billmate'), $result['code'], $result['message']);
                             } else {
+                                // Activate the credited payment
+                                if (isset($result['number']) AND $result['number'] != '') {
+                                    $billmate->activatePayment(array('PaymentData' => array('number' => $result['number'])));
+                                }
                                 $orderNote = __('Billmate: The order payment credited successfully', 'billmate');
                             }
                         }
