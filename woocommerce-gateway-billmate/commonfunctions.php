@@ -7,6 +7,10 @@ require_once(BILLMATE_LIB . 'Billmate.php');
 require_once(BILLMATE_LIB . 'billmatecalc.php');
 require_once dirname( __FILE__ ) .'/utf8.php';
 
+if (!function_exists('is_plugin_active')) {
+    require_once(ABSPATH.'wp-admin/includes/plugin.php');
+}
+
 function convertToUTF8($str) {
     $enc = mb_detect_encoding($str);
 
