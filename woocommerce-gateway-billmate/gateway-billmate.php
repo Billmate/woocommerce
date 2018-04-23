@@ -726,6 +726,80 @@ function init_billmate_gateway() {
                         $billmateOrder = $k->getPaymentinfo(array('number' => $billmateOrderNumber));
                     }
 
+                    /**
+                     * Update customer billing and shipping address on store order from Billmate Checkout order
+                     */
+                    if (    $checkout == true
+                            && isset($billmateOrder['Customer'])
+                            && is_array($billmateOrder['Customer'])
+                            && count($billmateOrder['Customer']) > 0
+                    ) {
+                        if (isset($billmateOrder['Customer']['Billing'])) {
+                            $billmateOrder['Customer']['Billing'] = array_map("utf8_decode",$billmateOrder['Customer']['Billing']);
+                        }
+
+                        if (isset($billmateOrder['Customer']['Shipping'])) {
+                            $billmateOrder['Customer']['Shipping'] = array_map("utf8_decode",$billmateOrder['Customer']['Shipping']);
+                        }
+
+                        $billing_address = array(
+                            'first_name' => $billmateOrder['Customer']['Billing']['firstname'],
+                            'last_name'  => $billmateOrder['Customer']['Billing']['lastname'],
+                            'company'    => (isset($billmateOrder['Customer']['Billing']['company']) ? $billmateOrder['Customer']['Billing']['company'] : ''),
+                            'email'      => $billmateOrder['Customer']['Billing']['email'],
+                            'phone'      => $billmateOrder['Customer']['Billing']['phone'],
+                            'address_1'  => $billmateOrder['Customer']['Billing']['street'],
+                            'address_2'  => (isset($billmateOrder['Customer']['Billing']['street2']) ? $billmateOrder['Customer']['Billing']['street2'] : ''),
+                            'city'       => $billmateOrder['Customer']['Billing']['city'],
+                            'state'      => '',
+                            'postcode'   => $billmateOrder['Customer']['Billing']['zip'],
+                            'country'    => $billmateOrder['Customer']['Billing']['country']
+                        );
+
+                        if( isset($billmateOrder['Customer']['Shipping'])
+                            && is_array($billmateOrder['Customer']['Shipping'])
+                            && count($billmateOrder['Customer']['Shipping']) > 0
+                        ) {
+                            $shipping_address = array(
+                                'first_name' => $billmateOrder['Customer']['Shipping']['firstname'],
+                                'last_name'  => $billmateOrder['Customer']['Shipping']['lastname'],
+                                'company'    => (isset($billmateOrder['Customer']['Shipping']['company']) ? $billmateOrder['Customer']['Shipping']['company'] : ''),
+                                'email'      => $billmateOrder['Customer']['Shipping']['email'],
+                                'phone'      => $billmateOrder['Customer']['Shipping']['phone'],
+                                'address_1'  => $billmateOrder['Customer']['Shipping']['street'],
+                                'address_2'  => (isset($billmateOrder['Customer']['Shipping']['street2']) ? $billmateOrder['Customer']['Shipping']['street2'] : ''),
+                                'city'       => $billmateOrder['Customer']['Shipping']['city'],
+                                'state'      => '',
+                                'postcode'   => $billmateOrder['Customer']['Shipping']['zip'],
+                                'country'    => $billmateOrder['Customer']['Shipping']['country']
+                            );
+                        } else {
+                            $shipping_address = $billing_address;
+                        }
+
+                        $billingEmail = isset($billmateOrder['Customer']['Billing']['email']) ? sanitize_text_field($billmateOrder['Customer']['Billing']['email']) : '';
+                        $isEmail = is_email($billingEmail);
+                        if ($isEmail != false AND is_string($isEmail) AND $isEmail == $billingEmail) {
+                            // Valid email
+                            $order->set_address($billing_address,'billing');
+                            $order->set_address($shipping_address,'shipping');
+                        } else {
+                            if (version_compare($wp_version, '2.8.0', '>=') AND version_compare(WC_VERSION, '3.1.0', '>=')) {
+                                // Prevent error when saving address with invalid email
+                                if (isset($billing_address['email'])) {
+                                    unset($billing_address['email']);
+                                }
+
+                                $order->set_address($billing_address, 'billing');
+                                $order->set_address($shipping_address, 'shipping');
+                                update_metadata('post', $order->get_id(), '_billing_email', $billingEmail);
+                            } else {
+                                $order->set_address($billing_address, 'billing');
+                                $order->set_address($shipping_address, 'shipping');
+                            }
+                        }
+                    }
+
                     // If paid with Billmate Checkout, get payment method from Billmate order
                     if ( $checkout == true AND version_compare(WC_VERSION, '3.0.0', '>=') AND $method_id != get_post_meta($order_id, '_payment_method') ) {
                         $_method_title = $method_title;
