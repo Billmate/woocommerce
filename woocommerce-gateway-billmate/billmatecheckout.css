@@ -1,3 +1,8 @@
+.billmate-checkout-another-payment-wrapper {
+    display: block;
+    margin-bottom: 20px;
+}
+
 .cart_totals{
     margin: 30px 0 50px 0
 }

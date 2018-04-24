@@ -980,6 +980,10 @@ msgstr "Billmate Checkout kunde inte laddas, vänligen kontakta butiksansvarig. 
 msgid "Billmate Checkout could not be loaded, please contact store manager. Error code: %s"
 msgstr "Billmate Checkout kunde inte laddas, vänligen kontakta butiksansvarig. Felkod: %s"
 
+#: ../shortcodes.php:68
+msgid "Select another payment method"
+msgstr "Välj ett annat betalsätt"
+
 #~ msgid "Subscription Payment Failed: "
 #~ msgstr "Prenumerationsbetalning misslyckades:"
 

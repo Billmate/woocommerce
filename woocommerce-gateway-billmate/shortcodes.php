@@ -47,28 +47,41 @@ function return_billmate_price() {
 	}
 		return $billmate_partpayment_shortcode_price;
 }
-function get_billmate_checkout(){
+
+function get_billmate_checkout() {
 
     if (!defined('DONOTCACHEPAGE')) {
         define('DONOTCACHEPAGE', 1);
     }
 
-	$checkout = new WC_Gateway_Billmate_Checkout();
-	
+    $checkout   = new WC_Gateway_Billmate_Checkout();
+    $return     = '';
+
     if(isset(WC()->cart) AND is_object(WC()->cart) AND method_exists(WC()->cart, "is_empty") AND !WC()->cart->is_empty()) {
         $checkoutUrl = $checkout->get_url();
         $wpLanguage = strtolower(current(explode('_',get_locale())));
 
+        // Button to WooCommerce checkout page when another payment method is available
+        $available_gateways = WC()->payment_gateways->get_available_payment_gateways();
+        if (is_array($available_gateways) AND count($available_gateways) > 0) {
+            $return .= '<div class="billmate-checkout-another-payment-wrapper">
+                <a class="checkout-button button" href="'.get_permalink(wc_get_page_id('checkout')).'">'.__('Select another payment method', 'billmate').'</a>
+            </div>';
+        }
+
         if($checkoutUrl != "") {
-		  return '<div id="checkoutdiv"><iframe id="checkout" src="' . $checkoutUrl . '" sandbox="allow-same-origin allow-scripts allow-modals allow-popups allow-forms allow-top-navigation" style="width:100%;min-height:800px;border:none;" scrolling="no"></iframe>';
+            // Billmate Checkout iframe
+            $return .= '<div id="checkoutdiv"><iframe id="checkout" src="' . $checkoutUrl . '" sandbox="allow-same-origin allow-scripts allow-modals allow-popups allow-forms allow-top-navigation" style="width:100%;min-height:800px;border:none;" scrolling="no"></iframe>';
         } else {
             $checkoutError = $checkout->get_error();
             if($wpLanguage != "sv") {
-                return '<div id="checkoutdiv">'.sprintf(__('Billmate Checkout could not be loaded, please contact store manager. Language need to be set to SV. Error code: %s','billmate'), $checkoutError['code']).'</div>';
+                $return .= '<div id="checkoutdiv">'.sprintf(__('Billmate Checkout could not be loaded, please contact store manager. Language need to be set to SV. Error code: %s','billmate'), $checkoutError['code']).'</div>';
+            } else {
+                $return .= '<div id="checkoutdiv">'.sprintf(__('Billmate Checkout could not be loaded, please contact store manager. Error code: %s','billmate'), $checkoutError['code']).'</div>';
             }
-            return '<div id="checkoutdiv">'.sprintf(__('Billmate Checkout could not be loaded, please contact store manager. Error code: %s','billmate'), $checkoutError['code']).'</div>';
         }
-	}
+    }
+    return $return;
 }
 
 function get_billmate_cart(){

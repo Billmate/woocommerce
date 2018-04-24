@@ -1139,6 +1139,10 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
     }
 
+    public function is_available() {
+        return false;
+    }
+
     public function get_error() {
         return array(
             "code" => $this->errorCode,
