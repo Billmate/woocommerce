@@ -1723,3 +1723,97 @@ if(!class_exists('BillmateProduct')) {
 
     }
 }
+
+
+if(!class_exists('BillmateAdminNotice')) {
+    class BillmateAdminNotice {
+
+        private static $instance;
+        public $notices;
+
+        public static function get_instance()
+        {
+            if (null === self::$instance) {
+                self::$instance = new self();
+            }
+            return self::$instance;
+        }
+
+        public function _add_notice($type = 'error', $title = '', $notice = '', $link_url = '', $link_title = '') {
+            if ($notice != '') {
+                if (!isset($this->notices[$type])) {
+                    $this->notices[$type] = array();
+                }
+                // $this->notices[$type][] = $message;
+                $this->notices[$type][] = array(
+                    'title' => $title,
+                    'notice' => $notice,
+                    'link_url' => $link_url,
+                    'link_title' => $link_title
+                );
+            }
+        }
+
+        public function _get_notices() {
+            return $this->notices;
+        }
+
+        public static function add_error($title = '', $notice = '', $link_url = '', $link_title = '') {
+            $instance = self::get_instance();
+            $instance->_add_notice('error', $title, $notice, $link_url, $link_title);
+        }
+
+        public static function add_info($title = '', $notice = '', $link_url = '', $link_title = '') {
+            $instance = self::get_instance();
+            $instance->_add_notice('info', $title, $notice, $link_url, $link_title);
+        }
+
+        public static function add_success($title = '', $notice = '', $link_url = '', $link_title = '') {
+            $instance = self::get_instance();
+            $instance->_add_notice('success', $title , $notice, $link_url, $link_title);
+        }
+
+        public static function add_warning($title = '', $notice = '', $link_url = '', $link_title = '') {
+            $instance = self::get_instance();
+            $instance->_add_notice('warning', $title , $notice, $link_url, $link_title);
+        }
+
+
+        public static function show_notices() {
+            $instance = self::get_instance();
+
+            $notices = $instance->_get_notices();
+            if (is_array($notices) AND count($notices) > 0) {
+                foreach ($notices AS $type => $_notices) {
+                    $class = 'notice notice-info';
+                    if (in_array($type, array('info', 'error', 'success', 'warning'))) {
+                        $class = 'notice notice-'.$type;
+                    }
+
+                    foreach ($_notices AS $message) {
+                        if (is_array($message) AND isset($message['title']) AND isset($message['notice'])) {
+
+                            $link = '';
+                            if (    isset($message['link_title'])
+                                    && isset($message['link_url'])
+                                    && $message['link_title'] != ''
+                                    && $message['link_url'] != ''
+                            ) {
+                                $link = sprintf('<a href="%1$s">%2$s</a>',esc_html( $message['link_url'] ),esc_html( $message['link_title'] ));
+                            }
+
+                            printf(
+                                '<div class="%1$s is-dismissible"><p><strong>%2$s</strong> - %3$s '.$link.'</p><button type="button" class="notice-dismiss"></button></div>',
+                                esc_attr( $class ),
+                                $imgHtml .esc_html( $message['title'] ),
+                                esc_html( $message['notice'] )
+                            );
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+}
