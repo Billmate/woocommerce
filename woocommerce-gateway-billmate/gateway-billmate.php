@@ -174,17 +174,16 @@ function billmate_settings_nag() {
 add_action( 'admin_init', 'billmate_checkout_settings_nag');
 function billmate_checkout_settings_nag() {
     $checkoutSettings = get_option("woocommerce_billmate_checkout_settings", array());
-    BillmateAdminNotice::add_info('setting', print_r($checkoutSettings, true));
 
     if(isset($checkoutSettings['enabled']) AND $checkoutSettings['enabled'] == 'yes') {
         if(!isset($checkoutSettings['checkout_url']) OR intval($checkoutSettings['checkout_url']) != $checkoutSettings['checkout_url'] OR intval($checkoutSettings['checkout_url']) < 1) {
             $link_url = get_admin_url().'admin.php?page=wc-settings&tab=checkout&section=billmate_checkout';
-            BillmateAdminNotice::add_warning('Billmate Checkout' , 'Billmate checkut must have Billmate Checkout page to be able to function', $link_url, 'Settings');
+            BillmateAdminNotice::add_error('Billmate Checkout' , 'Billmate checkut must have Billmate Checkout page to be able to function', $link_url, 'Settings');
         }
 
         if(!isset($checkoutSettings['terms_url']) OR intval($checkoutSettings['terms_url']) != $checkoutSettings['terms_url'] OR intval($checkoutSettings['terms_url']) < 1) {
             $link_url = get_admin_url().'admin.php?page=wc-settings&tab=checkout&section=billmate_checkout';
-            BillmateAdminNotice::add_warning('Billmate Checkout', 'Billmate Checkout must have a terms page to be able to function', $link_url, 'Settings');
+            BillmateAdminNotice::add_error('Billmate Checkout', 'Billmate Checkout must have a terms page to be able to function', $link_url, 'Settings');
         }
 
         if (isset($checkoutSettings['testmode']) AND $checkoutSettings['testmode'] == 'yes') {
@@ -196,7 +195,7 @@ function billmate_checkout_settings_nag() {
         $wpLanguage = strtolower(current(explode('_',get_locale())));
         if($wpLanguage != "sv") {
             $link_url = get_admin_url().'options-general.php';
-            BillmateAdminNotice::add_warning('Billmate Checkout', 'Billmate Checkout need the website language to be set as SV (Swedish) to be able to function', $link_url, 'Settings');
+            BillmateAdminNotice::add_error('Billmate Checkout', 'Billmate Checkout need the website language to be set as SV (Swedish) to be able to function', $link_url, 'Settings');
         }
 
         /**
@@ -205,7 +204,7 @@ function billmate_checkout_settings_nag() {
          */
         if ( wc_get_price_decimals() < 2 ) {
             $link_url = get_admin_url().'admin.php?page=wc-settings';
-            BillmateAdminNotice::add_warning('Billmate', 'WooCommerce need to have set prices with 2 decimals to ensure prices are correctly when sent to Billmate');
+            BillmateAdminNotice::add_warning('Billmate', 'WooCommerce need to have set prices with 2 decimals to ensure prices are correctly when sent to Billmate', $link_url, 'Settings');
         }
     }
 }
