@@ -104,6 +104,10 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
     }
 
+    public function get_title() {
+        return $this->method_title;
+    }
+
     function change_to_bco($url){
         if(!is_admin()) {
             if($this->enabled == 'yes') {
