@@ -1796,10 +1796,10 @@ parse_str($_POST['post_data'], $datatemp);
                         add_post_meta($order_id,'billmate_invoice_id',$invno);
 
                         // Payment complete
-                        if ($this->order_status == 'default') {
-                            $order->payment_complete();
-                        } else {
+                        $order->payment_complete();
+                        if ($this->order_status != 'default') {
                             $order->update_status($this->order_status);
+                            $order->save();
                         }
 
                         // Remove cart
@@ -1822,10 +1822,10 @@ parse_str($_POST['post_data'], $datatemp);
                         add_post_meta($order_id,'billmate_invoice_id',$invno);
 
                         // Payment complete
-                        if($this->order_status == 'default') {
-                            $order->payment_complete();
-                        } else {
+                        $order->payment_complete();
+                        if ($this->order_status != 'default') {
                             $order->update_status($this->order_status);
+                            $order->save();
                         }
 
                         // Remove cart

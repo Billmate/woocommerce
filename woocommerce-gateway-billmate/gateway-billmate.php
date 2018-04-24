@@ -843,11 +843,11 @@ function init_billmate_gateway() {
                                 && $storeOrderTotalCompare + 300 >= $billmateOrderTotalCompare
                         ) {
                             // Set order as paid if paid amount matches order total amount
+                            $order->payment_complete();
                             if ($this->order_status != 'default') {
                                 $order->update_status($this->order_status);
                                 $order->save();
                             }
-                            $order->payment_complete();
                         } else {
                             // To pay not match, maybe add handling fee to WC order
                             if (isset($billmateOrder['Cart']['Handling']['withouttax']) AND isset($billmateOrder['Cart']['Handling']['taxrate'])) {
@@ -924,7 +924,6 @@ function init_billmate_gateway() {
                                     }
 
                                     $order->payment_complete();
-
                                     if ($this->order_status != 'default') {
                                         $order->update_status($this->order_status);
                                         $order->save();
