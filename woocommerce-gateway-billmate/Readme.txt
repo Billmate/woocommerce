@@ -4,7 +4,7 @@ Donate link:
 Tags: woocomerce, billmate, payments, cardpayments, invoice, partpayment, recurring, bankpayment
 Requires at least: 4.0
 Tested up to: 4.9.1
-Stable tag: 3.1.1
+Stable tag: 3.2.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -87,6 +87,23 @@ If you would like to use our logo on your site then choose following:
 
 
 == Changelog ==
+
+= 3.2.0 (2018-04-25) =
+* Feature - Support for WooCommerc cart shipping calculator for Billmate Checkout
+* Feature - Show Select another payment button above Billmate Checkout when available
+* Fix - Improve clear cart when complete order with Billmate Checkout
+* Fix - Make sure file with function is_plugin_active is included
+* Fix - Set custom order status when paid after order is set as paid
+* Enhancement - Show paid with Billmate Checkout on order for recent version of WC
+* Enhancement - Update store order address from Billmate checkout
+* Enhancement - Improve admin notifications
+* Enhancement - Improve remind administrator about admin settings
+
+= 3.1.1 (2018-01-29) =
+* Fix - Bank payments now always use the same string where it's referenced.
+* Fix - Rounding improvements. Under some rare circumstances the amount can be different from payment window to callback and/or accept url.
+* Enhancement - Improved loading animation for Checkout - The loading animation is more precise triggered when needed.
+* Feature - Support for plugin "Product Add-Ons" in combination with Billmate Checkout.
 
 = 3.1.0 (2017-12-19) =
 * Fix - BC add handling fee on store order when set orderstatus is not default
