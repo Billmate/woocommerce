@@ -164,7 +164,7 @@ function billmate_settings_nag() {
         && (get_option('billmate_common_eid') == ''
             || get_option('billmate_common_secret') == '')
     ) {
-        BillmateAdminNotice::add_warning('Billmate', 'Billmate id or secret are not defined', admin_url( 'options-general.php?page=billmate-settings' ), 'Settings');
+        BillmateAdminNotice::add_warning( __( 'Billmate id or secret are not defined', 'billmate' ), admin_url( 'options-general.php?page=billmate-settings' ), __( 'Settings' ) );
     }
 }
 
@@ -178,24 +178,37 @@ function billmate_checkout_settings_nag() {
     if(isset($checkoutSettings['enabled']) AND $checkoutSettings['enabled'] == 'yes') {
         if(!isset($checkoutSettings['checkout_url']) OR intval($checkoutSettings['checkout_url']) != $checkoutSettings['checkout_url'] OR intval($checkoutSettings['checkout_url']) < 1) {
             $link_url = get_admin_url().'admin.php?page=wc-settings&tab=checkout&section=billmate_checkout';
-            BillmateAdminNotice::add_error('Billmate Checkout' , 'Billmate checkut must have Billmate Checkout page to be able to function', $link_url, 'Settings');
+            BillmateAdminNotice::add_error( __( 'Billmate Checkout must have a Billmate Checkout page to be able to function', 'billmate' ), $link_url, __( 'Settings' ) );
         }
 
         if(!isset($checkoutSettings['terms_url']) OR intval($checkoutSettings['terms_url']) != $checkoutSettings['terms_url'] OR intval($checkoutSettings['terms_url']) < 1) {
             $link_url = get_admin_url().'admin.php?page=wc-settings&tab=checkout&section=billmate_checkout';
-            BillmateAdminNotice::add_error('Billmate Checkout', 'Billmate Checkout must have a terms page to be able to function', $link_url, 'Settings');
+            BillmateAdminNotice::add_error( __( 'Billmate Checkout must have a terms page to be able to function', 'billmate' ), $link_url, __( 'Settings' ) );
         }
 
         if (isset($checkoutSettings['testmode']) AND $checkoutSettings['testmode'] == 'yes') {
             $link_url = get_admin_url().'admin.php?page=wc-settings&tab=checkout&section=billmate_checkout';
-            BillmateAdminNotice::add_info('Billmate Checkout', 'Billmate Checkout is currently in test-mode', $link_url, 'Settings');
+            BillmateAdminNotice::add_warning( __( 'Billmate Checkout is currently in test-mode', 'billmate' ), $link_url, __( 'Settings' ) );
         }
 
         // Check supported language is set
         $wpLanguage = strtolower(current(explode('_',get_locale())));
         if($wpLanguage != "sv") {
-            $link_url = get_admin_url().'options-general.php';
-            BillmateAdminNotice::add_error('Billmate Checkout', 'Billmate Checkout need the website language to be set as SV (Swedish) to be able to function', $link_url, 'Settings');
+
+            // When WPML is active Do not display language note in admin
+            $wpml_is_active = false;
+            $active_plugins = get_option( 'active_plugins', array() );
+            foreach ($active_plugins AS $_plugin) {
+                if (substr(strtolower($_plugin), 0, 5) == 'wpml-') {
+                    $wpml_is_active = true;
+                    break;
+                }
+            }
+
+            if ($wpml_is_active ==  false) {
+                $link_url = get_admin_url().'options-general.php';
+                BillmateAdminNotice::add_error( __( 'Billmate Checkout need the website language to be set as SV (Swedish) to be able to function', 'billmate' ), $link_url, __( 'Settings' ) );
+            }
         }
 
         /**
@@ -204,7 +217,7 @@ function billmate_checkout_settings_nag() {
          */
         if ( wc_get_price_decimals() < 2 ) {
             $link_url = get_admin_url().'admin.php?page=wc-settings';
-            BillmateAdminNotice::add_warning('Billmate', 'WooCommerce need to have set prices with 2 decimals to ensure prices are correctly when sent to Billmate', $link_url, 'Settings');
+            BillmateAdminNotice::add_info( __( 'WooCommerce need to have set prices with 2 decimals to ensure prices are correctly when sent to Billmate', 'billmate' ) , $link_url, __( 'Settings' ) );
         }
     }
 }

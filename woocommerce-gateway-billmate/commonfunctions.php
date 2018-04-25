@@ -1739,14 +1739,14 @@ if(!class_exists('BillmateAdminNotice')) {
             return self::$instance;
         }
 
-        public function _add_notice($type = 'error', $title = '', $notice = '', $link_url = '', $link_title = '') {
+        public function _add_notice($type = 'error', $notice = '', $link_url = '', $link_title = '') {
             if ($notice != '') {
                 if (!isset($this->notices[$type])) {
                     $this->notices[$type] = array();
                 }
                 // $this->notices[$type][] = $message;
                 $this->notices[$type][] = array(
-                    'title' => $title,
+                    'title' => 'Billmate',
                     'notice' => $notice,
                     'link_url' => $link_url,
                     'link_title' => $link_title
@@ -1758,24 +1758,24 @@ if(!class_exists('BillmateAdminNotice')) {
             return $this->notices;
         }
 
-        public static function add_error($title = '', $notice = '', $link_url = '', $link_title = '') {
+        public static function add_error($notice = '', $link_url = '', $link_title = '') {
             $instance = self::get_instance();
-            $instance->_add_notice('error', $title, $notice, $link_url, $link_title);
+            $instance->_add_notice('error', $notice, $link_url, $link_title);
         }
 
-        public static function add_info($title = '', $notice = '', $link_url = '', $link_title = '') {
+        public static function add_info($notice = '', $link_url = '', $link_title = '') {
             $instance = self::get_instance();
-            $instance->_add_notice('info', $title, $notice, $link_url, $link_title);
+            $instance->_add_notice('info', $notice, $link_url, $link_title);
         }
 
-        public static function add_success($title = '', $notice = '', $link_url = '', $link_title = '') {
+        public static function add_success($notice = '', $link_url = '', $link_title = '') {
             $instance = self::get_instance();
-            $instance->_add_notice('success', $title , $notice, $link_url, $link_title);
+            $instance->_add_notice('success', $notice, $link_url, $link_title);
         }
 
-        public static function add_warning($title = '', $notice = '', $link_url = '', $link_title = '') {
+        public static function add_warning($notice = '', $link_url = '', $link_title = '') {
             $instance = self::get_instance();
-            $instance->_add_notice('warning', $title , $notice, $link_url, $link_title);
+            $instance->_add_notice('warning', $notice, $link_url, $link_title);
         }
 
 
@@ -1803,7 +1803,7 @@ if(!class_exists('BillmateAdminNotice')) {
                             }
 
                             printf(
-                                '<div class="%1$s is-dismissible"><p><strong>%2$s</strong> - %3$s '.$link.'</p><button type="button" class="notice-dismiss"></button></div>',
+                                '<div class="%1$s"><p><strong>%2$s</strong> - %3$s '.$link.'</p></div>',
                                 esc_attr( $class ),
                                 $imgHtml .esc_html( $message['title'] ),
                                 esc_html( $message['notice'] )

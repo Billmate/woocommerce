@@ -972,6 +972,30 @@ msgstr ""
 msgid "Billmate Checkout is released! Contact Billmate (support@billmate.se) to get started with Billmate Checkout."
 msgstr "Billmate Checkout är lanserad! Kontakta Billmate (support@billmate.se) för att komma igång med Billmate Checkout."
 
+#: ../gateway-billmate.php:167
+msgid "Billmate id or secret are not defined"
+msgstr "Billmate id eller secret är inte angivna"
+
+#: ../gateway-billmate.php:181
+msgid "Billmate Checkout must have a Billmate Checkout page to be able to function"
+msgstr "Billmate Checkout behöver en sida för Billmate checkout angiven för att kunna visas"
+
+#: ../gateway-billmate.php:186
+msgid "Billmate Checkout must have a terms page to be able to function"
+msgstr "Billmate Checkout behöver en sida för Köpvillkor angiven för att kunna visas"
+
+#: ../gateway-billmate.php:191
+msgid "Billmate Checkout is currently in test-mode"
+msgstr "Billmate Checkout är i test-läge"
+
+#: ../gateway-billmate.php:198
+msgid "Billmate Checkout need the website language to be set as SV (Swedish) to be able to function"
+msgstr "Billmate Checkout behöver att WordPress språk är inställd på SV (svenska) för att kunna visas"
+
+#: ../gateway-billmate.php:207
+msgid "WooCommerce need to have set prices with 2 decimals to ensure prices are correctly when sent to Billmate"
+msgstr "WooCommerce behöver vara inställd på att visa priser med 2 decimaler för att säkerställa att priser är exakta när de skickas till Billmate"
+
 #: ../shortcodes.php:62
 msgid "Billmate Checkout could not be loaded, please contact store manager. Language need to be set to SV. Error code: %s"
 msgstr "Billmate Checkout kunde inte laddas, vänligen kontakta butiksansvarig. Språk behöver vara inställd på SV. Felkod: %s"
