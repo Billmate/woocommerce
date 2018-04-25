@@ -1,5 +1,7 @@
 .billmate-checkout-another-payment-wrapper {
+    clear: both;
     display: block;
+    float: right;
     margin-bottom: 20px;
 }
 
@@ -9,8 +11,10 @@
 
 
 #checkoutdiv {
-    position: relative;
+    clear: both;
+    display: block;
     overflow: auto;
+    position: relative;
 }
 
 form.woocommerce-shipping-calculator,
