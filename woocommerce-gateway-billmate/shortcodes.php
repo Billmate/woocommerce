@@ -54,6 +54,11 @@ function get_billmate_checkout() {
         define('DONOTCACHEPAGE', 1);
     }
 
+    $check_cart_item_stock_result = WC()->cart->check_cart_item_stock();
+    if (!is_bool($check_cart_item_stock_result) || (is_bool($check_cart_item_stock_result) && true != $check_cart_item_stock_result)) {
+        return '';
+    }
+
     $checkout   = new WC_Gateway_Billmate_Checkout();
     $return     = '';
 

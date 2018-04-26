@@ -180,6 +180,12 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
     }
     function billmate_set_method(){
 
+        $check_cart_item_stock_result = WC()->cart->check_cart_item_stock();
+        if (!is_bool($check_cart_item_stock_result) || (is_bool($check_cart_item_stock_result) && true != $check_cart_item_stock_result)) {
+            wp_send_json_error();
+            return false;
+        }
+
         $connection = $this->getBillmateConnection();
         $result = $connection->getCheckout(array('PaymentData' => array('hash' => WC()->session->get('billmate_checkout_hash'))));
         if(!isset($result['code'])) {
@@ -353,6 +359,13 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
     function billmate_update_address(){
         global $woocommerce;
         global $wp_version;
+
+        $check_cart_item_stock_result = WC()->cart->check_cart_item_stock();
+        if (!is_bool($check_cart_item_stock_result) || (is_bool($check_cart_item_stock_result) && true != $check_cart_item_stock_result)) {
+            // cart item is out of stock, need page reload
+            wp_send_json_success(array('reload_checkout' => true));
+            return false;
+        }
 
         $connection = $this->getBillmateConnection();
         $result = array("code" => "no hash");
@@ -929,6 +942,11 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
     public function updateCheckout($result, $order)
     {
+        $check_cart_item_stock_result = WC()->cart->check_cart_item_stock();
+        if (!is_bool($check_cart_item_stock_result) || (is_bool($check_cart_item_stock_result) && true != $check_cart_item_stock_result)) {
+            return false;
+        }
+
         $billmate = $this->getBillmateConnection();
 
         $billmateOrder = new BillmateOrder($order);

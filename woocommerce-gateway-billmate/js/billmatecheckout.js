@@ -67,7 +67,13 @@ var BillmateIframe = new function(){
                 if(response.hasOwnProperty("success") && response.success) {
                     window.address_selected = true;
                 }
-                self.updateCheckout();
+
+                if (response.hasOwnProperty("data") && response.data.hasOwnProperty("reload_checkout") && response.data.reload_checkout == true) {
+                    location.reload(true);
+                    return true;
+                } else {
+                    self.updateCheckout();
+                }
             }
         });
     };
@@ -200,11 +206,19 @@ var BillmateIframe = new function(){
     };
 
     this.checkoutPostMessage = function(message) {
-        var win = document.getElementById('checkout').contentWindow;
-        win.postMessage(message,'*')
+        var checkout = document.getElementById('checkout');
+        if (checkout != null) {
+            var win = checkout.contentWindow;
+            win.postMessage(message,'*');
+        }
     }
 
     this.updateCheckout = function(){
+        var checkout = document.getElementById('checkout');
+        if (checkout == null) {
+            location.reload(true);
+            return false;
+        }
         this.lock();
         this.checkoutPostMessage('update');
     }
