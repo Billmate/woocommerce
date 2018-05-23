@@ -460,6 +460,14 @@ msgstr ""
 msgid "terms of partpayment"
 msgstr "köpvillkoren"
 
+#: ../class-billmate-account.php:932 ../class-billmate-invoice.php:566
+msgid "and"
+msgstr "och"
+
+#: ../class-billmate-account.php:932 ../class-billmate-invoice.php:566
+msgid "Privacy Policy"
+msgstr "Integritetspolicy"
+
 #: ../class-billmate-account.php:864 ../class-billmate-invoice.php:525
 msgid "and accept the liability."
 msgstr "och accepterar betalningsansvaret."

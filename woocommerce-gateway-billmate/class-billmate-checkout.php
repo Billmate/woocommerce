@@ -30,6 +30,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         $this->secret				= get_option('billmate_common_secret');//( isset( $this->settings['secret'] ) ) ? $this->settings['secret'] : '';
         $this->logo 				= get_option('billmate_common_logo');
         $this->terms_url            = (isset($this->settings['terms_url'])) ? $this->settings['terms_url'] : false;
+        $this->gdpr_terms_url       = (isset($this->settings['gdpr_terms_url'])) ? $this->settings['gdpr_terms_url'] : false;
         $this->checkout_url            = (isset($this->settings['checkout_url'])) ? $this->settings['checkout_url'] : false;
 
         $this->testmode				= ( isset( $this->settings['testmode'] ) ) ? $this->settings['testmode'] : '';
@@ -810,6 +811,11 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             'sendreciept' => 'yes',
             'terms' => $terms->guid
         );
+
+        if ($this->gdpr_terms_url > 0) {
+            $orderValues['CheckoutData']['gdprTerms'] = get_permalink($this->gdpr_terms_url);
+        }
+
         $lang = explode('_',get_locale());
 
         $location = wc_get_base_location();
@@ -1135,6 +1141,13 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                 'title'       => __( 'Terms Page', 'billmate' ),
                 'type'        => 'select',
                 'description' => __( 'Please select the terms page.', 'billmate' ),
+                'default'     => '',
+                'options' => $pageOption
+            ),
+            'gdpr_terms_url'                    => array(
+                'title'       => __( 'GDPR Terms Page', 'billmate' ),
+                'type'        => 'select',
+                'description' => __( 'Please select the GDPR terms page.', 'billmate' ),
                 'default'     => '',
                 'options' => $pageOption
             )
