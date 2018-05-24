@@ -30,6 +30,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         $this->secret				= get_option('billmate_common_secret');//( isset( $this->settings['secret'] ) ) ? $this->settings['secret'] : '';
         $this->logo 				= get_option('billmate_common_logo');
         $this->terms_url            = (isset($this->settings['terms_url'])) ? $this->settings['terms_url'] : false;
+        $this->privacy_policy_url       = (isset($this->settings['privacy_policy_url'])) ? $this->settings['privacy_policy_url'] : false;
         $this->checkout_url            = (isset($this->settings['checkout_url'])) ? $this->settings['checkout_url'] : false;
 
         $this->testmode				= ( isset( $this->settings['testmode'] ) ) ? $this->settings['testmode'] : '';
@@ -111,9 +112,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
     function change_to_bco($url){
         if(!is_admin()) {
             if($this->enabled == 'yes') {
-                $checkout_url = get_post($this->checkout_url);
-
-                return $checkout_url->guid;
+                return get_permalink($this->checkout_url);
             }
         }
         return $url;
@@ -816,13 +815,17 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         $billmateOrder = new BillmateOrder($order);
 
         $orderValues = array();
-        $terms = get_post($this->terms_url);
         $orderValues['CheckoutData'] = array(
             'windowmode' => 'iframe',
             'redirectOnSuccess' => 'true',
             'sendreciept' => 'yes',
-            'terms' => $terms->guid
+            'terms' => get_permalink($this->terms_url)
         );
+
+        if ($this->privacy_policy_url > 0) {
+            $orderValues['CheckoutData']['privacyPolicy'] = get_permalink($this->privacy_policy_url);
+        }
+
         $lang = explode('_',get_locale());
 
         $location = wc_get_base_location();
@@ -1153,6 +1156,13 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                 'title'       => __( 'Terms Page', 'billmate' ),
                 'type'        => 'select',
                 'description' => __( 'Please select the terms page.', 'billmate' ),
+                'default'     => '',
+                'options' => $pageOption
+            ),
+            'privacy_policy_url'                    => array(
+                'title'       => __( 'Privacy Policy Page', 'billmate' ),
+                'type'        => 'select',
+                'description' => __( 'Please select the Privacy Policy page.', 'billmate' ),
                 'default'     => '',
                 'options' => $pageOption
             )
