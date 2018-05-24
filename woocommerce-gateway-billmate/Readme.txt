@@ -4,7 +4,7 @@ Donate link:
 Tags: woocomerce, billmate, payments, cardpayments, invoice, partpayment, recurring, bankpayment
 Requires at least: 4.0
 Tested up to: 4.9.1
-Stable tag: 3.2.0
+Stable tag: 3.3.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -87,6 +87,12 @@ If you would like to use our logo on your site then choose following:
 
 
 == Changelog ==
+
+= 3.3.0 (2018-05-24) =
+* Feature - Privacy policy support for payment methods and Billmate Checkout
+* Fix - Do not display Billmate Checkout when cart have item out of stock
+* Fix - User better method to get permalinks
+* Enhancement - Tweak Billmate Checkout iframe permissions
 
 = 3.2.0 (2018-04-25) =
 * Feature - Support for WooCommerc cart shipping calculator for Billmate Checkout

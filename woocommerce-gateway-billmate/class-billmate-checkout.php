@@ -30,6 +30,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         $this->secret				= get_option('billmate_common_secret');//( isset( $this->settings['secret'] ) ) ? $this->settings['secret'] : '';
         $this->logo 				= get_option('billmate_common_logo');
         $this->terms_url            = (isset($this->settings['terms_url'])) ? $this->settings['terms_url'] : false;
+        $this->privacy_policy_url       = (isset($this->settings['privacy_policy_url'])) ? $this->settings['privacy_policy_url'] : false;
         $this->checkout_url            = (isset($this->settings['checkout_url'])) ? $this->settings['checkout_url'] : false;
 
         $this->testmode				= ( isset( $this->settings['testmode'] ) ) ? $this->settings['testmode'] : '';
@@ -111,9 +112,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
     function change_to_bco($url){
         if(!is_admin()) {
             if($this->enabled == 'yes') {
-                $checkout_url = get_post($this->checkout_url);
-
-                return $checkout_url->guid;
+                return get_permalink($this->checkout_url);
             }
         }
         return $url;
@@ -179,6 +178,12 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
     }
     function billmate_set_method(){
+
+        $check_cart_item_stock_result = WC()->cart->check_cart_item_stock();
+        if (!is_bool($check_cart_item_stock_result) || (is_bool($check_cart_item_stock_result) && true != $check_cart_item_stock_result)) {
+            wp_send_json_error();
+            return false;
+        }
 
         $connection = $this->getBillmateConnection();
         $result = $connection->getCheckout(array('PaymentData' => array('hash' => WC()->session->get('billmate_checkout_hash'))));
@@ -353,6 +358,13 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
     function billmate_update_address(){
         global $woocommerce;
         global $wp_version;
+
+        $check_cart_item_stock_result = WC()->cart->check_cart_item_stock();
+        if (!is_bool($check_cart_item_stock_result) || (is_bool($check_cart_item_stock_result) && true != $check_cart_item_stock_result)) {
+            // cart item is out of stock, need page reload
+            wp_send_json_success(array('reload_checkout' => true));
+            return false;
+        }
 
         $connection = $this->getBillmateConnection();
         $result = array("code" => "no hash");
@@ -803,13 +815,17 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         $billmateOrder = new BillmateOrder($order);
 
         $orderValues = array();
-        $terms = get_post($this->terms_url);
         $orderValues['CheckoutData'] = array(
             'windowmode' => 'iframe',
             'redirectOnSuccess' => 'true',
             'sendreciept' => 'yes',
-            'terms' => $terms->guid
+            'terms' => get_permalink($this->terms_url)
         );
+
+        if ($this->privacy_policy_url > 0) {
+            $orderValues['CheckoutData']['privacyPolicy'] = get_permalink($this->privacy_policy_url);
+        }
+
         $lang = explode('_',get_locale());
 
         $location = wc_get_base_location();
@@ -929,6 +945,11 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
     public function updateCheckout($result, $order)
     {
+        $check_cart_item_stock_result = WC()->cart->check_cart_item_stock();
+        if (!is_bool($check_cart_item_stock_result) || (is_bool($check_cart_item_stock_result) && true != $check_cart_item_stock_result)) {
+            return false;
+        }
+
         $billmate = $this->getBillmateConnection();
 
         $billmateOrder = new BillmateOrder($order);
@@ -1135,6 +1156,13 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                 'title'       => __( 'Terms Page', 'billmate' ),
                 'type'        => 'select',
                 'description' => __( 'Please select the terms page.', 'billmate' ),
+                'default'     => '',
+                'options' => $pageOption
+            ),
+            'privacy_policy_url'                    => array(
+                'title'       => __( 'Privacy Policy Page', 'billmate' ),
+                'type'        => 'select',
+                'description' => __( 'Please select the Privacy Policy page.', 'billmate' ),
                 'default'     => '',
                 'options' => $pageOption
             )
