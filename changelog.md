@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.3.0 (2018-05-24)
+* Feature - Privacy policy support for payment methods and Billmate Checkout
+* Fix - Do not display Billmate Checkout when cart have item out of stock
+* Fix - User better method to get permalinks
+* Enhancement - Tweak Billmate Checkout iframe permissions
+
 ## 3.2.0 (2018-04-25)
 * Feature - Support for WooCommerc cart shipping calculator for Billmate Checkout
 * Feature - Show Select another payment button above Billmate Checkout when available
