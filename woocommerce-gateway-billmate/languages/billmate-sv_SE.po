@@ -458,7 +458,7 @@ msgstr ""
 
 #: ../class-billmate-account.php:864 ../class-billmate-invoice.php:525
 msgid "terms of partpayment"
-msgstr "köpvillkoren"
+msgstr "Billmates köpvillkor"
 
 #: ../class-billmate-account.php:932 ../class-billmate-invoice.php:566
 msgid "and"
@@ -466,11 +466,11 @@ msgstr "och"
 
 #: ../class-billmate-account.php:932 ../class-billmate-invoice.php:566
 msgid "Privacy Policy"
-msgstr "Integritetspolicy"
+msgstr "integritetspolicy"
 
 #: ../class-billmate-account.php:864 ../class-billmate-invoice.php:525
 msgid "and accept the liability."
-msgstr "och accepterar betalningsansvaret."
+msgstr "samt accepterar betalningsansvaret."
 
 #: ../class-billmate-account.php:871 ../class-billmate-invoice.php:533
 #, php-format
@@ -523,7 +523,7 @@ msgstr "Leverans och faktura adress måste vara samma vid köp via Billmate"
 
 #: ../class-billmate-account.php:1160 ../class-billmate-invoice.php:1382
 msgid "You must accept the Billmate consent terms."
-msgstr "Du måste acceptera Billmate köpvillkor"
+msgstr "Du måste acceptera Billmates köpvillkor"
 
 #: ../class-billmate-account.php:1219 ../class-billmate-account.php:1535
 #: ../class-billmate-invoice.php:597
@@ -938,7 +938,7 @@ msgstr "Person / Organisationsnummer"
 
 #: ../class-billmate-invoice.php:551
 msgid "terms of invoice"
-msgstr "köpvillkoren"
+msgstr "Billmates köpvillkor"
 
 #: ../class-billmate-invoice.php:1353
 msgid "<strong>Gender</strong> is a required field"
