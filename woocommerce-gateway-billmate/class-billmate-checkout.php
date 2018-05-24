@@ -30,7 +30,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         $this->secret				= get_option('billmate_common_secret');//( isset( $this->settings['secret'] ) ) ? $this->settings['secret'] : '';
         $this->logo 				= get_option('billmate_common_logo');
         $this->terms_url            = (isset($this->settings['terms_url'])) ? $this->settings['terms_url'] : false;
-        $this->gdpr_terms_url       = (isset($this->settings['gdpr_terms_url'])) ? $this->settings['gdpr_terms_url'] : false;
+        $this->privacy_policy_url       = (isset($this->settings['privacy_policy_url'])) ? $this->settings['privacy_policy_url'] : false;
         $this->checkout_url            = (isset($this->settings['checkout_url'])) ? $this->settings['checkout_url'] : false;
 
         $this->testmode				= ( isset( $this->settings['testmode'] ) ) ? $this->settings['testmode'] : '';
@@ -809,8 +809,8 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             'terms' => get_permalink($this->terms_url)
         );
 
-        if ($this->gdpr_terms_url > 0) {
-            $orderValues['CheckoutData']['gdprTerms'] = get_permalink($this->gdpr_terms_url);
+        if ($this->privacy_policy_url > 0) {
+            $orderValues['CheckoutData']['privacyPolicy'] = get_permalink($this->privacy_policy_url);
         }
 
         $lang = explode('_',get_locale());
@@ -1141,10 +1141,10 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                 'default'     => '',
                 'options' => $pageOption
             ),
-            'gdpr_terms_url'                    => array(
-                'title'       => __( 'GDPR Terms Page', 'billmate' ),
+            'privacy_policy_url'                    => array(
+                'title'       => __( 'Privacy Policy Page', 'billmate' ),
                 'type'        => 'select',
-                'description' => __( 'Please select the GDPR terms page.', 'billmate' ),
+                'description' => __( 'Please select the Privacy Policy page.', 'billmate' ),
                 'default'     => '',
                 'options' => $pageOption
             )
