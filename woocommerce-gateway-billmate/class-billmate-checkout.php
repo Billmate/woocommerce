@@ -179,8 +179,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
     }
     function billmate_set_method(){
 
-        $check_cart_item_stock_result = WC()->cart->check_cart_item_stock();
-        if (!is_bool($check_cart_item_stock_result) || (is_bool($check_cart_item_stock_result) && true != $check_cart_item_stock_result)) {
+        if ( ! $this->is_cart_items_in_stock() ) {
             wp_send_json_error();
             return false;
         }
@@ -359,9 +358,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         global $woocommerce;
         global $wp_version;
 
-        $check_cart_item_stock_result = WC()->cart->check_cart_item_stock();
-        if (!is_bool($check_cart_item_stock_result) || (is_bool($check_cart_item_stock_result) && true != $check_cart_item_stock_result)) {
-            // cart item is out of stock, need page reload
+        if ( ! $this->is_cart_items_in_stock() ) {
             wp_send_json_success(array('reload_checkout' => true));
             return false;
         }
@@ -525,11 +522,9 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         if ( ! is_email( $customer_email ) ) {
             return;
         }
-        // Check quantities
-        global $woocommerce;
-        $result = $woocommerce->cart->check_cart_item_stock();
-        if ( is_wp_error( $result ) ) {
-            return $result->get_error_message();
+
+        if ( ! $this->is_cart_items_in_stock() ) {
+            return;
         }
 
         if ( $customer_email ) {
@@ -781,28 +776,30 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
     function get_url(){
         $orderId = $this->create_order();
-        if( WC()->session->get( 'billmate_checkout_hash' )){
-            $billmate = $this->getBillmateConnection();
 
-            $this->updateCheckoutFromOrderId( $orderId );
-            $checkout = $billmate->getCheckout(array('PaymentData' => array('hash' => WC()->session->get( 'billmate_checkout_hash' ))));
-            if(!isset($checkout['code'])){
-                return $checkout['PaymentData']['url'];
-            } else {
-                $this->errorCode = (isset($checkout['code'])) ? $checkout['code'] : $this->errorCode;
-                $this->errorMessage = (isset($checkout['message'])) ? $checkout['message'] : $this->errorMessage;
-            }
-        } else {
-            $result = $this->initCheckout($orderId);
-            if(!isset($result['code'])){
-                return $result['url'];
-            } else {
-                $this->errorCode = (isset($result['code'])) ? $result['code'] : $this->errorCode;
-                $this->errorMessage = (isset($result['message'])) ? $result['message'] : $this->errorMessage;
-            }
+        if (is_int($orderId) && $orderId > 0) {
+            if( WC()->session->get( 'billmate_checkout_hash' )){
+                $billmate = $this->getBillmateConnection();
 
+                $this->updateCheckoutFromOrderId( $orderId );
+                $checkout = $billmate->getCheckout(array('PaymentData' => array('hash' => WC()->session->get( 'billmate_checkout_hash' ))));
+                if(!isset($checkout['code'])){
+                    return $checkout['PaymentData']['url'];
+                } else {
+                    $this->errorCode = (isset($checkout['code'])) ? $checkout['code'] : $this->errorCode;
+                    $this->errorMessage = (isset($checkout['message'])) ? $checkout['message'] : $this->errorMessage;
+                }
+            } else {
+                $result = $this->initCheckout($orderId);
+                if(!isset($result['code'])){
+                    return $result['url'];
+                } else {
+                    $this->errorCode = (isset($result['code'])) ? $result['code'] : $this->errorCode;
+                    $this->errorMessage = (isset($result['message'])) ? $result['message'] : $this->errorMessage;
+                }
+            }
         }
-
+        return '';
     }
 
 
@@ -943,10 +940,18 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
     }
 
-    public function updateCheckout($result, $order)
+    public function is_cart_items_in_stock()
     {
         $check_cart_item_stock_result = WC()->cart->check_cart_item_stock();
         if (!is_bool($check_cart_item_stock_result) || (is_bool($check_cart_item_stock_result) && true != $check_cart_item_stock_result)) {
+            return false;
+        }
+        return true;
+    }
+
+    public function updateCheckout($result, $order)
+    {
+        if ( ! $this->is_cart_items_in_stock() ) {
             return false;
         }
 
