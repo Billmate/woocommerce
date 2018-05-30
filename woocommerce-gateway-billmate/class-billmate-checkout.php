@@ -778,7 +778,9 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         $orderId = $this->create_order();
 
         if (is_int($orderId) && $orderId > 0) {
+            $isInit = true;
             if( WC()->session->get( 'billmate_checkout_hash' )){
+                $isInit = false;
                 $billmate = $this->getBillmateConnection();
 
                 $this->updateCheckoutFromOrderId( $orderId );
@@ -788,8 +790,11 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                 } else {
                     $this->errorCode = (isset($checkout['code'])) ? $checkout['code'] : $this->errorCode;
                     $this->errorMessage = (isset($checkout['message'])) ? $checkout['message'] : $this->errorMessage;
+                    $isInit = true;
                 }
-            } else {
+            }
+
+            if ( $isInit == true ) {
                 $result = $this->initCheckout($orderId);
                 if(!isset($result['code'])){
                     return $result['url'];
