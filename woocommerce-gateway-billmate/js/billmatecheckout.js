@@ -77,30 +77,7 @@ var BillmateIframe = new function(){
             }
         });
     };
-    this.updatePaymentMethod = function(data){
-        if(window.method != data.method) {
-            data.action = 'billmate_set_method';
-            self.showCheckoutLoading();
-            jQuery.ajax({
-                url: billmate.ajax_url,
-                data: data,
-                type: 'POST',
-                success: function (response) {
-                    if (response.hasOwnProperty("success") && response.success) {
 
-                        if(response.hasOwnProperty("data") && response.data.hasOwnProperty("update_checkout") && response.data.update_checkout == true) {
-                            jQuery( 'body' ).trigger( 'update_checkout' );
-                            self.updateCheckout();
-                        } else {
-                            self.hideCheckoutLoading();
-                        }
-                        window.method = data.method;
-                    }
-                }
-            });
-        }
-
-    };
     this.updateShippingMethod = function(){
 
     }

@@ -61,15 +61,6 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             'billmate_update_address'
         ) );
 
-        // Update Address from Iframe
-        add_action( 'wp_ajax_billmate_set_method', array(
-            $this,
-            'billmate_set_method'
-        ) );
-        add_action( 'wp_ajax_nopriv_billmate_set_method', array(
-            $this,
-            'billmate_set_method'
-        ) );
         add_action('wp_ajax_billmate_complete_order',array($this,'billmate_complete_order'));
         add_action('wp_ajax_nopriv_billmate_complete_order',array($this,'billmate_complete_order'));
 
@@ -176,65 +167,6 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                 return $key;
         }
 
-    }
-    function billmate_set_method(){
-
-        if ( ! $this->is_cart_items_in_stock() ) {
-            wp_send_json_error();
-            return false;
-        }
-
-        $connection = $this->getBillmateConnection();
-        $result = $connection->getCheckout(array('PaymentData' => array('hash' => WC()->session->get('billmate_checkout_hash'))));
-        if(!isset($result['code'])) {
-            $class = '';
-
-            $orderId = $this->create_order();
-            $order = wc_get_order( $orderId );
-            // Clear invoice fee
-            switch ($result['PaymentData']['method']) {
-                case 1:
-                    $method = 'billmate_invoice';
-                    //$class = new WC_Gateway_Billmate_Invoice();
-
-                    break;
-                case 4:
-                    $method = 'billmate_partpayment';
-                    //$class = new WC_Gateway_Billmate_Partpayment();
-                    break;
-                case 8:
-                    $method = 'billmate_cardpay';
-                    $result['PaymentData']['accepturl']    = billmate_add_query_arg(array('wc-api' => 'WC_Gateway_Billmate_Cardpay', 'payment' => 'success','method' => 'checkout'));
-                    $result['PaymentData']['callbackurl']  = billmate_add_query_arg(array('wc-api' => 'WC_Gateway_Billmate_Cardpay', 'method' => 'checkout'));
-                    $result['PaymentData']['cancelurl']    = billmate_add_query_arg(array('wc-api' => 'WC_Gateway_Billmate_Cardpay', 'payment' => 'cancel','method' => 'checkout'));
-                    $result['PaymentData']['returnmethod'] = is_ssl() ? 'POST' : 'GET';
-                    //$class = new WC_Gateway_Billmate_Cardpay();
-                    break;
-                case 16:
-                    $method = 'billmate_bankpay';
-                    $result['PaymentData']['accepturl']    = billmate_add_query_arg(array('wc-api' => 'WC_Gateway_Billmate_Bankpay', 'payment' => 'success','method' => 'checkout'));
-                    $result['PaymentData']['callbackurl']  = billmate_add_query_arg(array('wc-api' => 'WC_Gateway_Billmate_Bankpay', 'method' => 'checkout'));
-                    $result['PaymentData']['cancelurl']    = billmate_add_query_arg(array('wc-api' => 'WC_Gateway_Billmate_Bankpay', 'payment' => 'cancel','method' => 'checkout'));
-                    $result['PaymentData']['returnmethod'] = is_ssl() ? 'POST' : 'GET';
-                    //$class = new WC_Gateway_Billmate_Bankpay();
-                    break;
-            }
-
-
-            $available_gateways = WC()->payment_gateways->payment_gateways();
-
-            if(isset($method) AND $method != "" AND isset($available_gateways[$method])) {
-                $payment_method = $available_gateways[$method];
-                $order->set_payment_method($payment_method);
-            }
-
-            $order->calculate_taxes();
-            $order->calculate_shipping();
-            $order->calculate_totals();
-            $data = $this->updateCheckout($result, $order);
-            wp_send_json_success($data);
-        }
-        wp_send_json_error();
     }
 
     function get_order(){
