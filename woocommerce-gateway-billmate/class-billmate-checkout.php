@@ -870,7 +870,9 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
            $parts = explode('/',$url);
            $sum = count($parts);
            $hash = ($parts[$sum-1] == 'test') ? str_replace('\\','',$parts[$sum-2]) : str_replace('\\','',$parts[$sum-1]);
+           $number = (isset($result['number'])) ? $result['number'] : '';
            WC()->session->set('billmate_checkout_hash', $hash);
+           WC()->session->set('billmate_checkout_number', $number);
        }
 
         return $result;
