@@ -1478,6 +1478,15 @@ if(!class_exists('BillmateOrder')){
 
         public function getCartShipping() {
 
+            if ( WC()->session->get('billmate_checkout_billing_postcode') != '' ) {
+                WC()->customer->set_billing_country( WC()->session->get('billmate_checkout_billing_country') );
+                WC()->customer->set_billing_postcode( WC()->session->get('billmate_checkout_billing_postcode') );
+                WC()->customer->set_shipping_country( WC()->session->get('billmate_checkout_shipping_country') );
+                WC()->customer->set_shipping_postcode( WC()->session->get('billmate_checkout_shipping_postcode') );
+                WC()->customer->save();
+                WC()->cart->calculate_totals();
+            }
+
             $taxrate        = 0;
             $shipping_total = 0;
             $shipping_tax   = 0;

@@ -425,14 +425,20 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                         }
                     }
 
-                    WC()->cart->calculate_shipping();
-                    WC()->cart->calculate_fees();
+                    WC()->customer->set_billing_country( $billing_address['country'] );
+                    WC()->customer->set_shipping_country( $shipping_address['country'] );
+                    WC()->customer->set_billing_postcode( $billing_address['postcode'] );
+                    WC()->customer->set_shipping_postcode( $shipping_address['postcode'] );
+                    WC()->customer->save();
                     WC()->cart->calculate_totals();
 
-                    $order->calculate_taxes();
-                    $order->calculate_shipping();
-                    $order->calculate_totals();
+                    WC()->session->set('billmate_checkout_billing_country', $billing_address['country']);
+                    WC()->session->set('billmate_checkout_billing_postcode', $billing_address['postcode']);
+                    WC()->session->set('billmate_checkout_shipping_country', $shipping_address['country']);
+                    WC()->session->set('billmate_checkout_shipping_postcode', $shipping_address['postcode']);
 
+                    $orderId = $this->create_order();
+                    $order = wc_get_order( $orderId );
                     $data = $this->updateCheckout($result, $order);
                     wp_send_json_success($data);
                 } else {
@@ -533,6 +539,15 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
     function check_if_order_should_be_updated_or_created($customer_email = ''){
         if ( ! defined( 'WOOCOMMERCE_CART' ) ) {
             define( 'WOOCOMMERCE_CART', true );
+        }
+
+        if ( WC()->session->get('billmate_checkout_billing_postcode') != '' ) {
+            WC()->customer->set_billing_country( WC()->session->get('billmate_checkout_billing_country') );
+            WC()->customer->set_billing_postcode( WC()->session->get('billmate_checkout_billing_postcode') );
+            WC()->customer->set_shipping_country( WC()->session->get('billmate_checkout_shipping_country') );
+            WC()->customer->set_shipping_postcode( WC()->session->get('billmate_checkout_shipping_postcode') );
+            WC()->customer->save();
+            WC()->cart->calculate_totals();
         }
 
         if ( WC()->session->get( 'billmate_checkout_order' ) && wc_get_order( WC()->session->get( 'billmate_checkout_order' ) ) ) {
