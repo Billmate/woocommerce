@@ -60,7 +60,7 @@ var BillmateIframe = new function(){
         self.showCheckoutLoading();
         jQuery.ajax({
             url : billmate.ajax_url,
-            data: {action: 'billmate_update_address',hash: window.hash},
+            data: {action: 'billmate_update_order',hash: window.hash},
             type: 'POST',
             success: function(response){
 

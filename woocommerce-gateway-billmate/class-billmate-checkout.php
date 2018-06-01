@@ -61,6 +61,9 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             'billmate_update_address'
         ) );
 
+        add_action( 'wp_ajax_billmate_update_order', array( $this, 'billmate_update_order' ) );
+        add_action( 'wp_ajax_nopriv_billmate_update_order', array( $this, 'billmate_update_order' ) );
+
         add_action('wp_ajax_billmate_complete_order',array($this,'billmate_complete_order'));
         add_action('wp_ajax_nopriv_billmate_complete_order',array($this,'billmate_complete_order'));
 
@@ -286,6 +289,45 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
     }
 
+    function billmate_update_order()
+    {
+        if ( ! $this->is_cart_items_in_stock() ) {
+            wp_send_json_success(array('reload_checkout' => true));
+            return false;
+        }
+
+        $result = array("code" => "no hash");
+        $hash   = WC()->session->get('billmate_checkout_hash');
+        $number = WC()->session->get('billmate_checkout_number');
+
+        if ($number == '' && $hash != '') {
+            $connection = $this->getBillmateConnection();
+            $result = $connection->getCheckout(array('PaymentData' => array('hash' => $hash)));
+            $number = isset($result['PaymentData']['number']) ? $result['PaymentData']['number'] : '';
+        }
+
+        if ($number != '') {
+            $result = array(
+                'PaymentData' => array(
+                    'number' => $number
+                )
+            );
+
+            WC()->cart->calculate_shipping();
+            WC()->cart->calculate_fees();
+            WC()->cart->calculate_totals();
+
+            $orderId = $this->create_order();
+            $order = wc_get_order( $orderId );
+            $order->calculate_totals();
+
+            $data = $this->updateCheckout($result, $order);
+            wp_send_json_success($data);
+        }
+        wp_send_json_error();
+        return false;
+    }
+
     function billmate_update_address(){
         global $woocommerce;
         global $wp_version;
@@ -430,17 +472,14 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                     WC()->customer->set_billing_postcode( $billing_address['postcode'] );
                     WC()->customer->set_shipping_postcode( $shipping_address['postcode'] );
                     WC()->customer->save();
-                    WC()->cart->calculate_totals();
 
                     WC()->session->set('billmate_checkout_billing_country', $billing_address['country']);
                     WC()->session->set('billmate_checkout_billing_postcode', $billing_address['postcode']);
                     WC()->session->set('billmate_checkout_shipping_country', $shipping_address['country']);
                     WC()->session->set('billmate_checkout_shipping_postcode', $shipping_address['postcode']);
 
-                    $orderId = $this->create_order();
-                    $order = wc_get_order( $orderId );
-                    $data = $this->updateCheckout($result, $order);
-                    wp_send_json_success($data);
+                    $this->billmate_update_order();
+
                 } else {
                     wp_send_json_success(array('update_checkout' => false));
                 }
