@@ -1191,7 +1191,6 @@ if(!class_exists('BillmateOrder')){
             $this->getCustomerBillingData();
 
             $this->orderData['PaymentInfo'] = array();
-            $this->orderData['PaymentInfo']['paymentdate'] = (string)date('Y-m-d');
 
             if($this->paymentterms > 0) {
                 $this->orderData['PaymentInfo']['paymentterms'] = $this->paymentterms;
