@@ -922,31 +922,23 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         return $orderValues;
     }
 
-    public function updateCheckoutFromOrderId( $orderId = null ) {
-        $orderValues = $this->getCheckoutDataFromOrderId($orderId);
-
+    public function updateCheckoutFromOrderId( $orderId = null )
+    {
         $billmate = $this->getBillmateConnection();
-        $checkoutOrder = $billmate->getCheckout(array('PaymentData' => array('hash' => WC()->session->get('billmate_checkout_hash'))));
-
-        $checkoutOrderNumber = (isset($checkoutOrder['PaymentData']['number'])) ? $checkoutOrder['PaymentData']['number'] : 0;
-
-        if (isset($checkoutOrder['PaymentData']['method'])) {
-            if (!isset($orderValues['PaymentData'])) {
-                $orderValues['PaymentData'] = array();
-            }
-            $orderValues['PaymentData']['method'] = $checkoutOrder['PaymentData']['method'];
+        $checkoutOrderNumber = WC()->session->get('billmate_checkout_number');
+        if ($checkoutOrderNumber == '') {
+            $checkoutOrder = $billmate->getCheckout(array('PaymentData' => array('hash' => WC()->session->get('billmate_checkout_hash'))));
+            $checkoutOrderNumber = (isset($checkoutOrder['PaymentData']['number'])) ? $checkoutOrder['PaymentData']['number'] : 0;
         }
 
-        $result = array();
         if ( $checkoutOrderNumber > 0 ) {
-            if ( !isset($orderValues['PaymentData']) ) {
-                $orderValues['PaymentData'] = array();
-            }
-            $orderValues['PaymentData']['number'] = $checkoutOrderNumber;
-            $result = $billmate->updateCheckout($orderValues);
+            $orderValues = $this->getCheckoutDataFromOrderId($orderId);
+            $orderValues['PaymentData'] = array(
+                'number' => $checkoutOrderNumber
+            );
+            return $billmate->updateCheckout($orderValues);
         }
-
-        return $result;
+        return array();
     }
 
     function initCheckout($orderId = null){
