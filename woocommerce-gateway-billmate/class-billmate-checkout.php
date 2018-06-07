@@ -723,8 +723,14 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
             $order_taxes = $order->get_items( array( 'tax' ) );
             if ( empty( $order_taxes ) ) {
-                foreach ( array_keys( WC()->cart->taxes + WC()->cart->shipping_taxes ) as $tax_id ) {
 
+                if(version_compare(WC_VERSION, '3.2.0', '>=')) {
+                    $tax_ids = array_keys( WC()->cart->get_cart_contents_taxes() + WC()->cart->get_shipping_taxes() );
+                } else {
+                    $tax_ids = array_keys( WC()->cart->taxes + WC()->cart->shipping_taxes );
+                }
+
+                foreach ( $tax_ids as $tax_id ) {
                     if(version_compare(WC_VERSION, '3.0.0', '>=')) {
                         $tax_code = WC_Tax::get_rate_code( $tax_id );
                         if(!is_numeric($tax_id) OR $tax_id < 1 OR $tax_code == false) {
