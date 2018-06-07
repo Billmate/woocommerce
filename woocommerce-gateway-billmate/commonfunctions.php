@@ -1,5 +1,5 @@
 <?php
-define('BILLPLUGIN_VERSION','3.3.0');
+define('BILLPLUGIN_VERSION','3.3.1');
 define('BILLMATE_CLIENT','PHP:Woocommerce:'.BILLPLUGIN_VERSION);
 define('BILLMATE_SERVER','2.1.9');
 
@@ -1191,7 +1191,6 @@ if(!class_exists('BillmateOrder')){
             $this->getCustomerBillingData();
 
             $this->orderData['PaymentInfo'] = array();
-            $this->orderData['PaymentInfo']['paymentdate'] = (string)date('Y-m-d');
 
             if($this->paymentterms > 0) {
                 $this->orderData['PaymentInfo']['paymentterms'] = $this->paymentterms;
@@ -1477,6 +1476,15 @@ if(!class_exists('BillmateOrder')){
         }
 
         public function getCartShipping() {
+
+            if ( WC()->session->get('billmate_checkout_billing_postcode') != '' ) {
+                WC()->customer->set_billing_country( WC()->session->get('billmate_checkout_billing_country') );
+                WC()->customer->set_billing_postcode( WC()->session->get('billmate_checkout_billing_postcode') );
+                WC()->customer->set_shipping_country( WC()->session->get('billmate_checkout_shipping_country') );
+                WC()->customer->set_shipping_postcode( WC()->session->get('billmate_checkout_shipping_postcode') );
+                WC()->customer->save();
+                WC()->cart->calculate_totals();
+            }
 
             $taxrate        = 0;
             $shipping_total = 0;

@@ -54,12 +54,12 @@ function get_billmate_checkout() {
         define('DONOTCACHEPAGE', 1);
     }
 
-    $check_cart_item_stock_result = WC()->cart->check_cart_item_stock();
-    if (!is_bool($check_cart_item_stock_result) || (is_bool($check_cart_item_stock_result) && true != $check_cart_item_stock_result)) {
+    $checkout   = new WC_Gateway_Billmate_Checkout();
+
+    if ( ! $checkout->is_cart_items_in_stock() ) {
         return '';
     }
 
-    $checkout   = new WC_Gateway_Billmate_Checkout();
     $return     = '';
 
     if(isset(WC()->cart) AND is_object(WC()->cart) AND method_exists(WC()->cart, "is_empty") AND !WC()->cart->is_empty()) {
@@ -74,7 +74,7 @@ function get_billmate_checkout() {
             </div>';
         }
 
-        if($checkoutUrl != "") {
+        if( $checkoutUrl != "" && $checkout->is_cart_items_in_stock() ) {
             // Billmate Checkout iframe
             $return .= '<div id="checkoutdiv"><iframe id="checkout" src="' . $checkoutUrl . '" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation" style="width:100%;min-height:800px;border:none;" scrolling="no"></iframe>';
         } else {
