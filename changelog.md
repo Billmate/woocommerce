@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.3.1 (2018-06-07)
+* Fix - Use WooCommerce cart get tax functions when wc above version 3.2
+* Fix - Improve check if cart items is in stock
+* Fix - Init new Billmate Checkout if current cant be found
+* Enhancement - Decrease amount of API requests for Billmate Checkout
+* Enhancement - Remove PaymentInfo.paymentdate from Billmate API requests
+
 ## 3.3.0 (2018-05-24)
 * Feature - Privacy policy support for payment methods and Billmate Checkout
 * Fix - Do not display Billmate Checkout when cart have item out of stock

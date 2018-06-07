@@ -4,7 +4,7 @@ Donate link:
 Tags: woocomerce, billmate, payments, cardpayments, invoice, partpayment, recurring, bankpayment
 Requires at least: 4.0
 Tested up to: 4.9.1
-Stable tag: 3.3.0
+Stable tag: 3.3.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -87,6 +87,13 @@ If you would like to use our logo on your site then choose following:
 
 
 == Changelog ==
+
+= 3.3.1 (2018-06-07) =
+* Fix - Use WooCommerce cart get tax functions when wc above version 3.2
+* Fix - Improve check if cart items is in stock
+* Fix - Init new Billmate Checkout if current cant be found
+* Enhancement - Decrease amount of API requests for Billmate Checkout
+* Enhancement - Remove PaymentInfo.paymentdate from Billmate API requests
 
 = 3.3.0 (2018-05-24) =
 * Feature - Privacy policy support for payment methods and Billmate Checkout
