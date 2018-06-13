@@ -50,8 +50,14 @@ var BillmateIframe = new function(){
 
                 if(response.hasOwnProperty("success") && response.success) {
                     window.address_selected = true;
+                    if (response.hasOwnProperty('data') && response.data.hasOwnProperty('update_checkout') && response.data.update_checkout == true) {
+                        self.updateCheckout();
+                    } else {
+                        self.hideCheckoutLoading();
+                    }
+                } else {
+                    self.hideCheckoutLoading();
                 }
-                self.hideCheckoutLoading();
             }
         });
 
