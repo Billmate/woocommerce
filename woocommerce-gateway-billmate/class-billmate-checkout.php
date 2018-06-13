@@ -359,6 +359,10 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             $order = wc_get_order( $orderId );
             $post = $_POST;
 
+            // shipping_pre_address_save will be used later to check if new address affect shipping cost
+            $billmateOrder = new BillmateOrder($order);
+            $shipping_pre_address_save = $billmateOrder->getCartShipping();
+
             if( isset($post['Customer'])
                 && is_array($post['Customer'])
                 && count($post['Customer']) > 0
@@ -478,7 +482,26 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                     WC()->session->set('billmate_checkout_shipping_country', $shipping_address['country']);
                     WC()->session->set('billmate_checkout_shipping_postcode', $shipping_address['postcode']);
 
-                    $this->billmate_update_order();
+
+                    WC()->cart->calculate_shipping();
+                    WC()->cart->calculate_fees();
+                    WC()->cart->calculate_totals();
+
+                    $orderId = $this->create_order();
+                    $order = wc_get_order( $orderId );
+                    $order->calculate_totals();
+
+                    $billmateOrder = new BillmateOrder($order);
+                    $shipping_post_address_save = $billmateOrder->getCartShipping();
+                    if (
+                        $shipping_pre_address_save['price'] != $shipping_post_address_save['price']
+                        || $shipping_pre_address_save['taxrate'] != $shipping_post_address_save['taxrate']
+                        || $shipping_pre_address_save['tax'] != $shipping_post_address_save['tax']
+                        || $shipping_pre_address_save['price_with_tax'] != $shipping_post_address_save['price_with_tax']
+                    ) {
+                        // New address affect shipping price Update checkout-order
+                        $this->billmate_update_order();
+                    }
 
                 } else {
                     wp_send_json_success(array('update_checkout' => false));
