@@ -4,7 +4,7 @@ Donate link:
 Tags: woocomerce, billmate, payments, cardpayments, invoice, partpayment, recurring, bankpayment
 Requires at least: 4.0
 Tested up to: 4.9.1
-Stable tag: 3.3.1
+Stable tag: 3.3.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -87,6 +87,11 @@ If you would like to use our logo on your site then choose following:
 
 
 == Changelog ==
+
+= 3.3.2 (2018-06-14) =
+* Fix - Check if session exists before try fetching customer postcode
+* Enhancement - When saved address in Billmate Checkout Only update Checkout order when Shipping fee is affected
+* Enhancement - Minor code refactoring Use same function to calculate shipping fee when update Checkout
 
 = 3.3.1 (2018-06-07) =
 * Fix - Use WooCommerce cart get tax functions when wc above version 3.2
