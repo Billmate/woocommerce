@@ -359,6 +359,10 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             $order = wc_get_order( $orderId );
             $post = $_POST;
 
+            // shipping_pre_address_save will be used later to check if new address affect shipping cost
+            $billmateOrder = new BillmateOrder($order);
+            $shipping_pre_address_save = $billmateOrder->getCartShipping();
+
             if( isset($post['Customer'])
                 && is_array($post['Customer'])
                 && count($post['Customer']) > 0
@@ -478,7 +482,26 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                     WC()->session->set('billmate_checkout_shipping_country', $shipping_address['country']);
                     WC()->session->set('billmate_checkout_shipping_postcode', $shipping_address['postcode']);
 
-                    $this->billmate_update_order();
+
+                    WC()->cart->calculate_shipping();
+                    WC()->cart->calculate_fees();
+                    WC()->cart->calculate_totals();
+
+                    $orderId = $this->create_order();
+                    $order = wc_get_order( $orderId );
+                    $order->calculate_totals();
+
+                    $billmateOrder = new BillmateOrder($order);
+                    $shipping_post_address_save = $billmateOrder->getCartShipping();
+                    if (
+                        $shipping_pre_address_save['price'] != $shipping_post_address_save['price']
+                        || $shipping_pre_address_save['taxrate'] != $shipping_post_address_save['taxrate']
+                        || $shipping_pre_address_save['tax'] != $shipping_post_address_save['tax']
+                        || $shipping_pre_address_save['price_with_tax'] != $shipping_post_address_save['price_with_tax']
+                    ) {
+                        // New address affect shipping price Update checkout-order
+                        $this->billmate_update_order();
+                    }
 
                 } else {
                     wp_send_json_success(array('update_checkout' => false));
@@ -580,7 +603,13 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             define( 'WOOCOMMERCE_CART', true );
         }
 
-        if ( WC()->session->get('billmate_checkout_billing_postcode') != '' ) {
+        if (
+                is_object(WC())
+                && property_exists(WC(), 'session')
+                && is_object(WC()->session)
+                && method_exists(WC()->session, 'get')
+                && WC()->session->get('billmate_checkout_billing_postcode') != ''
+        ) {
             WC()->customer->set_billing_country( WC()->session->get('billmate_checkout_billing_country') );
             WC()->customer->set_billing_postcode( WC()->session->get('billmate_checkout_billing_postcode') );
             WC()->customer->set_shipping_country( WC()->session->get('billmate_checkout_shipping_country') );
@@ -1006,33 +1035,12 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
         // Shipping
         unset($orderValues['Cart']);
-        if(version_compare(WC_VERSION, '3.0.0', '>=')) {
-            $order_shipping_total = $order->get_shipping_total();
-            $order_shipping_tax = $order->get_shipping_tax();
-        } else {
-            $order_shipping_total = $order->order_shipping;
-            $order_shipping_tax = $order->order_shipping_tax;
+        $shipping = $billmateOrder->getCartShipping();
+        if ($shipping['price'] > 0) {
+            $orderValues['Cart']['Shipping'] = $billmateOrder->getCartShippingData();
+            $total      += $shipping['price'];
+            $totalTax   += $shipping['tax'];
         }
-
-        if ($order_shipping_total > 0) :
-            // We manually calculate the shipping taxrate percentage here
-            $calculated_shipping_tax_percentage = ($order_shipping_tax / $order_shipping_total) * 100; //25.00
-            $calculated_shipping_tax_decimal = ($order_shipping_tax / $order_shipping_total) + 1; //0.25
-
-            // apply_filters to Shipping so we can filter this if needed
-            $billmate_shipping_price_including_tax = $order_shipping_total * $calculated_shipping_tax_decimal;
-            $shipping_price = apply_filters( 'billmate_shipping_price_including_tax', $billmate_shipping_price_including_tax );
-
-            $orderValues['Cart']['Shipping'] = array(
-                'withouttax'    => ($shipping_price - $order_shipping_tax) * 100,
-                'taxrate'      => round($calculated_shipping_tax_percentage),
-
-            );
-            $total += ($shipping_price - $order_shipping_tax) * 100;
-            $totalTax += (($shipping_price - $order_shipping_tax) * ($calculated_shipping_tax_percentage/100)) * 100;
-        endif;
-
-
 
         $round = (round($order->get_total() * 100)) - round($total + $totalTax,0);
 
