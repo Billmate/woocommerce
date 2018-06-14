@@ -1,5 +1,5 @@
 <?php
-define('BILLPLUGIN_VERSION','3.3.1');
+define('BILLPLUGIN_VERSION','3.3.2');
 define('BILLMATE_CLIENT','PHP:Woocommerce:'.BILLPLUGIN_VERSION);
 define('BILLMATE_SERVER','2.1.9');
 
@@ -1477,7 +1477,13 @@ if(!class_exists('BillmateOrder')){
 
         public function getCartShipping() {
 
-            if ( WC()->session->get('billmate_checkout_billing_postcode') != '' ) {
+            if (
+                    is_object(WC())
+                    && property_exists(WC(), 'session')
+                    && is_object(WC()->session)
+                    && method_exists(WC()->session, 'get')
+                    && WC()->session->get('billmate_checkout_billing_postcode') != ''
+            ) {
                 WC()->customer->set_billing_country( WC()->session->get('billmate_checkout_billing_country') );
                 WC()->customer->set_billing_postcode( WC()->session->get('billmate_checkout_billing_postcode') );
                 WC()->customer->set_shipping_country( WC()->session->get('billmate_checkout_shipping_country') );

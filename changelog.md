@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.3.2 (2018-06-14)
+* Fix - Check if session exists before try fetching customer postcode
+* Enhancement - When saved address in Billmate Checkout Only update Checkout order when Shipping fee is affected
+* Enhancement - Minor code refactoring Use same function to calculate shipping fee when update Checkout
+
 ## 3.3.1 (2018-06-07)
 * Fix - Use WooCommerce cart get tax functions when wc above version 3.2
 * Fix - Improve check if cart items is in stock
