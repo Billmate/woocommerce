@@ -13,6 +13,7 @@ var BillmateIframe = new function(){
     var timerPostMessage;
 
     var currentCustomerBillingZip;
+    var currentOrderComments;
 
     this.updateAddress = function (data) {
         // When address in checkout updates;
@@ -112,6 +113,18 @@ var BillmateIframe = new function(){
             }
         });
     };
+    this.updateOrderComments = function () {
+        data = {};
+        data.action = 'billmate_update_order_comments';
+        data.order_comments = jQuery(document).find('#order_comments').val();
+        jQuery.ajax({
+            url: billmate.ajax_url,
+            data: data,
+            type: 'POST',
+            success: function (response) {
+            }
+        });
+    };
     this.initListeners = function () {
         jQuery(document).ready(function () {
             window.addEventListener("message",self.handleEvent);
@@ -139,6 +152,20 @@ var BillmateIframe = new function(){
         });
         jQuery( document ).on('change', 'select.shipping_method, input[name^=shipping_method]', function() {
             self.lock();
+        });
+
+        // order comment
+        jQuery(document).on('input change', '#order_comments', function() {
+            that = self;
+            newVal = jQuery(this).val();
+            if (that.currentOrderComments != newVal) {
+                clearTimeout(jQuery.data(this, 'timer'));
+                var wait = setTimeout(function () {
+                    that.updateOrderComments();
+                    that.currentOrderComments = newVal;
+                }, 500);
+                jQuery(this).data('timer', wait);
+            }
         });
 
         /* Updated cart totals */

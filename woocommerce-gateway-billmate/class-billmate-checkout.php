@@ -64,6 +64,9 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         add_action( 'wp_ajax_billmate_update_order', array( $this, 'billmate_update_order' ) );
         add_action( 'wp_ajax_nopriv_billmate_update_order', array( $this, 'billmate_update_order' ) );
 
+        add_action( 'wp_ajax_billmate_update_order_comments', array( $this, 'billmate_update_order_comments' ) );
+        add_action( 'wp_ajax_nopriv_billmate_update_order_comments', array( $this, 'billmate_update_order_comments' ) );
+
         add_action('wp_ajax_billmate_complete_order',array($this,'billmate_complete_order'));
         add_action('wp_ajax_nopriv_billmate_complete_order',array($this,'billmate_complete_order'));
 
@@ -512,6 +515,14 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         }
         wp_send_json_error();
         return false;
+    }
+
+    function billmate_update_order_comments() {
+        $order_comments = (isset($_POST['order_comments'])) ? $_POST['order_comments'] : '';
+        $orderId = $this->create_order();
+        $order = wc_get_order( $orderId );
+        $order->set_customer_note( $order_comments );
+        $order->save();
     }
 
     function billmate_checkout_cart_callback_update() {
