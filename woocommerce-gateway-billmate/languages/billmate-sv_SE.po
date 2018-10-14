@@ -783,6 +783,14 @@ msgstr "Checkout sida"
 msgid "Please select checkout page."
 msgstr "Vänligen ange sida för Billmate Checkout."
 
+#: ../class-billmate-checkout.php:1209
+msgid "Show order comments"
+msgstr "Visa ordernoteringar"
+
+#: ../class-billmate-checkout.php:1211
+msgid "Show order comments on checkout page."
+msgstr "Visa ordernoteringar på Checkout sida."
+
 #: ../class-billmate-checkout.php:1296
 msgid "Terms Page"
 msgstr "Köpvillkor sida"

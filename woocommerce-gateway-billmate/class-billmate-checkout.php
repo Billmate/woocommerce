@@ -36,6 +36,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         $this->testmode				= ( isset( $this->settings['testmode'] ) ) ? $this->settings['testmode'] : '';
 
         $this->order_status = (isset($this->settings['order_status'])) ? $this->settings['order_status'] : false;
+        $this->show_order_comments = ( isset( $this->settings['show_order_comments'] ) ) ? $this->settings['show_order_comments'] : '';
 
         $this->errorCode = "";
         $this->errorMessage = "";
@@ -1203,6 +1204,12 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                 'default'     => '',
                 'options' => $pageOption
 
+            ),
+            'show_order_comments' => array(
+                'title' => __( 'Show order comments', 'billmate' ),
+                'type' => 'checkbox',
+                'label' => __( 'Show order comments on checkout page.', 'billmate' ),
+                'default' => 'no'
             ),
             'terms_url'                    => array(
                 'title'       => __( 'Terms Page', 'billmate' ),
