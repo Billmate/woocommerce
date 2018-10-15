@@ -88,6 +88,14 @@ If you would like to use our logo on your site then choose following:
 
 == Changelog ==
 
+= 3.4.0 (2018-10-15) =
+* Feature - Order Comments on Billamte Checkout page
+* Feature - Invoice support for WooCommerce Subscription
+* Feature - Show/hide overlay in store when in Billmate Checkout
+* Enhancement - Improve open apps in IOS for Billmate Checkout
+* Enhancement - Partpayment on product page also show when checkout is active
+* Fix - Remove org.nr from Partpayment pno input label
+
 = 3.3.2 (2018-06-14) =
 * Fix - Check if session exists before try fetching customer postcode
 * Enhancement - When saved address in Billmate Checkout Only update Checkout order when Shipping fee is affected
