@@ -429,7 +429,11 @@ msgstr "Dec"
 msgid "Year"
 msgstr "År"
 
-#: ../class-billmate-account.php:837 ../class-billmate-common.php:58
+#: ../class-billmate-account.php:837
+msgid "Social Security Number"
+msgstr "Personnummer"
+
+#: ../class-billmate-common.php:58
 #: ../class-billmate-invoice.php:498
 msgid "Social Security Number / Corporate Registration Number"
 msgstr "Personnummer / Organisationsnummer"
@@ -778,6 +782,14 @@ msgstr "Checkout sida"
 #: ../class-billmate-checkout.php:1219
 msgid "Please select checkout page."
 msgstr "Vänligen ange sida för Billmate Checkout."
+
+#: ../class-billmate-checkout.php:1209
+msgid "Show order comments"
+msgstr "Visa ordernoteringar"
+
+#: ../class-billmate-checkout.php:1211
+msgid "Show order comments on checkout page."
+msgstr "Visa ordernoteringar på Checkout sida."
 
 #: ../class-billmate-checkout.php:1296
 msgid "Terms Page"

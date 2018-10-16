@@ -13,6 +13,7 @@ var BillmateIframe = new function(){
     var timerPostMessage;
 
     var currentCustomerBillingZip;
+    var currentOrderComments;
 
     this.updateAddress = function (data) {
         // When address in checkout updates;
@@ -112,6 +113,18 @@ var BillmateIframe = new function(){
             }
         });
     };
+    this.updateOrderComments = function () {
+        data = {};
+        data.action = 'billmate_update_order_comments';
+        data.order_comments = jQuery(document).find('#order_comments').val();
+        jQuery.ajax({
+            url: billmate.ajax_url,
+            data: data,
+            type: 'POST',
+            success: function (response) {
+            }
+        });
+    };
     this.initListeners = function () {
         jQuery(document).ready(function () {
             window.addEventListener("message",self.handleEvent);
@@ -141,6 +154,20 @@ var BillmateIframe = new function(){
             self.lock();
         });
 
+        // order comment
+        jQuery(document).on('input change', '#order_comments', function() {
+            that = self;
+            newVal = jQuery(this).val();
+            if (that.currentOrderComments != newVal) {
+                clearTimeout(jQuery.data(this, 'timer'));
+                var wait = setTimeout(function () {
+                    that.updateOrderComments();
+                    that.currentOrderComments = newVal;
+                }, 500);
+                jQuery(this).data('timer', wait);
+            }
+        });
+
         /* Updated cart totals */
         jQuery(document.body).on('updated_cart_totals',function(e){
             self.updateBillmate();
@@ -156,6 +183,20 @@ var BillmateIframe = new function(){
             }
             self.childWindow = json.source;
             switch (json.event) {
+                case 'show_overlay':
+                    if (jQuery(document).find('#billmateCheckoutOverlay').length < 1) {
+                        var $div = jQuery('<div />').appendTo('body');
+                        $div.attr('id', 'billmateCheckoutOverlay');
+                    }
+                    resizeBillmateCheckoutOverlay();
+                    jQuery('body').addClass('billmate-checkout-overlay');
+                    break;
+                case 'hide_overlay':
+                    jQuery('body').removeClass('billmate-checkout-overlay');
+                    break;
+                case 'go_to':
+                    location.href = json.data;
+                    break;
                 case 'address_selected':
                     self.updateAddress(json.data);
                     //self.updateTotals();
@@ -245,6 +286,29 @@ var BillmateIframe = new function(){
 
 };
 
+    function resizeBillmateCheckoutOverlay() {
+        if (jQuery(document).find('#billmateCheckoutOverlay').length > 0) {
+            height = jQuery(document).innerHeight();
+            if (jQuery(window).height() + jQuery(window).scrollTop() > height) {
+                height = jQuery(window).height() + jQuery(window).scrollTop();
+            }
+            width = jQuery(document).innerWidth();
+            jQuery("#billmateCheckoutOverlay").height(height);
+            jQuery("#billmateCheckoutOverlay").width(width);
+        }
+    }
+
+    jQuery(window).resize(function () {
+        resizeBillmateCheckoutOverlay();
+    });
+
+    jQuery(document).resize(function () {
+        resizeBillmateCheckoutOverlay();
+    });
+
+    jQuery(document).scroll(function () {
+        resizeBillmateCheckoutOverlay();
+    });
 
     var b_iframe = BillmateIframe;
     b_iframe.initListeners();

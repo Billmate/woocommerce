@@ -124,6 +124,24 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
         add_action('admin_enqueue_scripts',array(&$this,'injectscripts'));
 
 
+        // WooCommerce Subscription
+        $this->subscription_active = false;
+        if ( is_plugin_active( 'woocommerce-subscriptions/woocommerce-subscriptions.php' ) ) {
+			$this->subscription_active = true;
+        }
+        add_action( 'woocommerce_scheduled_subscription_payment_' . $this->id,array( $this, 'process_scheduled_payment' ), 10, 3 );
+        $this->supports = array(
+			'products',
+			'subscriptions',
+			'subscription_cancellation',
+			'subscription_suspension',
+			'subscription_reactivation',
+			'subscription_amount_changes',
+			'subscription_payment_method_change_admin',
+            'subscription_payment_method_change_customer',
+			'subscription_date_changes'
+		);
+
 	}
 
     public function injectscripts(){
@@ -974,6 +992,114 @@ parse_str($_POST['post_data'], $datatemp);
 			}
 		}
 	}
+
+    function process_scheduled_payment( $amount_to_charge, $order ) {
+        global $woocommerce;
+
+        $k = new Billmate( $this->eid, $this->secret, true, $this->testmode, false, $this->getRequestMeta() );
+
+        $subscriptions = wcs_get_subscriptions_for_renewal_order( $order );
+        $subscription = end($subscriptions);
+
+        if ( version_compare( WC_VERSION, '3.0.0', '>=' ) ) {
+            $parent_order = $subscription->get_parent();
+            $parent_id = $parent_order->get_id();
+        } else {
+            $parent_id = $subscription->order->id;
+        }
+
+        $parent_billmate_order = array();
+        $parent_billmate_order_customer_pno = '';
+        $parent_invoice_number = intval( get_post_meta( $parent_id, 'billmate_invoice_id', true ) );
+        if ($parent_invoice_number > 0) {
+            $parent_billmate_order = $k->getPaymentinfo( array( 'number' => $parent_invoice_number ) );
+            if ( isset( $parent_billmate_order['Customer'] ) && isset( $parent_billmate_order['Customer']['pno'] ) ) {
+                $parent_billmate_order_customer_pno = $parent_billmate_order['Customer']['pno'];
+            }
+        }
+
+        $total = 0;
+        $totalTax = 0;
+        $prepareDiscount = array();
+
+        $billmateOrder = new BillmateOrder($order);
+        $billmateOrder->setAllowedCountries($woocommerce->countries->get_allowed_countries());
+
+        $language = explode('_',get_locale());
+        $orderValues = array();
+        $orderValues['PaymentData'] = array(
+            'method' => 1,
+            'currency' => get_woocommerce_currency(),
+            'language' => strtolower($language[0]),
+            'country' => $this->billmate_country,
+            'orderid' => preg_replace('/#/','',$order->get_order_number()),
+            'logo' => (strlen($this->logo)> 0) ? $this->logo : ''
+
+        );
+
+        $orderValues['PaymentInfo'] = $billmateOrder->getPaymentInfoData();
+        $orderValues['Customer']['nr'] = $billmateOrder->getCustomerNrData();
+        $orderValues['Customer']['pno'] = $parent_billmate_order_customer_pno;
+        $orderValues['Customer']['Billing'] = $billmateOrder->getCustomerBillingData();
+        $orderValues['Customer']['Shipping'] = $billmateOrder->getCustomerShippingData();
+
+        /* Articles, fees, discount */
+        $orderValues['Articles'] = $billmateOrder->getArticlesData();
+        $total += $billmateOrder->getArticlesTotal();
+        $totalTax += $billmateOrder->getArticlesTotalTax();
+
+        $shippingPrices = $billmateOrder->getCartShipping();
+        if ($shippingPrices['price'] > 0) {
+            $orderValues['Cart']['Shipping'] = $billmateOrder->getCartShippingData();
+            $total += $shippingPrices['price'];
+            $totalTax += $shippingPrices['tax'];
+        }
+
+        $handling = $billmateOrder->getFormattedInvoiceFee();
+        if ( $handling['price'] > 0 ) {
+            $orderValues['Cart']['Handling'] = array(
+                'withouttax' => $handling['price'],
+                'taxrate' => $handling['taxrate']
+            );
+            $total += $handling['price'];
+            $totalTax += $handling['tax'];
+            $this->maybe_add_handling_to_order($order);
+        }
+
+        $round = 0;
+
+        $orderValues['Cart']['Total'] = array(
+            'withouttax' => round($total),
+            'tax' => round($totalTax,0),
+            'rounding' => $round,
+            'withtax' => round($total) + round($totalTax,0) + $round
+        );
+
+        $result = $k->addPayment($orderValues);
+        if ( isset( $result['code'] ) ) {
+            wc_bm_errors(__($result['message'],'billmate'));
+            $order->update_status('failed',sprintf(__("Subscription Payment Failed: Invoice ID: None" , 'billmate'),$result['message']));
+            $order->add_order_note(sprintf(__("Subscription Payment Failed: Invoice ID: None" , 'billmate'),$result['message']));
+            WC_Subscriptions_Manager::process_subscription_payment_failure_on_order($order);
+            return;
+        }else{
+            if ( $result['status'] == 'Paid' || $result['status'] == 'Created' ) {
+                add_post_meta($order->id,'billmate_invoice_id',$result['number']);
+                $order->add_order_note(sprintf(__("Subscription Payment Successful. Invoice ID: %s ",'billmate'), $result['number']));
+                $order->payment_complete($result['number']);
+                WC_Subscriptions_Manager::process_subscription_payments_on_order($order);
+                return array(
+                    'result' => 'success'
+                );
+            } else {
+                wc_bm_errors(__($result['message'],'billmate'));
+                $order->update_status('failed',sprintf(__("Subscription Payment Failed: Invoice ID: None" , 'billmate'),$result['message']));
+                $order->add_order_note(sprintf(__("Subscription Payment Failed: Invoice ID: None" , 'billmate'),$result['message']));
+                WC_Subscriptions_Manager::process_subscription_payment_failure_on_order($order);
+                return;
+            }
+        }
+    }
 
 	/**
 	 * Process the payment and return the result

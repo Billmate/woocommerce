@@ -66,6 +66,21 @@ function get_billmate_checkout() {
         $checkoutUrl = $checkout->get_url();
         $wpLanguage = strtolower(current(explode('_',get_locale())));
 
+        // order comment
+        if ( $checkout->show_order_comments == 'yes' ) {
+            if ( apply_filters( 'woocommerce_enable_order_notes_field', 'yes' == get_option( 'woocommerce_enable_order_comments', 'yes' ) ) ) {
+                ob_start();
+                $order_fields = WC()->checkout()->get_checkout_fields( 'order' );
+                if ( array_key_exists( 'order_comments', $order_fields ) ) {
+                    $orderId = $checkout->create_order();
+                    $order = wc_get_order( $orderId );
+                    $order_comments = $order->get_customer_note();
+                    woocommerce_form_field( 'order_comments', $order_fields[ 'order_comments' ], $order_comments );
+                }
+                $return .= ob_get_clean();
+            }
+        }
+
         // Button to WooCommerce checkout page when another payment method is available
         $available_gateways = WC()->payment_gateways->get_available_payment_gateways();
         if (is_array($available_gateways) AND count($available_gateways) > 0) {

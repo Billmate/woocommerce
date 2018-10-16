@@ -902,7 +902,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
                     </select>
 
 				<?php else : ?>
-					<label for="billmate_pno"><?php echo __("Social Security Number / Corporate Registration Number", 'billmate') ?> <span class="required">*</span></label>
+					<label for="billmate_pno"><?php echo __("Social Security Number", 'billmate') ?> <span class="required">*</span></label>
 					<input type="text" class="input-text" name="billmate_pno" value="<?php echo isset($_POST['billmate_pno']) ? $_POST['billmate_pno'] : '' ?>"/>
 				<?php endif; ?>
 			</p>
@@ -1880,17 +1880,29 @@ parse_str($_POST['post_data'], $datatemp);
 
 	}
 
-	/**
-	 * Calc monthly cost on single Product page and print it out
-	 **/
-
+    /**
+     * Calc monthly cost on single Product page and print it out when partpayment and/or checkout is enabled
+     * @return void
+     **/
     static function print_product_monthly_cost() {
 
         $queried_object = get_queried_object();
 
         /* Settings */
         $settings = get_option('woocommerce_billmate_partpayment_settings');
+        $eid = get_option('billmate_common_eid');
         $enabled = (isset($settings['enabled'])) ? $settings['enabled'] : '';
+
+        // If partpayment is not enabled, check if Billmate Checkout is enabled.
+        if ( $enabled != "yes" ) {
+            $checkout_settings = get_option( "woocommerce_billmate_checkout_settings", array() );
+            $enabled = ( isset( $checkout_settings['enabled']) && $checkout_settings['enabled'] == 'yes' ) ? 'yes' : $enabled;
+        }
+
+        if ($enabled != "yes" OR $eid == '') {
+            return;
+        }
+
         $show_monthly_cost = (isset($settings['show_monthly_cost'])) ? $settings['show_monthly_cost'] : '';
         $show_monthly_cost_info = (isset($settings['show_monthly_cost_info'])) ? $settings['show_monthly_cost_info'] : '';
         $testmode = (isset($settings['testmode'])) ? $settings['testmode'] : '';
@@ -1899,8 +1911,6 @@ parse_str($_POST['post_data'], $datatemp);
 
         $lower_threshold_monthly_cost = ($lower_threshold_monthly_cost != '') ? $lower_threshold_monthly_cost : 0;
         $upper_threshold_monthly_cost = ($upper_threshold_monthly_cost != '') ? $upper_threshold_monthly_cost : 10000000;
-
-        $eid = get_option('billmate_common_eid');
 
         $country_data = self::get_country_data();
         $billmate_country = isset($country_data['billmate_country']) ? $country_data['billmate_country'] : '';
@@ -1916,10 +1926,6 @@ parse_str($_POST['post_data'], $datatemp);
         $billmate_partpayment_info            = apply_filters( 'billmate_partpayment_info', $billmate_partpayment_info );
         $icon                                 = apply_filters( 'billmate_partpayment_icon', $billmate_partpayment_icon );
         $icon_basic                           = apply_filters( 'billmate_basic_icon', $billmate_basic_icon );
-
-        if ($enabled != "yes" OR $eid == '') {
-            return;
-        }
 
         if (!in_array(get_option('woocommerce_currency'), array('SEK')) OR get_woocommerce_currency() != 'SEK') {
             return false;
