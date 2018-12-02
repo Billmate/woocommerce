@@ -1219,6 +1219,8 @@ if(!class_exists('BillmateOrder')){
             /* Articles */
             $total = 0;
             $totalTax = 0;
+            $subtotal = 0;
+            $subtotalTax = 0;
 
             $isOrderDiscount = true;    /* If true, all articles have discount, if false, discount is for individual articles */
             $orderArticles = array();
@@ -1267,8 +1269,8 @@ if(!class_exists('BillmateOrder')){
                         }
 
                         $_discount          = 0; /* Discount percentage */
-                        $_discountTotal     = 0;
-                        $_discountTotalTax  = 0;
+                        $_discount_total     = 0;
+                        $_discount_total_tax  = 0;
 
                         if ($_total != $_subtotal) {
                             /* Assume discount when total and subtotal not match */
