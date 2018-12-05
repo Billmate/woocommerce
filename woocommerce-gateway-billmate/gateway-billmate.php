@@ -8,6 +8,9 @@ Author: Billmate
 Text Domain: billmate
 Author URI: https://billmate.se
 Domain Path: /languages/
+
+WC tested up to: 3.5
+
 */
 
 
