@@ -3,11 +3,14 @@
 Plugin Name: WooCommerce Billmate Gateway
 Plugin URI: http://woothemes.com/woocommerce
 Description: Receive payments on your WooCommerce store via Billmate. Invoice, partpayment, credit/debit card and direct bank transfers. Secure and 100&#37; free plugin.
-Version: 3.4.0
+Version: 3.4.1
 Author: Billmate
 Text Domain: billmate
 Author URI: https://billmate.se
 Domain Path: /languages/
+
+WC tested up to: 3.5
+
 */
 
 
@@ -516,8 +519,12 @@ function init_billmate_gateway() {
 
             if(function_exists('wc_seq_order_number_pro')){
                 $order_id = wc_seq_order_number_pro()->find_order_by_order_number( $data['orderid'] );
-
             }
+
+            if ( function_exists( 'wc_sequential_order_numbers' ) ) {
+                $order_id = wc_sequential_order_numbers()->find_order_by_order_number( $order_number );
+            }
+
             if(isset($GLOBALS['wc_seq_order_number'])){
                 $order_id = $GLOBALS['wc_seq_order_number']->find_order_by_order_number($order_id);
             }
