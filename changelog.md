@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.4.1 (2018-01-07)
+* Enhancement - Add trigger JS event getaddresserror
+* Enhancement - Add tested WooCommerce version 3.5
+* Tweak - Remove pre-check from Invoice/Partpayment email validation checkbox
+* Fix - Improve support for sequential order numbers
+* Fix - Fix undefined variables on Billmate Checkout page
+* Refactor - Move logic of hide payment option pno input to backend
+
 ## 3.4.0 (2018-10-15)
 * Feature - Order Comments on Billamte Checkout page
 * Feature - Invoice support for WooCommerce Subscription
