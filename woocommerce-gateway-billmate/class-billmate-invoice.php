@@ -369,7 +369,8 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 	 */
 
 	function payment_fields() {
-	   	global $woocommerce;
+        global $woocommerce;
+
 		$billmate_description = strlen($this->description) ? $this->description : '';
 	   	?>
 
@@ -407,6 +408,7 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 		<?php endif; ?>
 
 		<fieldset>
+            <?php if (get_option('billmate_common_getaddress') != 'active') : ?>
 			<p class="form-row" id="invoice_pno">
 				<?php if ( $this->shop_country == 'NL' || $this->shop_country == 'DE' ) : ?>
 
@@ -554,10 +556,11 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
                 </span><!-- .dob -->
 
 				<?php else : ?>
-					<label for="billmate_invo_pno"><?php echo __("Social Security Number / Corporate Registration Number", 'billmate') ?> <span class="required">*</span></label>
-					<input type="text" class="input-text" name="billmate_invo_pno" id="billmate_invo_pno" value="<?php echo isset($_POST['billmate_invo_pno']) ? $_POST['billmate_invo_pno'] : '' ?>" />
+                    <label for="billmate_invo_pno"><?php echo __("Social Security Number / Corporate Registration Number", 'billmate') ?> <span class="required">*</span></label>
+                    <input type="text" class="input-text" name="billmate_invo_pno" id="billmate_invo_pno" value="<?php echo isset($_POST['billmate_invo_pno']) ? $_POST['billmate_invo_pno'] : '' ?>" />
 				<?php endif; ?>
 			</p>
+            <?php endif; ?>
 
 			<?php if ( $this->shop_country == 'NL' || $this->shop_country == 'DE' ) : ?>
 				<p class="form-row form-row-last">
@@ -606,14 +609,19 @@ parse_str($_POST['post_data'], $datatemp);
 	public function getAddress( )
 	{
 		// Collect the dob different depending on country
-		if ( $this->shop_country == 'NL' || $this->shop_country == 'DE' ) :
+        if ( $this->shop_country == 'NL' || $this->shop_country == 'DE' ) {
 			$billmate_pno_day 			= isset($_POST['billmate_invo_date_of_birth_day']) ? $this->woocommerce_clean($_POST['billmate_invo_date_of_birth_day']) : '';
 			$billmate_pno_month 			= isset($_POST['billmate_invo_date_of_birth_month']) ? $this->woocommerce_clean($_POST['billmate_invo_date_of_birth_month']) : '';
 			$billmate_pno_year 			= isset($_POST['billmate_invo_date_of_birth_year']) ? $this->woocommerce_clean($_POST['billmate_invo_date_of_birth_year']) : '';
 			$billmate_pno 				= $billmate_pno_day . $billmate_pno_month . $billmate_pno_year;
-		else :
-			$billmate_pno 				= isset($_POST['billmate_invo_pno']) ? $this->woocommerce_clean($_POST['billmate_invo_pno']) : '';
-		endif;
+        } else {
+            if (isset($_POST['pno']) && $_POST['pno'] != '' && get_option('billmate_common_getaddress') == 'active') {
+                $billmate_pno = $this->woocommerce_clean($_POST['pno']);
+            } else {
+                $billmate_pno = isset($_POST['billmate_invo_pno']) ? $this->woocommerce_clean($_POST['billmate_invo_pno']) : '';
+            }
+        }
+
 		if($billmate_pno == ''){
 			return;
 		}
@@ -778,14 +786,18 @@ parse_str($_POST['post_data'], $datatemp);
         $billmateOrder = new BillmateOrder($order);
 
 		// Collect the dob different depending on country
-		if ( $this->shop_country == 'NL' || $this->shop_country == 'DE' ) :
+        if ( $this->shop_country == 'NL' || $this->shop_country == 'DE' ) {
 			$billmate_pno_day 			= isset($_POST['billmate_invo_date_of_birth_day']) ? $this->woocommerce_clean($_POST['billmate_invo_date_of_birth_day']) : '';
 			$billmate_pno_month 			= isset($_POST['billmate_invo_date_of_birth_month']) ? $this->woocommerce_clean($_POST['billmate_invo_date_of_birth_month']) : '';
 			$billmate_pno_year 			= isset($_POST['billmate_invo_date_of_birth_year']) ? $this->woocommerce_clean($_POST['billmate_invo_date_of_birth_year']) : '';
 			$billmate_pno 				= $billmate_pno_day . $billmate_pno_month . $billmate_pno_year;
-		else :
-			$billmate_pno 				= isset($_POST['billmate_invo_pno']) ? $this->woocommerce_clean($_POST['billmate_invo_pno']) : '';
-		endif;
+        } else {
+            if (isset($_POST['pno']) && $_POST['pno'] != '' && get_option('billmate_common_getaddress') == 'active') {
+                $billmate_pno = $this->woocommerce_clean($_POST['pno']);
+            } else {
+                $billmate_pno = isset($_POST['billmate_invo_pno']) ? $this->woocommerce_clean($_POST['billmate_invo_pno']) : '';
+            }
+        }
 		if($billmate_pno == ''){
 			return;
 		}
@@ -1120,14 +1132,19 @@ parse_str($_POST['post_data'], $datatemp);
 		}
 
 		// Collect the dob different depending on country
-		if ( $this->shop_country == 'NL' || $this->shop_country == 'DE' ) :
+        if ( $this->shop_country == 'NL' || $this->shop_country == 'DE' ) {
 			$billmate_pno_day 			= isset($_POST['billmate_invo_date_of_birth_day']) ? $this->woocommerce_clean($_POST['billmate_invo_date_of_birth_day']) : '';
 			$billmate_pno_month 			= isset($_POST['billmate_invo_date_of_birth_month']) ? $this->woocommerce_clean($_POST['billmate_invo_date_of_birth_month']) : '';
 			$billmate_pno_year 			= isset($_POST['billmate_invo_date_of_birth_year']) ? $this->woocommerce_clean($_POST['billmate_invo_date_of_birth_year']) : '';
 			$billmate_pno 				= $billmate_pno_day . $billmate_pno_month . $billmate_pno_year;
-		else :
-			$billmate_pno 				= isset($_POST['billmate_invo_pno']) ? $this->woocommerce_clean($_POST['billmate_invo_pno']) : '';
-		endif;
+        } else {
+            if (isset($_POST['pno']) && $_POST['pno'] != '' && get_option('billmate_common_getaddress') == 'active') {
+                $billmate_pno = $this->woocommerce_clean($_POST['pno']);
+            } else {
+                $billmate_pno = isset($_POST['billmate_invo_pno']) ? $this->woocommerce_clean($_POST['billmate_invo_pno']) : '';
+            }
+        }
+
 		if($billmate_pno == ''){
 			return;
 		}
@@ -1731,11 +1748,24 @@ class WC_Gateway_Billmate_Invoice_Extra {
  			// SE, NO, DK & FI
 	 		if ( $this->shop_country == 'SE' || $this->shop_country == 'NO' || $this->shop_country == 'DK' || $this->shop_country == 'FI' ){
 
-    			// Check if set, if its not set add an error.
-    			if (isset($_POST['billmate_invo_pno']) && !$_POST['billmate_invo_pno'])
-    	    	 	wc_bm_errors( '<span data-error-code="9015"></span>'.__('Non Valid Person / Corporate number. Check the number.', 'billmate') );
+                $post_pno = '';
+                if (isset($_POST['pno']) && $_POST['pno'] != '' && get_option('billmate_common_getaddress') == 'active') {
+                    $post_pno = $_POST['pno'];
+                } else {
+                    $post_pno = isset($_POST['billmate_invo_pno']) ? $_POST['billmate_invo_pno'] : '';
+                }
+                if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+                    $post_pno = wc_clean($post_pno);
+                } else {
+                    $post_pno = woocommerce_clean($post_pno);
+                }
 
-			}
+                if ($post_pno == '') {
+                    // Missing pno, show error
+                    wc_bm_errors( '<span data-error-code="9015"></span>'.__('Non Valid Person / Corporate number. Check the number.', 'billmate') );
+                }
+            }
+
 			// NL & DE
 	 		if ( $this->shop_country == 'NL' || $this->shop_country == 'DE' ){
 	    		// Check if set, if its not set add an error.

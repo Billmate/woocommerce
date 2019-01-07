@@ -7,6 +7,7 @@ Tested up to: 4.9.1
 Stable tag: 3.3.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
+WC tested up to: 3.5
 
 Billmate offers a complete paymentsolution to your webshop.
 
@@ -28,7 +29,7 @@ If you have any questions please visit https://billmate.se/kontakt to make conta
 = Minimum Requirements =
 
 * Account at Billmate.se
-* WooCommerce version 2.5.5 - 3.1.2
+* WooCommerce version 2.5.5 - 3.5
 
 = Installation in Wordpress =
 

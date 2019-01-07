@@ -8,6 +8,9 @@ Author: Billmate
 Text Domain: billmate
 Author URI: https://billmate.se
 Domain Path: /languages/
+
+WC tested up to: 3.5
+
 */
 
 
@@ -516,8 +519,12 @@ function init_billmate_gateway() {
 
             if(function_exists('wc_seq_order_number_pro')){
                 $order_id = wc_seq_order_number_pro()->find_order_by_order_number( $data['orderid'] );
-
             }
+
+            if ( function_exists( 'wc_sequential_order_numbers' ) ) {
+                $order_id = wc_sequential_order_numbers()->find_order_by_order_number( $order_number );
+            }
+
             if(isset($GLOBALS['wc_seq_order_number'])){
                 $order_id = $GLOBALS['wc_seq_order_number']->find_order_by_order_number($order_id);
             }
