@@ -1011,6 +1011,9 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
     public function is_cart_items_in_stock()
     {
+        if (!isset(WC()->cart) || !is_object(WC()->cart)) {
+            return false;
+        }
         $check_cart_item_stock_result = WC()->cart->check_cart_item_stock();
         if (!is_bool($check_cart_item_stock_result) || (is_bool($check_cart_item_stock_result) && true != $check_cart_item_stock_result)) {
             return false;

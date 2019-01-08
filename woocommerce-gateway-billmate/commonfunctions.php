@@ -27,7 +27,13 @@ function wc_bm_errors($message){
         if(version_compare(WC_VERSION, '2.0.0', '<')){
             $woocommerce->add_error( $message );
         } elseif (function_exists('wc_add_notice')) {
-            wc_add_notice( $message, 'error' );
+            if ( function_exists( 'wc_has_notice' ) ) {
+                if ( !wc_has_notice( $message, 'error' ) ) {
+                    wc_add_notice( $message, 'error' );
+                }
+            } else {
+                wc_add_notice( $message, 'error' );
+            }
         }
     } else {
         add_action('admin_notices','billmate_admin_notice');
