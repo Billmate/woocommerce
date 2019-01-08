@@ -4,7 +4,7 @@ Donate link:
 Tags: woocomerce, billmate, payments, cardpayments, invoice, partpayment, recurring, bankpayment
 Requires at least: 4.0
 Tested up to: 5.0.2
-Stable tag: 3.4.1
+Stable tag: 3.4.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 WC tested up to: 3.5.3
@@ -88,6 +88,11 @@ If you would like to use our logo on your site then choose following:
 
 
 == Changelog ==
+
+= 3.4.2 (2019-01-08) =
+* Fix - Check if cart exists before checking if having items in stock
+* Fix - Prevent invoice pno validation on store checkout page load
+* Fix - Prevent duplicated wc checkout error messages
 
 = 3.4.1 (2019-01-07) =
 * Enhancement - Add trigger JS event getaddresserror
