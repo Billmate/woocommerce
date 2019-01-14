@@ -522,14 +522,18 @@ function init_billmate_gateway() {
             }
 
             if ( function_exists( 'wc_sequential_order_numbers' ) ) {
-                $order_id = wc_sequential_order_numbers()->find_order_by_order_number( $order_number );
+                $order_id = wc_sequential_order_numbers()->find_order_by_order_number( $order_id );
             }
 
             if(isset($GLOBALS['wc_seq_order_number'])){
                 $order_id = $GLOBALS['wc_seq_order_number']->find_order_by_order_number($order_id);
             }
-            $order = new WC_Order( $order_id );
 
+            if ($order_id == $data["orderid"]) {
+                $order_id = apply_filters( 'woocommerce_shortcode_order_tracking_order_id', $order_id );
+            }
+
+            $order = new WC_Order( $order_id );
 
             $method_id = ( isset( $config['method_id'] ) ) ? $config['method_id'] : $this->id;
             $method_title = ( isset( $config['method_title'] ) ) ? $config['method_title'] : $this->method_title;
