@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.4.3 (2019-01-16)
+* Enhancement - HTML decode order item titles
+* Enhancement - Keep Billmate Checkout in sync when multiple browser tabs
+* Fix - Fix subscription with invoice when not test mode
+* Fix - Add generic support for sequental order number
+
 ## 3.4.2 (2019-01-08)
 * Fix - Check if cart exists before checking if having items in stock
 * Fix - Prevent invoice pno validation on store checkout page load
