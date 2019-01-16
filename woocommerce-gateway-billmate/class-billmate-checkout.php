@@ -107,7 +107,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
     public function woocommerce_cart_updated( $cart ) {
         $previous_order_total = (int)WC()->session->get('billmate_previous_calculated_order_total');
         $current_order_total = (int)WC_Payment_Gateway::get_order_total();
-        if ($previous_order_total == $current_order_total) {
+        if (WC()->session->get('billmate_checkout_hash') == "" || $previous_order_total == $current_order_total) {
             return true;
         }
         WC()->session->set('billmate_previous_calculated_order_total', $current_order_total);
