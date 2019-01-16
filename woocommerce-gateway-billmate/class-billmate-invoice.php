@@ -1008,7 +1008,7 @@ parse_str($_POST['post_data'], $datatemp);
     function process_scheduled_payment( $amount_to_charge, $order ) {
         global $woocommerce;
 
-        $k = new Billmate( $this->eid, $this->secret, true, $this->testmode, false, $this->getRequestMeta() );
+        $k = new Billmate( $this->eid, $this->secret, true, $this->testmode == 'yes', false, $this->getRequestMeta() );
 
         $subscriptions = wcs_get_subscriptions_for_renewal_order( $order );
         $subscription = end($subscriptions);

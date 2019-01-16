@@ -1695,6 +1695,7 @@ if(!class_exists('BillmateProduct')) {
                 }
             }
 
+            $name = html_entity_decode($name);
             if(version_compare(WC_VERSION, '3.0.0', '>=')) {
                 $name = wc_clean($name);
             } else {
