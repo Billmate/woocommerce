@@ -101,6 +101,19 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
         add_action( 'woocommerce_api_wc_gateway_billmate_checkout', array( $this, 'check_ipn_response' ) );
 
+        add_action( 'woocommerce_cart_updated' , array( &$this, 'woocommerce_cart_updated' ) );
+    }
+
+    public function woocommerce_cart_updated( $cart ) {
+        $previous_order_total = (int)WC()->session->get('billmate_previous_calculated_order_total');
+        $current_order_total = (int)WC_Payment_Gateway::get_order_total();
+        if (WC()->session->get('billmate_checkout_hash') == "" || $previous_order_total == $current_order_total) {
+            return true;
+        }
+        WC()->session->set('billmate_previous_calculated_order_total', $current_order_total);
+        $order_id = $this->create_order();
+        $this->updateCheckoutFromOrderId( $order_id );
+        return true;
     }
 
     public function get_title() {
@@ -298,6 +311,20 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         if ( ! $this->is_cart_items_in_stock() ) {
             wp_send_json_success(array('reload_checkout' => true));
             return false;
+        }
+
+        $previous_order_total = (int)WC()->session->get('billmate_previous_calculated_order_total');
+        $current_order_total = (int)WC_Payment_Gateway::get_order_total();
+
+        if ($previous_order_total == $current_order_total) {
+            wp_send_json_success(array(
+                "success" => true,
+                "data" => array(
+                    "update_checkout" => true,
+                    "order_total" => $current_order_total
+                )
+            ));
+            return true;
         }
 
         $result = array("code" => "no hash");
@@ -508,9 +535,11 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                     }
 
                 } else {
-                    wp_send_json_success(array('update_checkout' => false));
+                    $current_order_total = (int)WC_Payment_Gateway::get_order_total();
+                    wp_send_json_success(array('update_checkout' => false, "order_total" => $current_order_total));
                 }
-                wp_send_json_success(array('update_checkout' => false));
+                $current_order_total = (int)WC_Payment_Gateway::get_order_total();
+                wp_send_json_success(array('update_checkout' => false, "order_total" => $current_order_total));
             }
 
         }
@@ -853,7 +882,12 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                 $isInit = false;
                 $billmate = $this->getBillmateConnection();
 
-                $this->updateCheckoutFromOrderId( $orderId );
+                $previous_order_total = (int)WC()->session->get('billmate_previous_calculated_order_total');
+                $current_order_total = (int)WC_Payment_Gateway::get_order_total();
+                if ($previous_order_total != $current_order_total) {
+                    $this->updateCheckoutFromOrderId( $orderId );
+                }
+
                 $checkout = $billmate->getCheckout(array('PaymentData' => array('hash' => WC()->session->get( 'billmate_checkout_hash' ))));
                 if(!isset($checkout['code'])){
                     return $checkout['PaymentData']['url'];
@@ -983,6 +1017,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             $orderValues['PaymentData'] = array(
                 'number' => $checkoutOrderNumber
             );
+            WC()->session->set('billmate_previous_calculated_order_total', WC_Payment_Gateway::get_order_total());
             return $billmate->updateCheckout($orderValues);
         }
         return array();
@@ -1011,6 +1046,9 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
     public function is_cart_items_in_stock()
     {
+        if (!isset(WC()->cart) || !is_object(WC()->cart)) {
+            return false;
+        }
         $check_cart_item_stock_result = WC()->cart->check_cart_item_stock();
         if (!is_bool($check_cart_item_stock_result) || (is_bool($check_cart_item_stock_result) && true != $check_cart_item_stock_result)) {
             return false;
@@ -1089,13 +1127,15 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             'withtax' => round($total + $totalTax + $round)
         );
 
+        WC()->session->set('billmate_previous_calculated_order_total', WC_Payment_Gateway::get_order_total());
         $data = $billmate->updateCheckout($orderValues);
 
         if(!isset($data['code'])){
+            $current_order_total = (int)WC_Payment_Gateway::get_order_total();
             if($previousTotal != $orderValues['Cart']['Total']['withtax']){
-                return array('update_checkout' => true);
+                return array('update_checkout' => true, "order_total" => $current_order_total);
             } else {
-                return array('update_checkout' => false);
+                return array('update_checkout' => false, "order_total" => $current_order_total);
             }
         }
 

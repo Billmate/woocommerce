@@ -14,6 +14,7 @@ var BillmateIframe = new function(){
 
     var currentCustomerBillingZip;
     var currentOrderComments;
+    var orderTotal;
 
     this.updateAddress = function (data) {
         // When address in checkout updates;
@@ -49,6 +50,15 @@ var BillmateIframe = new function(){
             type: 'POST',
             success: function(response){
 
+                if (response.hasOwnProperty("data") && response.data.hasOwnProperty("order_total")) {
+                    if (self.orderTotal != undefined && self.orderTotal != response.data.order_total) {
+                        self.lock();
+                        location.reload(true);
+                        return true;
+                    }
+                    self.orderTotal = response.data.order_total;
+                }
+
                 if(response.hasOwnProperty("success") && response.success) {
                     window.address_selected = true;
                     if (response.hasOwnProperty('data') && response.data.hasOwnProperty('update_checkout') && response.data.update_checkout == true) {
@@ -70,6 +80,10 @@ var BillmateIframe = new function(){
             data: {action: 'billmate_update_order',hash: window.hash},
             type: 'POST',
             success: function(response){
+
+                if (response.hasOwnProperty("data") && response.data.hasOwnProperty("data") && response.data.data.hasOwnProperty("order_total")) {
+                    self.orderTotal = response.data.data.order_total;
+                }
 
                 if(response.hasOwnProperty("success") && response.success) {
                     window.address_selected = true;

@@ -3,11 +3,11 @@ Contributors: Billmate
 Donate link:
 Tags: woocomerce, billmate, payments, cardpayments, invoice, partpayment, recurring, bankpayment
 Requires at least: 4.0
-Tested up to: 4.9.1
-Stable tag: 3.4.1
+Tested up to: 5.0.2
+Stable tag: 3.4.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
-WC tested up to: 3.5
+WC tested up to: 3.5.3
 
 Billmate offers a complete paymentsolution to your webshop.
 
@@ -88,6 +88,17 @@ If you would like to use our logo on your site then choose following:
 
 
 == Changelog ==
+
+= 3.4.3 (2019-01-16) =
+* Enhancement - HTML decode order item titles
+* Enhancement - Keep Billmate Checkout in sync when multiple browser tabs
+* Fix - Fix subscription with invoice when not test mode
+* Fix - Add generic support for sequental order number
+
+= 3.4.2 (2019-01-08) =
+* Fix - Check if cart exists before checking if having items in stock
+* Fix - Prevent invoice pno validation on store checkout page load
+* Fix - Prevent duplicated wc checkout error messages
 
 = 3.4.1 (2019-01-07) =
 * Enhancement - Add trigger JS event getaddresserror

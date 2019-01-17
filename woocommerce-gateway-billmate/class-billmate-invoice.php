@@ -1008,7 +1008,7 @@ parse_str($_POST['post_data'], $datatemp);
     function process_scheduled_payment( $amount_to_charge, $order ) {
         global $woocommerce;
 
-        $k = new Billmate( $this->eid, $this->secret, true, $this->testmode, false, $this->getRequestMeta() );
+        $k = new Billmate( $this->eid, $this->secret, true, $this->testmode == 'yes', false, $this->getRequestMeta() );
 
         $subscriptions = wcs_get_subscriptions_for_renewal_order( $order );
         $subscription = end($subscriptions);
@@ -1703,9 +1703,12 @@ class WC_Gateway_Billmate_Invoice_Extra {
 		//add_action( 'woocommerce_checkout_process', array($this, 'add_invoice_fee_process') );
 		add_action( 'woocommerce_cart_calculate_fees', array($this, 'add_invoice_fee_process') );
 
-		// Chcek Billmate specific fields on Checkout
-		//add_action('woocommerce_checkout_process', array(&$this, 'billmate_invoice_checkout_field_process'));
-		add_action('woocommerce_cart_calculate_fees', array(&$this, 'billmate_invoice_checkout_field_process'));
+        // Check Billmate specific fields on Checkout
+        if ( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '3.4.5', '>' ) ) {
+            add_action( 'woocommerce_checkout_process', array( &$this, 'billmate_invoice_checkout_field_process' ) );
+        } else {
+            add_action( 'woocommerce_cart_calculate_fees', array( &$this, 'billmate_invoice_checkout_field_process' ) );
+        }
 	}
 
 	/**

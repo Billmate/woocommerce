@@ -1,5 +1,5 @@
 <?php
-define('BILLPLUGIN_VERSION','3.4.1');
+define('BILLPLUGIN_VERSION','3.4.3');
 define('BILLMATE_CLIENT','PHP:Woocommerce:'.BILLPLUGIN_VERSION);
 define('BILLMATE_SERVER','2.1.9');
 
@@ -27,7 +27,13 @@ function wc_bm_errors($message){
         if(version_compare(WC_VERSION, '2.0.0', '<')){
             $woocommerce->add_error( $message );
         } elseif (function_exists('wc_add_notice')) {
-            wc_add_notice( $message, 'error' );
+            if ( function_exists( 'wc_has_notice' ) ) {
+                if ( !wc_has_notice( $message, 'error' ) ) {
+                    wc_add_notice( $message, 'error' );
+                }
+            } else {
+                wc_add_notice( $message, 'error' );
+            }
         }
     } else {
         add_action('admin_notices','billmate_admin_notice');
@@ -1689,6 +1695,7 @@ if(!class_exists('BillmateProduct')) {
                 }
             }
 
+            $name = html_entity_decode($name);
             if(version_compare(WC_VERSION, '3.0.0', '>=')) {
                 $name = wc_clean($name);
             } else {
