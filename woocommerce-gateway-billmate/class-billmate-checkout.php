@@ -843,7 +843,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
             $order->set_payment_method( $payment_method );
 
-            if ( ! defined( 'WOOCOMMERCE_CHECKOUT' ) ) {
+            if ( $this->checkout_url == get_the_ID() && defined( 'WOOCOMMERCE_CHECKOUT' ) ) {
                 define( 'WOOCOMMERCE_CHECKOUT', true );
             }
 
