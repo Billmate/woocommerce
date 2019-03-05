@@ -123,7 +123,9 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
     function change_to_bco($url){
         if(!is_admin()) {
             if($this->enabled == 'yes') {
-                return get_permalink($this->checkout_url);
+                if("sv" == strtolower(current(explode('_',get_locale())))) {
+                    return get_permalink($this->checkout_url);
+                }
             }
         }
         return $url;
@@ -843,7 +845,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
             $order->set_payment_method( $payment_method );
 
-            if ( ! defined( 'WOOCOMMERCE_CHECKOUT' ) ) {
+            if ( $this->checkout_url == get_the_ID() && defined( 'WOOCOMMERCE_CHECKOUT' ) ) {
                 define( 'WOOCOMMERCE_CHECKOUT', true );
             }
 

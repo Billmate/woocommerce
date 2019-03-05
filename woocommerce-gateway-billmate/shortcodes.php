@@ -278,7 +278,7 @@ function return_billmate_partpayment_info_link() {
 	ob_start();
 	WC_Gateway_Billmate_Partpayment::payment_fields_options( $price, false , BillmateFlags::PRODUCT_PAGE);
 	echo '<script>var billmate_eid = "'.get_option('billmate_common_eid').'"; var billmate_invoice_fee_price = 0;</script>';
-	echo '<a href="https://efinance.se/billmate/?cmd=villkor_delbetalning" onclick="'; ?>window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=650');return false;<?php echo '">' . WC_Gateway_Billmate_Partpayment::get_account_terms_link_text($billmate_partpayment_country) . '</a>';
+	echo '<a href="https://billmate.se/billmate/?cmd=villkor_delbetalning" onclick="'; ?>window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=650');return false;<?php echo '">' . WC_Gateway_Billmate_Partpayment::get_account_terms_link_text($billmate_partpayment_country) . '</a>';
 
 	$output_string = ob_get_clean();
 	return $output_string;
