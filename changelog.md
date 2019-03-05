@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.4.4 (2019-03-05)
+* Enhancement - Only get Billmate Checkout page when language is sv
+* Fix - Only define WOOCOMMERCE_CHECKOUT on Billmate Checkout page
+* Fix - Fix product partpayment info_link shortcode url
+
 ## 3.4.3 (2019-01-16)
 * Enhancement - HTML decode order item titles
 * Enhancement - Keep Billmate Checkout in sync when multiple browser tabs
