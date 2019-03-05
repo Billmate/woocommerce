@@ -4,7 +4,7 @@ Donate link:
 Tags: woocomerce, billmate, payments, cardpayments, invoice, partpayment, recurring, bankpayment
 Requires at least: 4.0
 Tested up to: 5.0.2
-Stable tag: 3.4.3
+Stable tag: 3.4.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 WC tested up to: 3.5.3
@@ -88,6 +88,11 @@ If you would like to use our logo on your site then choose following:
 
 
 == Changelog ==
+
+= 3.4.4 (2019-03-05) =
+* Enhancement - Only get Billmate Checkout page when language is sv
+* Fix - Only define WOOCOMMERCE_CHECKOUT on Billmate Checkout page
+* Fix - Fix product partpayment info_link shortcode url
 
 = 3.4.3 (2019-01-16) =
 * Enhancement - HTML decode order item titles
