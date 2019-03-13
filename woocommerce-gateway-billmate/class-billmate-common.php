@@ -287,6 +287,8 @@ class BillmateCommon {
 	{
 		$value = get_option('billmate_common_enable_overlay','') ? 'checked' : '';
 		echo '<input type="checkbox" id="billmate_common_enable_overlay" name="billmate_common_enable_overlay" '.$value.' />';
+		echo '<div class="tooltip">?<span class="tooltiptext">'.__('Make sure this works with your theme after enabling.').'</span></div>';
+		
 	}
 	
 	public function print_section_info()
@@ -303,7 +305,7 @@ class BillmateCommon {
 		$this->options = get_option( 'billmate_common_settings' );
 		?>
 		<div class="wrap">
-			<?php screen_icon(); ?>
+			<?php // screen_icon(); Deprecated ?>
 			<h2><?php echo __('Billmate Settings','billmate'); ?></h2>
 			<form method="post" action="options.php">
 				<?php
@@ -353,6 +355,54 @@ class BillmateCommon {
 			})
 
 		</script>
+		<style>
+			/* Tooltip container */
+			.tooltip {
+				position: relative;
+				display: inline-block;
+				border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+			}
+
+			/* Tooltip text */
+			.tooltip .tooltiptext {
+				visibility: hidden;
+				width: 350px;
+				background: #0BA9E5 linear-gradient(180deg, #0BA9E5 0%, #0099D3 100%);
+				color: #fff;
+				text-align: center;
+				padding: 5px 0;
+				border-radius: 6px;
+
+				/* Position the tooltip text */
+				position: absolute;
+				z-index: 1;
+				bottom: -40%;
+				left: 50%;
+				margin-left: 15px;
+
+				/* Fade in tooltip */
+				opacity: 0;
+				transition: opacity 0.3s;
+			}
+
+			/* Tooltip arrow */
+			.tooltip .tooltiptext::after {
+				content: "";
+				position: absolute;
+				top: 50%;
+				left: 0;
+				margin-left: -10px;
+				margin-top: -5px;
+				border: 5px solid transparent;
+				border-right-color: #0BA9E5;
+			}
+
+			/* Show the tooltip text when you mouse over the tooltip container */
+			.tooltip:hover .tooltiptext {
+				visibility: visible;
+				opacity: 1;
+			}
+		</style>
 	<?php
 	}
 
