@@ -173,6 +173,16 @@ class BillmateCommon {
 			'billmate_common_activateonstatus',
 			array($this,'sanitize')
 		);
+		register_setting(
+			'billmate_common',
+			'billmate_common_enable_overlay',
+			[
+					'sanitize_callback' => [$this, 'sanitize'],
+				'default' => false,
+				'description' => __('Test description of toggle overlay setting.'),
+				'type' => 'boolean'
+			]
+		);
 		add_settings_section(
 			'setting_credentials', // ID
 			__('Common Billmate Settings','billmate'), // Title
@@ -213,6 +223,13 @@ class BillmateCommon {
 			'billmate_common_logo',
 			__('Logo to be displayed in the invoice','billmate'),
 			array($this,'logo_callback'),
+			'billmate-settings',
+			'setting_credentials'
+		);
+		add_settings_field(
+			'billmate_common_enable_overlay',
+			__('Enable overlay','billmate'),
+			array($this,'enable_overlay_callback'),
 			'billmate-settings',
 			'setting_credentials'
 		);
@@ -265,6 +282,13 @@ class BillmateCommon {
 		$value = get_option('billmate_common_logo','');
 		echo '<input type="text" id="billmate_common_logo" name="billmate_common_logo" value="'.$value.'" />';
 	}
+
+	public function enable_overlay_callback()
+	{
+		$value = get_option('billmate_common_enable_overlay','') ? 'checked' : '';
+		echo '<input type="checkbox" id="billmate_common_enable_overlay" name="billmate_common_enable_overlay" '.$value.' />';
+	}
+	
 	public function print_section_info()
 	{
 		echo __('Here is the common settings for the Billmate Payment module','billmate');
