@@ -235,7 +235,7 @@ class BillmateCommon {
 
 	public function secret_callback(){
 		$value = get_option('billmate_common_secret','');
-		echo '<input type="text" id="billmate_common_secret" name="billmate_common_secret" value="'.$value.'" />';
+		echo '<input type="password" id="billmate_common_secret" name="billmate_common_secret" value="'.$value.'" />';
 	}
 
 	public function activateonstatus_callback()
