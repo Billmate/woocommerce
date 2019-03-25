@@ -198,6 +198,9 @@ var BillmateIframe = new function(){
             self.childWindow = json.source;
             switch (json.event) {
                 case 'show_overlay':
+                    if(billmate.overlay_enabled === "") {
+                        break;
+                    }
                     if (jQuery(document).find('#billmateCheckoutOverlay').length < 1) {
                         var $div = jQuery('<div />').appendTo('body');
                         $div.attr('id', 'billmateCheckoutOverlay');
