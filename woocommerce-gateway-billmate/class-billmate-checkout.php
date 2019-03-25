@@ -101,7 +101,21 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
         add_action( 'woocommerce_api_wc_gateway_billmate_checkout', array( $this, 'check_ipn_response' ) );
 
-        add_action( 'woocommerce_cart_updated' , array( &$this, 'woocommerce_cart_updated' ) );
+        add_action( 'woocommerce_cart_updated' , array( $this, 'woocommerce_cart_updated' ) );
+    }
+    
+    public function woocommerce_shipping_calculator() {
+	    ?>
+	    <tr class="shipping" style="display:none;">
+		    <th><?php _e( 'Shipping', 'woocommerce' ); ?></th>
+		    <td data-title="<?php esc_attr_e( 'Shipping', 'woocommerce' ); ?>"><?php
+			    wp_enqueue_script( 'wc-country-select' );
+			    wc_get_template( 'cart/shipping-calculator.php', array(
+				    'button_text' => '',
+			    ) );
+			    ?></td>
+	    </tr>
+	    <?php
     }
 
     public function woocommerce_cart_updated( $cart ) {
@@ -1296,6 +1310,16 @@ class WC_Gateway_Billmate_Checkout_Extra{
     public function start()
     {
         $checkout = new WC_Gateway_Billmate_Checkout();
+        
+        /*
+         * Adds a shipping calculator to Billmate Checkout if "Hide shipping cost until an address is entered" is enabled
+         * and "Enable the shipping calculator on the cart page" is disabled.
+         * */
+        if(get_option('woocommerce_enable_shipping_calc') === 'no'
+           && get_option('woocommerce_shipping_cost_requires_address') === 'yes'
+        ){
+        	add_action( 'woocommerce_cart_totals_after_order_total', array($checkout, 'woocommerce_shipping_calculator'), 99);
+        }
     }
 }
 
