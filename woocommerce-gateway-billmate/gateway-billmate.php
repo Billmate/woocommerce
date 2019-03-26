@@ -220,7 +220,7 @@ function billmate_checkout_settings_nag() {
          */
         if ( wc_get_price_decimals() < 2 ) {
             $link_url = get_admin_url().'admin.php?page=wc-settings';
-            BillmateAdminNotice::add_info( __( 'WooCommerce need to have set prices with 2 decimals to ensure prices are correctly when sent to Billmate', 'billmate' ) , $link_url, __( 'Settings' ) );
+            BillmateAdminNotice::add_warning( __( 'WooCommerce need to have set prices with 2 decimals to ensure prices are correctly when sent to Billmate', 'billmate' ) , $link_url, __( 'Settings' ) );
         }
     }
 }
