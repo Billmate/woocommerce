@@ -46,6 +46,24 @@ function wc_bm_errors($message){
         }
     }
 }
+
+add_action('woocommerce_thankyou', function() {
+    if (WC()->session->get('billmate_checkout_number') == null){
+        wp_redirect(get_permalink(woocommerce_get_page_id('shop')));
+    }
+    WC()->session->delete_session();
+    WC()->session->set("billmate_checkout_number", null);
+    WC()->session->set("billmate_previous_calculated_order_total", null);
+    WC()->session->set("billmate_checkout_billing_country", null);
+    WC()->session->set("billmate_checkout_billing_postcode", null);
+    WC()->session->set("billmate_checkout_shipping_country", null);
+    WC()->session->set("billmate_checkout_shipping_postcode", null);
+    WC()->session->set("shipping_for_package_0", null);
+    WC()->session->set("previous_shipping_methods", null);
+    WC()->session->set("shipping_method_counts", null);
+    WC()->session->set("chosen_shipping_methods", null);
+});
+
 /**
  * Provides encoding constants.
  *
