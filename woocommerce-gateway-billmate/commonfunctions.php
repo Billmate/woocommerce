@@ -48,7 +48,6 @@ function wc_bm_errors($message){
 }
 
 add_action('woocommerce_thankyou', function() {
-    WC()->session->delete_session();
     WC()->session->set("billmate_checkout_number", null);
     WC()->session->set("billmate_previous_calculated_order_total", null);
     WC()->session->set("billmate_checkout_billing_country", null);
@@ -59,6 +58,7 @@ add_action('woocommerce_thankyou', function() {
     WC()->session->set("previous_shipping_methods", null);
     WC()->session->set("shipping_method_counts", null);
     WC()->session->set("chosen_shipping_methods", null);
+    WC()->session->destroy_session();
 });
 
 /**
