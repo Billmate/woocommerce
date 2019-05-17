@@ -48,9 +48,6 @@ function wc_bm_errors($message){
 }
 
 add_action('woocommerce_thankyou', function() {
-    if (WC()->session->get('billmate_checkout_number') == null){
-        wp_redirect(get_permalink(woocommerce_get_page_id('shop')));
-    }
     WC()->session->delete_session();
     WC()->session->set("billmate_checkout_number", null);
     WC()->session->set("billmate_previous_calculated_order_total", null);
