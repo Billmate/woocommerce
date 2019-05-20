@@ -89,6 +89,9 @@ If you would like to use our logo on your site then choose following:
 
 == Changelog ==
 
+= 3.4.5 (2019-05-20)
+  * Fix - Clear Billmate Checkout Session after a payment is made
+
 = 3.4.4 (2019-03-05) =
 * Enhancement - Only get Billmate Checkout page when language is sv
 * Fix - Only define WOOCOMMERCE_CHECKOUT on Billmate Checkout page
