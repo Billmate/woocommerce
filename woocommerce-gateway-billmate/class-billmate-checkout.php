@@ -123,9 +123,8 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
     function change_to_bco($url){
         if(!is_admin()) {
             if($this->enabled == 'yes') {
-                if("sv" == strtolower(current(explode('_',get_locale())))) {
-                    return get_permalink($this->checkout_url);
-                }
+                return get_permalink($this->checkout_url);
+
             }
         }
         return $url;
@@ -940,7 +939,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         $orderValues['PaymentData'] = array(
             'method' => 93,
             'currency' => get_woocommerce_currency(),
-            'language' => $lang[0],
+            'language' => 'sv',
             'country' => $location['country'],
             'orderid' => ltrim($order->get_order_number(),'#')
         );
