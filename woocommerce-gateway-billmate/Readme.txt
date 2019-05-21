@@ -3,11 +3,11 @@ Contributors: Billmate
 Donate link:
 Tags: woocomerce, billmate, payments, cardpayments, invoice, partpayment, recurring, bankpayment
 Requires at least: 4.0
-Tested up to: 5.0.2
-Stable tag: 3.4.4
+Tested up to: 5.2 “Jaco”
+Stable tag: 3.4.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
-WC tested up to: 3.5.3
+WC tested up to: 3.6.3
 
 Billmate offers a complete paymentsolution to your webshop.
 
@@ -29,7 +29,7 @@ If you have any questions please visit https://billmate.se/kontakt to make conta
 = Minimum Requirements =
 
 * Account at Billmate.se
-* WooCommerce version 2.5.5 - 3.5
+* WooCommerce version 2.5.5 - 3.6.3
 
 = Installation in Wordpress =
 
@@ -88,6 +88,9 @@ If you would like to use our logo on your site then choose following:
 
 
 == Changelog ==
+
+= 3.4.5 (2019-05-20)
+  * Fix - Clear Billmate Checkout Session after a payment is made
 
 = 3.4.4 (2019-03-05) =
 * Enhancement - Only get Billmate Checkout page when language is sv

@@ -3,13 +3,13 @@
 Plugin Name: WooCommerce Billmate Gateway
 Plugin URI: http://woothemes.com/woocommerce
 Description: Receive payments on your WooCommerce store via Billmate. Invoice, partpayment, credit/debit card and direct bank transfers. Secure and 100&#37; free plugin.
-Version: 3.4.4
+Version: 3.4.5
 Author: Billmate
 Text Domain: billmate
 Author URI: https://billmate.se
 Domain Path: /languages/
 
-WC tested up to: 3.5
+WC tested up to: 3.6.3
 
 */
 
