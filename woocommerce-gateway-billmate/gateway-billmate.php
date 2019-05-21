@@ -207,11 +207,6 @@ function billmate_checkout_settings_nag() {
                     break;
                 }
             }
-
-            if ($wpml_is_active ==  false) {
-                $link_url = get_admin_url().'options-general.php';
-                BillmateAdminNotice::add_error( __( 'Billmate Checkout need the website language to be set as SV (Swedish) to be able to function', 'billmate' ), $link_url, __( 'Settings' ) );
-            }
         }
 
         /**
