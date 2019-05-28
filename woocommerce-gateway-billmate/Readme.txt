@@ -91,7 +91,7 @@ If you would like to use our logo on your site then choose following:
 
 = 3.4.6 (2019-05-22)
   * Fix - Removed auto scroll on Billmate Checkout page
-
+  
 = 3.4.5 (2019-05-20)
   * Fix - Clear Billmate Checkout Session after a payment is made
 
