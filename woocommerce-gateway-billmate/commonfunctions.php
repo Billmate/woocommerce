@@ -1508,11 +1508,13 @@ if(!class_exists('BillmateOrder')){
                 $order_shipping_total   = $this->order->get_shipping_total();
                 $order_shipping_tax     = $this->order->get_shipping_tax();
 
-                $cart_shipping_total    = WC()->cart->shipping_total;
-                $cart_shipping_tax      = WC()->cart->shipping_tax_total;
+                $cart_shipping_total    = WC()->cart->get_totals()['shipping_tax'];
+                $cart_shipping_tax      = WC()->cart->get_totals()['shipping_tax'];
 
                 $shipping_total     = $order_shipping_total;
-                $shipping_tax       = $order_shipping_tax;
+                $shipping_tax       = WC()->cart->get_totals()['shipping_tax'];
+                $this->order->set_shipping_tax(WC()->cart->get_totals()['shipping_tax']);
+                $this->order->save();
 
                 /*
                  * When shipping is available in cart and total is same as order, use cart tax
@@ -1551,6 +1553,10 @@ if(!class_exists('BillmateOrder')){
                     /** No taxrate available, get taxrate based on $shipping_total and $shipping_tax */
                     $taxrate = ($shipping_tax / $shipping_total) * 100;
                 }
+            }
+
+            if ($shipping_tax == 0){
+                $taxrate = 0;
             }
 
             return array(

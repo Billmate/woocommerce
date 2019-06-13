@@ -352,7 +352,13 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
             $orderId = $this->create_order();
             $order = wc_get_order( $orderId );
+            ob_start();
+            var_dump($order->get_data());
+            file_put_contents("gunk.log", "orderdata pre calculate checkout totals: " . ob_get_clean() . "\n", FILE_APPEND);
             $order->calculate_totals();
+            ob_start();
+            var_dump($order->get_data());
+            file_put_contents("gunk.log", "orderdata pre calculate checkout totals: " . ob_get_clean() . "\n", FILE_APPEND);
 
             $data = $this->updateCheckout($result, $order);
             wp_send_json_success($data);
@@ -647,11 +653,11 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         }
 
         if (
-                is_object(WC())
-                && property_exists(WC(), 'session')
-                && is_object(WC()->session)
-                && method_exists(WC()->session, 'get')
-                && WC()->session->get('billmate_checkout_billing_postcode') != ''
+            is_object(WC())
+            && property_exists(WC(), 'session')
+            && is_object(WC()->session)
+            && method_exists(WC()->session, 'get')
+            && WC()->session->get('billmate_checkout_billing_postcode') != ''
         ) {
             WC()->customer->set_billing_country( WC()->session->get('billmate_checkout_billing_country') );
             WC()->customer->set_billing_postcode( WC()->session->get('billmate_checkout_billing_postcode') );
@@ -693,6 +699,10 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             $order_items = $order->get_items( array( 'line_item' ) );
             if ( empty( $order_items ) ) {
                 foreach ( WC()->cart->get_cart() as $key => $values ) {
+                    ob_start();
+                    var_dump($key);
+                    var_dump($values);
+                    file_put_contents("gunk2.log", "items ".ob_get_clean() . "\n", FILE_APPEND);
                     $item_id = $order->add_product( $values['data'], $values['quantity'], array(
                         'variation' => $values['variation'],
                         'totals'    => array(
@@ -719,6 +729,10 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             $order_fees = $order->get_items( array( 'fee' ) );
             if ( empty( $order_fees ) ) {
                 foreach ( WC()->cart->get_fees() as $key => $fee ) {
+                    ob_start();
+                    var_dump($key);
+                    var_dump($fee);
+                    file_put_contents("gunk2.log", "".ob_get_clean() . "\n", FILE_APPEND);
 
                     if(version_compare(WC_VERSION, '3.0.0', '>=')) {
                         $orderId = $order->get_id();
@@ -1001,7 +1015,6 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             'rounding' => round($round),
             'withtax' => round($total + $totalTax + $round)
         );
-
         return $orderValues;
     }
 
@@ -1030,7 +1043,10 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
         $billmate = $this->getBillmateConnection();
         $result = $billmate->initCheckout($orderValues);
-
+        ob_start();
+        var_dump($orderValues);
+        var_dump($result);
+        file_put_contents("gunk.log", ob_get_clean() . "\n", FILE_APPEND);
         // Save checkout hash
         if(!isset($result['code']) AND isset($result['url']) AND $result['url'] != "") {
            $url = $result['url'];
@@ -1131,6 +1147,8 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
         WC()->session->set('billmate_previous_calculated_order_total', WC_Payment_Gateway::get_order_total());
         $data = $billmate->updateCheckout($orderValues);
+
+
 
         if(!isset($data['code'])){
             $current_order_total = (int)WC_Payment_Gateway::get_order_total();
