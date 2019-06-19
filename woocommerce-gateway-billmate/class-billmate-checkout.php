@@ -508,12 +508,20 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                     WC()->customer->set_shipping_country( $shipping_address['country'] );
                     WC()->customer->set_billing_postcode( $billing_address['postcode'] );
                     WC()->customer->set_shipping_postcode( $shipping_address['postcode'] );
+                    WC()->customer->set_billing_city( $billing_address['city'] );
+                    WC()->customer->set_shipping_city( $shipping_address['city'] );
+                    WC()->customer->set_billing_address_1( $billing_address['address_1'] );
+                    WC()->customer->set_shipping_address_1( $shipping_address['address_1'] );
                     WC()->customer->save();
 
                     WC()->session->set('billmate_checkout_billing_country', $billing_address['country']);
-                    WC()->session->set('billmate_checkout_billing_postcode', $billing_address['postcode']);
                     WC()->session->set('billmate_checkout_shipping_country', $shipping_address['country']);
+                    WC()->session->set('billmate_checkout_billing_postcode', $billing_address['postcode']);
                     WC()->session->set('billmate_checkout_shipping_postcode', $shipping_address['postcode']);
+                    WC()->session->set('billmate_checkout_billing_city', $billing_address['city']);
+                    WC()->session->set('billmate_checkout_shipping_city', $shipping_address['city']);
+                    WC()->session->set('billmate_checkout_billing_address_1', $billing_address['address_1']);
+                    WC()->session->set('billmate_checkout_shipping_address_1', $shipping_address['address_1']);
 
 
                     WC()->cart->calculate_shipping();
