@@ -17,39 +17,17 @@ var BillmateIframe = new function(){
     var orderTotal;
 
     this.updateAddress = function (data) {
-        // When address in checkout updates;
         data.action = 'billmate_update_address';
 
         if (data.hasOwnProperty('Customer') && data.hasOwnProperty('billingAddress')) {
             data.Customer.Billing = data.billingAddress;
         }
-
-        /**
-         * Support WooCommerce Shipping calculation
-         */
-         if (   jQuery('form.woocommerce-shipping-calculator').length > 0
-                && jQuery('#calc_shipping_postcode').length > 0) {
-            zip = '';
-            if (data.hasOwnProperty('Customer') && data.Customer.hasOwnProperty('Billing') && data.Customer.Billing.hasOwnProperty('zip') && data.Customer.Billing.zip != '') {
-                zip = data.Customer.Billing.zip.replace(/[^0-9\.]/g, '');
-            }
-            if (data.hasOwnProperty('Customer') && data.Customer.hasOwnProperty('Shipping') && data.Customer.Shipping.hasOwnProperty('zip') && data.Customer.Shipping.zip != '') {
-                zip = data.Customer.Shipping.zip.replace(/[^0-9\.]/g, '');
-            }
-            if (zip != '' && (zip != this.currentCustomerBillingZip || zip != jQuery('#calc_shipping_postcode').val())) {
-                this.currentCustomerBillingZip = zip;
-                jQuery('#calc_shipping_postcode').val(zip);
-                jQuery('form.woocommerce-shipping-calculator').submit();
-            }
-         }
-
         self.showCheckoutLoading();
         jQuery.ajax({
             url : billmate.ajax_url,
             data: data,
             type: 'POST',
             success: function(response){
-
                 if (response.hasOwnProperty("data") && response.data.hasOwnProperty("order_total")) {
                     if (self.orderTotal != undefined && self.orderTotal != response.data.order_total) {
                         self.lock();
@@ -65,6 +43,9 @@ var BillmateIframe = new function(){
                         self.updateCheckout();
                     } else {
                         self.hideCheckoutLoading();
+                        if (response.data.hasOwnProperty('cartData')) {
+                            jQuery('div.woocommerce').replaceWith(response.data.cartData);
+                        }
                     }
                 } else {
                     self.hideCheckoutLoading();
@@ -111,8 +92,9 @@ var BillmateIframe = new function(){
             data: data,
             type: 'POST',
             success: function(response){
-                if(response.hasOwnProperty("success") && response.success)
-                    location.href=response.data.url;
+                if(response.hasOwnProperty("success") && response.success) {
+                    location.href = response.data.url;
+                }
             }
         });
 
@@ -240,7 +222,6 @@ var BillmateIframe = new function(){
 
             }
         }
-
     };
 
     this.checkoutPostMessage = function(message) {

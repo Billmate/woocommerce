@@ -8,6 +8,7 @@ add_shortcode( 'billmate_partpayment_info_link', 'return_billmate_partpayment_in
 add_shortcode('billmate_checkout','get_billmate_checkout');
 add_shortcode('billmate_cart','get_billmate_cart');
 add_action('wp_enqueue_scripts','add_billmate_popup');
+
 // Return Monthly price
 function return_billmate_price() {
 	global $billmate_partpayment_shortcode_price, $eid;
