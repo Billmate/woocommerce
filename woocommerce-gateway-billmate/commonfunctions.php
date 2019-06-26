@@ -1,5 +1,5 @@
 <?php
-define('BILLPLUGIN_VERSION','3.4.4');
+define('BILLPLUGIN_VERSION','3.4.7');
 define('BILLMATE_CLIENT','PHP:Woocommerce:'.BILLPLUGIN_VERSION);
 define('BILLMATE_SERVER','2.1.9');
 
@@ -46,6 +46,21 @@ function wc_bm_errors($message){
         }
     }
 }
+
+add_action('woocommerce_thankyou', function() {
+    WC()->session->set("billmate_checkout_number", null);
+    WC()->session->set("billmate_previous_calculated_order_total", null);
+    WC()->session->set("billmate_checkout_billing_country", null);
+    WC()->session->set("billmate_checkout_billing_postcode", null);
+    WC()->session->set("billmate_checkout_shipping_country", null);
+    WC()->session->set("billmate_checkout_shipping_postcode", null);
+    WC()->session->set("shipping_for_package_0", null);
+    WC()->session->set("previous_shipping_methods", null);
+    WC()->session->set("shipping_method_counts", null);
+    WC()->session->set("chosen_shipping_methods", null);
+    WC()->session->destroy_session();
+});
+
 /**
  * Provides encoding constants.
  *

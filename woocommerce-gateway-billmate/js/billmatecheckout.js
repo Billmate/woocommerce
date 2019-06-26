@@ -227,11 +227,6 @@ var BillmateIframe = new function(){
                 case 'content_height':
                     jQuery('#checkout').height(json.data);
                     break;
-                case 'content_scroll_position':
-                    if (jQuery(document).scrollTop() > 0) {
-                        jQuery('html, body').animate({scrollTop: jQuery(document).find( "#checkout" ).offset().top + json.data}, 400);
-                    }
-                    break;
                 case 'checkout_loaded':
                     self.hideCheckoutLoading();
                     break;

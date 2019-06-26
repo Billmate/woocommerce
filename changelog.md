@@ -1,5 +1,14 @@
 # Changelog
 
+## 3.4.7 (2019-06-07)
+  * Fix - WhooCommerce built-in checkout use Billmates new logos
+
+## 3.4.6 (2019-05-22)
+* Fix - Removed browser scrolls to Billmate Checkout after refresh
+
+## 3.4.5 (2019-05-20)
+* Fix - Clear Billmate Checkout Session after a payment is made
+
 ## 3.4.4 (2019-03-05)
 * Enhancement - Only get Billmate Checkout page when language is sv
 * Fix - Only define WOOCOMMERCE_CHECKOUT on Billmate Checkout page
