@@ -139,6 +139,46 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         return $order_statuses;
     }
 
+    function order_calculate_totals($order){
+        $order->calculate_totals();
+        $is_shipping_no_tax = false;
+        $available_shipping_methods = WC()->shipping()->get_shipping_methods();
+        foreach($available_shipping_methods as $available_shipping_method){
+            if (array_key_exists('rules', $available_shipping_method->settings)){
+                if (array_key_exists('0', $available_shipping_method->settings['rules'])){
+                    if (array_key_exists('meta', $available_shipping_method->settings['rules'][0])) {
+                        foreach ($order->get_items('shipping') as $shippingItem) {
+                            if ($shippingItem->get_data()['method_title'] == $available_shipping_method->settings['rules'][0]['meta']['title'] && !$available_shipping_method->settings['rules'][0]['meta']['taxable']) {
+                                $is_shipping_no_tax = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if ($is_shipping_no_tax) {
+            $shipping_tax = $order->get_shipping_tax();
+            foreach ($order->get_items('shipping') as $item_id => $shipping_item) {
+                $shipping_taxes = $shipping_item->get_taxes();
+                $shipping_taxes_ids = array_keys($shipping_taxes['total']);
+                if (!is_array($shipping_taxes_ids)) {
+                    $shipping_taxes['total'][$shipping_taxes_ids] -= $shipping_tax;
+                } else {
+                    foreach ($shipping_taxes_ids as $id) {
+                        $shipping_taxes['total'][$id] -= $shipping_tax;
+                    }
+                }
+                $shipping_item->set_taxes($shipping_taxes);
+            }
+            foreach ($order->get_items('tax') as $item_id => $tax_item) {
+                $tax_item->set_shipping_tax_total(0);
+            }
+            $order->set_total($order->get_total() - $shipping_tax);
+            $order->set_shipping_tax(0);
+            $order->save();
+        }
+    }
+
     function add_billmate_incomplete_order_statuses(){
         if ( 'yes' == $this->testmode ) {
             $show_in_admin_status_list = true;
@@ -352,13 +392,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
             $orderId = $this->create_order();
             $order = wc_get_order( $orderId );
-            ob_start();
-            var_dump($order->get_data());
-            file_put_contents("gunk.log", "orderdata pre calculate checkout totals: " . ob_get_clean() . "\n", FILE_APPEND);
-            $order->calculate_totals();
-            ob_start();
-            var_dump($order->get_data());
-            file_put_contents("gunk.log", "orderdata pre calculate checkout totals: " . ob_get_clean() . "\n", FILE_APPEND);
+            $this->order_calculate_totals($order);
 
             $data = $this->updateCheckout($result, $order);
             wp_send_json_success($data);
@@ -528,7 +562,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
                     $orderId = $this->create_order();
                     $order = wc_get_order( $orderId );
-                    $order->calculate_totals();
+                    $this->order_calculate_totals($order);
 
                     $billmateOrder = new BillmateOrder($order);
                     $shipping_post_address_save = $billmateOrder->getCartShipping();
@@ -699,10 +733,6 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             $order_items = $order->get_items( array( 'line_item' ) );
             if ( empty( $order_items ) ) {
                 foreach ( WC()->cart->get_cart() as $key => $values ) {
-                    ob_start();
-                    var_dump($key);
-                    var_dump($values);
-                    file_put_contents("gunk2.log", "items ".ob_get_clean() . "\n", FILE_APPEND);
                     $item_id = $order->add_product( $values['data'], $values['quantity'], array(
                         'variation' => $values['variation'],
                         'totals'    => array(
@@ -729,10 +759,6 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             $order_fees = $order->get_items( array( 'fee' ) );
             if ( empty( $order_fees ) ) {
                 foreach ( WC()->cart->get_fees() as $key => $fee ) {
-                    ob_start();
-                    var_dump($key);
-                    var_dump($fee);
-                    file_put_contents("gunk2.log", "".ob_get_clean() . "\n", FILE_APPEND);
 
                     if(version_compare(WC_VERSION, '3.0.0', '>=')) {
                         $orderId = $order->get_id();
@@ -871,7 +897,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             WC()->cart->calculate_fees();
             WC()->cart->calculate_totals();
 
-            $order->calculate_totals();
+            $this->order_calculate_totals($order);
 
             if(version_compare(WC_VERSION, '3.0.0', '>=')) {
                 $orderId = $order->get_id();
@@ -1043,10 +1069,6 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
         $billmate = $this->getBillmateConnection();
         $result = $billmate->initCheckout($orderValues);
-        ob_start();
-        var_dump($orderValues);
-        var_dump($result);
-        file_put_contents("gunk.log", ob_get_clean() . "\n", FILE_APPEND);
         // Save checkout hash
         if(!isset($result['code']) AND isset($result['url']) AND $result['url'] != "") {
            $url = $result['url'];

@@ -1507,7 +1507,6 @@ if(!class_exists('BillmateOrder')){
             if(version_compare(WC_VERSION, '3.0.0', '>=')) {
                 $order_shipping_total   = $this->order->get_shipping_total();
                 $order_shipping_tax     = $this->order->get_shipping_tax();
-
                 $cart_shipping_total    = WC()->cart->get_totals()['shipping_tax'];
                 $cart_shipping_tax      = WC()->cart->get_totals()['shipping_tax'];
 

@@ -939,13 +939,7 @@ function init_billmate_gateway() {
                                         $item->save();
                                         $order->add_item( $item );
                                         $item_id = $item->get_id();
-                                        ob_start();
-                                        var_dump($order->get_data());
-                                        file_put_contents("gunk.log", "orderdata pre calculate totals: " . ob_get_clean() . "\n", FILE_APPEND);
                                         $order->calculate_totals(); // Recalculate order totals after fee is added
-                                        ob_start();
-                                        var_dump($order->get_data());
-                                        file_put_contents("gunk.log", "orderdata post calculate totals: " . ob_get_clean() . "\n", FILE_APPEND);
 
                                     } else {
                                         $item_id = $order->add_fee( $fee );
@@ -1002,10 +996,6 @@ function init_billmate_gateway() {
                     else
                         wp_die('OK','ok',array('response' => 200));
                 }
-
-                ob_start();
-                var_dump($order->get_data());
-                file_put_contents("gunk.log", "orderdata pre: " . ob_get_clean() . "\n", FILE_APPEND);
                 $order->set_total($order->get_total()-$order->get_shipping_total());
                 //$order->set_total_tax($order->get_total_tax() - $order->get_shipping_tax());
                 $order->set_shipping_total(($billmateOrder['Cart']['Shipping']['withouttax']*(1+($billmateOrder['Cart']['Shipping']['taxrate']/100)))/100);
@@ -1013,9 +1003,6 @@ function init_billmate_gateway() {
                 //$order->set_total_tax($order->get_total_tax() + $order->get_shipping_tax());
                 $order->set_total($order->get_total()+$order->get_shipping_total());
                 $order->save();
-                ob_start();
-                var_dump($order->get_data());
-                file_put_contents("gunk.log", "orderdata post: " . ob_get_clean() . "\n", FILE_APPEND);
 
                 if($cancel_url_hit) {
                     /* In case of cancel and we not received cancel or failed status */
