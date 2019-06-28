@@ -833,6 +833,9 @@ msgstr "Secret"
 msgid "Activate Orders in Billmate Online when completed"
 msgstr "Aktivera ordrar i Billmate Online när ordern får status completed"
 
+msgid "Refund Orders in Billmate Online when refunded"
+msgstr "Återbetala ordrar i Billmate Online när ordern får status refunded"
+
 #: ../class-billmate-common.php:318
 msgid "Cancel/credit Orders in Billmate Online when orderstatus is cancelled/refunded"
 msgstr "Makuler/kreditera order i Billmate Online när order får status cancelled/refunded"

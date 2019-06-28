@@ -19,6 +19,8 @@ class BillmateCommon {
         add_action('woocommerce_checkout_before_customer_details',array($this,'get_address_fields'));
         add_action( 'woocommerce_order_status_completed',array($this,'activate_invoice'));
 		add_filter('woocommerce_payment_successful_result',array($this,'clear_pno'));
+        add_action('woocommerce_order_status_refunded', array($this, 'refund_invoice'));
+        add_action('woocommerce_order_status_cancelled', array($this, 'refund_invoice'));
 
 
 	}
@@ -86,6 +88,79 @@ class BillmateCommon {
 			}
 		}
 	}
+
+    public function refund_invoice($order_id)
+    {
+        if(get_option('billmate_common_refundonstatus') == 'active') {
+
+            $orderNote = "";
+
+            $paymentMethod = get_post_meta($order_id,'_payment_method');
+            $method = false;
+            switch($paymentMethod[0]){
+                case 'billmate_partpayment':
+                    $method = new WC_Gateway_Billmate_Partpayment();
+                    break;
+                case 'billmate_invoice':
+                    $method = new WC_Gateway_Billmate_Invoice();
+                    break;
+                case 'billmate_bankpay':
+                    $method = new WC_Gateway_Billmate_Bankpay();
+                    break;
+                case 'billmate_cardpay':
+                    $method = new WC_Gateway_Billmate_Cardpay();
+                    break;
+                case 'billmate_checkout':
+                    $method = new WC_Gateway_Billmate_Checkout();
+                    break;
+            }
+
+            if($method !== false) {
+
+                $billmate = new BillMate(get_option('billmate_common_eid'), get_option('billmate_common_secret'), true, $method->testmode == 'yes', false);
+                $order = new WC_Order($order_id);
+
+                if ($billmateInvoiceId = get_post_meta($order_id, 'billmate_invoice_id', true)) {
+
+                    $paymentInfo = $billmate->getPaymentinfo(array('number' => $billmateInvoiceId));
+                    if (is_array($paymentInfo) AND
+                        isset($paymentInfo['PaymentData']) AND
+                        is_array($paymentInfo['PaymentData']) AND
+                        isset($paymentInfo['PaymentData']['status']) AND
+                        ($paymentInfo['PaymentData']['status'] == 'Created' ||
+                         $paymentInfo['PaymentData']['status'] == 'Factoring')
+                    ) {
+                        $result = $billmate->creditPayment(array('PaymentData' => array('number' => $billmateInvoiceId)));
+                        $result['message'] = isset($result['message']) ? utf8_encode($result['message']) : '';
+                        if (isset($result['code'])) {
+                            $result = $billmate->cancelPayment(array('PaymentData' => array('number' => $billmateInvoiceId)));
+                            if (isset($result['code'])) {
+                                $orderNote = sprintf(__('Billmate: The order payment couldnt be refunded, error code: %s error message: %s', 'billmate'), $result['code'], $result['message']);
+                            }
+                            else {
+                                $orderNote = __('Billmate: The order payment was refunded successfully', 'billmate');
+                            }
+                        }
+                        else {
+                            $orderNote = __('Billmate: The order payment was refunded successfully', 'billmate');
+                        }
+                    } elseif (isset($paymentInfo['code'])) {
+                        $paymentInfo['message'] = utf8_encode($paymentInfo['message']);
+                        $orderNote = sprintf(__('Billmate: The order payment couldnt be refunded, error code: %s error message: %s', 'billmate'), $paymentInfo['code'], $paymentInfo['message']);
+                    }
+
+                } else {
+                    // billmate_invoice_id is missing
+                    $orderNote = 'The order payment could not be activated, please activate order in online.billmate.se';
+                }
+
+                if ($orderNote != '') {
+                    $order->add_order_note($orderNote);
+                }
+            }
+        }
+    }
+
 	public function clear_pno($result,$order_id = null)
 	{
 		if(isset($_SESSION['billmate_pno']))
@@ -93,6 +168,7 @@ class BillmateCommon {
 		return $result;
 
 	}
+
     public function get_address_fields()
     {
         if(get_option('billmate_common_getaddress') == 'active'){
@@ -173,6 +249,11 @@ class BillmateCommon {
 			'billmate_common_activateonstatus',
 			array($this,'sanitize')
 		);
+        register_setting(
+            'billmate_common',
+            'billmate_common_refundonstatus',
+            array($this,'sanitize')
+        );
 		add_settings_section(
 			'setting_credentials', // ID
 			__('Common Billmate Settings','billmate'), // Title
@@ -209,6 +290,13 @@ class BillmateCommon {
 			'billmate-settings',
 			'setting_credentials'
 		);
+        add_settings_field(
+            'billmate_common_refundonstatus',
+            __('Refund Orders in Billmate Online when refunded','billmate'),
+            array($this,'refundonstatus_callback'),
+            'billmate-settings',
+            'setting_credentials'
+        );
 		add_settings_field(
 			'billmate_common_logo',
 			__('Logo to be displayed in the invoice','billmate'),
@@ -248,6 +336,17 @@ class BillmateCommon {
 		echo '<option value="active"'.$active.'>'.__('Active','billmate').'</option>';
 		echo '</select>';
 	}
+
+    public function refundonstatus_callback()
+    {
+        $value = get_option('billmate_common_refundonstatus','');
+        $inactive = ($value == 'inactive') ? 'selected="selected"' : '';
+        $active = ($value == 'active') ? 'selected="selected"' : '';
+        echo '<select name="billmate_common_refundonstatus" id="billmate_common_refundonstatus">';
+        echo '<option value="inactive"'.$inactive.'>'.__('Inactive','billmate').'</option>';
+        echo '<option value="active"'.$active.'>'.__('Active','billmate').'</option>';
+        echo '</select>';
+    }
 
     public function getaddress_callback()
     {
