@@ -836,6 +836,18 @@ msgstr "Aktivera ordrar i Billmate Online när ordern får status completed"
 msgid "Refund Orders in Billmate Online when refunded"
 msgstr "Återbetala ordrar i Billmate Online när ordern får status refunded"
 
+msgid "Billmate: The order payment couldnt be refunded, error code: %s error message: %s"
+msgstr "Billmate: Ordern kunde inte återbetalas, felkod: %s felmeddelande: %s"
+
+msgid "Billmate: The order payment was refunded successfully"
+msgstr "Billmate: Ordern återbetalades"
+
+msgid "Refund Orders in Billmate Online when refunded"
+msgstr "Återbetala ordrar i Billmate Online när ordern får status refunded"
+
+msgid "The order payment could not be refunded, please refund order in online.billmate.se"
+msgstr "Order kunde inte återbetalas, vänligen återbetala ordern i online.billmate.se"
+
 #: ../class-billmate-common.php:318
 msgid "Cancel/credit Orders in Billmate Online when orderstatus is cancelled/refunded"
 msgstr "Makuler/kreditera order i Billmate Online när order får status cancelled/refunded"

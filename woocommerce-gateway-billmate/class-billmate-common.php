@@ -151,7 +151,7 @@ class BillmateCommon {
 
                 } else {
                     // billmate_invoice_id is missing
-                    $orderNote = 'The order payment could not be activated, please activate order in online.billmate.se';
+                    $orderNote = 'The order payment could not be refunded, please refund order in online.billmate.se';
                 }
 
                 if ($orderNote != '') {
