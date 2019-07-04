@@ -49,7 +49,6 @@ var BillmateIframe = new function(){
             data: data,
             type: 'POST',
             success: function(response){
-
                 if (response.hasOwnProperty("data") && response.data.hasOwnProperty("order_total")) {
                     if (self.orderTotal != undefined && self.orderTotal != response.data.order_total) {
                         self.lock();
@@ -69,8 +68,10 @@ var BillmateIframe = new function(){
                 } else {
                     self.hideCheckoutLoading();
                 }
-                if (response.data.hasOwnProperty('cart')){
-                    document.getElementsByClassName("woocommerce")[0].innerHTML = response.data.cart;
+                if(response.hasOwnProperty("success") && response.success) {
+                    if (response.data.hasOwnProperty('cart')) {
+                        document.getElementsByClassName("woocommerce")[0].innerHTML = response.data.cart;
+                    }
                 }
             }
         });

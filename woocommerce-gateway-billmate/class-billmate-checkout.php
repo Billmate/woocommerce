@@ -375,7 +375,6 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
         $hash = WC()->session->get('billmate_checkout_hash');
         $number = WC()->session->get('billmate_checkout_number');
-
         if ($number == '' && $hash != '') {
             $result = $connection->getCheckout(array('PaymentData' => array('hash' => $hash)));
             $number = isset($result['PaymentData']['number']) ? $result['PaymentData']['number'] : '';
