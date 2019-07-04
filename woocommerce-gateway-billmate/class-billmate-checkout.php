@@ -548,8 +548,9 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                     $current_order_total = (int)WC_Payment_Gateway::get_order_total();
                     wp_send_json_success(array('update_checkout' => false, "order_total" => $current_order_total));
                 }
+                $cart = do_shortcode('[woocommerce_cart]');
                 $current_order_total = (int)WC_Payment_Gateway::get_order_total();
-                wp_send_json_success(array('update_checkout' => false, "order_total" => $current_order_total));
+                wp_send_json_success(array('update_checkout' => false, "order_total" => $current_order_total, 'cart' => $cart));
             }
 
         }
