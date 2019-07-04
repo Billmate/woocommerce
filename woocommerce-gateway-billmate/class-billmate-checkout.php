@@ -395,7 +395,6 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             // shipping_pre_address_save will be used later to check if new address affect shipping cost
             $billmateOrder = new BillmateOrder($order);
             $shipping_pre_address_save = $billmateOrder->getCartShipping();
-
             if( isset($post['Customer'])
                 && is_array($post['Customer'])
                 && count($post['Customer']) > 0
@@ -419,20 +418,16 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                 if( isset($post['Customer']['Shipping'])
                     && is_array($post['Customer']['Shipping'])
                     && count($post['Customer']['Shipping']) > 0
-                    && isset($post['Customer']['Shipping']['firstname'])
-                    && isset($post['Customer']['Shipping']['lastname'])
                     && isset($post['Customer']['Shipping']['street'])
                     && isset($post['Customer']['Shipping']['city'])
                     && isset($post['Customer']['Shipping']['zip'])
-                    && $post['Customer']['Shipping']['firstname'] != ''
-                    && $post['Customer']['Shipping']['lastname'] != ''
                     && $post['Customer']['Shipping']['street'] != ''
                     && $post['Customer']['Shipping']['city'] != ''
                     && $post['Customer']['Shipping']['zip'] != ''
                 ) {
                     $shipping_address = array(
-                        'first_name' => $post['Customer']['Shipping']['firstname'],
-                        'last_name'  => $post['Customer']['Shipping']['lastname'],
+                        'first_name' => (isset($post['Customer']['Shipping']['firstname']) ? $post['Customer']['Shipping']['firstname'] : ''),
+                        'last_name'  => (isset($post['Customer']['Shipping']['lastname']) ? $post['Customer']['Shipping']['lastname'] : ''),
                         'company'    => (isset($post['Customer']['Shipping']['company']) ? $post['Customer']['Shipping']['company'] : ''),
                         'email'      => $post['Customer']['Shipping']['email'],
                         'phone'      => $post['Customer']['Shipping']['phone'],
