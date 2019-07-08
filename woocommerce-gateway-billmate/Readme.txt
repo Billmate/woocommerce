@@ -91,6 +91,8 @@ If you would like to use our logo on your site then choose following:
 
 = 3.4.7 (2019-06-07)
   * Fix - WhooCommerce built-in checkout use Billmates new logos
+  * Fix WhooCommerce shows correct company delivery address
+
 
 = 3.4.6 (2019-05-22)
   * Fix - Removed auto scroll on Billmate Checkout page
