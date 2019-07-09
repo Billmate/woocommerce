@@ -89,10 +89,10 @@ If you would like to use our logo on your site then choose following:
 
 == Changelog ==
 
-= 3.4.7 (2019-06-07)
+= 3.4.7 (2019-07-09)
   * Fix - WhooCommerce built-in checkout use Billmates new logos
   * Fix WhooCommerce shows correct company delivery address
-
+  * Fix Wocommerce Subription sets the currency based on the order instead of the defualt currency
 
 = 3.4.6 (2019-05-22)
   * Fix - Removed auto scroll on Billmate Checkout page
