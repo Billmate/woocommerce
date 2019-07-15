@@ -3,11 +3,11 @@ Contributors: Billmate
 Donate link:
 Tags: woocomerce, billmate, payments, cardpayments, invoice, partpayment, recurring, bankpayment
 Requires at least: 4.0
-Tested up to: 5.2 “Jaco”
+Tested up to: 5.2.2
 Stable tag: 3.4.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
-WC tested up to: 3.6.3
+WC tested up to: 3.6.5
 
 Billmate offers a complete paymentsolution to your webshop.
 
