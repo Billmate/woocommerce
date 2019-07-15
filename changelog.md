@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.4.7 (2019-07-15)
+  * Fix - WhooCommerce built-in checkout use Billmates new logos
+  * Fix WhooCommerce shows correct company delivery address
+  * Fix Wocommerce Subription sets the currency based on the order instead of the defualt currency
+
 ## 3.4.6 (2019-05-22)
 * Fix - Removed browser scrolls to Billmate Checkout after refresh
 

@@ -3,11 +3,11 @@ Contributors: Billmate
 Donate link:
 Tags: woocomerce, billmate, payments, cardpayments, invoice, partpayment, recurring, bankpayment
 Requires at least: 4.0
-Tested up to: 5.2 “Jaco”
-Stable tag: 3.4.5
+Tested up to: 5.2.2
+Stable tag: 3.4.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
-WC tested up to: 3.6.3
+WC tested up to: 3.6.5
 
 Billmate offers a complete paymentsolution to your webshop.
 
@@ -88,7 +88,12 @@ If you would like to use our logo on your site then choose following:
 
 
 == Changelog ==
-  
+
+= 3.4.7 (2019-07-15)
+  * Fix - WhooCommerce built-in checkout use Billmates new logos
+  * Fix WhooCommerce shows correct company delivery address
+  * Fix Wocommerce Subription sets the currency based on the order instead of the defualt currency
+
 = 3.4.6 (2019-05-22)
   * Fix - Removed auto scroll on Billmate Checkout page
   

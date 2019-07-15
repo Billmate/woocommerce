@@ -49,7 +49,7 @@ var BillmateIframe = new function(){
             data: data,
             type: 'POST',
             success: function(response){
-
+                
                 if (response.hasOwnProperty("data") && response.data.hasOwnProperty("order_total")) {
                     if (self.orderTotal != undefined && self.orderTotal != response.data.order_total) {
                         self.lock();

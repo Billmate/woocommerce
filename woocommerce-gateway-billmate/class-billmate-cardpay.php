@@ -363,7 +363,9 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
             $parent_id = $parent_order->get_id();
         } else {
             $parent_id = $subscription->order->id;
+            $parent_order = new WC_Order($parent_id);
         }
+
 
         $billmateOrder = new BillmateOrder($order);
         $billmateOrder->setAllowedCountries($woocommerce->countries->get_allowed_countries());
@@ -384,7 +386,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		$language = explode('_',get_locale());
 		$orderValues['PaymentData'] = array(
 			'method' => 8,
-			'currency' => get_woocommerce_currency(),
+			'currency' => $parent_order->get_currency('view'),
 			'language' => strtolower($language[0]),
 			'country' => $this->billmate_country,
 			'autoactivate' => 1,
