@@ -291,7 +291,6 @@ class BillmateCommon {
 		echo '<option value="active"' . $active . '>' . __('Active', 'billmate') . '</option>';
 		echo '</select>';
 	}
-<<<<<<< HEAD
 
     public function getaddress_callback()
     {
@@ -316,26 +315,10 @@ class BillmateCommon {
     }
 
 	public function logo_callback()
-	{
-		$value = get_option('billmate_common_logo','');
-		echo '<input type="text" id="billmate_common_logo" name="billmate_common_logo" value="'.$value.'" />';
-=======
-	
-	public function getaddress_callback() {
-		$value    = get_option('billmate_common_getaddress', '');
-		$inactive = ($value == 'inactive') ? 'selected="selected"' : '';
-		$active   = ($value == 'active') ? 'selected="selected"' : '';
-		echo '<select name="billmate_common_getaddress" id="billmate_common_getaddress">';
-		echo '<option value="inactive"' . $inactive . '>' . __('Inactive', 'billmate') . '</option>';
-		echo '<option value="active"' . $active . '>' . __('Active', 'billmate') . '</option>';
-		echo '</select>';
->>>>>>> 11d12f226a3689b5193a0d3bc8b778f5aee41d87
-	}
-	
-	public function logo_callback() {
-		$value = get_option('billmate_common_logo', '');
-		echo '<input type="text" id="billmate_common_logo" name="billmate_common_logo" value="' . $value . '" />';
-	}
+    {
+        $value = get_option('billmate_common_logo', '');
+        echo '<input type="text" id="billmate_common_logo" name="billmate_common_logo" value="' . $value . '" />';
+    }
 	
 	public function enable_overlay_callback() {
 		$value = get_option('billmate_common_enable_overlay', '') ? 'checked' : '';
