@@ -455,7 +455,6 @@ function init_billmate_gateway() {
                 }
 				wp_localize_script( 'billmate-checkout-js', 'billmate',
 					array( 'ajax_url' => admin_url( 'admin-ajax.php' ),'billmate_checkout_nonce' => wp_create_nonce('billmate_checkout_nonce'), 'overlayEnabled' => $overlayEnabled) );
-
 			}
 
 
