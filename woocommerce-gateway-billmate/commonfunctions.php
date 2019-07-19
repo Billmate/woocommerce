@@ -1,22 +1,3 @@
-Skip to content
-
-Search or jump to…
-
-Pull requests
-Issues
-Marketplace
-Explore
-
-@henrik-lofstrom
-10
-4 9 Billmate/woocommerce
-Code  Issues 3  Pull requests 6  Projects 0  Wiki  Security  Insights
-woocommerce/woocommerce-gateway-billmate/commonfunctions.php
-@stefanliden stefanliden Update plugin version to 3.4.7
-10a5611 19 days ago
-@kalorifri @Boxedsolutions @stefanliden @henrik-lofstrom @andyjohansson
-1858 lines (1607 sloc)  57.8 KB
-
 <?php
 define('BILLPLUGIN_VERSION','3.4.7');
 define('BILLMATE_CLIENT','PHP:Woocommerce:'.BILLPLUGIN_VERSION);
