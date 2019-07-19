@@ -481,7 +481,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                     || $order_shipping_address['address_1'] != $shipping_address['address_1']
                     || $order_shipping_address['address_2'] != $shipping_address['address_2']
                     || $order_shipping_address['city'] != $shipping_address['city']
-                    || $order_shipping_address['postcode'] != $shipping_address['postcode'] || true
+                    || $order_shipping_address['postcode'] != $shipping_address['postcode']
                 ) {
                     $isEmail = is_email($billing_address['email']);
                     if ($isEmail != false AND is_string($isEmail) AND $isEmail == $billing_address['email']) {
@@ -517,7 +517,6 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                     $chosen_shipping = WC()->session->get('billmate_checkout_saved_shipping_method');
                     WC()->shipping->reset_shipping();
                     WC()->session->set('chosen_shipping_methods', array( $chosen_shipping ) );
-
                     WC()->session->set('billmate_checkout_billing_country', $billing_address['country']);
                     WC()->session->set('billmate_checkout_shipping_country', $shipping_address['country']);
                     WC()->session->set('billmate_checkout_billing_postcode', $billing_address['postcode']);
@@ -548,8 +547,9 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                     }
 
                 } else {
+                    $cart = do_shortcode('[woocommerce_cart]');
                     $current_order_total = (int)WC_Payment_Gateway::get_order_total();
-                    wp_send_json_success(array('update_checkout' => false, "order_total" => $current_order_total));
+                    wp_send_json_success(array('update_checkout' => false, "order_total" => $current_order_total, 'cart' => $cart));
                 }
                 $cart = do_shortcode('[woocommerce_cart]');
                 $current_order_total = (int)WC_Payment_Gateway::get_order_total();
