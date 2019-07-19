@@ -163,6 +163,11 @@ class BillmateCommon {
             'billmate_common_getaddress',
             array($this,'sanitize')
         );
+        register_setting(
+            'billmate_common',
+            'billmate_common_overlay_enabled',
+            array($this,'sanitize')
+        );
 		register_setting(
 			'billmate_common',
 			'billmate_common_logo',
@@ -199,6 +204,13 @@ class BillmateCommon {
             'billmate_common_getaddress',
             __('Get Address','billmate'),
             array($this,'getaddress_callback'),
+            'billmate-settings',
+            'setting_credentials'
+        );
+        add_settings_field(
+            'billmate_common_overlay_enabled',
+            __('Enable Overlay','billmate'),
+            array($this,'overlay_enabled_callback'),
             'billmate-settings',
             'setting_credentials'
         );
@@ -255,6 +267,17 @@ class BillmateCommon {
         $inactive = ($value == 'inactive') ? 'selected="selected"' : '';
         $active = ($value == 'active') ? 'selected="selected"' : '';
         echo '<select name="billmate_common_getaddress" id="billmate_common_getaddress">';
+        echo '<option value="inactive"'.$inactive.'>'.__('Inactive','billmate').'</option>';
+        echo '<option value="active"'.$active.'>'.__('Active','billmate').'</option>';
+        echo '</select>';
+    }
+
+    public function overlay_enabled_callback()
+    {
+        $value = get_option('billmate_common_overlay_enabled','');
+        $inactive = ($value == 'inactive') ? 'selected="selected"' : '';
+        $active = ($value == 'active') ? 'selected="selected"' : '';
+        echo '<select name="billmate_common_overlay_enabled" id="billmate_common_overlay_enabled">';
         echo '<option value="inactive"'.$inactive.'>'.__('Inactive','billmate').'</option>';
         echo '<option value="active"'.$active.'>'.__('Active','billmate').'</option>';
         echo '</select>';
