@@ -89,6 +89,9 @@ If you would like to use our logo on your site then choose following:
 
 == Changelog ==
 
+= 3.4.8 (2019-07-22)
+  * Enhancement - Hit area for accepting Billmate billing for mobile
+  
 = 3.4.7 (2019-07-15)
   * Fix - WhooCommerce built-in checkout use Billmates new logos
   * Fix WhooCommerce shows correct company delivery address
