@@ -92,6 +92,7 @@ If you would like to use our logo on your site then choose following:
 = 3.4.8 (2019-07-22)
   * Enhancement - Hit area for accepting Billmate billing for mobile
   * Fix - Loopback request that failure in WP built in site health 
+  * Fix - Billmate Checkout uses the image to be set on the invoice based on WP Billmate settings.
   
 = 3.4.7 (2019-07-15)
   * Fix - WhooCommerce built-in checkout use Billmates new logos
