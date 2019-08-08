@@ -102,6 +102,13 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         add_action( 'woocommerce_api_wc_gateway_billmate_checkout', array( $this, 'check_ipn_response' ) );
 
         add_action( 'woocommerce_cart_updated' , array( &$this, 'woocommerce_cart_updated' ) );
+
+        add_action('woocommerce_thankyou', array($this, 'order_update_totals'));
+    }
+
+    public function order_update_totals($order_id){
+        $order = wc_get_order($order_id);
+        $this->order_calculate_totals($order);
     }
 
     public function woocommerce_cart_updated( $cart ) {

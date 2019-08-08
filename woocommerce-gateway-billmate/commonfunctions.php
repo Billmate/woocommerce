@@ -8,6 +8,7 @@ require_once dirname( __FILE__ ) .'/utf8.php';
 if (!function_exists('is_plugin_active')) {
     require_once(ABSPATH.'wp-admin/includes/plugin.php');
 }
+
 function convertToUTF8($str) {
     $enc = mb_detect_encoding($str);
     if ($enc && $enc != 'UTF-8') {
@@ -43,17 +44,25 @@ function wc_bm_errors($message){
     }
 }
 add_action('woocommerce_thankyou', function() {
-    WC()->session->set("billmate_checkout_number", null);
-    WC()->session->set("billmate_previous_calculated_order_total", null);
-    WC()->session->set("billmate_checkout_billing_country", null);
-    WC()->session->set("billmate_checkout_billing_postcode", null);
-    WC()->session->set("billmate_checkout_shipping_country", null);
-    WC()->session->set("billmate_checkout_shipping_postcode", null);
-    WC()->session->set("shipping_for_package_0", null);
-    WC()->session->set("previous_shipping_methods", null);
-    WC()->session->set("shipping_method_counts", null);
-    WC()->session->set("chosen_shipping_methods", null);
-    WC()->session->destroy_session();
+    $hasRefreshed = WC()->session->get('billmate_refresh_success');
+    if ($hasRefreshed === 1) {
+        file_put_contents("gunk.log", "test 2\n", FILE_APPEND);
+        WC()->session->set("billmate_checkout_number", null);
+        WC()->session->set("billmate_previous_calculated_order_total", null);
+        WC()->session->set("billmate_checkout_billing_country", null);
+        WC()->session->set("billmate_checkout_billing_postcode", null);
+        WC()->session->set("billmate_checkout_shipping_country", null);
+        WC()->session->set("billmate_checkout_shipping_postcode", null);
+        WC()->session->set("shipping_for_package_0", null);
+        WC()->session->set("previous_shipping_methods", null);
+        WC()->session->set("shipping_method_counts", null);
+        WC()->session->set("chosen_shipping_methods", null);
+        WC()->session->destroy_session();
+    }
+    else if (WC()->session->get('billmate_checkout_number') !== NULL){
+        WC()->session->set("billmate_refresh_success", 1);
+        header("Refresh:0");
+    }
 });
 /**
  * Provides encoding constants.
