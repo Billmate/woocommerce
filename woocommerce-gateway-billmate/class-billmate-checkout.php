@@ -938,7 +938,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             'language' => $lang[0],
             'country' => $location['country'],
             'orderid' => ltrim($order->get_order_number(),'#'),
-            'logo' => $this->logo
+            'logo' => (strlen($this->logo)> 0) ? $this->logo : ''
         );
 
         $orderValues['PaymentData']['accepturl']    = billmate_add_query_arg(array('wc-api' => 'WC_Gateway_Billmate_Checkout', 'payment' => 'success','method' => 'checkout'));
