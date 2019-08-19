@@ -11,20 +11,63 @@ add_action('wp_enqueue_scripts','add_billmate_popup');
 // Return Monthly price
 function return_billmate_price() {
 	global $billmate_partpayment_shortcode_price, $eid;
-	$pclasses = get_option('wc_gateway_billmate_partpayment_pclasses');
+    $product = new WC_Product( get_the_ID() );
+    $settings = get_option('woocommerce_billmate_partpayment_settings');
+    if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+        $price = $product->get_price();
+    } else {
+        $price = $product->price;
+    }
+
+    if ($settings['testmode'] == 'yes'):
+        // Disable SSL if in testmode
+        $billmate_ssl = 'false';
+        $billmate_mode = 'test';
+    else :
+        // Set SSL if used in webshop
+        if (is_ssl()) {
+            $billmate_ssl = 'true';
+        } else {
+            $billmate_ssl = 'false';
+        }
+        $billmate_mode = 'live';
+    endif;
+    $eid = (int)get_option('billmate_common_eid');
+
+
+    $secret = get_option('billmate_common_secret');
+    $country = WC_Countries::get_base_country();
+    if ($country != 'SE' && $country != 'DK' && $country != 'FI' && $country != 'NO' && $country != 'NL'){
+        $country = "SE";
+    }
+    $currency = get_woocommerce_currency();
+    $language = explode('_', get_locale());
+    if (!defined('BILLMATE_LANGUAGE')) define('BILLMATE_LANGUAGE', strtolower($language[0]));
+    global $wp_version;
+
+    // Meta to add to API requests, will be used for debug
+    $meta = array(
+        'PHP_VERSION' => phpversion(),
+        'WORDPRESS_VERSION' => $wp_version,
+        'WOOCOMMERCE_VERSION' => WC_VERSION
+    );
+    $bm = new BillMate($eid, $secret, true, $settings['testmode'] == 'yes', false, $meta);
+
+    $values['PaymentData'] = array(
+        'currency' => $currency,
+        'language' => $language[0],
+        'country' => $country,
+        'totalwithtax' => $price * 100
+    );
+
+    $pclasses = $bm->getPaymentPlans($values);
 	$flag = BillmateFlags::CHECKOUT_PAGE;
 	$pclasses_not_available = true;
 
 	if($pclasses)
 		$pclasses_not_available = false;
 	//$WC_Gateway_Billmate_Partpayment = new WC_Gateway_Billmate_Partpayment;
-	$product = new WC_Product( get_the_ID() );
 
-    if(version_compare(WC_VERSION, '3.0.0', '>=')) {
-        $price = $product->get_price();
-    } else {
-        $price = $product->price;
-    }
 
 	$settings = get_option('woocommerce_billmate_partpayment_settings');
 	$eid = get_option('billmate_common_eid');;

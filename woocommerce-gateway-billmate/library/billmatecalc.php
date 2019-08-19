@@ -528,7 +528,6 @@ class BillmateCalc {
     }
 
     public static function getCheapestPClass($sum, $flags, $pclasses) {
-
         $sum = (is_numeric($sum)) ? $sum : 0;
 
         if(!is_numeric ($flags) || !in_array ($flags,
@@ -588,14 +587,15 @@ class BillmateCalc {
      * @return float  The monthly cost.
      */
     public static function calc_monthly_cost($sum, $pclass, $flags) {
-        if(!is_numeric($sum)) {
+        if(!array_key_exists('monthlycost', $pclass)) {
             throw new Exception('Error in ' . __METHOD__ . ': Argument sum is not numeric!');
         }
         else if(is_numeric($sum) && (!is_int($sum) || !is_float($sum))) {
             $sum = floatval($sum);
         }
+        return $pclass['monthlycost']/100;
 
-        if(is_numeric($flags) && !is_int($flags)) {
+        /*if(is_numeric($flags) && !is_int($flags)) {
             $flags = intval($flags);
         }
         if(!is_numeric($flags) || !in_array($flags, array(BillmateFlags::CHECKOUT_PAGE, BillmateFlags::PRODUCT_PAGE))) {
@@ -604,7 +604,7 @@ class BillmateCalc {
 
         $payarr = self::get_payarr($sum, $pclass, $flags);
         $value = isset($payarr[0]) ? ($payarr[0]) : 0;
-        return (BillmateFlags::CHECKOUT_PAGE == $flags) ? round($value, 0) : self::pRound($value, $pclass['country']);
+        return (BillmateFlags::CHECKOUT_PAGE == $flags) ? round($value, 0) : self::pRound($value, $pclass['country']);*/
     }
 
     /**
