@@ -232,13 +232,6 @@ class BillmateCommon {
             'billmate-settings',
             'setting_credentials'
         );
-        add_settings_field(
-            'billmate_common_overlay_enabled',
-            __('Enable Overlay','billmate'),
-            array($this,'overlay_enabled_callback'),
-            'billmate-settings',
-            'setting_credentials'
-        );
 		add_settings_field(
 			'billmate_common_activateonstatus',
 			__('Activate Orders in Billmate Online when completed', 'billmate'),
@@ -250,13 +243,6 @@ class BillmateCommon {
 			'billmate_common_logo',
 			__('Logo to be displayed in the invoice', 'billmate'),
 			array($this, 'logo_callback'),
-			'billmate-settings',
-			'setting_credentials'
-		);
-		add_settings_field(
-			'billmate_common_enable_overlay',
-			__('Enable overlay', 'billmate'),
-			array($this, 'enable_overlay_callback'),
 			'billmate-settings',
 			'setting_credentials'
 		);
@@ -303,29 +289,11 @@ class BillmateCommon {
         echo '</select>';
     }
 
-    public function overlay_enabled_callback()
-    {
-        $value = get_option('billmate_common_overlay_enabled','');
-        $inactive = ($value == 'inactive') ? 'selected="selected"' : '';
-        $active = ($value == 'active') ? 'selected="selected"' : '';
-        echo '<select name="billmate_common_overlay_enabled" id="billmate_common_overlay_enabled">';
-        echo '<option value="inactive"'.$inactive.'>'.__('Inactive','billmate').'</option>';
-        echo '<option value="active"'.$active.'>'.__('Active','billmate').'</option>';
-        echo '</select>';
-    }
-
 	public function logo_callback()
     {
         $value = get_option('billmate_common_logo', '');
         echo '<input type="text" id="billmate_common_logo" name="billmate_common_logo" value="' . $value . '" />';
     }
-	
-	public function enable_overlay_callback() {
-		$value = get_option('billmate_common_enable_overlay', '') ? 'checked' : '';
-		echo '<input type="checkbox" id="billmate_common_enable_overlay" name="billmate_common_enable_overlay" ' . $value . ' />';
-		echo '<div class="tooltip"><span class="dashicons dashicons-info"></span><span class="tooltiptext">' . __('Make sure this works with your theme after enabling.') . '</span></div>';
-		
-	}
 	
 	public function print_section_info() {
 		echo __('Here is the common settings for the Billmate Payment module', 'billmate');
