@@ -1266,7 +1266,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             'billmate_common_enable_overlay' => array(
                 'title' => __('Enable Overlay','billmate'),
                 'type' => 'checkbox',
-                'description' => __('Enable visual focus in Billmate Checkout'),
+                'description' => __('Enable visual focus in Billmate Checkout', 'billmate'),
                 'default' => 'no'
             )
         ) );
