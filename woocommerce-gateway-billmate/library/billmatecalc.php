@@ -539,16 +539,20 @@ class BillmateCalc {
         $lowest_pp = $lowest = false;
         foreach($pclasses as $pclass) {
             // Lowest for SE is 50
-            $lowest_payment = BillmateCalc::get_lowest_payment_for_account(strtoupper($pclass['country']));
+            if (is_array($pclass)) {
+                if (array_key_exists('country', $pclass)) {
+                    $lowest_payment = BillmateCalc::get_lowest_payment_for_account(strtoupper($pclass['country']));
 
-            // Check if sum is over mintotal. And Type is 1 or less.
-            if($pclass['type'] < 2 && $sum >= $pclass['minamount']) {
-                $minpay = BillmateCalc::calc_monthly_cost($sum, $pclass, $flags);
+                    // Check if sum is over mintotal. And Type is 1 or less.
+                    if ($pclass['type'] < 2 && $sum >= $pclass['minamount']) {
+                        $minpay = BillmateCalc::calc_monthly_cost($sum, $pclass, $flags);
 
-                if($minpay < $lowest_pp || $lowest_pp === false) {
-                    if($pclass['type'] == 1 || $minpay >= $lowest_payment) {
-                        $lowest_pp = $minpay;
-                        $lowest = $pclass;
+                        if ($minpay < $lowest_pp || $lowest_pp === false) {
+                            if ($pclass['type'] == 1 || $minpay >= $lowest_payment) {
+                                $lowest_pp = $minpay;
+                                $lowest = $pclass;
+                            }
+                        }
                     }
                 }
             }
