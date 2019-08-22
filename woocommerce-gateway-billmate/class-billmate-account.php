@@ -2317,7 +2317,7 @@ parse_str($_POST['post_data'], $datatemp);
                     if ($pclasses) $pclasses_not_available = false;
 
                     // apply_filters to product price so we can filter this if needed
-                    $billmate_product_total = $product->get_price()*100;
+                    $billmate_product_total = $product->get_price();
                     $sum = apply_filters('billmate_product_total', $billmate_product_total); // Product price.
                     $flag = BillmateFlags::PRODUCT_PAGE; //or BillmateFlags::PRODUCT_PAGE, if you want to do it for one item.
                     $pclass = BillmateCalc::getCheapestPClass($sum, $flag, $pclasses);
