@@ -2304,6 +2304,7 @@ parse_str($_POST['post_data'], $datatemp);
                 );
 
                 $pclasses = $bm->getPaymentPlans($values);
+
                 // Only execute this if the feature is activated in the gateway settings
                 if (is_array($pclasses)) {
                     if (array_key_exists('code', $pclasses)) {
@@ -2315,9 +2316,8 @@ parse_str($_POST['post_data'], $datatemp);
                     $pclasses_not_available = true;
                     if ($pclasses) $pclasses_not_available = false;
 
-
                     // apply_filters to product price so we can filter this if needed
-                    $billmate_product_total = $product->get_price();
+                    $billmate_product_total = $product->get_price()*100;
                     $sum = apply_filters('billmate_product_total', $billmate_product_total); // Product price.
                     $flag = BillmateFlags::PRODUCT_PAGE; //or BillmateFlags::PRODUCT_PAGE, if you want to do it for one item.
                     $pclass = BillmateCalc::getCheapestPClass($sum, $flag, $pclasses);
@@ -2331,7 +2331,6 @@ parse_str($_POST['post_data'], $datatemp);
                             $pclass,
                             $flag
                         );
-
 
                         // Asign values to variables used for shortcodes.
                         $billmate_partpayment_shortcode_currency = $this->billmate_currency;

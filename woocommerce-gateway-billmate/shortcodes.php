@@ -9,6 +9,7 @@ add_shortcode('billmate_checkout','get_billmate_checkout');
 add_shortcode('billmate_cart','get_billmate_cart');
 add_action('wp_enqueue_scripts','add_billmate_popup');
 // Return Monthly price
+
 function return_billmate_price() {
 	global $billmate_partpayment_shortcode_price, $eid;
     $product = new WC_Product( get_the_ID() );
@@ -36,7 +37,7 @@ function return_billmate_price() {
 
 
     $secret = get_option('billmate_common_secret');
-    $country = WC_Countries::get_base_country();
+    $country = get_option('woocommerce_default_country');
     if ($country != 'SE' && $country != 'DK' && $country != 'FI' && $country != 'NO' && $country != 'NL'){
         $country = "SE";
     }
