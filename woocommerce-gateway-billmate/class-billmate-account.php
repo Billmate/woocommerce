@@ -53,8 +53,8 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 		$this->show_monthly_cost_shop_prio		= ( isset( $this->settings['show_monthly_cost_shop_prio'] ) ) ? $this->settings['show_monthly_cost_shop_prio'] : '15';
 		$this->testmode							= ( isset( $this->settings['testmode'] ) ) ? $this->settings['testmode'] : '';
 		$this->de_consent_terms					= ( isset( $this->settings['de_consent_terms'] ) ) ? $this->settings['de_consent_terms'] : '';
-		$this->lower_threshold_monthly_cost		= ( isset( $this->settings['lower_threshold_monthly_cost'] ) ) ? $this->settings['lower_threshold_monthly_cost'] : '';
-		$this->upper_threshold_monthly_cost		= ( isset( $this->settings['upper_threshold_monthly_cost'] ) ) ? $this->settings['upper_threshold_monthly_cost'] : '';
+		$this->lower_threshold_monthly_cost		= '';
+		$this->upper_threshold_monthly_cost		= '';
 		$this->allowed_countries		= ( isset( $this->settings['billmateaccount_allowed_countries'] ) && !empty($this->settings['billmateaccount_allowed_countries'])) ? $this->settings['billmateaccount_allowed_countries'] : array('SE');
 		$this->shop_country				= strlen($this->shop_country) ? $this->shop_country: 'SE';
 		$this->order_status = (isset($this->settings['order_status'])) ? $this->settings['order_status'] : false;
@@ -259,18 +259,6 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 								'description' => __( 'Select where on the products page the Monthly cost information should be displayed.', 'billmate' ),
 								'default' => '15'
 							),
-			'lower_threshold_monthly_cost' => array(
-							'title' => __( 'Lower threshold for monthly cost', 'billmate' ),
-							'type' => 'text',
-							'description' => __( 'Disable the monthly cost feature if <i>product price</i> is lower than the specified value. Leave blank to disable.', 'billmate' ),
-							'default' => ''
-						),
-			'upper_threshold_monthly_cost' => array(
-							'title' => __( 'Upper threshold for monthly cost', 'billmate' ),
-							'type' => 'text',
-							'description' => __( 'Disable the monthly cost feature if <i>product price</i> is higher than the specified value. Leave blank to disable.', 'billmate' ),
-							'default' => ''
-						),
 
 			'testmode' => array(
 							'title' => __( 'Testmode', 'billmate' ),
@@ -2120,8 +2108,8 @@ parse_str($_POST['post_data'], $datatemp);
         $show_monthly_cost = (isset($settings['show_monthly_cost'])) ? $settings['show_monthly_cost'] : '';
         $show_monthly_cost_info = (isset($settings['show_monthly_cost_info'])) ? $settings['show_monthly_cost_info'] : '';
         $testmode = (isset($settings['testmode'])) ? $settings['testmode'] : '';
-        $lower_threshold_monthly_cost = (isset($settings['lower_threshold_monthly_cost'])) ? $settings['lower_threshold_monthly_cost'] : '';
-        $upper_threshold_monthly_cost = (isset($settings['upper_threshold_monthly_cost'])) ? $settings['upper_threshold_monthly_cost'] : '';
+        $lower_threshold_monthly_cost = '';
+        $upper_threshold_monthly_cost = '';
 
         $lower_threshold_monthly_cost = ($lower_threshold_monthly_cost != '') ? $lower_threshold_monthly_cost : 0;
         $upper_threshold_monthly_cost = ($upper_threshold_monthly_cost != '') ? $upper_threshold_monthly_cost : 10000000;
