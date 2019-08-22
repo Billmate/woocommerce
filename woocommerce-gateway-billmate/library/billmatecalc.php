@@ -529,7 +529,7 @@ class BillmateCalc {
 
     public static function getCheapestPClass($sum, $flags, $pclasses) {
         $sum = (is_numeric($sum)) ? $sum : 0;
-
+        $sum = $sum*100;
         if(!is_numeric ($flags) || !in_array ($flags,
                 array(BillmateFlags::CHECKOUT_PAGE, BillmateFlags::PRODUCT_PAGE))) {
             throw new Exception(
