@@ -58,15 +58,10 @@ function return_billmate_price() {
         'currency' => $currency,
         'language' => $language[0],
         'country' => $country,
-        'totalwithtax' => $price * 100,
-        "time" => time()
+        'totalwithtax' => $price * 100
     );
 
     $pclasses = $bm->getPaymentPlans($values);
-    ob_start();
-    var_dump($values);
-    var_dump($pclasses);
-    file_put_contents("bmdev.log", "2: " . ob_get_clean() . "\n", FILE_APPEND);
 	$flag = BillmateFlags::CHECKOUT_PAGE;
 	$pclasses_not_available = true;
 
