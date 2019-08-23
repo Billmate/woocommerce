@@ -2249,7 +2249,7 @@ parse_str($_POST['post_data'], $datatemp);
 	 **/
 
  	function print_product_monthly_cost_shop() {
- 	    if (is_product()) {
+ 	    /*if (is_product()) {
             if ($this->show_monthly_cost_shop == 'yes') {
                 if ($this->enabled != "yes") {
                     return;
@@ -2304,7 +2304,10 @@ parse_str($_POST['post_data'], $datatemp);
                 );
 
                 $pclasses = $bm->getPaymentPlans($values);
-
+                ob_start();
+                var_dump($values);
+                var_dump($pclasses);
+                file_put_contents("bmdev.log", "1: " . ob_get_clean() . "\n", FILE_APPEND);
                 // Only execute this if the feature is activated in the gateway settings
                 if (is_array($pclasses)) {
                     if (array_key_exists('code', $pclasses)) {
@@ -2360,7 +2363,7 @@ parse_str($_POST['post_data'], $datatemp);
 
                 } // End show_monthly_cost_shop check
             }
-        }
+        }*/
 	}
 
 
