@@ -1843,7 +1843,7 @@ if(!class_exists('BillmateAdminNotice')) {
                             printf(
                                 '<div class="%1$s"><p><strong>%2$s</strong> - %3$s '.$link.'</p></div>',
                                 esc_attr( $class ),
-                                $imgHtml .esc_html( $message['title'] ),
+                                esc_html( $message['title'] ),
                                 esc_html( $message['notice'] )
                             );
                         }
