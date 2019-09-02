@@ -89,12 +89,11 @@ If you would like to use our logo on your site then choose following:
 
 == Changelog ==
 
-= 3.4.8 (2019-08-29)
+= 3.4.8 (2019-09-02)
   * Enhancement - Hit area for accepting Billmate billing for mobile
   * Fix - Loopback request that failure in WP built in site health 
   * Fix - Billmate Checkout uses the image to be set on the invoice based on WP Billmate settings.
   * Enhancement - Support for enable visual focus in Billmate Checkout settings
-  partial payment
   * Enhancement -  Payment plan is updated directly from the API on the product page 
   
 = 3.4.7 (2019-07-15)
