@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.4.8 (2019-09-02)
+  * Fix - E-mails purchased through Billmate Checkout have the correct encoding.
+
 ## 3.4.7 (2019-07-15)
   * Fix - WhooCommerce built-in checkout use Billmates new logos
   * Fix WhooCommerce shows correct company delivery address
