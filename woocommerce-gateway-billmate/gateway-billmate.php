@@ -753,14 +753,7 @@ function init_billmate_gateway() {
                             && is_array($billmateOrder['Customer'])
                             && count($billmateOrder['Customer']) > 0
                     ) {
-                        if (isset($billmateOrder['Customer']['Billing'])) {
-                            $billmateOrder['Customer']['Billing'] = array_map("utf8_decode",$billmateOrder['Customer']['Billing']);
-                        }
-
-                        if (isset($billmateOrder['Customer']['Shipping'])) {
-                            $billmateOrder['Customer']['Shipping'] = array_map("utf8_decode",$billmateOrder['Customer']['Shipping']);
-                        }
-
+                     
                         $billing_address = array(
                             'first_name' => $billmateOrder['Customer']['Billing']['firstname'],
                             'last_name'  => $billmateOrder['Customer']['Billing']['lastname'],
