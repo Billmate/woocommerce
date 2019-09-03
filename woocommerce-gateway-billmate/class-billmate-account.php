@@ -384,8 +384,63 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 		global $woocommerce;
 		if(is_object($woocommerce->cart))
 		{
+
 			$cart_total                                = $woocommerce->cart->total;
-			$pclasses                                  = get_option('wc_gateway_billmate_partpayment_pclasses');
+
+
+
+
+
+            $settings = get_option('woocommerce_billmate_partpayment_settings');
+            if ($settings['testmode'] == 'yes'):
+                // Disable SSL if in testmode
+                $billmate_ssl = 'false';
+                $billmate_mode = 'test';
+            else :
+                // Set SSL if used in webshop
+                if (is_ssl()) {
+                    $billmate_ssl = 'true';
+                } else {
+                    $billmate_ssl = 'false';
+                }
+                $billmate_mode = 'live';
+            endif;
+            $eid = (int)get_option('billmate_common_eid');
+
+            if (empty($eid)) {
+                return false;
+            }
+
+            $secret = get_option('billmate_common_secret');
+            $country = self::$country;
+            $currency = get_woocommerce_currency();
+            $language = explode('_', get_locale());
+            if (!defined('BILLMATE_LANGUAGE')) define('BILLMATE_LANGUAGE', strtolower($language[0]));
+            global $wp_version;
+
+            // Meta to add to API requests, will be used for debug
+            $meta = array(
+                'PHP_VERSION' => phpversion(),
+                'WORDPRESS_VERSION' => $wp_version,
+                'WOOCOMMERCE_VERSION' => WC_VERSION
+            );
+            $bm = new BillMate($eid, $secret, true, $settings['testmode'] == 'yes', false, $meta);
+
+            $values['PaymentData'] = array(
+                'currency' => $currency,
+                'language' => $language[0],
+                'country' => $country,
+                'totalwithtax' => WC_Payment_Gateway::get_order_total() * 100
+            );
+
+            $pclasses = $bm->getPaymentPlans($values);
+
+
+
+
+
+
+
 			$flags                                     = BillmateFlags::CHECKOUT_PAGE;
 			$pclass                                    = BillmateCalc::getCheapestPClass($cart_total, $flags, $pclasses);
 			$billmate_partpayment_monthly_cost_message = false;
@@ -529,6 +584,8 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
                     $sum -= ($availableFees[sanitize_title(__('Invoice fee','billmate'))]['amount'] + $availableFees[sanitize_title(__('Invoice fee','billmate'))]['tax']);
                 }
 
+                $sum = $sum*100;
+
 				foreach ($pclasses as $pclass) {
 					if (strlen($pclass['description']) > 0 ) {
 						// If sum over minamount and not over maxamount or maxamount is 0
@@ -639,7 +696,8 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 						'country' => strtolower($country)
 					)
 				);
-				$data = $k->getPaymentplans($values);
+
+                $data = $k->getPaymentplans($values);
 				if(!is_array($data)){
 					throw new Exception($data);
 				}
@@ -680,7 +738,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 	 */
 
 	function payment_fields( ) {
-	   	global $woocommerce;
+        global $woocommerce;
 
 		$enabled_plcass = 'no';
 		// Test mode or Live mode
@@ -1043,7 +1101,8 @@ parse_str($_POST['post_data'], $datatemp);
 					'country' => strtolower($country)
 				)
 			);
-			$data = $k->getPaymentplans($values);
+
+            $data = $k->getPaymentplans($values);
 			if(!is_array($data)){
 				throw new Exception($data);
 			}
@@ -1122,6 +1181,7 @@ parse_str($_POST['post_data'], $datatemp);
             'country' => $country,
             'totalwithtax' => $sum * 100
         );
+
 
         $pclasses = $bm->getPaymentPlans($values);
 		if(date('Y-m-d',strtotime('+1 week')) >= $pclasses[0]['expirydate']){
@@ -1235,7 +1295,7 @@ parse_str($_POST['post_data'], $datatemp);
 
                 <?php
                 // Loop through the available PClasses stored in the file srv/billmatepclasses.json
-
+                $sum = $sum * 100;
                 foreach ($pclasses as $pclass2) {
 
                     $pclass = $pclass2;
