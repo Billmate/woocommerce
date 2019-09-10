@@ -95,6 +95,7 @@ If you would like to use our logo on your site then choose following:
   * Fix - Billmate Checkout uses the image to be set on the invoice based on WP Billmate settings.
   * Enhancement - Support for enable visual focus in Billmate Checkout settings
   * Enhancement -  Payment plan is updated directly from the API on the product page 
+  * Enhancement - WhooCommerce built-in checkout use transparent Billmate logos
   
 = 3.4.7 (2019-07-15)
   * Fix - WhooCommerce built-in checkout use Billmates new logos
