@@ -1436,18 +1436,34 @@ if(!class_exists('BillmateOrder')){
                 ksort($discountTotals);
                 foreach($discountTotals AS $key => $discountAmount) {
                     if($discountAmount > 0) {
-                        $this->orderData['Articles'][] = array(
-                            'quantity'   => (int)1,
-                            'artnr'    => "",
-                            'title'    => sprintf(__('Discount %s%% tax', 'billmate'),round($key,0)),
-                            'aprice'    => -abs($discountAmount),
-                            'taxrate'      => (int)$key,
-                            'discount' => (float)0,
-                            'withouttax' => -abs($discountAmount),
-                        );
+                        if (count($discountTotals) > 1) {
+                            $this->orderData['Articles'][] = array(
+                                'quantity' => (int)1,
+                                'artnr' => "",
+                                'title' => sprintf(__('Discount %s%% tax', 'billmate'), round($key, 0)),
+                                'aprice' => -abs($discountAmount),
+                                'taxrate' => (int)$key,
+                                'discount' => (float)0,
+                                'withouttax' => -abs($discountAmount),
+                            );
 
-                        $total -= $discountAmount;
-                        $totalTax -= (isset($discountTotalTaxs[$key]) ? $discountTotalTaxs[$key] : 0);
+                            $total -= $discountAmount;
+                            $totalTax -= (isset($discountTotalTaxs[$key]) ? $discountTotalTaxs[$key] : 0);
+                        }
+                        else {
+                            $this->orderData['Articles'][] = array(
+                                'quantity' => (int)1,
+                                'artnr' => "",
+                                'title' => sprintf(__('Discount', 'billmate')   ),
+                                'aprice' => -abs($discountAmount),
+                                'taxrate' => (int)$key,
+                                'discount' => (float)0,
+                                'withouttax' => -abs($discountAmount),
+                            );
+
+                            $total -= $discountAmount;
+                            $totalTax -= (isset($discountTotalTaxs[$key]) ? $discountTotalTaxs[$key] : 0);
+                        }
                     }
                 }
             }
@@ -1462,7 +1478,7 @@ if(!class_exists('BillmateOrder')){
                 $this->orderData['Articles'][] = array(
                     'quantity'      => (int)1,
                     'artnr'         => "",
-                    'title'         => sprintf(__('Discount %s%% tax', 'billmate'),round($taxrate,0)),
+                    'title'         => sprintf(__('Discount', 'billmate')),
                     'aprice'        => abs($discountAmount),
                     'taxrate'       => $orderTaxrate,
                     'discount'      => (float)0,
