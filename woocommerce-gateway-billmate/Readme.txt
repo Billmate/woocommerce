@@ -83,8 +83,6 @@ You need to make sure our callback IP, 54.194.217.63, is whitelisted  in Wordfen
 If you would like to use our logos on your site:
 https://www.billmate.se/press-och-media/
 
-
-
 == Changelog ==
 
 = 3.4.8 (2019-09-18)
