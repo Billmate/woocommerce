@@ -7,7 +7,7 @@ Tested up to: 5.2.2
 Stable tag: 3.4.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
-WC tested up to: 3.6.5
+WC tested up to: 3.7.0
 
 Billmate offers a complete paymentsolution to your webshop.
 
@@ -29,7 +29,7 @@ If you have any questions please visit https://billmate.se/kontakt to make conta
 = Minimum Requirements =
 
 * Account at Billmate.se
-* WooCommerce version 2.5.5 - 3.6.3
+* WooCommerce version 2.5.5 - 3.7.0
 
 = Installation in Wordpress =
 
@@ -89,7 +89,7 @@ If you would like to use our logo on your site then choose following:
 
 == Changelog ==
 
-= 3.4.8 (2019-09-02)
+= 3.4.8 (2019-09-18)
   * Enhancement - Hit area for accepting Billmate billing for mobile
   * Fix - Loopback request that failure in WP built in site health 
   * Fix - Billmate Checkout uses the image to be set on the invoice based on WP Billmate settings.
