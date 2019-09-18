@@ -45,19 +45,18 @@ You need to make sure our callback IP, 54.194.217.63, is whitelisted  in Wordfen
 Copy the code below for the size that fits your needs.
 
 ### Large
-<a href="https://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_l.png" alt="Billmate Payment Gateway" /></a>
+<a href="https://billmate.se"><img src="https://www.billmate.se/wp-content/uploads/2019/09/L.png" alt="Billmate Payment Gateway" /></a>
 
-`<a href="https://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_l.png" alt="Billmate Payment Gateway" /></a>`
+`<a href="https://billmate.se"><img src="https://www.billmate.se/wp-content/uploads/2019/09/L.png" alt="Billmate Payment Gateway" /></a>`
 
 ### Medium
-<a href="https://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_m.png" alt="Billmate Payment Gateway" /></a>
+<a href="https://billmate.se"><img src="https://www.billmate.se/wp-content/uploads/2019/09/M.png" alt="Billmate Payment Gateway" /></a>
 
-`<a href="https://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_m.png" alt="Billmate Payment Gateway" /></a>`
-
+`<a href="https://billmate.se"><img src="https://www.billmate.se/wp-content/uploads/2019/09/M.png" alt="Billmate Payment Gateway" /</a>`
 ### Small
-<a href="https://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_s.png" alt="Billmate Payment Gateway" /></a>
+<a href="https://billmate.se"><img src="https://www.billmate.se/wp-content/uploads/2019/09/S.png" alt="Billmate Payment Gateway" /></a>
 
-`<a href="https://billmate.se"><img src="https://billmate.se/billmate/logos/billmate_cloud_s.png" alt="Billmate Payment Gateway" /></a>`
+`<a href="https://billmate.se"><img src="https://www.billmate.se/wp-content/uploads/2019/09/S.png" alt="Billmate Payment Gateway" /></a>`
 
 ## Testing
 Tested with [Browserstack](http://www.browserstack.com)
