@@ -80,11 +80,9 @@ You need to make sure our callback IP, 54.194.217.63, is whitelisted  in Wordfen
 5. Billmate BankPayment - https://billmate.se/plugins/images/woocommerce/bank.png
 6. Billmate Partpayment - https://billmate.se/plugins/images/woocommerce/partpayment.png
 
-If you would like to use our logo on your site then choose following:
+If you would like to use our logos on your site:
+https://www.billmate.se/press-och-media/
 
-1. Large - https://billmate.se/billmate/logos/billmate_cloud_l.png
-2. Medium - https://billmate.se/billmate/logos/billmate_cloud_m.png
-3. Small - https://billmate.se/billmate/logos/billmate_cloud_s.png
 
 
 == Changelog ==
