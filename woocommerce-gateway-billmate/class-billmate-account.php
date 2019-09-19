@@ -1213,8 +1213,7 @@ parse_str($_POST['post_data'], $datatemp);
             $pclasses = $bm->getPaymentPlans($values);
             WC()->session->set('billmate_pclasses_sum', $sum * 100);
             WC()->session->set('billmate_pclasses', $pclasses);
-        }
-        else {
+        } else {
             $pclasses = $storedPclasses;
         }
 		if(date('Y-m-d',strtotime('+1 week')) >= $pclasses[0]['expirydate']){
@@ -1230,29 +1229,6 @@ parse_str($_POST['post_data'], $datatemp);
 			$pclasses = array($pclasses);
 			$flag = BillmateFlags::CHECKOUT_PAGE;
 		}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         $storedPclassesSum = WC()->session->get('billmate_pclasses_sum');
         $storedPclasses = WC()->session->get('billmate_pclasses');
@@ -1304,29 +1280,9 @@ parse_str($_POST['post_data'], $datatemp);
             $pclasses = $bm->getPaymentPlans($values);
             WC()->session->set('billmate_pclasses_sum', $sum * 100);
             WC()->session->set('billmate_pclasses', $pclasses);
-        }
-        else {
+        } else {
             $pclasses = $storedPclasses;
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 		// Check if we have any PClasses
 		if(!$pclasses_not_available) {
@@ -2290,8 +2246,7 @@ parse_str($_POST['post_data'], $datatemp);
             );
 
             $pclasses = $bm->getPaymentPlans($values);
-        }
-        else {
+        } else {
             $pclasses = $storedPclasses;
         }
         $billmate_partpayment_eid = $eid;
