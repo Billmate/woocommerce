@@ -449,8 +449,7 @@ function init_billmate_gateway() {
 				wp_enqueue_script( 'billmate-checkout-js' );
                 if (get_option('woocommerce_billmate_checkout_settings')['billmate_common_enable_overlay'] != 'yes'){
                     $overlayEnabled = false;
-                }
-                else {
+                } else {
                     $overlayEnabled = true;
                 }
 				wp_localize_script( 'billmate-checkout-js', 'billmate',
