@@ -598,17 +598,6 @@ class BillmateCalc {
             $sum = floatval($sum);
         }
         return $pclass['monthlycost']/100;
-
-        /*if(is_numeric($flags) && !is_int($flags)) {
-            $flags = intval($flags);
-        }
-        if(!is_numeric($flags) || !in_array($flags, array(BillmateFlags::CHECKOUT_PAGE, BillmateFlags::PRODUCT_PAGE))) {
-            throw new Exception('Error in ' . __METHOD__ . ': Flags argument invalid!');
-        }
-
-        $payarr = self::get_payarr($sum, $pclass, $flags);
-        $value = isset($payarr[0]) ? ($payarr[0]) : 0;
-        return (BillmateFlags::CHECKOUT_PAGE == $flags) ? round($value, 0) : self::pRound($value, $pclass['country']);*/
     }
 
     /**
