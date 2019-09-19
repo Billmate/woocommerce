@@ -1417,9 +1417,9 @@ if(!class_exists('BillmateOrder')){
              * Will be used when determine if use own calculated discount or from store
              */
             $isOneTaxrate = true;
-            $orderTaxrate = 0;
+            $orderTaxrate = -1;
             foreach ($orderArticles AS $orderArticle) {
-                if ($orderTaxrate < 1) {
+                if ($orderTaxrate < 0) {
                     $orderTaxrate = $orderArticle['taxrate'];
                 }
                 if ($orderTaxrate != $orderArticle['taxrate']) {
