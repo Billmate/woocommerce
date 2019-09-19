@@ -1028,6 +1028,12 @@ msgstr "Billmate Checkout kunde inte laddas, vänligen kontakta butiksansvarig. 
 msgid "Select another payment method"
 msgstr "Välj ett annat betalsätt"
 
+msgid "Enable visual focus in Billmate Checkout"
+msgstr "Aktivera visuellt fokus i Billmate Checkout"
+
+msgid "Enable Overlay"
+msgstr "Visuellt Fokus"
+
 #~ msgid "Subscription Payment Failed: "
 #~ msgstr "Prenumerationsbetalning misslyckades:"
 

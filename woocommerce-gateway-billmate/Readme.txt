@@ -3,11 +3,11 @@ Contributors: Billmate
 Donate link:
 Tags: woocomerce, billmate, payments, cardpayments, invoice, partpayment, recurring, bankpayment
 Requires at least: 4.0
-Tested up to: 5.2.2
-Stable tag: 3.4.7
+Tested up to: 5.2.3
+Stable tag: 3.4.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
-WC tested up to: 3.6.5
+WC tested up to: 3.7.0
 
 Billmate offers a complete paymentsolution to your webshop.
 
@@ -29,7 +29,7 @@ If you have any questions please visit https://billmate.se/kontakt to make conta
 = Minimum Requirements =
 
 * Account at Billmate.se
-* WooCommerce version 2.5.5 - 3.6.3
+* WooCommerce version 2.5.5 - 3.7.0
 
 = Installation in Wordpress =
 
@@ -80,15 +80,19 @@ You need to make sure our callback IP, 54.194.217.63, is whitelisted  in Wordfen
 5. Billmate BankPayment - https://billmate.se/plugins/images/woocommerce/bank.png
 6. Billmate Partpayment - https://billmate.se/plugins/images/woocommerce/partpayment.png
 
-If you would like to use our logo on your site then choose following:
-
-1. Large - https://billmate.se/billmate/logos/billmate_cloud_l.png
-2. Medium - https://billmate.se/billmate/logos/billmate_cloud_m.png
-3. Small - https://billmate.se/billmate/logos/billmate_cloud_s.png
-
+If you would like to use our logos on your site:
+https://www.billmate.se/press-och-media/
 
 == Changelog ==
 
+= 3.4.8 (2019-09-18)
+  * Enhancement - Hit area for accepting Billmate billing for mobile
+  * Fix - Loopback request that failure in WP built in site health 
+  * Fix - Billmate Checkout uses the image to be set on the invoice based on WP Billmate settings.
+  * Enhancement - Support for enable visual focus in Billmate Checkout settings
+  * Enhancement -  Payment plan is updated directly from the API on the product page 
+  * Enhancement - WhooCommerce built-in checkout use transparent Billmate logos
+  
 = 3.4.7 (2019-07-15)
   * Fix - WhooCommerce built-in checkout use Billmates new logos
   * Fix WhooCommerce shows correct company delivery address

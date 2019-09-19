@@ -1,5 +1,5 @@
 <?php
-define('BILLPLUGIN_VERSION','3.4.7');
+define('BILLPLUGIN_VERSION','3.4.8');
 define('BILLMATE_CLIENT','PHP:Woocommerce:'.BILLPLUGIN_VERSION);
 define('BILLMATE_SERVER','2.1.9');
 
@@ -1843,7 +1843,7 @@ if(!class_exists('BillmateAdminNotice')) {
                             printf(
                                 '<div class="%1$s"><p><strong>%2$s</strong> - %3$s '.$link.'</p></div>',
                                 esc_attr( $class ),
-                                $imgHtml .esc_html( $message['title'] ),
+                                esc_html( $message['title'] ),
                                 esc_html( $message['notice'] )
                             );
                         }
