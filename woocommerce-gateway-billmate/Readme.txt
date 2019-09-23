@@ -85,24 +85,24 @@ https://www.billmate.se/press-och-media/
 
 == Changelog ==
 
-= 3.4.8 (2019-09-18)
-  * Enhancement - Hit area for accepting Billmate billing for mobile
-  * Fix - Loopback request that failure in WP built in site health 
-  * Fix - Billmate Checkout uses the image to be set on the invoice based on WP Billmate settings.
-  * Enhancement - Support for enable visual focus in Billmate Checkout settings
-  * Enhancement -  Payment plan is updated directly from the API on the product page 
-  * Enhancement - WhooCommerce built-in checkout use transparent Billmate logos
+= 3.4.8 (2019-09-18) =
+* Enhancement - Hit area for accepting Billmate billing for mobile
+* Fix - Loopback request that failure in WP built in site health 
+* Fix - Billmate Checkout uses the image to be set on the invoice based on WP Billmate settings.
+* Enhancement - Support for enable visual focus in Billmate Checkout settings
+* Enhancement -  Payment plan is updated directly from the API on the product page 
+* Enhancement - WhooCommerce built-in checkout use transparent Billmate logos
   
-= 3.4.7 (2019-07-15)
-  * Fix - WhooCommerce built-in checkout use Billmates new logos
-  * Fix WhooCommerce shows correct company delivery address
-  * Fix Wocommerce Subription sets the currency based on the order instead of the defualt currency
+= 3.4.7 (2019-07-15) =
+* Fix - WhooCommerce built-in checkout use Billmates new logos
+* Fix WhooCommerce shows correct company delivery address
+* Fix Wocommerce Subription sets the currency based on the order instead of the defualt currency
 
-= 3.4.6 (2019-05-22)
-  * Fix - Removed auto scroll on Billmate Checkout page
+= 3.4.6 (2019-05-22) =
+* Fix - Removed auto scroll on Billmate Checkout page
   
-= 3.4.5 (2019-05-20)
-  * Fix - Clear Billmate Checkout Session after a payment is made
+= 3.4.5 (2019-05-20) =
+* Fix - Clear Billmate Checkout Session after a payment is made
 
 = 3.4.4 (2019-03-05) =
 * Enhancement - Only get Billmate Checkout page when language is sv
