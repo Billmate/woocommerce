@@ -85,8 +85,11 @@ https://www.billmate.se/press-och-media/
 
 == Changelog ==
 
+= 3.4.9 (2019-09-23) =
+* Fix - Orders receive duplicate articles and sets as a high rounding to Billmate Online.
+
 = 3.4.8 (2019-09-18) =
-* Enhancement - Hit area for accepting Billmate billing for mobile
+Enhancement - Hit area for accepting Billmate billing for mobile
 * Fix - Loopback request that failure in WP built in site health 
 * Fix - Billmate Checkout uses the image to be set on the invoice based on WP Billmate settings.
 * Enhancement - Support for enable visual focus in Billmate Checkout settings
