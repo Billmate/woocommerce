@@ -569,9 +569,12 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
                     'country' => $country,
                     'totalwithtax' => WC_Payment_Gateway::get_order_total() * 100
                 );
-
                 $pclasses = $bm->getPaymentPlans($values);
-
+                if (array_key_exists('code', $pclasses)){
+                    if ($pclasses['code'] == 5301){
+                        return false;
+                    }
+                }
                 WC()->session->set('billmate_pclasses_sum', WC_Payment_Gateway::get_order_total() * 100);
                 WC()->session->set('billmate_pclasses', $pclasses);
             }
@@ -712,7 +715,6 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 						'country' => strtolower($country)
 					)
 				);
-
                 $data = $k->getPaymentplans($values);
 				if(!is_array($data)){
 					throw new Exception($data);
@@ -863,7 +865,6 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
                     'country' => $country,
                     'totalwithtax' => $sum * 100
                 );
-
                 $pclasses = $bm->getPaymentPlans($values);
                 WC()->session->set('billmate_pclasses_sum', $sum * 100);
                 WC()->session->set('billmate_pclasses', $pclasses);
@@ -1125,7 +1126,6 @@ parse_str($_POST['post_data'], $datatemp);
 					'country' => strtolower($country)
 				)
 			);
-
             $data = $k->getPaymentplans($values);
 			if(!is_array($data)){
 				throw new Exception($data);
@@ -1209,7 +1209,6 @@ parse_str($_POST['post_data'], $datatemp);
                 'totalwithtax' => $sum * 100
             );
 
-
             $pclasses = $bm->getPaymentPlans($values);
             WC()->session->set('billmate_pclasses_sum', $sum * 100);
             WC()->session->set('billmate_pclasses', $pclasses);
@@ -1276,7 +1275,6 @@ parse_str($_POST['post_data'], $datatemp);
                 'country' => $country,
                 'totalwithtax' => $sum * 100
             );
-
             $pclasses = $bm->getPaymentPlans($values);
             WC()->session->set('billmate_pclasses_sum', $sum * 100);
             WC()->session->set('billmate_pclasses', $pclasses);
@@ -2244,7 +2242,6 @@ parse_str($_POST['post_data'], $datatemp);
                 'country' => $country,
                 'totalwithtax' => $product->get_price() * 100
             );
-
             $pclasses = $bm->getPaymentPlans($values);
         } else {
             $pclasses = $storedPclasses;
