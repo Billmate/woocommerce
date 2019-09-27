@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.4.10 (2019-09-27)
+  * Fix - Reverse back to 3.4.7 state
+
 ## 3.4.7 (2019-07-15)
   * Fix - WhooCommerce built-in checkout use Billmates new logos
   * Fix WhooCommerce shows correct company delivery address

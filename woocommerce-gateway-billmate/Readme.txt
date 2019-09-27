@@ -4,7 +4,7 @@ Donate link:
 Tags: woocomerce, billmate, payments, cardpayments, invoice, partpayment, recurring, bankpayment
 Requires at least: 4.0
 Tested up to: 5.2.2
-Stable tag: 3.4.7
+Stable tag: 3.4.10
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 WC tested up to: 3.6.5
@@ -88,6 +88,9 @@ If you would like to use our logo on your site then choose following:
 
 
 == Changelog ==
+
+= 3.4.10 (2019-09-27)
+  * Fix - Reverse back to 3.4.7 state
 
 = 3.4.7 (2019-07-15)
   * Fix - WhooCommerce built-in checkout use Billmates new logos
