@@ -498,18 +498,28 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                             $order->set_address($shipping_address, 'shipping');
                         }
                     }
-
                     WC()->customer->set_billing_country( $billing_address['country'] );
                     WC()->customer->set_shipping_country( $shipping_address['country'] );
                     WC()->customer->set_billing_postcode( $billing_address['postcode'] );
                     WC()->customer->set_shipping_postcode( $shipping_address['postcode'] );
+                    WC()->customer->set_billing_city( $billing_address['city'] );
+                    WC()->customer->set_shipping_city( $shipping_address['city'] );
+                    WC()->customer->set_billing_address_1( $billing_address['address_1'] );
+                    WC()->customer->set_shipping_address_1( $shipping_address['address_1'] );
+                    WC()->customer->set_billing_address( $billing_address['address_1'] );
+                    WC()->customer->set_shipping_address( $shipping_address['address_1'] );
                     WC()->customer->save();
-
+                    $chosen_shipping = WC()->session->get('billmate_checkout_saved_shipping_method');
+                    WC()->shipping->reset_shipping();
+                    WC()->session->set('chosen_shipping_methods', array( $chosen_shipping ) );
                     WC()->session->set('billmate_checkout_billing_country', $billing_address['country']);
-                    WC()->session->set('billmate_checkout_billing_postcode', $billing_address['postcode']);
                     WC()->session->set('billmate_checkout_shipping_country', $shipping_address['country']);
+                    WC()->session->set('billmate_checkout_billing_postcode', $billing_address['postcode']);
                     WC()->session->set('billmate_checkout_shipping_postcode', $shipping_address['postcode']);
-
+                    WC()->session->set('billmate_checkout_billing_city', $billing_address['city']);
+                    WC()->session->set('billmate_checkout_shipping_city', $shipping_address['city']);
+                    WC()->session->set('billmate_checkout_billing_address_1', $billing_address['address_1']);
+                    WC()->session->set('billmate_checkout_shipping_address_1', $shipping_address['address_1']);
 
                     WC()->cart->calculate_shipping();
                     WC()->cart->calculate_fees();
@@ -532,11 +542,13 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                     }
 
                 } else {
+                    $cart = do_shortcode('[woocommerce_cart]');
                     $current_order_total = (int)WC_Payment_Gateway::get_order_total();
-                    wp_send_json_success(array('update_checkout' => false, "order_total" => $current_order_total));
+                    wp_send_json_success(array('update_checkout' => false, "order_total" => $current_order_total, 'cart' => $cart));
                 }
+                $cart = do_shortcode('[woocommerce_cart]');
                 $current_order_total = (int)WC_Payment_Gateway::get_order_total();
-                wp_send_json_success(array('update_checkout' => false, "order_total" => $current_order_total));
+                wp_send_json_success(array('update_checkout' => false, "order_total" => $current_order_total, 'cart' => $cart));
             }
 
         }
@@ -883,6 +895,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                 $current_order_total = (int)WC_Payment_Gateway::get_order_total();
                 if ($previous_order_total != $current_order_total) {
                     $this->updateCheckoutFromOrderId( $orderId );
+
                 }
 
                 $checkout = $billmate->getCheckout(array('PaymentData' => array('hash' => WC()->session->get( 'billmate_checkout_hash' ))));
@@ -1015,6 +1028,12 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                 'number' => $checkoutOrderNumber
             );
             WC()->session->set('billmate_previous_calculated_order_total', WC_Payment_Gateway::get_order_total());
+            if (count(debug_backtrace()) < 25) {
+                do_action('billmate_checkout_save_shipping_method');
+            }
+            else {
+                WC()->session->set('billmate_update_cart_timestamp', time());
+            }
             return $billmate->updateCheckout($orderValues);
         }
         return array();
@@ -1025,7 +1044,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
         $billmate = $this->getBillmateConnection();
         $result = $billmate->initCheckout($orderValues);
-
+        do_action('billmate_checkout_save_shipping_method');
         // Save checkout hash
         if(!isset($result['code']) AND isset($result['url']) AND $result['url'] != "") {
            $url = $result['url'];
@@ -1126,7 +1145,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
         WC()->session->set('billmate_previous_calculated_order_total', WC_Payment_Gateway::get_order_total());
         $data = $billmate->updateCheckout($orderValues);
-
+        do_action('billmate_checkout_save_shipping_method');
         if(!isset($data['code'])){
             $current_order_total = (int)WC_Payment_Gateway::get_order_total();
             if($previousTotal != $orderValues['Cart']['Total']['withtax']){

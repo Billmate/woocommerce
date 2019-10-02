@@ -69,6 +69,9 @@ var BillmateIframe = new function(){
                 } else {
                     self.hideCheckoutLoading();
                 }
+                if (response.data.hasOwnProperty('cart')){
+                    document.getElementsByClassName("woocommerce")[0].innerHTML = response.data.cart;
+                }
             }
         });
 

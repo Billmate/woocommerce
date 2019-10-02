@@ -10,6 +10,24 @@ require_once dirname( __FILE__ ) .'/utf8.php';
 if (!function_exists('is_plugin_active')) {
     require_once(ABSPATH.'wp-admin/includes/plugin.php');
 }
+add_action('billmate_checkout_save_shipping_method', 'updateshipping');
+add_action('woocommerce_proceed_to_checkout', 'updatecartshipping');
+
+function updatecartshipping() {
+    $chosen_methods = WC()->session->get( 'chosen_shipping_methods' );
+    $chosen_shipping = $chosen_methods[0];
+    if ($chosen_shipping !== null && is_cart() && (time() - WC()->session->get( 'billmate_update_cart_timestamp') > 5)) {
+        WC()->session->set('billmate_checkout_saved_shipping_method', $chosen_shipping);
+    }
+}
+
+function updateshipping() {
+    $chosen_methods = WC()->session->get( 'chosen_shipping_methods' );
+    $chosen_shipping = $chosen_methods[0];
+    if ($chosen_shipping !== null) {
+        WC()->session->set('billmate_checkout_saved_shipping_method', $chosen_shipping);
+    }
+}
 
 function convertToUTF8($str) {
     $enc = mb_detect_encoding($str);
