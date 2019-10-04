@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.4.11 (2019-10-04)
+  * Fix - WooCommerce built-in Checkout are using Billmate's new logos
+
 ## 3.4.10 (2019-09-27)
   * Fix - Reverse back to 3.4.7 state
 
