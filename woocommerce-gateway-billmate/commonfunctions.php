@@ -47,6 +47,175 @@ function wc_bm_errors($message){
     }
 }
 
+add_action('woocommerce_order_status_cancelled', 'cancel_billmate_order', 1);
+
+function cancel_billmate_order($order_id, $action = false){
+    if(get_option('billmate_common_activateonstatus') == 'active') {
+        $hasBeenActivated = get_post_meta($order_id, 'order_has_been_activated', true);
+        if ($hasBeenActivated == ""){
+            $hasBeenActivated = false;
+        }
+        else {
+            $hasBeenActivated = true;
+        }
+        $order = wc_get_order($order_id);
+        $shouldCancel = false;
+        $shouldCredit = false;
+        $method = $order->get_payment_method();
+        switch ($method) {
+            case 'billmate_partpayment':
+            case 'billmate_cardpay':
+            case 'billmate_invoice':
+                $shouldCancel = true;
+                $shouldCredit = false;
+                break;
+            case 'billmate_bankpay':
+                $shouldCancel = false;
+                $shouldCredit = true;
+                break;
+            case 'billmate_checkout':
+                $checkoutMethod = $order->get_payment_method_title();
+                switch ($checkoutMethod) {
+                    case "Billmate Checkout (Kortbetalning)":
+                    case "Billmate Checkout (Delbetalning)":
+                    case "Billmate Checkout (Faktura)":
+                        $shouldCancel = true;
+                        $shouldCredit = false;
+                        break;
+                    case "Billmate Checkout (Direktbetalning)":
+                    case "Billmate Checkout (Swish)":
+                        $shouldCancel = false;
+                        $shouldCredit = true;
+                        break;
+                    default:
+                        $order->add_order_note(__('Error: Can\'t cancel order, Unknown Method'));
+                        break;
+                }
+                break;
+            default:
+                $shouldCancel = false;
+                $shouldCredit = false;
+                break;
+        }
+
+        if ($shouldCancel && !$hasBeenActivated) {
+            $number = get_post_meta($order_id, 'billmate_invoice_id', true);
+            if ($number !== null) {
+                $paymentMethod = get_post_meta($order_id, '_payment_method');
+                $methodClass = false;
+                switch ($paymentMethod[0]) {
+                    case 'billmate_partpayment':
+                        $methodClass = new WC_Gateway_Billmate_Partpayment();
+                        break;
+                    case 'billmate_invoice':
+                        $methodClass = new WC_Gateway_Billmate_Invoice();
+                        break;
+                    case 'billmate_bankpay':
+                        $methodClass = new WC_Gateway_Billmate_Bankpay();
+                        break;
+                    case 'billmate_cardpay':
+                        $methodClass = new WC_Gateway_Billmate_Cardpay();
+                        break;
+                    case 'billmate_checkout':
+                        $methodClass = new WC_Gateway_Billmate_Checkout();
+                        break;
+                    default:
+                        $order->add_order_note(__('Error: Can\'t cancel order, Unknown Method'));
+                        break;
+                }
+                if ($methodClass) {
+                    $bmRequestData["PaymentData"] = [
+                        "number" => $number
+                    ];
+                    $billmate = new BillMate(get_option('billmate_common_eid'), get_option('billmate_common_secret'), true, $methodClass->testmode == 'yes', false);
+                    $result = $billmate->cancelPayment($bmRequestData);
+                    if ($result['status'] !== "Cancelled"){
+                        $order->add_order_note(__('Error: Can\'t cancel order'));
+                    } else {
+                        $order->add_order_note(__('Order canceled'));
+                    }
+                } else {
+                    $order->add_order_note(__('Error: Can\'t cancel order, Unknown Method'));
+                }
+            } else {
+                $order->add_order_note(__('Error: Can\'t cancel order, missing Billmate ID'));
+            }
+        } else if ($shouldCredit || $hasBeenActivated) {
+            credit_billmate_order($order_id, $action, true);
+        }
+    }
+}
+
+function credit_billmate_order($order_id, $action = false, $isCancel = false){
+    if(get_option('billmate_common_activateonstatus') == 'active') {
+        $order = wc_get_order($order_id);
+        $method = $order->get_payment_method();
+        if (strpos(strtolower($method), 'billmate') !== false) {
+            $number = get_post_meta($order_id, 'billmate_invoice_id', true);
+            if ($number !== null) {
+                $paymentMethod = get_post_meta($order_id, '_payment_method');
+                $methodClass = false;
+                switch ($paymentMethod[0]) {
+                    case 'billmate_partpayment':
+                        $methodClass = new WC_Gateway_Billmate_Partpayment();
+                        break;
+                    case 'billmate_invoice':
+                        $methodClass = new WC_Gateway_Billmate_Invoice();
+                        break;
+                    case 'billmate_bankpay':
+                        $methodClass = new WC_Gateway_Billmate_Bankpay();
+                        break;
+                    case 'billmate_cardpay':
+                        $methodClass = new WC_Gateway_Billmate_Cardpay();
+                        break;
+                    case 'billmate_checkout':
+                        $methodClass = new WC_Gateway_Billmate_Checkout();
+                        break;
+                    default:
+                        if ($isCancel){
+                            $order->add_order_note(__('Error: Can\'t cancel order, unknown method'));
+                        } else {
+                            $order->add_order_note(__('Error: Can\'t credit order, unknown method'));
+                        }
+                        break;
+                }
+                if ($methodClass) {
+                    $bmRequestData["PaymentData"] = [
+                        "number" => $number
+                    ];
+                    $billmate = new BillMate(get_option('billmate_common_eid'), get_option('billmate_common_secret'), true, $methodClass->testmode == 'yes', false);
+                    $result = $billmate->creditPayment($bmRequestData);
+                    if ($result['status'] !== "Credited"){
+                        if ($isCancel){
+                            $order->add_order_note(__('Error: Can\'t cancel order'));
+                        } else {
+                            $order->add_order_note(__('Error: Can\'t credit order'));
+                        }
+                    } else {
+                        if ($isCancel){
+                            $order->add_order_note(__('Order Canceled'));
+                        } else {
+                            $order->add_order_note(__('Order Credited'));
+                        }
+                    }
+                } else {
+                    if ($isCancel){
+                        $order->add_order_note(__('Error: Can\'t cancel order, unknown method'));
+                    } else {
+                        $order->add_order_note(__('Error: Can\'t credit order, unknown method'));
+                    }
+                }
+            } else {
+                if ($isCancel){
+                    $order->add_order_note(__('Error: Can\'t cancel order, missing Billmate ID'));
+                } else {
+                    $order->add_order_note(__('Error: Can\'t credit order, missing Billmate ID'));
+                }
+            }
+        }
+    }
+}
+
 add_action('woocommerce_thankyou', function() {
     WC()->session->set("billmate_checkout_number", null);
     WC()->session->set("billmate_previous_calculated_order_total", null);
