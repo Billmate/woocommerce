@@ -51,6 +51,7 @@ add_action('woocommerce_order_status_cancelled', 'cancel_billmate_order', 1);
 
 function cancel_billmate_order($order_id, $action = false){
     if(get_option('billmate_common_activateonstatus') == 'active') {
+        $number = get_post_meta($order_id, 'billmate_invoice_id', true);
         $hasBeenActivated = get_post_meta($order_id, 'order_has_been_activated', true);
         if ($hasBeenActivated == ""){
             $hasBeenActivated = false;
@@ -88,7 +89,7 @@ function cancel_billmate_order($order_id, $action = false){
                         $shouldCredit = true;
                         break;
                     default:
-                        $order->add_order_note(__('Error: Can\'t cancel order, Unknown Method'));
+                        $order->add_order_note(sprintf(__('Error: Can\'t cancel Billmate invoice %s, Unknown Method.'), $number));
                         break;
                 }
                 break;
@@ -99,7 +100,6 @@ function cancel_billmate_order($order_id, $action = false){
         }
 
         if ($shouldCancel && !$hasBeenActivated) {
-            $number = get_post_meta($order_id, 'billmate_invoice_id', true);
             if ($number !== null) {
                 $paymentMethod = get_post_meta($order_id, '_payment_method');
                 $methodClass = false;
@@ -120,7 +120,7 @@ function cancel_billmate_order($order_id, $action = false){
                         $methodClass = new WC_Gateway_Billmate_Checkout();
                         break;
                     default:
-                        $order->add_order_note(__('Error: Can\'t cancel order, Unknown Method'));
+                        $order->add_order_note(sprintf(__('Error: Can\'t cancel Billmate invoice %s, Unknown Method.'), $number));
                         break;
                 }
                 if ($methodClass) {
@@ -130,15 +130,15 @@ function cancel_billmate_order($order_id, $action = false){
                     $billmate = new BillMate(get_option('billmate_common_eid'), get_option('billmate_common_secret'), true, $methodClass->testmode == 'yes', false);
                     $result = $billmate->cancelPayment($bmRequestData);
                     if ($result['status'] !== "Cancelled"){
-                        $order->add_order_note(__('Error: Can\'t cancel order'));
+                        $order->add_order_note(sprintf(__('Error: Can\'t cancel Billmate Invoice %s.'), $number));
                     } else {
-                        $order->add_order_note(__('Order canceled'));
+                        $order->add_order_note(sprintf(__('Billmate Invoice %s successfully Canceled.'), $number));
                     }
                 } else {
-                    $order->add_order_note(__('Error: Can\'t cancel order, Unknown Method'));
+                    $order->add_order_note(sprintf(__('Error: Can\'t cancel Billmate invoice %s, Unknown Method.'), $number));
                 }
             } else {
-                $order->add_order_note(__('Error: Can\'t cancel order, missing Billmate ID'));
+                $order->add_order_note(sprintf(__('Error: Can\'t cancel Billmate Invoice ID is missing.')));
             }
         } else if ($shouldCredit || $hasBeenActivated) {
             credit_billmate_order($order_id, $action, true);
@@ -173,9 +173,9 @@ function credit_billmate_order($order_id, $action = false, $isCancel = false){
                         break;
                     default:
                         if ($isCancel){
-                            $order->add_order_note(__('Error: Can\'t cancel order, unknown method'));
+                            $order->add_order_note(sprintf(__('Error: Can\'t cancel Billmate invoice %s, Unknown Method.'), $number));
                         } else {
-                            $order->add_order_note(__('Error: Can\'t credit order, unknown method'));
+                            $order->add_order_note(sprintf(__('Error: Can\'t credit Billmate invoice %s, Unknown Method.'), $number));
                         }
                         break;
                 }
@@ -187,29 +187,29 @@ function credit_billmate_order($order_id, $action = false, $isCancel = false){
                     $result = $billmate->creditPayment($bmRequestData);
                     if ($result['status'] !== "Credited"){
                         if ($isCancel){
-                            $order->add_order_note(__('Error: Can\'t cancel order'));
+                            $order->add_order_note(sprintf(__('Error: Can\'t cancel Billmate Invoice %s.'), $number));
                         } else {
-                            $order->add_order_note(__('Error: Can\'t credit order'));
+                            $order->add_order_note(sprintf(__('Error: Can\'t credit Billmate faktura %s.'), $number));
                         }
                     } else {
                         if ($isCancel){
-                            $order->add_order_note(__('Order Canceled'));
+                            $order->add_order_note(sprintf(__('Billmate Invoice %d successfully Canceled.'), $number));
                         } else {
-                            $order->add_order_note(__('Order Credited'));
+                            $order->add_order_note(sprintf(__('Billmate invoice %s successfully credited, Billmate credit Invoice %s.'), $number));
                         }
                     }
                 } else {
                     if ($isCancel){
-                        $order->add_order_note(__('Error: Can\'t cancel order, unknown method'));
+                        $order->add_order_note(sprintf(__('Error: Can\'t cancel Billmate invoice %s, Unknown Method.'), $number));
                     } else {
-                        $order->add_order_note(__('Error: Can\'t credit order, unknown method'));
+                        $order->add_order_note(sprintf(__('Error: Can\'t credit Billmate invoice %s, Unknown Method.'), $number));
                     }
                 }
             } else {
                 if ($isCancel){
-                    $order->add_order_note(__('Error: Can\'t cancel order, missing Billmate ID'));
+                    $order->add_order_note(sprintf(__('Error: Can\'t cancel Billmate Invoice ID is missing.')));
                 } else {
-                    $order->add_order_note(__('Error: Can\'t credit order, missing Billmate ID'));
+                    $order->add_order_note(sprintf(__('Error: Can\'t credit Billmate invoice ID is missing.')));
                 }
             }
         }
