@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.4.11 (2019-10-04)
+  * Fix - WhooCommerce built-in checkout use Billmates new logos
+
 ## 3.4.10 (2019-09-27)
   * Fix - Reverse back to 3.4.7 state
 
