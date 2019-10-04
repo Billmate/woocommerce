@@ -193,9 +193,9 @@ function credit_billmate_order($order_id, $action = false, $isCancel = false){
                         }
                     } else {
                         if ($isCancel){
-                            $order->add_order_note(sprintf(__('Billmate Invoice %s successfully Canceled.', 'billmate'), $number));
+                            $order->add_order_note(sprintf(__('Billmate Invoice %s successfully Canceled, Billmate credit Invoice %s.', 'billmate'), $number, $result['number']));
                         } else {
-                            $order->add_order_note(sprintf(__('Billmate invoice %s successfully credited, Billmate credit Invoice %s.', 'billmate'), $number));
+                            $order->add_order_note(sprintf(__('Billmate invoice %s successfully credited, Billmate credit Invoice %s.', 'billmate'), $number, $result['number']));
                         }
                     }
                 } else {
