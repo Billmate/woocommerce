@@ -86,6 +86,9 @@ https://www.billmate.se/press-och-media/
 
 == Changelog ==
 
+= 3.4.12 (2019-10-15)
+  * Enhancement - Discount Code
+
 = 3.4.11 (2019-10-04)
   * Fix - WooCommerce built-in Checkout are using Billmate's new logos
 
