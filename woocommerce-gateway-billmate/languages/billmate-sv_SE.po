@@ -566,6 +566,12 @@ msgstr ""
 #: ../class-billmate-cardpay.php:652 ../class-billmate-cardpay.php:921
 #: ../class-billmate-cardpay.php:1214 ../class-billmate-invoice.php:877
 #, php-format
+msgid "Discount %s%% tax [%s]"
+msgstr "Rabatt %s%% moms [%s]"
+
+msgid "Discount [%s]"
+msgstr "Rabatt [%s]"
+
 msgid "Discount %s%% tax"
 msgstr "Rabatt %s%% moms"
 
