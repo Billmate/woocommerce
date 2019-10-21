@@ -1,6 +1,6 @@
 # Changelog
 
-##  3.4.12 (2019-10-18)
+## 3.4.12 (2019-10-18)
   * Enhancement - Discount Code
   * Tweak - Remove pre-check from Invoice/Partpayment email validation checkbox
   * Fix - Loopback request that failure in WP built in site health
