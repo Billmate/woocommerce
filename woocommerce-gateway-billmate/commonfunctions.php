@@ -48,6 +48,7 @@ function wc_bm_errors($message){
 }
 
 add_action('woocommerce_order_status_cancelled', 'cancel_billmate_order', 1);
+add_action('woocommerce_order_status_refunded', 'credit_billmate_order', 1);
 
 function cancel_billmate_order($order_id, $action = false){
     if(get_option('billmate_common_activateonstatus') == 'active') {
