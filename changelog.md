@@ -1,5 +1,12 @@
 # Changelog
 
+
+## 3.4.14 (2019-10-24)
+  * Fix - Reverse back - loopback health problem
+
+## 3.4.13 (2019-10-23)
+  * Fix - Reverse back to 3.4.11 state
+
 ## 3.4.12 (2019-10-18)
   * Enhancement - Discount Code
   * Tweak - Remove pre-check from Invoice/Partpayment email validation checkbox
