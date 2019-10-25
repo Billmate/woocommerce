@@ -33,8 +33,6 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 		// This is used so that the merchant easily can modify the displayed monthly cost text (on single product and shop page) via the settings page.
 		require_once('shortcodes.php');
 
-
-
 		// Define user set variables
 		$this->enabled							= ( isset( $this->settings['enabled'] ) ) ? $this->settings['enabled'] : '';
 		$this->title 							= ( isset( $this->settings['title'] ) && strlen($this->settings['title'])) ? $this->settings['title'] : __('Billmate Partpayment','billmate');
@@ -81,8 +79,6 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 		$this->billmate_partpayment_info 			= apply_filters( 'billmate_partpayment_info', $billmate_partpayment_info );
 		$this->icon 							    = apply_filters( 'billmate_partpayment_icon', $billmate_partpayment_icon );
 		$this->icon_basic						    = apply_filters( 'billmate_basic_icon', $billmate_basic_icon );
-
-
 
 		// Actions
 
@@ -591,89 +587,86 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 		/**
  		* Retrieve the PClasses from Billmate and store it in the file billmatepclasses.json.
  		*/
- 		function update_billmatepclasses_from_billmate( ) {
+ 		function update_billmatepclasses_from_billmate( )
+        {
 
- 		global $woocommerce;
-			register_setting('wc_gateway_billmate_partpayment','pclasses');
+            global $woocommerce;
+            register_setting('wc_gateway_billmate_partpayment', 'pclasses');
 
- 		if (isset($_GET['billmatePclassListener']) && $_GET['billmatePclassListener'] == '1'):
-			if(isset($_GET['resetPclasses']) && $_GET['resetPclasses'] == '1'):
-				update_option('wc_gateway_billmate_partpayment_pclasses',false);
-			endif;
-
-
-			// Test mode or Live mode
-			if ( $this->testmode == 'yes' ):
-				// Disable SSL if in testmode
-				$billmate_ssl = 'false';
-				$billmate_mode = 'test';
-			else :
-				// Set SSL if used in webshop
-				if (is_ssl()) {
-					$billmate_ssl = 'true';
-				} else {
-					$billmate_ssl = 'false';
-				}
-				$billmate_mode = 'live';
-			endif;
-		   		if( empty( $this->eid) ){
-		   		    return false;
-		   		}
-
-			$eid = (int)$this->eid;
-			$secret = $this->secret;
-			$country = $this->billmate_country;
-			$language = $this->billmate_language;
-			$currency = $this->billmate_currency;
+            if (isset($_GET['billmatePclassListener']) && $_GET['billmatePclassListener'] == '1'):
+                if (isset($_GET['resetPclasses']) && $_GET['resetPclasses'] == '1'):
+                    update_option('wc_gateway_billmate_partpayment_pclasses', false);
+                endif;
 
 
-			$k = new BillMate( $eid, $secret, true, $this->testmode == 'yes', false, $this->getRequestMeta() );
+                // Test mode or Live mode
+                if ($this->testmode == 'yes'):
+                    // Disable SSL if in testmode
+                    $billmate_ssl = 'false';
+                    $billmate_mode = 'test';
+                else :
+                    // Set SSL if used in webshop
+                    if (is_ssl()) {
+                        $billmate_ssl = 'true';
+                    } else {
+                        $billmate_ssl = 'false';
+                    }
+                    $billmate_mode = 'live';
+                endif;
+                if (empty($this->eid)) {
+                    return false;
+                }
+
+                $eid = (int)$this->eid;
+                $secret = $this->secret;
+                $country = $this->billmate_country;
+                $language = $this->billmate_language;
+                $currency = $this->billmate_currency;
 
 
-			try {
-				$language = explode('_',get_locale());
-				$values = array(
-					'PaymentData' => array(
-						'currency' => $currency,
-						'language' => $language[0],
-						'country' => strtolower($country)
-					)
-				);
-				$data = $k->getPaymentplans($values);
-				if(!is_array($data)){
-					throw new Exception($data);
-				}
-				if(isset($data['code'])){
-					throw new Exception($data['message']);
-				}
-				$output = array();
-				array_walk($data, array($this,'correct_lang_billmate'));
-				foreach( $data as $row ){
-					$row['eid'] = $eid;
-					$output[]=$row;
-				}
-				update_option('wc_gateway_billmate_partpayment_pclasses',$output);
-
-				// Redirect to settings page
-				wp_redirect(admin_url('admin.php?page='.$_GET['page'].'&tab='.$_GET['tab'].'&section=WC_Gateway_Billmate_Partpayment&billmate_error_status=0'));
-				}
-				catch(Exception $e) {
-				    //Something went wrong, print the message:
-				    wc_bm_errors( sprintf(__('Billmate PClass problem: %s. Error code: ', 'billmate'), utf8_encode($e->getMessage()) ) . '"' . $e->getCode() . '"', 'error' );
-				    //$billmate_error_code = utf8_encode($e->getMessage()) . 'Error code: ' . $e->getCode();
-
-				    $redirect_url = 'admin.php?page='.$_GET['page'].'&tab='.$_GET['tab'].'&section=WC_Gateway_Billmate_Partpayment&billmate_error_status=1&billmate_error_code=' . $e->getCode().'&message='.($e->getMessage());
-
-				    //wp_redirect(admin_url($redirect_url));
-				    wp_redirect(admin_url($redirect_url));
-				}
-
-			endif;
-
-			}
+                $k = new BillMate($eid, $secret, true, $this->testmode == 'yes', false, $this->getRequestMeta());
 
 
+                try {
+                    $language = explode('_', get_locale());
+                    $values = array(
+                        'PaymentData' => array(
+                            'currency' => $currency,
+                            'language' => $language[0],
+                            'country' => strtolower($country)
+                        )
+                    );
+                    $data = $k->getPaymentplans($values);
+                    if (!is_array($data)) {
+                        throw new Exception($data);
+                    }
+                    if (isset($data['code'])) {
+                        throw new Exception($data['message']);
+                    }
+                    $output = array();
+                    array_walk($data, array($this, 'correct_lang_billmate'));
+                    foreach ($data as $row) {
+                        $row['eid'] = $eid;
+                        $output[] = $row;
+                    }
+                    update_option('wc_gateway_billmate_partpayment_pclasses', $output);
 
+                    // Redirect to settings page
+                    wp_redirect(admin_url('admin.php?page=' . $_GET['page'] . '&tab=' . $_GET['tab'] . '&section=WC_Gateway_Billmate_Partpayment&billmate_error_status=0'));
+                } catch (Exception $e) {
+                    //Something went wrong, print the message:
+                    wc_bm_errors(sprintf(__('Billmate PClass problem: %s. Error code: ', 'billmate'), utf8_encode($e->getMessage())) . '"' . $e->getCode() . '"', 'error');
+                    //$billmate_error_code = utf8_encode($e->getMessage()) . 'Error code: ' . $e->getCode();
+
+                    $redirect_url = 'admin.php?page=' . $_GET['page'] . '&tab=' . $_GET['tab'] . '&section=WC_Gateway_Billmate_Partpayment&billmate_error_status=1&billmate_error_code=' . $e->getCode() . '&message=' . ($e->getMessage());
+
+                    //wp_redirect(admin_url($redirect_url));
+                    wp_redirect(admin_url($redirect_url));
+                }
+
+            endif;
+
+        }
 
 	/**
 	 * Payment form on checkout page
@@ -1137,31 +1130,6 @@ parse_str($_POST['post_data'], $datatemp);
 			$pclasses = array($pclasses);
 			$flag = BillmateFlags::CHECKOUT_PAGE;
 		}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         $settings = get_option('woocommerce_billmate_partpayment_settings');
 
         if ($settings['testmode'] == 'yes'):
@@ -1206,25 +1174,6 @@ parse_str($_POST['post_data'], $datatemp);
         );
 
         $pclasses = $bm->getPaymentPlans($values);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 		// Check if we have any PClasses
 		if(!$pclasses_not_available) {
@@ -1858,11 +1807,6 @@ parse_str($_POST['post_data'], $datatemp);
 
 		$billmate_de_consent_terms	= isset($_POST['billmate_de_consent_terms']) ? $this->woocommerce_clean($_POST['billmate_de_consent_terms']) : '';
 
-
-		
-
-
-
         $billmateOrder->setCustomerPno($billmate_pno);
 
 		// Test mode or Live mode
@@ -1890,9 +1834,6 @@ parse_str($_POST['post_data'], $datatemp);
 		$currency = $this->billmate_currency;
 		$language = explode('_',get_locale());
 		if(!defined('BILLMATE_LANGUAGE')) define('BILLMATE_LANGUAGE',strtolower($language[0]));
-
-
-
 
 		$k = new Billmate( $eid, $secret, true, $this->testmode == 'yes', false, $this->getRequestMeta() );
 
@@ -2261,8 +2202,6 @@ parse_str($_POST['post_data'], $datatemp);
 		}
 	}
 
-
-
 	/**
 	* get_terms_country function.
  	* Helperfunction - Get Terms Country based on selected Billing Country in the Ceckout form
@@ -2343,8 +2282,6 @@ parse_str($_POST['post_data'], $datatemp);
 		return $this->show_monthly_cost_shop_prio;
 	}
 
-
-
     private function woocommerce_clean($var = "") {
         if(version_compare(WC_VERSION, '3.0.0', '>=')) {
             return wc_clean($var);
@@ -2354,8 +2291,6 @@ parse_str($_POST['post_data'], $datatemp);
 
 
 } // End class WC_Gateway_Billmate_Partpayment
-
-
 
 /**
  * Class

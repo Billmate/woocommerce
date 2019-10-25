@@ -843,8 +843,6 @@ function utf8_from_unicode($data) {
 	return $result;
 }
 
-
-
 class BillmateStringEncoding {
     
   protected static $win1252ToUtf8 = array(

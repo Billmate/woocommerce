@@ -215,8 +215,6 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 
 	} // End init_form_fields()
 
-
-
 	/**
 	 * Admin Panel Options
 	 * - Options for bits like 'title' and availability on a country-by-country basis

@@ -46,8 +46,6 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 		//if ( $this->handlingfee_tax == "") $this->handlingfee_tax = 0;
 		if ( $this->invoice_fee_id == "") $this->invoice_fee_id = 0;
 
-
-
 		// Country and language
 		switch ( $this->shop_country )
 		{
@@ -187,8 +185,6 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 			}
 		}
 
-
-
 	   	$this->form_fields = apply_filters('billmate_invoice_form_fields', array(
 			'enabled' => array(
 							'title' => __( 'Enable/Disable', 'billmate' ),
@@ -260,8 +256,6 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
         }
 
 	} // End init_form_fields()
-
-
 
 	/**
 	 * Admin Panel Options
@@ -359,10 +353,6 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 
 		return false;
 	}
-
-
-
-
 
 	/**
 	 * Payment form on checkout page
@@ -1733,8 +1723,6 @@ class WC_Gateway_Billmate_Invoice_Extra {
             $woocommerce->cart->add_fee(__('Invoice fee','billmate'), $invoice_fee, true, $invoice_fee_tax_class);
 		}
 	} // End function add_invoice_fee_process
-
-
 
 	/**
  	 * Process the gateway specific checkout form fields

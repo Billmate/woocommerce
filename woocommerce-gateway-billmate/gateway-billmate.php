@@ -452,8 +452,6 @@ function init_billmate_gateway() {
 
 			}
 
-
-
 			// Account terms popup
 			if ( is_checkout() || is_product() || is_shop() || is_product_category() || is_product_tag() ) {
 				// Original file: https://static.billmate.com:444/external/js/billmatepart.js
@@ -843,8 +841,6 @@ function init_billmate_gateway() {
                     $order->add_order_note(sprintf(__('Billmate Invoice id: %s','billmate'),$data['number']));
 
                     $billmateOrderTotal = isset($billmateOrder['Cart']['Total']['withtax']) ? $billmateOrder['Cart']['Total']['withtax'] : 0;
-
-
 
                     $checkoutSettings = get_option("woocommerce_billmate_checkout_settings", array());
                     if (    $this->order_status == 'default'

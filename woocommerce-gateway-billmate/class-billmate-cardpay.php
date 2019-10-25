@@ -241,8 +241,6 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 
 	} // End init_form_fields()
 
-
-
 	/**
 	 * Admin Panel Options
 	 * - Options for bits like 'title' and availability on a country-by-country basis
@@ -459,9 +457,6 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 				return;
 			}
 		}
-
-
-
 	}
 	/**
 	 * Process the payment and return the result
@@ -608,8 +603,6 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 
 			$language = explode('_',get_locale());
 			if(!defined('BILLMATE_LANGUAGE')) define('BILLMATE_LANGUAGE',strtolower($language[0]));
-
-
 
             $languageCode = strtoupper($language[0]);
             $languageCode = $languageCode == 'DA' ? 'DK' : $languageCode;
