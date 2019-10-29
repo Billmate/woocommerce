@@ -627,13 +627,13 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
                 }
                 update_option('wc_gateway_billmate_partpayment_pclasses',$output);
                 // Redirect to settings page
-                wp_redirect(admin_url('admin.php?page='.isset($_GET['page'])?intval($_GET['page']):''.'&tab='.isset($_GET['tab'])?intval($_GET['tab']):''.'&section=WC_Gateway_Billmate_Partpayment&billmate_error_status=0'));
+                wp_redirect(admin_url('admin.php?page='.$_GET['page'].'&tab='.$_GET['tab'].'&section=WC_Gateway_Billmate_Partpayment&billmate_error_status=0'));
             }
             catch(Exception $e) {
                 //Something went wrong, print the message:
                 wc_bm_errors( sprintf(__('Billmate PClass problem: %s. Error code: ', 'billmate'), utf8_encode($e->getMessage()) ) . '"' . $e->getCode() . '"', 'error' );
                 //$billmate_error_code = utf8_encode($e->getMessage()) . 'Error code: ' . $e->getCode();
-                $redirect_url = 'admin.php?page='.isset($_GET['page'])?intval($_GET['page']):''.'&tab='.isset($_GET['tab'])?intval($_GET['tab']):''.'&section=WC_Gateway_Billmate_Partpayment&billmate_error_status=1&billmate_error_code=' . $e->getCode().'&message='.($e->getMessage());
+                $redirect_url = 'admin.php?page='.$_GET['page'].'&tab='.$_GET['tab'].'&section=WC_Gateway_Billmate_Partpayment&billmate_error_status=1&billmate_error_code=' . $e->getCode().'&message='.($e->getMessage());
                 //wp_redirect(admin_url($redirect_url));
                 wp_redirect(admin_url($redirect_url));
             }
