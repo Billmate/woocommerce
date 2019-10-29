@@ -130,8 +130,8 @@ class BillmateCommon {
     {
 
         $billmate = new BillMate(get_option('billmate_common_eid'),get_option('billmate_common_secret'),true,false,false);
-		$_SESSION['billmate_pno'] = $_POST['pno'];
-        $addr = $billmate->getAddress(array('pno' => $_POST['pno']));
+		$_SESSION['billmate_pno'] = sanitize_text_field($_POST['pno']);
+        $addr = $billmate->getAddress(array('pno' => sanitize_text_field($_POST['pno'])));
         if(isset($addr['code'])) {
             $response['success'] = false;
             $response['message'] = utf8_encode($addr['message']);
@@ -335,7 +335,7 @@ class BillmateCommon {
 	public function verify_credentials()
 	{
 		require_once 'library/Billmate.php';
-		$billmate = new BillMate($_POST['billmate_id'],$_POST['billmate_secret'],true, false,false);
+		$billmate = new BillMate(sanitize_text_field($_POST['billmate_id']),sanitize_text_field($_POST['billmate_secret']),true, false,false);
 		$values['PaymentData'] = array(
 			'currency' => 'SEK',
 			'language' => 'sv',

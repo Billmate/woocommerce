@@ -545,7 +545,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
     }
 
     function billmate_update_order_comments() {
-        $order_comments = (isset($_POST['order_comments'])) ? $_POST['order_comments'] : '';
+        $order_comments = (isset($_POST['order_comments'])) ? esc_html($_POST['order_comments']) : '';
         $orderId = $this->create_order();
         $order = wc_get_order( $orderId );
         $order->set_customer_note( $order_comments );
