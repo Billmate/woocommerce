@@ -100,6 +100,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 
 		add_action('wp_footer', array(&$this, 'billmate_partpayment_terms_js'));
 
+        add_action('admin_init', array(&$this, 'update_billmatepclasses_from_billmate'));
 
         add_action('admin_enqueue_scripts',array(&$this,'injectscripts'));
 
@@ -333,7 +334,63 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
                 <a href="https://billmate.se/plugins/manual/Installationsmanual_Woocommerce_Billmate.pdf" target="_blank">Installationsmanual Billmate Modul ( Manual Svenska )</a><br />
                 <a href="https://billmate.se/plugins/manual/Installation_Manual_Woocommerce_Billmate.pdf" target="_blank">Installation Manual Billmate ( Manual English )</a>
             </p>
+        <?php
+        $content = get_option('wc_gateway_billmate_partpayment_pclasses',false);
+        if($content){
+            //$fields = array(_e('eid','billmate'),_e('paymentplanid','billmate'),_e('description','billmate'),_e('months','billmate'),_e('interestrate','billmate'),_e('startfee','billmate'),_e('handlingfee','billmate'),_e('minamount','billmate'),_e('maxamount','billmate'),_e('currency','billmate'),_e('country','billmate'),_e('expirydate','billmate'));
+            ?>
+            <table border="0" style="border:1px solid #000">
+                <tr>
+                    <th><?php echo ucfirst(_e('eid','billmate') )?></th>
+                    <th><?php echo ucfirst(_e('paymentplanid','billmate')); ?></th>
+                    <th><?php echo ucfirst(_e('description','billmate')); ?></th>
+                    <th><?php echo ucfirst(_e('months','billmate')); ?></th>
+                    <th><?php echo ucfirst(_e('interestrate','billmate')); ?></th>
+                    <th><?php echo ucfirst(_e('startfee','billmate')); ?></th>
+                    <th><?php echo ucfirst(_e('handlingfee','billmate')); ?></th>
+                    <th><?php echo ucfirst(_e('minamount','billmate')); ?></th>
+                    <th><?php echo ucfirst(_e('maxamount','billmate')); ?></th>
+                    <th><?php echo ucfirst(_e('currency','billmate')); ?></th>
+                    <th><?php echo ucfirst(_e('country','billmate')); ?></th>
+                    <th><?php echo ucfirst(_e('expirydate','billmate')); ?></th>
+                </tr>
+                <?php foreach( $content as $terms ):?>
+                    <tr>
+                        <td><?php echo $terms['eid']; ?></td>
+                        <td><?php echo $terms['paymentplanid']; ?></td>
+                        <td><?php echo $terms['description']; ?></td>
+                        <td><?php echo $terms['nbrofmonths']; ?></td>
+                        <td><?php echo $terms['interestrate']; ?></td>
+                        <td><?php echo $terms['startfee']; ?></td>
+                        <td><?php echo $terms['handlingfee'];?></td>
+                        <td><?php echo $terms['minamount'];?></td>
+                        <td><?php echo $terms['maxamount'];?></td>
+                        <td><?php echo $terms['currency'];?></td>
+                        <td><?php echo $terms['country']; ?></td>
+                        <td><?php echo $terms['expirydate']; ?></td>
 
+                    </tr>
+                <?php endforeach;?>
+            </table>
+            <?php
+        } else {
+            if (strlen($this->eid) > 0 && strlen($this->secret) > 0)
+                echo __('You will need to update the Pclasses','billmate');
+        }
+        if (isset($_GET['billmate_error_status']) && $_GET['billmate_error_status'] == '0') {
+            // billmatepclasses.json file saved sucessfully
+            echo '<div class="updated">'.__('The paymentplans is updated.','billmate').'</div>';
+        }
+        if (isset($_GET['billmate_error_status']) && $_GET['billmate_error_status'] == '1') {
+            // billmatepclasses.json file could not be updated
+            echo '<div class="error">'.__('Billmate paymentplans couldnt be uppdated, Billmate error message ','billmate').': ' . esc_html($_GET['billmate_error_code']) . '</div>';
+        }
+        ?>
+        <p>
+            <a class="button" href="<?php echo admin_url('admin.php?'.$_SERVER['QUERY_STRING'].'&billmatePclassListener=1');?>"><?php _e('Update Paymentplans', 'billmate'); ?> </a>
+            <a class="button" href="<?php echo admin_url('admin.php?'.$_SERVER['QUERY_STRING'].'&billmatePclassListener=1&resetPclasses=1');?>"><?php _e('Clear Paymentplans', 'billmate'); ?> </a>
+
+        </p>
     	<table class="form-table">
     	<?php
     		// Generate the HTML For the settings form.
@@ -512,6 +569,76 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 
 		return false;
 	}
+
+    /**
+     * Retrieve the PClasses from Billmate and store it in the file billmatepclasses.json.
+     */
+    function update_billmatepclasses_from_billmate( ) {
+        global $woocommerce;
+        register_setting('wc_gateway_billmate_partpayment','pclasses');
+        if (isset($_GET['billmatePclassListener']) && $_GET['billmatePclassListener'] == '1'):
+            if(isset($_GET['resetPclasses']) && $_GET['resetPclasses'] == '1'):
+                update_option('wc_gateway_billmate_partpayment_pclasses',false);
+            endif;
+            // Test mode or Live mode
+            if ( $this->testmode == 'yes' ):
+                // Disable SSL if in testmode
+                $billmate_ssl = 'false';
+                $billmate_mode = 'test';
+            else :
+                // Set SSL if used in webshop
+                if (is_ssl()) {
+                    $billmate_ssl = 'true';
+                } else {
+                    $billmate_ssl = 'false';
+                }
+                $billmate_mode = 'live';
+            endif;
+            if( empty( $this->eid) ){
+                return false;
+            }
+            $eid = (int)$this->eid;
+            $secret = $this->secret;
+            $country = $this->billmate_country;
+            $language = $this->billmate_language;
+            $currency = $this->billmate_currency;
+            $k = new BillMate( $eid, $secret, true, $this->testmode == 'yes', false, $this->getRequestMeta() );
+            try {
+                $language = explode('_',get_locale());
+                $values = array(
+                    'PaymentData' => array(
+                        'currency' => $currency,
+                        'language' => $language[0],
+                        'country' => strtolower($country)
+                    )
+                );
+                $data = $k->getPaymentplans($values);
+                if(!is_array($data)){
+                    throw new Exception($data);
+                }
+                if(isset($data['code'])){
+                    throw new Exception($data['message']);
+                }
+                $output = array();
+                array_walk($data, array($this,'correct_lang_billmate'));
+                foreach( $data as $row ){
+                    $row['eid'] = $eid;
+                    $output[]=$row;
+                }
+                update_option('wc_gateway_billmate_partpayment_pclasses',$output);
+                // Redirect to settings page
+                wp_redirect(admin_url('admin.php?page='.isset($_GET['page'])?intval($_GET['page']):''.'&tab='.isset($_GET['tab'])?intval($_GET['tab']):''.'&section=WC_Gateway_Billmate_Partpayment&billmate_error_status=0'));
+            }
+            catch(Exception $e) {
+                //Something went wrong, print the message:
+                wc_bm_errors( sprintf(__('Billmate PClass problem: %s. Error code: ', 'billmate'), utf8_encode($e->getMessage()) ) . '"' . $e->getCode() . '"', 'error' );
+                //$billmate_error_code = utf8_encode($e->getMessage()) . 'Error code: ' . $e->getCode();
+                $redirect_url = 'admin.php?page='.isset($_GET['page'])?intval($_GET['page']):''.'&tab='.isset($_GET['tab'])?intval($_GET['tab']):''.'&section=WC_Gateway_Billmate_Partpayment&billmate_error_status=1&billmate_error_code=' . $e->getCode().'&message='.($e->getMessage());
+                //wp_redirect(admin_url($redirect_url));
+                wp_redirect(admin_url($redirect_url));
+            }
+        endif;
+    }
 
 	/**
 	 * Payment form on checkout page
@@ -1066,7 +1193,7 @@ parse_str($_POST['post_data'], $datatemp);
 	         		wc_bm_errors( __('Non Valid Person / Corporate number. Check the number.', 'billmate') );
 
 	         	// Shipping and billing address must be the same
-	         	$billmate_shiptobilling = ( isset( $_POST['shiptobilling'] ) ) ? $_POST['shiptobilling'] : '';
+	         	$billmate_shiptobilling = ( isset( $_POST['shiptobilling'] ) ) ? esc_html($_POST['shiptobilling']) : '';
 
 	         	if ($billmate_shiptobilling !=1 && isset($_POST['shipping_first_name']) && $_POST['shipping_first_name'] !== $_POST['billing_first_name'])
 	        	 	wc_bm_errors( __('Shipping and billing address must be the same when paying via Billmate.', 'billmate') );
@@ -1423,8 +1550,8 @@ parse_str($_POST['post_data'], $datatemp);
         }
 
 		$fullname = esc_html($_POST['billing_last_name'].' '.$_POST['billing_first_name']);
-		$firstArr = explode(' ', $_POST['billing_last_name']);
-		$lastArr  = explode(' ', $_POST['billing_first_name']);
+		$firstArr = explode(' ', esc_html($_POST['billing_last_name']));
+		$lastArr  = explode(' ', esc_html($_POST['billing_first_name']));
 
 		$usership = esc_html($_POST['billing_first_name'].' '.$_POST['billing_last_name'].' '.$_POST['billing_company']);
 		$userbill = esc_html($_POST['shipping_first_name'].' '.$_POST['shipping_last_name'].' '.$_POST['shipping_company']);
