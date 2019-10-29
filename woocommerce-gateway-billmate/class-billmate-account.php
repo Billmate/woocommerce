@@ -880,7 +880,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 
 				<?php else : ?>
 					<label for="billmate_pno"><?php echo __("Social Security Number", 'billmate') ?> <span class="required">*</span></label>
-					<input type="text" class="input-text" name="billmate_pno" value="<?php echo isset($_POST['billmate_pno']) ? esc_html(_POST['billmate_pno']) : '' ?>"/>
+					<input type="text" class="input-text" name="billmate_pno" value="<?php echo isset($_POST['billmate_pno']) ? esc_html($_POST['billmate_pno']) : '' ?>"/>
 				<?php endif; ?>
 			</p>
             <?php endif; ?>
