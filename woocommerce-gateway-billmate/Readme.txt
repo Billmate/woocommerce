@@ -1,4 +1,4 @@
-=== Billmate for WooCommerce ===
+=== Billmate Payment Gateway for WooCommerce ===
 Contributors: Billmate
 Donate link:
 Tags: woocomerce, billmate, payments, cardpayments, invoice, partpayment, recurring, bankpayment
