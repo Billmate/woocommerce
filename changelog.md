@@ -1,6 +1,8 @@
 # Changelog
 
-
+## 3.4.15 (2019-10-30)
+  * Fix - Sanitization issues
+  
 ## 3.4.14 (2019-10-24)
   * Fix - Revert back - loopback health problem
 
