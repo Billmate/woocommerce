@@ -1040,6 +1040,9 @@ msgstr "Aktivera visuellt fokus i Billmate Checkout"
 msgid "Enable Overlay"
 msgstr "Visuellt Fokus"
 
+msgid "%s months"
+msgstr "%s månader"
+
 #~ msgid "Subscription Payment Failed: "
 #~ msgstr "Prenumerationsbetalning misslyckades:"
 

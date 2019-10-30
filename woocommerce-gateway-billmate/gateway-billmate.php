@@ -829,7 +829,26 @@ function init_billmate_gateway() {
                         $_method_title = $method_title;
                         if ( $billmateOrderNumber != '' ) {
                             if ( isset($billmateOrder['PaymentData']['method_name']) AND $billmateOrder['PaymentData']['method_name'] != "" ) {
-                                $_method_title = $_method_title . ' (' .$billmateOrder['PaymentData']['method_name']. ')';
+                                if (strpos($billmateOrder['PaymentData']['method_name'], 'Del') !== false) {
+                                    $pclasses                                  = get_option('wc_gateway_billmate_partpayment_pclasses');
+                                    $numberOfMonths = false;
+                                    if ($pclasses){
+                                        foreach ($pclasses as $pclass){
+                                            if ($pclass['paymentplanid'] == $billmateOrder['PaymentData']['paymentplanid']){
+                                                $numberOfMonths = sprintf(__('%s months', 'billmate'), $pclass['nbrofmonths']);
+                                            }
+                                        }
+                                    }
+                                    if ($numberOfMonths !== false) {
+                                        $_method_title = $_method_title . ' (' . $billmateOrder['PaymentData']['method_name'] . ' ' . $numberOfMonths . ')';
+                                    }
+                                    else {
+                                        $_method_title = $_method_title . ' (' . $billmateOrder['PaymentData']['method_name'] . ')';
+                                    }
+                                }
+                                else {
+                                    $_method_title = $_method_title . ' (' . $billmateOrder['PaymentData']['method_name'] . ')';
+                                }
                             } else {
                                 $billmateOrderMethod = 1;   // 8 = card, 16 = bank
                                 if (isset($billmateOrder['PaymentData']['method'])) {
