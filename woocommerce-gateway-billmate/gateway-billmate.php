@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: WooCommerce Billmate Gateway
+Plugin Name: Billmate Payment Gateway for WooCommerce
 Plugin URI: http://woothemes.com/woocommerce
 Description: Receive payments on your WooCommerce store via Billmate. Invoice, partpayment, credit/debit card and direct bank transfers. Secure and 100&#37; free plugin.
 Version: 3.4.15
