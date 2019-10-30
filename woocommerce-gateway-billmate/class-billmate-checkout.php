@@ -390,7 +390,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
             $orderId = $this->create_order();
             $order = wc_get_order( $orderId );
-            $post = $_POST;
+            $post = $this->woocommerce_clean($_POST);
 
             // shipping_pre_address_save will be used later to check if new address affect shipping cost
             $billmateOrder = new BillmateOrder($order);
@@ -545,7 +545,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
     }
 
     function billmate_update_order_comments() {
-        $order_comments = (isset($_POST['order_comments'])) ? $_POST['order_comments'] : '';
+        $order_comments = (isset($_POST['order_comments'])) ? esc_html($_POST['order_comments']) : '';
         $orderId = $this->create_order();
         $order = wc_get_order( $orderId );
         $order->set_customer_note( $order_comments );
@@ -557,8 +557,8 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             exit( 'Nonce can not be verified.' );
         }
         global $woocommerce;
-        $updated_item_key = $_REQUEST['cart_item_key'];
-        $new_quantity     = $_REQUEST['new_quantity'];
+        $updated_item_key = $this->woocommerce_clean($_REQUEST['cart_item_key']);
+        $new_quantity     = $this->woocommerce_clean($_REQUEST['new_quantity']);
         if ( ! defined( 'WOOCOMMERCE_CART' ) ) {
             define( 'WOOCOMMERCE_CART', true );
         }
@@ -1280,6 +1280,13 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
     public function getBillmateConnection() {
         return new BillMate( $this->eid, $this->secret, true, $this->testmode == 'yes', false, $this->getRequestMeta() );
+    }
+
+    private function woocommerce_clean($var = "") {
+        if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+            return wc_clean($var);
+        }
+        return woocommerce_clean($var);
     }
 }
 class WC_Gateway_Billmate_Checkout_Extra{

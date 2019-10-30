@@ -515,6 +515,11 @@ function init_billmate_gateway() {
             }
 
             $data = $k->verify_hash($_POST);
+            if (array_key_exists('code', $data)){
+                if ($data['code'] == 9511){
+                    wp_die('Verification error','verification error',array('response' => 405));
+                }
+            }
             $order_id = $data['orderid'];
 
             if(function_exists('wc_seq_order_number_pro')){
