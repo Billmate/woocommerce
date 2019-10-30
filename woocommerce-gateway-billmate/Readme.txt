@@ -4,7 +4,7 @@ Donate link:
 Tags: woocomerce, billmate, payments, cardpayments, invoice, partpayment, recurring, bankpayment
 Requires at least: 4.0
 Tested up to: 5.2.2
-Stable tag: 3.4.11
+Stable tag: 3.4.14
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 WC tested up to: 3.6.5
@@ -86,7 +86,13 @@ https://www.billmate.se/press-och-media/
 
 == Changelog ==
 
- = 3.4.12 (2019-10-15)
+= 3.4.14 (2019-10-24)
+  * Fix - Revert back - loopback health problem
+
+= 3.4.13 (2019-10-23)
+  * Fix - Revert back to 3.4.11 state
+
+= 3.4.12 (2019-10-15)
   * Enhancement - Discount Code
   * Tweak - Remove pre-check from Invoice/Partpayment email validation checkbox
   * Fix - Loopback request that failure in WP built in site health
