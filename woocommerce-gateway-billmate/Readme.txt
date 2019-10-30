@@ -4,7 +4,7 @@ Donate link:
 Tags: woocomerce, billmate, payments, cardpayments, invoice, partpayment, recurring, bankpayment
 Requires at least: 4.0
 Tested up to: 5.2.2
-Stable tag: 3.4.14
+Stable tag: 3.4.15
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 WC tested up to: 3.6.5
@@ -85,6 +85,9 @@ https://www.billmate.se/press-och-media/
 
 
 == Changelog ==
+
+= 3.4.5 (2019-10-30)
+  * Fix - Sanitization issues
 
 = 3.4.14 (2019-10-24)
   * Fix - Revert back - loopback health problem
