@@ -1034,6 +1034,9 @@ msgstr "Billmate Checkout kunde inte laddas, vänligen kontakta butiksansvarig. 
 msgid "Select another payment method"
 msgstr "Välj ett annat betalsätt"
 
+msgid "%s months"
+msgstr "%s månader"
+
 #~ msgid "Subscription Payment Failed: "
 #~ msgstr "Prenumerationsbetalning misslyckades:"
 
