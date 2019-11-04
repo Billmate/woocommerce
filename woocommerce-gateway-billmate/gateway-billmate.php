@@ -3,7 +3,7 @@
 Plugin Name: Billmate Payment Gateway for WooCommerce
 Plugin URI: http://woothemes.com/woocommerce
 Description: Receive payments on your WooCommerce store via Billmate. Invoice, partpayment, credit/debit card and direct bank transfers. Secure and 100&#37; free plugin.
-Version: 3.4.15
+Version: 3.4.16
 Author: Billmate
 Text Domain: billmate
 Author URI: https://billmate.se
@@ -17,8 +17,8 @@ WC tested up to: 3.6.3
 /**
  * Required functions
  */
-if ( ! function_exists( 'woothemes_queue_update' ) )
-	require_once( 'woo-includes/woo-functions.php' );
+//if ( ! function_exists( 'woothemes_queue_update' ) )
+//	require_once( 'woo-includes/woo-functions.php' );
 
 /**
  * Plugin updates
@@ -504,7 +504,7 @@ function init_billmate_gateway() {
                 $cancel_url_hit = true;
                 $payment_note = 'Note: Payment Cancelled.';
             } else {
-                $_POST = (is_array($_GET) && isset($_GET['data'])) ? $_GET : file_get_contents("php://input");
+                $_POST = $this->woocommerce_clean((is_array($_GET) && isset($_GET['data'])) ? $_GET : file_get_contents("php://input"));
                 $accept_url_hit = false;
                 $payment_note = 'Note: Payment Completed (callback success).';
             }
@@ -1059,6 +1059,13 @@ function init_billmate_gateway() {
             );
 
             return $meta;
+        }
+
+        private function woocommerce_clean($var = "") {
+            if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+                return wc_clean($var);
+            }
+            return woocommerce_clean($var);
         }
 
 
