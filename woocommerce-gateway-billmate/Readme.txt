@@ -86,7 +86,7 @@ https://www.billmate.se/press-och-media/
 
 == Changelog ==
 
-= 3.4.5 (2019-10-30)
+= 3.4.16 (2019-11-04)
   * Fix - plugin to comply with Wordpress standards
   * Enhancement -  Added security and input sanitation
 
