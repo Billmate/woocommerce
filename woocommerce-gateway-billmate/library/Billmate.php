@@ -120,7 +120,7 @@ class BillMate{
             )
         );
 	    $response = wp_remote_get("http".($this->SSL?"s":"")."://".$this->URL, $params);
-        return json_decode($response['body'], true)['data'];
+        return $response['body'];
 	}
 	function hash($args) {
 		$this->out("TO BE HASHED DATA",$args);
