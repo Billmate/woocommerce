@@ -13,13 +13,6 @@ WC tested up to: 3.6.3
 
 */
 
-
-/**
- * Required functions
- */
-//if ( ! function_exists( 'woothemes_queue_update' ) )
-//	require_once( 'woo-includes/woo-functions.php' );
-
 /**
  * Plugin updates
  */
