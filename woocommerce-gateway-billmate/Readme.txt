@@ -87,7 +87,7 @@ https://www.billmate.se/press-och-media/
 == Changelog ==
 
 = 3.4.17 (2019-11-06)
-  *Enhancement - Library file to use wordpress built-in functions instead of php curl
+  * Enhancement - Library file to use wordpress built-in functions instead of php curl
 
 = 3.4.16 (2019-11-04)
   * Fix - plugin to comply with Wordpress standards
