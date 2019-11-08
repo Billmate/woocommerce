@@ -2,6 +2,8 @@
 
 ## 3.5.0 (2019-11-13)
 *  Fix - WooCommerce built-in Checkout are using Billmate's new logos
+* Feature - Show/hide overlay in store when in Billmate Checkout
+
 
 ## 3.4.17 (2019-11-06)
 * Enhancement ibrary file to use wordpress built-in functions instead of php curl
