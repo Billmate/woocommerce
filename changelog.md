@@ -1,10 +1,14 @@
 # Changelog
 
-## 3.4.18 (2019-11-08)
-* Fix - Billmate Checkout page does not overwrite checkout page in WooCommerce settings
+## 3.5.0 (2019-11-13)
+*  Fix - WooCommerce built-in Checkout are using Billmate's new logos
 
 ## 3.4.17 (2019-11-06)
 * Enhancement ibrary file to use wordpress built-in functions instead of php curl
+
+## 3.4.5 (2019-11-04)
+* Fix - plugin to comply with Wordpress standards 
+* Enhancement Added security and input sanitation
 
 ## 3.4.16 (2019-11-04)
 * Fix - plugin to comply with Wordpress standards 
