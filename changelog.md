@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.4.18 (2019-11-18)
+* Fix - Billmate Checkout does not overwrite the checkout page
+
 ## 3.4.17 (2019-11-06)
 * Enhancement ibrary file to use wordpress built-in functions instead of php curl
 
