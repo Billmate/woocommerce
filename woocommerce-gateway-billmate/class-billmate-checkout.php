@@ -131,6 +131,9 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
     }
 
     function change_to_bco($url){
+        if (array_key_exists('payment', $_GET)){
+            return $url;
+        }
         if(!is_admin()) {
             if($this->enabled == 'yes') {
                 if("sv" == strtolower(current(explode('_',get_locale())))) {
