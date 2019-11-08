@@ -1,10 +1,10 @@
-=== Billmate for WooCommerce ===
+=== Billmate Payment Gateway for WooCommerce ===
 Contributors: Billmate
 Donate link:
 Tags: woocomerce, billmate, payments, cardpayments, invoice, partpayment, recurring, bankpayment
 Requires at least: 4.0
 Tested up to: 5.2.2
-Stable tag: 3.4.10
+Stable tag: 3.4.18
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 WC tested up to: 3.6.5
@@ -80,14 +80,38 @@ You need to make sure our callback IP, 54.194.217.63, is whitelisted  in Wordfen
 5. Billmate BankPayment - https://billmate.se/plugins/images/woocommerce/bank.png
 6. Billmate Partpayment - https://billmate.se/plugins/images/woocommerce/partpayment.png
 
-If you would like to use our logo on your site then choose following:
-
-1. Large - https://billmate.se/billmate/logos/billmate_cloud_l.png
-2. Medium - https://billmate.se/billmate/logos/billmate_cloud_m.png
-3. Small - https://billmate.se/billmate/logos/billmate_cloud_s.png
+If you would like to use our logos on your site:
+https://www.billmate.se/press-och-media/
 
 
 == Changelog ==
+
+= 3.4.18 (2019-11-08)
+  * Fix - Billmate Checkout page does not overwrite checkout page in WooCommerce settings
+  
+= 3.4.17 (2019-11-06)
+  * Enhancement - Library file to use wordpress built-in functions instead of php curl
+
+= 3.4.16 (2019-11-04)
+  * Fix - plugin to comply with Wordpress standards
+  * Enhancement -  Added security and input sanitation
+
+= 3.4.5 (2019-10-30)
+  * Fix - Sanitization issues
+
+= 3.4.14 (2019-10-24)
+  * Fix - Revert back - loopback health problem
+
+= 3.4.13 (2019-10-23)
+  * Fix - Revert back to 3.4.11 state
+
+= 3.4.12 (2019-10-15)
+  * Enhancement - Discount Code
+  * Tweak - Remove pre-check from Invoice/Partpayment email validation checkbox
+  * Fix - Loopback request that failure in WP built in site health
+
+= 3.4.11 (2019-10-04)
+  * Fix - WooCommerce built-in Checkout are using Billmate's new logos
 
 = 3.4.10 (2019-09-27)
   * Fix - Reverse back to 3.4.7 state
