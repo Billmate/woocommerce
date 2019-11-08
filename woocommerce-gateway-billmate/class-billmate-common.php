@@ -94,62 +94,60 @@ class BillmateCommon {
 		return $result;
 		
 	}
-	
-	public function get_address_fields() {
-		if(get_option('billmate_common_getaddress') == 'active') {
-			?>
-			<div class="col12-set checkout-billmate-getaddress-wrapper">
-				<div class="col-1">
-					<p class="form-row">
-						<label
-								for="pno"><?php echo __('Social Security Number / Corporate Registration Number', 'billmate'); ?></label>
-					</p>
-					<div class="clear"></div>
-					<p class="form-row form-row-first">
-						<input type="text" autocomplete="off" name="pno" label="12345678-1235" class="form-row-wide input-text"
-						       value="<?php echo isset($_SESSION['billmate_pno']) ? $_SESSION['billmate_pno'] : ''; ?>"/>
-					</p>
-					<p class="form-row form-row-last">
-						<label></label>
-						<button id="getaddress"
-						        class="'button getaddress-button"><?php echo __('Get Address', 'billmate'); ?></button>
-					</p>
 
-					<p class="form-row">
-					<div id="getaddresserr"></div>
-					</p>
-				</div>
-			</div>
-			<div class="clear"></div>
-			<script type="text/javascript">
-        var ajaxurl = '<?php echo admin_url('admin-ajax.php'); ?>';
-        var nopno = '<?php echo __('You have to type in Social Security number/Corporate number', 'billmate'); ?>';
-			</script>
-			
-			<?php
-		}
-	}
-	
-	public function getaddress() {
-		
-		$billmate                 = new BillMate(get_option('billmate_common_eid'), get_option('billmate_common_secret'), true, false, false);
-		$_SESSION['billmate_pno'] = $_POST['pno'];
-		$addr                     = $billmate->getAddress(array('pno' => $_POST['pno']));
-		if(isset($addr['code'])) {
-			$response['success'] = false;
-			$response['message'] = utf8_encode($addr['message']);
-		} else {
-			$data = array();
-			foreach($addr as $key => $value) {
-				$data[$key] = mb_convert_encoding($value, 'UTF-8', 'auto');
-			}
-			$response['success'] = true;
-			$response['data']    = $data;
-		}
-		
-		die(json_encode($response));
-	}
-	
+    public function get_address_fields()
+    {
+        if(get_option('billmate_common_getaddress') == 'active'){
+            ?>
+            <div class="col12-set checkout-billmate-getaddress-wrapper">
+                <div class="col-1">
+                    <p class="form-row">
+                        <label for="pno"><?php echo __('Social Security Number / Corporate Registration Number','billmate'); ?></label>
+                    </p>
+                    <div class="clear"></div>
+                    <p class="form-row form-row-first">
+                        <input type="text" autocomplete="off" name="pno" label="12345678-1235" class="form-row-wide input-text" value="<?php echo isset($_SESSION['billmate_pno']) ? $_SESSION['billmate_pno'] : ''; ?>"/>
+                    </p>
+                    <p class="form-row form-row-last">
+                        <label></label>
+                        <button id="getaddress" class="'button getaddress-button"><?php echo __('Get Address','billmate'); ?></button>
+                    </p>
+
+                    <p class="form-row">
+                        <div id="getaddresserr"></div>
+                    </p>
+                </div>
+            </div>
+            <div class="clear"></div>
+            <script type="text/javascript">
+                var ajaxurl = '<?php echo admin_url('admin-ajax.php'); ?>';
+				var nopno = '<?php echo __('You have to type in Social Security number/Corporate number','billmate'); ?>';
+            </script>
+
+            <?php
+        }
+    }
+
+    public function getaddress()
+    {
+
+        $billmate = new BillMate(get_option('billmate_common_eid'),get_option('billmate_common_secret'),true,false,false);
+		$_SESSION['billmate_pno'] = sanitize_text_field($_POST['pno']);
+        $addr = $billmate->getAddress(array('pno' => sanitize_text_field($_POST['pno'])));
+        if(isset($addr['code'])) {
+            $response['success'] = false;
+            $response['message'] = utf8_encode($addr['message']);
+        } else {
+            $data = array();
+            foreach($addr as $key => $value){
+                $data[$key] = mb_convert_encoding($value,'UTF-8','auto');
+            }
+            $response['success'] = true;
+            $response['data'] = $data;
+        }
+
+        die(json_encode($response));
+    }
 	public function page_init() {
 		register_setting(
 			'billmate_common', // Option group
@@ -414,7 +412,7 @@ class BillmateCommon {
 	
 	public function verify_credentials() {
 		require_once 'library/Billmate.php';
-		$billmate              = new BillMate($_POST['billmate_id'], $_POST['billmate_secret'], true, false, false);
+		$billmate = new BillMate(sanitize_text_field($_POST['billmate_id']),sanitize_text_field($_POST['billmate_secret']),true, false,false);
 		$values['PaymentData'] = array(
 			'currency' => 'SEK',
 			'language' => 'sv',

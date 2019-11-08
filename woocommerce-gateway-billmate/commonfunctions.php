@@ -1,5 +1,5 @@
 <?php
-define('BILLPLUGIN_VERSION','3.4.9');
+define('BILLPLUGIN_VERSION','3.4.18');
 define('BILLMATE_CLIENT','PHP:Woocommerce:'.BILLPLUGIN_VERSION);
 define('BILLMATE_SERVER','2.1.9');
 
@@ -1354,15 +1354,10 @@ if(!class_exists('BillmateOrder')){
             $discountTotalTaxs = array();
             $sentProducts = array();
             foreach ($orderArticles AS $orderArticle) {
-                if (in_array($orderArticle['artnr'], $sentProducts)){
-                    continue;
-                }
-                else {
-                    array_push($sentProducts, $orderArticle['artnr']);
-                }
-                /* 
+
+                /*
                  * Use discounted price if product discount
-                 * If discount is for complete order, add discount later as new row 
+                 * If discount is for complete order, add discount later as new row
                  */
                 $taxrate = $orderArticle['taxrate'];
 
@@ -1423,31 +1418,39 @@ if(!class_exists('BillmateOrder')){
              * Will be used when determine if use own calculated discount or from store
              */
             $isOneTaxrate = true;
-            $orderTaxrate = 0;
+            $orderTaxrate = -1;
             foreach ($orderArticles AS $orderArticle) {
-                if ($orderTaxrate < 1) {
+                if ($orderTaxrate < 0) {
                     $orderTaxrate = $orderArticle['taxrate'];
                 }
                 if ($orderTaxrate != $orderArticle['taxrate']) {
                     $isOneTaxrate = false;
                 }
             }
-
+            $coupons = WC()->cart->get_applied_coupons();
+            $codes = "";
+            for ($i = 0; $i < count ($coupons); $i++) {
+                if ($i == count($coupons) - 1) {
+                    $codes .= $coupons[$i];
+                } else {
+                    $codes .= $coupons[$i] . ", ";
+                }
+            }
             /* Order discount */
             if (    $isOrderDiscount == true
-                    && count($discountTotals) > 0
-                    && $isOneTaxrate ==  false
+                && count($discountTotals) > 0
+                && $isOneTaxrate ==  false
             ) {
                 // Order by taxrate ASC
                 ksort($discountTotals);
                 foreach($discountTotals AS $key => $discountAmount) {
                     if($discountAmount > 0) {
                         $this->orderData['Articles'][] = array(
-                            'quantity'   => (int)1,
-                            'artnr'    => "",
-                            'title'    => sprintf(__('Discount %s%% tax', 'billmate'),round($key,0)),
-                            'aprice'    => -abs($discountAmount),
-                            'taxrate'      => (int)$key,
+                            'quantity' => (int)1,
+                            'artnr' => "",
+                            'title' => sprintf(__('Discount %s%% tax [%s]', 'billmate'), round($key, 0), $codes),
+                            'aprice' => -abs($discountAmount),
+                            'taxrate' => (int)$key,
                             'discount' => (float)0,
                             'withouttax' => -abs($discountAmount),
                         );
@@ -1460,15 +1463,15 @@ if(!class_exists('BillmateOrder')){
 
             /** Use woocommerce discount when discount affect all order items and all items have same taxrate */
             if (    $isOrderDiscount == true
-                    && $this->order->get_discount_total() > 0
-                    && $isOneTaxrate == true
+                && $this->order->get_discount_total() > 0
+                && $isOneTaxrate == true
             ) {
                 $discountAmount = $this->order->get_discount_total();
                 $discountAmount = round($discountAmount * 100);
                 $this->orderData['Articles'][] = array(
                     'quantity'      => (int)1,
                     'artnr'         => "",
-                    'title'         => sprintf(__('Discount %s%% tax', 'billmate'),round($taxrate,0)),
+                    'title'         => sprintf(__('Discount [%s]', 'billmate'), $codes),
                     'aprice'        => abs($discountAmount),
                     'taxrate'       => $orderTaxrate,
                     'discount'      => (float)0,
@@ -1552,7 +1555,7 @@ if(!class_exists('BillmateOrder')){
                     // Get shipping tax rate from cart
                     $rates = current(WC_Tax::get_shipping_tax_rates());
                     if (is_array($rates) AND isset($rates['rate'])) {
-                        $taxrate = round($rates['rate']);
+                        $taxzrate = round($rates['rate']);
                     }
                 }
             } else {

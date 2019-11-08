@@ -1,10 +1,10 @@
-=== Billmate for WooCommerce ===
+=== Billmate Payment Gateway for WooCommerce ===
 Contributors: Billmate
 Donate link:
 Tags: woocomerce, billmate, payments, cardpayments, invoice, partpayment, recurring, bankpayment
 Requires at least: 4.0
-Tested up to: 5.2.3
-Stable tag: 3.4.9
+Tested up to: 5.2.2
+Stable tag: 3.4.18
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 WC tested up to: 3.7.0
@@ -82,24 +82,42 @@ You need to make sure our callback IP, 54.194.217.63, is whitelisted  in Wordfen
 
 If you would like to use our logos on your site:
 https://www.billmate.se/press-och-media/
-
 == Changelog ==
 
-= 3.4.9 (2019-09-23) =
-* Fix - Orders receive duplicate articles and sets as a high rounding to Billmate Online.
-
-= 3.4.8 (2019-09-18) =
-Enhancement - Hit area for accepting Billmate billing for mobile
-* Fix - Loopback request that failure in WP built in site health 
-* Fix - Billmate Checkout uses the image to be set on the invoice based on WP Billmate settings.
-* Enhancement - Support for enable visual focus in Billmate Checkout settings
-* Enhancement -  Payment plan is updated directly from the API on the product page 
-* Enhancement - WhooCommerce built-in checkout use transparent Billmate logos
+= 3.4.18 (2019-11-08)
+  * Fix - Billmate Checkout page does not overwrite checkout page in WooCommerce settings
   
-= 3.4.7 (2019-07-15) =
-* Fix - WhooCommerce built-in checkout use Billmates new logos
-* Fix WhooCommerce shows correct company delivery address
-* Fix Wocommerce Subription sets the currency based on the order instead of the defualt currency
+= 3.4.17 (2019-11-06)
+  * Enhancement - Library file to use wordpress built-in functions instead of php curl
+
+= 3.4.16 (2019-11-04)
+  * Fix - plugin to comply with Wordpress standards
+  * Enhancement -  Added security and input sanitation
+
+= 3.4.5 (2019-10-30)
+  * Fix - Sanitization issues
+
+= 3.4.14 (2019-10-24)
+  * Fix - Revert back - loopback health problem
+
+= 3.4.13 (2019-10-23)
+  * Fix - Revert back to 3.4.11 state
+
+= 3.4.12 (2019-10-15)
+  * Enhancement - Discount Code
+  * Tweak - Remove pre-check from Invoice/Partpayment email validation checkbox
+  * Fix - Loopback request that failure in WP built in site health
+
+= 3.4.11 (2019-10-04)
+  * Fix - WooCommerce built-in Checkout are using Billmate's new logos
+
+= 3.4.10 (2019-09-27)
+  * Fix - Reverse back to 3.4.7 state
+
+= 3.4.7 (2019-07-15)
+  * Fix - WhooCommerce built-in checkout use Billmates new logos
+  * Fix WhooCommerce shows correct company delivery address
+  * Fix Wocommerce Subription sets the currency based on the order instead of the defualt currency
 
 = 3.4.6 (2019-05-22) =
 * Fix - Removed auto scroll on Billmate Checkout page

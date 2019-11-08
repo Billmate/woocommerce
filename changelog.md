@@ -1,15 +1,34 @@
 # Changelog
 
-## 3.4.9 (2019-09-23)
-  * Fix - Orders receive duplicate articles and sets as a high rounding to Billmate Online.
+## 3.4.18 (2019-11-08)
+* Fix - Billmate Checkout page does not overwrite checkout page in WooCommerce settings
 
-## 3.4.8 (2019-09-18)
-  * Enhancement - Hit area for accepting Billmate billing for mobile
-  * Fix - Loopback request that failure in WP built in site health 
-  * Fix - Billmate Checkout uses the image to be set on the invoice based on WP Billmate settings.
-  * Enhancement - Support for enable visual focus in Billmate Checkout settings
-  * Enhancement -  Payment plan is updated directly from the API on the product page 
-  * Enhancement - WhooCommerce built-in checkout use transparent Billmate logos
+## 3.4.17 (2019-11-06)
+* Enhancement ibrary file to use wordpress built-in functions instead of php curl
+
+## 3.4.16 (2019-11-04)
+* Fix - plugin to comply with Wordpress standards 
+* Enhancement Added security and input sanitation
+
+## 3.4.15 (2019-10-30)
+  * Fix - Sanitization issues
+  
+## 3.4.14 (2019-10-24)
+  * Fix - Revert back - loopback health problem
+
+## 3.4.13 (2019-10-23)
+  * Fix - Revert back to 3.4.11 state
+
+## 3.4.12 (2019-10-18)
+  * Enhancement - Discount Code
+  * Tweak - Remove pre-check from Invoice/Partpayment email validation checkbox
+  * Fix - Loopback request that failure in WP built in site health
+
+## 3.4.11 (2019-10-04)
+  * Fix - WooCommerce built-in Checkout are using Billmate's new logos
+
+## 3.4.10 (2019-09-27)
+  * Fix - Reverse back to 3.4.7 state
 
 ## 3.4.7 (2019-07-15)
   * Fix - WhooCommerce built-in checkout use Billmates new logos
