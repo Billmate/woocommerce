@@ -1,7 +1,7 @@
 # Changelog
 
 ## 3.4.18 (2019-11-08)
-* Fix - Billmate Checkout page does not overwrite checkout page in WooCommerce settings.
+* Fix - Billmate Checkout page does not overwrite checkout page in WooCommerce settings
 
 ## 3.4.17 (2019-11-06)
 * Enhancement ibrary file to use wordpress built-in functions instead of php curl
