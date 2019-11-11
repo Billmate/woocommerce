@@ -163,6 +163,11 @@ class BillmateCommon {
             'billmate_common_getaddress',
             array($this,'sanitize')
         );
+        register_setting(
+            'billmate_common',
+            'billmate_common_overlay_enabled',
+            array($this,'sanitize')
+        );
 		register_setting(
 			'billmate_common',
 			'billmate_common_logo',

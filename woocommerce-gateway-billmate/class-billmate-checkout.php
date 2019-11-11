@@ -940,7 +940,8 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             'currency' => get_woocommerce_currency(),
             'language' => $lang[0],
             'country' => $location['country'],
-            'orderid' => ltrim($order->get_order_number(),'#')
+            'orderid' => ltrim($order->get_order_number(),'#'),
+            'logo' => (strlen($this->logo)> 0) ? $this->logo : ''
         );
 
         $orderValues['PaymentData']['accepturl']    = billmate_add_query_arg(array('wc-api' => 'WC_Gateway_Billmate_Checkout', 'payment' => 'success','method' => 'checkout'));
@@ -1264,6 +1265,12 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                 'description' => __( 'Please select the Privacy Policy page.', 'billmate' ),
                 'default'     => '',
                 'options' => $pageOption
+            ),
+            'billmate_common_enable_overlay' => array(
+                'title' => __('Enable Overlay','billmate'),
+                'type' => 'checkbox',
+                'description' => __('Enable visual focus in Billmate Checkout', 'billmate'),
+                'default' => 'no'
             )
         ) );
         

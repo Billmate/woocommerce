@@ -198,15 +198,19 @@ var BillmateIframe = new function(){
             self.childWindow = json.source;
             switch (json.event) {
                 case 'show_overlay':
-                    if (jQuery(document).find('#billmateCheckoutOverlay').length < 1) {
-                        var $div = jQuery('<div />').appendTo('body');
-                        $div.attr('id', 'billmateCheckoutOverlay');
+                    if (billmate.overlayEnabled) {
+                        if (jQuery(document).find('#billmateCheckoutOverlay').length < 1) {
+                            var $div = jQuery('<div />').appendTo('body');
+                            $div.attr('id', 'billmateCheckoutOverlay');
+                        }
+                        resizeBillmateCheckoutOverlay();
+                        jQuery('body').addClass('billmate-checkout-overlay');
                     }
-                    resizeBillmateCheckoutOverlay();
-                    jQuery('body').addClass('billmate-checkout-overlay');
                     break;
                 case 'hide_overlay':
-                    jQuery('body').removeClass('billmate-checkout-overlay');
+                    if (billmate.overlayEnabled) {
+                        jQuery('body').removeClass('billmate-checkout-overlay');
+                    }
                     break;
                 case 'go_to':
                     location.href = json.data;

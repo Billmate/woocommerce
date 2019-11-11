@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.5.0 (2019-11-11)
+*  Fix - WooCommerce built-in Checkout are using Billmate's new logos
+* Feature - Show/hide overlay in store when in Billmate Checkout
+
 ## 3.4.18 (2019-11-08)
 * Fix - Billmate Checkout page does not overwrite checkout page in WooCommerce settings
 
