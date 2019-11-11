@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.5.1 (2019-11-12)
+*  Fix - Checking orders for used coupons
+
 ## 3.5.0 (2019-11-11)
 *  Fix - WooCommerce built-in Checkout are using Billmate's new logos
 * Feature - Show/hide overlay in store when in Billmate Checkout
