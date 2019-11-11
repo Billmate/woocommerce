@@ -1426,7 +1426,7 @@ if(!class_exists('BillmateOrder')){
                     $isOneTaxrate = false;
                 }
             }
-            $coupons = WC()->cart->get_applied_coupons();
+            $coupons = $this->order->get_used_coupons();
             $codes = "";
             for ($i = 0; $i < count ($coupons); $i++) {
                 if ($i == count($coupons) - 1) {
