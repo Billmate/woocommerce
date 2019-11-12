@@ -4,7 +4,7 @@ Donate link:
 Tags: woocomerce, billmate, payments, cardpayments, invoice, partpayment, recurring, bankpayment
 Requires at least: 4.0
 Tested up to: 5.2.2
-Stable tag: 3.5.0
+Stable tag: 3.5.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 WC tested up to: 3.6.5
@@ -86,6 +86,8 @@ https://www.billmate.se/press-och-media/
 
 == Changelog ==
 
+=  3.5.1 (2019-11-11)
+*  Fix -  Checking orders for used coupons
 
 =  3.5.0 (2019-11-11)
 *  Fix - WooCommerce built-in Checkout are using Billmate's new logos
