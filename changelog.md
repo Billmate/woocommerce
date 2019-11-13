@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.6.0 (2019-11-13)
+*  Feature - Selected payment method in Billmate Checkout is shown in WooCommerce order details
+
 ## 3.5.1 (2019-11-12)
 *  Fix - Checking orders for used coupons
 
@@ -11,7 +14,7 @@
 * Fix - Billmate Checkout page does not overwrite checkout page in WooCommerce settings
 
 ## 3.4.17 (2019-11-06)
-* Enhancement ibrary file to use wordpress built-in functions instead of php curl
+* Enhancement library file to use wordpress built-in functions instead of php curl
 
 ## 3.4.16 (2019-11-04)
 * Fix - plugin to comply with Wordpress standards 
