@@ -1,7 +1,7 @@
 # Changelog
 
 ## 3.6.1 (2019-11-13)
-  * Fix - Revert back to 3.6.1 state
+  * Fix - Revert back to 3.5.1 state
 
 ## 3.6.0 (2019-11-13)
 *  Feature - Selected payment method in Billmate Checkout is shown in WooCommerce order details
