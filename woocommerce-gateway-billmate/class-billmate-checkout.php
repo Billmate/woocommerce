@@ -132,7 +132,9 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
     function change_to_bco($url){
         if (array_key_exists('payment', $_GET) || array_key_exists('wc-ajax', $_GET)){
-            return $url;
+            if ($_GET['wc-ajax'] == 'get_refreshed_fragments') {
+                return $url;
+            }
         }
         if(!is_admin()) {
             if($this->enabled == 'yes') {
