@@ -2,6 +2,7 @@
 
 ## 3.6.0 (2019-11-13)
 *  Feature - Selected payment method in Billmate Checkout is shown in WooCommerce order details
+*  Fix -  Aditional rules for checkout url to not be overwritten by billmatecheckout url
 
 ## 3.5.1 (2019-11-12)
 *  Fix - Checking orders for used coupons
