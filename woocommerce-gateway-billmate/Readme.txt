@@ -86,7 +86,7 @@ https://www.billmate.se/press-och-media/
 
 == Changelog ==
 
-=  3.5.1 (2019-11-11)
+=  3.5.1 (2019-11-12)
 *  Fix -  Checking orders for used coupons
 
 =  3.5.0 (2019-11-11)
