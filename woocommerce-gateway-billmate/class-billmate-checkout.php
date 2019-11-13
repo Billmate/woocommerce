@@ -117,7 +117,17 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
     }
 
     public function get_title() {
-        return $this->method_title;
+        if (ctype_digit($_GET['post'])){
+            if (get_post_status($_GET['post']) !== FALSE){
+                return esc_html(get_post_meta($_GET['post'], '_payment_method_title', true));
+            }
+            else {
+                return $this->method_title;
+            }
+        }
+        else {
+            return $this->method_title;
+        }
     }
 
     function change_to_bco($url){
