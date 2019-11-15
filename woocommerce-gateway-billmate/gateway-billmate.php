@@ -741,7 +741,76 @@ function init_billmate_gateway() {
                                 } else {
                                     $method_title = $method_title . ' (' . $billmateOrder['PaymentData']['method_name'] . ')';
                                 }
-                            } else {
+                            }
+                            else if (isset($billmateOrder['Cart']['Handling']['withouttax']) AND isset($billmateOrder['Cart']['Handling']['taxrate'])) {
+
+                                $billmateInvoice = new WC_Gateway_Billmate_Invoice();
+                                $invoice_fee = $billmateInvoice->invoice_fee;
+                                $invoice_fee_tax_class = $billmateInvoice->invoice_fee_tax_class;
+
+                                $feeTaxrate = intval($billmateOrder['Cart']['Handling']['taxrate']);
+
+                                $feeAmount = intval($billmateOrder['Cart']['Handling']['withouttax']);
+                                if ($feeAmount > 0) {
+                                    $feeAmount /= 100;
+                                }
+
+                                $feeTax = 0;
+                                if ($feeTaxrate > 0) {
+                                    $feeTax = ($feeAmount * (1 + ($feeTaxrate / 100))) - $feeAmount;
+                                }
+
+
+                                // Handling fee tax rates
+                                $tax = new WC_Tax();
+                                $rates = $tax->get_rates($invoice_fee_tax_class);
+                                $rate = $rates;
+                                $rate = array_pop($rate);
+                                $rate = $rate['rate'];
+
+                                $feeTaxdata = array();
+                                foreach ($rates AS $i => $rate) {
+                                    $feeTaxdata[$i] = wc_format_decimal(0);
+                                    if ($rate['rate'] > 0) {
+                                        $feeTaxdata[$i] = wc_format_decimal(($feeAmount * (1 + ($rate['rate'] / 100))) - $feeAmount);
+                                    }
+                                }
+
+                                $fee = new stdClass();
+                                $fee->name = __('Invoice fee', 'billmate');
+                                $fee->tax_class = $invoice_fee_tax_class;
+                                $fee->taxable = ($feeTax > 0) ? true : false;
+                                $fee->amount = wc_format_decimal($feeAmount);
+                                $fee->tax = wc_format_decimal($feeTax);
+                                $fee->tax_data = $feeTaxdata;
+
+                                if (version_compare(WC_VERSION, '3.0.0', '>=')) {
+                                    $item = new WC_Order_Item_Fee();
+                                    $item->set_props(array(
+                                        'name' => $fee->name,
+                                        'tax_class' => $fee->tax_class,
+                                        'total' => $fee->amount,
+                                        'total_tax' => $fee->tax,
+                                        'taxes' => array(
+                                            'total' => $fee->tax_data,
+                                        ),
+                                        'order_id' => $order->get_id(),
+                                    ));
+
+                                    $item->save();
+                                    $order->add_item($item);
+                                    $item_id = $item->get_id();
+
+                                    $order->calculate_totals(); // Recalculate order totals after fee is added
+
+                                } else {
+                                    $item_id = $order->add_fee($fee);
+                                }
+                                $order->calculate_taxes();
+                                $order->calculate_totals();
+                            }
+                            else
+                            {
                                 $method_title = $method_title . ' (' . $billmateOrder['PaymentData']['method_name'] . ')';
                             }
                         }
