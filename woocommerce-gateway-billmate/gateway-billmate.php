@@ -785,26 +785,40 @@ function init_billmate_gateway() {
                                 $fee->tax_data = $feeTaxdata;
 
                                 if (version_compare(WC_VERSION, '3.0.0', '>=')) {
-                                    $item = new WC_Order_Item_Fee();
-                                    $item->set_props(array(
-                                        'name' => $fee->name,
-                                        'tax_class' => $fee->tax_class,
-                                        'total' => $fee->amount,
-                                        'total_tax' => $fee->tax,
-                                        'taxes' => array(
-                                            'total' => $fee->tax_data,
-                                        ),
-                                        'order_id' => $order->get_id(),
-                                    ));
+                                    $run = true;
+                                    if ($order->get_meta('billmate_has_applied_invoice_fee', true) == 1){
+                                        $run = false;
+                                    }
+                                    if ($run) {
+                                        $item = new WC_Order_Item_Fee();
+                                        $item->set_props(array(
+                                            'name' => $fee->name,
+                                            'tax_class' => $fee->tax_class,
+                                            'total' => $fee->amount,
+                                            'total_tax' => $fee->tax,
+                                            'taxes' => array(
+                                                'total' => $fee->tax_data,
+                                            ),
+                                            'order_id' => $order->get_id(),
+                                        ));
 
-                                    $item->save();
-                                    $order->add_item($item);
-                                    $item_id = $item->get_id();
+                                        $item->save();
+                                        $order->add_item($item);
+                                        $item_id = $item->get_id();
 
-                                    $order->calculate_totals(); // Recalculate order totals after fee is added
+                                        $order->calculate_totals(); // Recalculate order totals after fee is added
+                                        $order->update_meta_data('billmate_has_applied_invoice_fee',1);
+                                    }
 
                                 } else {
-                                    $item_id = $order->add_fee($fee);
+                                    $run = true;
+                                    if ($order->get_meta('billmate_has_applied_invoice_fee', true) == 1){
+                                        $run = false;
+                                    }
+                                    if ($run) {
+                                        $item_id = $order->add_fee($fee);
+                                        $order->update_meta_data('billmate_has_applied_invoice_fee',1);
+                                    }
                                 }
                                 $order->calculate_taxes();
                                 $order->calculate_totals();
