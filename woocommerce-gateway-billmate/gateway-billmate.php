@@ -786,7 +786,7 @@ function init_billmate_gateway() {
 
                                 if (version_compare(WC_VERSION, '3.0.0', '>=')) {
                                     $run = true;
-                                    if ($order->get_meta('billmate_invoice_id', true) == $data['number']){
+                                    if ($order->get_meta('billmate_has_applied_invoice_fee', true) == 1){
                                         $run = false;
                                     }
                                     if ($run) {
@@ -807,15 +807,17 @@ function init_billmate_gateway() {
                                         $item_id = $item->get_id();
 
                                         $order->calculate_totals(); // Recalculate order totals after fee is added
+                                        $order->update_meta_data('billmate_has_applied_invoice_fee',1);
                                     }
 
                                 } else {
                                     $run = true;
-                                    if ($order->get_meta('billmate_invoice_id', true) == $data['number']){
+                                    if ($order->get_meta('billmate_has_applied_invoice_fee', true) == 1){
                                         $run = false;
                                     }
                                     if ($run) {
                                         $item_id = $order->add_fee($fee);
+                                        $order->update_meta_data('billmate_has_applied_invoice_fee',1);
                                     }
                                 }
                                 $order->calculate_taxes();
