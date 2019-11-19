@@ -3,7 +3,7 @@
 Plugin Name: Billmate Payment Gateway for WooCommerce
 Plugin URI: http://woothemes.com/woocommerce
 Description: Receive payments on your WooCommerce store via Billmate. Invoice, partpayment, credit/debit card and direct bank transfers. Secure and 100&#37; free plugin.
-Version: 3.5.1
+Version: __STABLE_TAG__
 Author: Billmate
 Text Domain: billmate
 Author URI: https://billmate.se
@@ -718,15 +718,38 @@ function init_billmate_gateway() {
                 $order_status = $order_status_terms[0];
             }
 
-
+            $billmateOrderNumber = (isset($data['number'])) ? $data['number'] : '';
             if (in_array($order_status, array('pending', 'cancelled', 'bm-incomplete', 'failed'))) {
 
                 // Make sure the selected payment method is saved on order
                 if ( version_compare(WC_VERSION, '3.0.0', '>=') AND $method_id != get_post_meta($order_id, '_payment_method') ) {
-                    $order->set_payment_method($method_id);
-                    $order->set_payment_method_title($method_title);
-                    update_post_meta($order_id, '_payment_method', $method_id);
-                    update_post_meta($order_id, '_payment_method_title', $method_title);
+                    if ($checkout) {
+                        $billmateOrder = $k->getPaymentinfo(array('number' => $billmateOrderNumber));
+                        if (isset($billmateOrder['PaymentData']['method_name']) AND $billmateOrder['PaymentData']['method_name'] != "") {
+                            if (strpos($billmateOrder['PaymentData']['method_name'], 'Del') !== false) {
+                                $pclasses = get_option('wc_gateway_billmate_partpayment_pclasses');
+                                $numberOfMonths = false;
+                                if ($pclasses) {
+                                    foreach ($pclasses as $pclass) {
+                                        if ($pclass['paymentplanid'] == $billmateOrder['PaymentData']['paymentplanid']) {
+                                            $numberOfMonths = sprintf(__('%s months', 'billmate'), $pclass['nbrofmonths']);
+                                        }
+                                    }
+                                }
+                                if ($numberOfMonths !== false) {
+                                    $method_title = $method_title . ' (' . $billmateOrder['PaymentData']['method_name'] . ' ' . $numberOfMonths . ')';
+                                } else {
+                                    $method_title = $method_title . ' (' . $billmateOrder['PaymentData']['method_name'] . ')';
+                                }
+                            } else {
+                                $method_title = $method_title . ' (' . $billmateOrder['PaymentData']['method_name'] . ')';
+                            }
+                        }
+                        $order->set_payment_method($method_id);
+                        $order->set_payment_method_title($method_title);
+                        update_post_meta($order_id, '_payment_method', $method_id);
+                        update_post_meta($order_id, '_payment_method_title', $method_title);
+                    }
                 }
 
                 // Bank payment can be pending
@@ -744,7 +767,6 @@ function init_billmate_gateway() {
                         $orderId = $order->id;
                     }
 
-                    $billmateOrderNumber = (isset($data['number'])) ? $data['number'] : '';
                     $billmateOrder = isset($billmateOrder) ? $billmateOrder : array();
                     if (!isset($billmateOrder['PaymentData']) AND $billmateOrderNumber != '') {
                         $billmateOrder = $k->getPaymentinfo(array('number' => $billmateOrderNumber));
@@ -827,17 +849,6 @@ function init_billmate_gateway() {
                     // If paid with Billmate Checkout, get payment method from Billmate order
                     if ( $checkout == true AND version_compare(WC_VERSION, '3.0.0', '>=') AND $method_id != get_post_meta($order_id, '_payment_method') ) {
                         $_method_title = $method_title;
-                        if ( $billmateOrderNumber != '' ) {
-                            if ( isset($billmateOrder['PaymentData']['method_name']) AND $billmateOrder['PaymentData']['method_name'] != "" ) {
-                                $_method_title = $_method_title . ' (' .$billmateOrder['PaymentData']['method_name']. ')';
-                            } else {
-                                $billmateOrderMethod = 1;   // 8 = card, 16 = bank
-                                if (isset($billmateOrder['PaymentData']['method'])) {
-                                    $billmateOrderMethod = $billmateOrder['PaymentData']['method'];
-                                }
-                            }
-
-                        }
                         $order->set_payment_method($method_id);
                         $order->set_payment_method_title($_method_title);
                         update_post_meta($order_id, '_payment_method', $method_id);

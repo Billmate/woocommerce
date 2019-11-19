@@ -4,7 +4,7 @@ Donate link:
 Tags: woocomerce, billmate, payments, cardpayments, invoice, partpayment, recurring, bankpayment
 Requires at least: 4.0
 Tested up to: 5.2.2
-Stable tag: 3.5.1
+Stable tag: __STABLE_TAG__
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 WC tested up to: 3.6.5
@@ -85,6 +85,10 @@ https://www.billmate.se/press-och-media/
 
 
 == Changelog ==
+
+=  3.6.0 (2019-11-13)
+*  Feature - Selected payment method in Billmate Checkout is shown in WooCommerce order details
+*  Fix - Aditional rules for checkout url to not be overwritten by billmatecheckout url
 
 =  3.5.1 (2019-11-12)
 *  Fix -  Checking orders for used coupons

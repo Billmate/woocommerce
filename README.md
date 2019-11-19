@@ -1,4 +1,4 @@
-#Billmate Payment Gateway for WooCommerce
+# Billmate Payment Gateway for WooCommerce
 By Billmate AB - [https://billmate.se](https://billmate.se/ "billmate.se")
 
 ## Documentation
