@@ -743,7 +743,7 @@ function init_billmate_gateway() {
                                 }
                             }
                             else if (isset($billmateOrder['Cart']['Handling']['withouttax']) AND isset($billmateOrder['Cart']['Handling']['taxrate'])) {
-
+                                $method_title = $method_title . ' (' . $billmateOrder['PaymentData']['method_name'] . ')';
                                 $billmateInvoice = new WC_Gateway_Billmate_Invoice();
                                 $invoice_fee = $billmateInvoice->invoice_fee;
                                 $invoice_fee_tax_class = $billmateInvoice->invoice_fee_tax_class;
