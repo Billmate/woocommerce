@@ -1,0 +1,12 @@
+{
+  "name": "billmate/",
+  "description": "An eCommerce toolkit that helps you sell anything. Beautifully.",
+  "homepage": "https://woocommerce.com/",
+  "type": "wordpress-plugin",
+  "license": "GPL-3.0-or-later",
+  "prefer-stable": true,
+  "minimum-stability": "dev",
+  "require-dev": {
+    "phpunit/phpunit": "^7.5"
+  }
+}
