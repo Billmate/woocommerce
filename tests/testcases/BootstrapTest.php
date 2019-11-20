@@ -18,7 +18,7 @@ class BootstrapTest extends PluginTestCase {
      */
     public function test_get_option() {
         Functions\expect( 'get_option' )
-            ->once() // called once
+            ->once()
             ->with( 'plugin-settings', get_option( 'plugin-settings', [] ) )
             ->andReturn( [] );
     }
