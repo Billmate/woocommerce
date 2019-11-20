@@ -107,45 +107,20 @@ class BillMate{
 		return array_map("utf8_decode",$response_array);
 	}
 	function curl($parameters) {
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, "http".($this->SSL?"s":"")."://".$this->URL);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $this->SSL);
-		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT,10);
-
-		// Start Mod Jesper.  Added cacert.pem to make sure server has the latest ssl certs.
-		$path = __DIR__.'/cacert.pem';
-		curl_setopt($ch,CURLOPT_CAINFO,$path);
-		// End mod Jesper
-		$vh = $this->SSL?((function_exists("phpversion") && function_exists("version_compare") && version_compare(phpversion(),'5.4','>=')) ? 2 : true):false;
-		if($this->SSL){
-			if(function_exists("phpversion") && function_exists("version_compare")){
-				$cv = curl_version();
-				if(version_compare(phpversion(),'5.4','>=') || version_compare($cv["version"],'7.28.1','>='))
-					$vh = 2;
-				else $vh = true;
-			}
-			else
-				$vh = true;
-		}
-		else
-			$vh = false;
-		@curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, $vh);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-		    'Content-Type: application/json',
-		    'Content-Length: ' . strlen($parameters))
-		);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $parameters);
-		$data = curl_exec($ch);
-		if (curl_errno($ch)){
-	        $curlerror = curl_error($ch);
-	        return json_encode(array("code"=>9510,"message"=>htmlentities($curlerror)));
-		} else
-			curl_close($ch);
-		if(strlen($data) == 0){
-			return json_encode(array("code" => 9510,"message" => htmlentities("Communication Error")));
-		}
-	    return $data;
+	    $params = array(
+            'body' => $parameters,
+            'method'      => 'POST',
+            'timeout'     => 45,
+            'redirection' => 5,
+            'httpversion' => '1.0',
+            'blocking'    => true,
+            'headers'     => array(
+                'Content-Type' => 'application/json',
+                'Content-Length' => strlen($parameters)
+            )
+        );
+	    $response = wp_remote_get("http".($this->SSL?"s":"")."://".$this->URL, $params);
+        return $response['body'];
 	}
 	function hash($args) {
 		$this->out("TO BE HASHED DATA",$args);

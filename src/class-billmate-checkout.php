@@ -117,10 +117,30 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
     }
 
     public function get_title() {
-        return $this->method_title;
+        if (ctype_digit($_GET['post'])){
+            if (get_post_status($_GET['post']) !== FALSE){
+                return esc_html(get_post_meta($_GET['post'], '_payment_method_title', true));
+            }
+            else {
+                return $this->method_title;
+            }
+        }
+        else {
+            return $this->method_title;
+        }
     }
 
     function change_to_bco($url){
+        $redirect = true;
+        $traces = debug_backtrace();
+        foreach ($traces as $trace){
+            if ($trace['function'] == 'get_checkout_order_received_url'){
+                $redirect = false;
+            }
+        }
+        if (array_key_exists('payment', $_GET) || !$redirect){
+            return $url;
+        }
         if(!is_admin()) {
             if($this->enabled == 'yes') {
                 if("sv" == strtolower(current(explode('_',get_locale())))) {
@@ -390,7 +410,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
             $orderId = $this->create_order();
             $order = wc_get_order( $orderId );
-            $post = $_POST;
+            $post = $this->woocommerce_clean($_POST);
 
             // shipping_pre_address_save will be used later to check if new address affect shipping cost
             $billmateOrder = new BillmateOrder($order);
@@ -545,7 +565,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
     }
 
     function billmate_update_order_comments() {
-        $order_comments = (isset($_POST['order_comments'])) ? $_POST['order_comments'] : '';
+        $order_comments = (isset($_POST['order_comments'])) ? esc_html($_POST['order_comments']) : '';
         $orderId = $this->create_order();
         $order = wc_get_order( $orderId );
         $order->set_customer_note( $order_comments );
@@ -557,8 +577,8 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             exit( 'Nonce can not be verified.' );
         }
         global $woocommerce;
-        $updated_item_key = $_REQUEST['cart_item_key'];
-        $new_quantity     = $_REQUEST['new_quantity'];
+        $updated_item_key = $this->woocommerce_clean($_REQUEST['cart_item_key']);
+        $new_quantity     = $this->woocommerce_clean($_REQUEST['new_quantity']);
         if ( ! defined( 'WOOCOMMERCE_CART' ) ) {
             define( 'WOOCOMMERCE_CART', true );
         }
@@ -937,7 +957,8 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             'currency' => get_woocommerce_currency(),
             'language' => $lang[0],
             'country' => $location['country'],
-            'orderid' => ltrim($order->get_order_number(),'#')
+            'orderid' => ltrim($order->get_order_number(),'#'),
+            'logo' => (strlen($this->logo)> 0) ? $this->logo : ''
         );
 
         $orderValues['PaymentData']['accepturl']    = billmate_add_query_arg(array('wc-api' => 'WC_Gateway_Billmate_Checkout', 'payment' => 'success','method' => 'checkout'));
@@ -1261,6 +1282,12 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                 'description' => __( 'Please select the Privacy Policy page.', 'billmate' ),
                 'default'     => '',
                 'options' => $pageOption
+            ),
+            'billmate_common_enable_overlay' => array(
+                'title' => __('Enable Overlay','billmate'),
+                'type' => 'checkbox',
+                'description' => __('Enable visual focus in Billmate Checkout', 'billmate'),
+                'default' => 'no'
             )
         ) );
         
@@ -1280,6 +1307,13 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
     public function getBillmateConnection() {
         return new BillMate( $this->eid, $this->secret, true, $this->testmode == 'yes', false, $this->getRequestMeta() );
+    }
+
+    private function woocommerce_clean($var = "") {
+        if(version_compare(WC_VERSION, '3.0.0', '>=')) {
+            return wc_clean($var);
+        }
+        return woocommerce_clean($var);
     }
 }
 class WC_Gateway_Billmate_Checkout_Extra{
