@@ -839,6 +839,8 @@ function init_billmate_gateway() {
                 if ( $data['status'] == 'Pending' AND $checkout == true) {
                     $order->add_order_note(__($payment_note,'billmate'));
                     $order->update_status('pending');
+                    add_post_meta($order->get_id(), 'billmate_invoice_id', $data['number']);
+                    $order->add_order_note(sprintf(__('Billmate Invoice id: %s','billmate'),$data['number']));
                     delete_transient($transientPrefix.$order_id);
                 }
 
