@@ -8,7 +8,7 @@ PLUGIN_SLUG="billmate-payment-gateway-for-woocommerce"
 TAG=$(sed -e "s/refs\/tags\///g" <<< $GITHUB_REF)
 
 # Replace the version in these 2 files.
-sed -i -e "s/__STABLE_TAG__/$TAG/g" ./src/readme.txt
+sed -i -e "s/__STABLE_TAG__/$TAG/g" ./src/Readme.txt
 sed -i -e "s/__STABLE_TAG__/$TAG/g" "./src/gateway-billmate.php"
 
 # Get the SVN data from wp.org in a folder named `svn`
