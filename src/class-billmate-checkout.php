@@ -1208,6 +1208,11 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             }
         }
 
+        $checkoutModeOptions = array(
+            'private' => __('Individual'),
+            'business' => __('Business')
+        );
+
 
         $args = array(
             'sort_order' => 'asc',
@@ -1288,9 +1293,16 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                 'type' => 'checkbox',
                 'description' => __('Enable visual focus in Billmate Checkout', 'billmate'),
                 'default' => 'no'
+            ),
+            'checkout_mode' => array(
+                'title' => __('Checkout Mode','billmate'),
+                'type' => 'select',
+                'description' => __('Choose if checkout should be initialized in Individual mode or Business mode','billmate'),
+                'default' => 'default',
+                'options' => $checkoutModeOptions
             )
         ) );
-        
+
 
     }
 
