@@ -86,6 +86,10 @@ https://www.billmate.se/press-och-media/
 
 == Changelog ==
 
+=  3.6.2 (2019-11-20)
+*  Feature - Selected payment method in Billmate Checkout is shown in WooCommerce order details
+*  Fix - Additional rules for checkout url to not be overwritten by billmatecheckout url
+
 =  3.6.0 (2019-11-13)
 *  Feature - Selected payment method in Billmate Checkout is shown in WooCommerce order details
 *  Fix - Aditional rules for checkout url to not be overwritten by billmatecheckout url
