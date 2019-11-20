@@ -1,4 +1,4 @@
-<?php @session_start(['read_and_close' => true,]);
+<?php @session_start();
 require_once "commonfunctions.php";
 
 class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
