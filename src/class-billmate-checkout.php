@@ -1212,8 +1212,8 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         }
 
         $checkoutModeOptions = array(
-            'private' => __('Individual'),
-            'business' => __('Business')
+            'private' => __('Consumer', 'billmate'),
+            'business' => __('Company', 'billmate')
         );
 
 
@@ -1298,9 +1298,9 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                 'default' => 'no'
             ),
             'billmate_checkout_mode' => array(
-                'title' => __('Checkout Mode','billmate'),
+                'title' => __('Checkout MODE','billmate'),
                 'type' => 'select',
-                'description' => __('Choose if checkout should be initialized in Individual mode or Business mode','billmate'),
+                'description' => __('Choose whether you want to emphasize shopping as a company or consumer first in Billmate Checkout.','billmate'),
                 'default' => 'default',
                 'options' => $checkoutModeOptions
             )
