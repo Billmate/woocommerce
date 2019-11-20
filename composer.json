@@ -8,11 +8,20 @@
   "minimum-stability": "dev",
   "require-dev": {
     "phpunit/phpunit": "^7.5",
-    "wp-coding-standards/wpcs": "^2.2"
+    "wp-coding-standards/wpcs": "^2.2",
+    "brain/monkey": "^2.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "Billmate\\WooCommerce\\": "src/",
+      "Billmate\\WooCommerce\\Tests\\": "tests/",
+      "Billmate\\WooCommerce\\Tests\\Inc\\": "tests/inc/",
+      "Billmate\\WooCommerce\\Tests\\TestCases\\": "tests/testcases/"
+    }
   },
   "scripts": {
-    "php:codesniffer": "vendor/bin/phpcs src/ vendor/wp-coding-standards/wpcs/",
-    "php:unit-tests": "vendor/bin/phpunit Tests/",
+    "php:codesniffer": "phpcs --standard=WordPress-Extra src/ tests/",
+    "php:unit-tests": "phpunit Tests/",
     "tests:all": "composer php:codesniffer && composer php:unit-tests"
   }
 }
