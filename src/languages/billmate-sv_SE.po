@@ -1040,6 +1040,12 @@ msgstr "Aktivera visuellt fokus i Billmate Checkout"
 msgid "Enable Overlay"
 msgstr "Visuellt Fokus"
 
+<<<<<<< HEAD:woocommerce-gateway-billmate/languages/billmate-sv_SE.po
+=======
+msgid "%s months"
+msgstr "%s månader"
+
+>>>>>>> dev:src/languages/billmate-sv_SE.po
 #~ msgid "Subscription Payment Failed: "
 #~ msgstr "Prenumerationsbetalning misslyckades:"
 

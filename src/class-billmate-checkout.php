@@ -117,11 +117,28 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
     }
 
     public function get_title() {
-        return $this->method_title;
+        if (ctype_digit($_GET['post'])){
+            if (get_post_status($_GET['post']) !== FALSE){
+                return esc_html(get_post_meta($_GET['post'], '_payment_method_title', true));
+            }
+            else {
+                return $this->method_title;
+            }
+        }
+        else {
+            return $this->method_title;
+        }
     }
 
     function change_to_bco($url){
-        if (array_key_exists('payment', $_GET)){
+        $redirect = true;
+        $traces = debug_backtrace();
+        foreach ($traces as $trace){
+            if ($trace['function'] == 'get_checkout_order_received_url'){
+                $redirect = false;
+            }
+        }
+        if (array_key_exists('payment', $_GET) || !$redirect){
             return $url;
         }
         if(!is_admin()) {
