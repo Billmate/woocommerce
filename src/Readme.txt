@@ -87,7 +87,7 @@ https://www.billmate.se/press-och-media/
 == Changelog ==
 
   3.7.0 (2019-11-25)
-*  Feature - Support for choosing Billmate Checkout to act as a company or individual to prompt first.
+*  Feature - Support for choosing Billmate Checkout to act as a company or individual to prompt first
 *  Feature - Orders that get status pending now showing Billmate invoice number in the orderdetails
 *  Fix - Incorrect purchases in Billmate Checkout redirect to Billmate Checkout page instead of the standard checkout page
 
