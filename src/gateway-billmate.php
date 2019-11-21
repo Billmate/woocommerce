@@ -3,7 +3,7 @@
 Plugin Name: Billmate Payment Gateway for WooCommerce
 Plugin URI: http://woothemes.com/woocommerce
 Description: Receive payments on your WooCommerce store via Billmate. Invoice, partpayment, credit/debit card and direct bank transfers. Secure and 100&#37; free plugin.
-Version: 3.4.18
+Version: __STABLE_TAG__
 Author: Billmate
 Text Domain: billmate
 Author URI: https://billmate.se
@@ -440,8 +440,15 @@ function init_billmate_gateway() {
 
 				wp_register_script( 'billmate-checkout-js', plugins_url( '/js/billmatecheckout.js', __FILE__ ),array(),false, true );
 				wp_enqueue_script( 'billmate-checkout-js' );
+
+                if (get_option('woocommerce_billmate_checkout_settings')['billmate_common_enable_overlay'] != 'yes'){
+                    $overlayEnabled = false;
+                }
+                else {
+                    $overlayEnabled = true;
+                }
 				wp_localize_script( 'billmate-checkout-js', 'billmate',
-					array( 'ajax_url' => admin_url( 'admin-ajax.php' ),'billmate_checkout_nonce' => wp_create_nonce('billmate_checkout_nonce')) );
+					array( 'ajax_url' => admin_url( 'admin-ajax.php' ),'billmate_checkout_nonce' => wp_create_nonce('billmate_checkout_nonce'), 'overlayEnabled' => $overlayEnabled) );
 
 			}
 
@@ -711,21 +718,129 @@ function init_billmate_gateway() {
                 $order_status = $order_status_terms[0];
             }
 
-
+            $billmateOrderNumber = (isset($data['number'])) ? $data['number'] : '';
             if (in_array($order_status, array('pending', 'cancelled', 'bm-incomplete', 'failed'))) {
 
                 // Make sure the selected payment method is saved on order
                 if ( version_compare(WC_VERSION, '3.0.0', '>=') AND $method_id != get_post_meta($order_id, '_payment_method') ) {
-                    $order->set_payment_method($method_id);
-                    $order->set_payment_method_title($method_title);
-                    update_post_meta($order_id, '_payment_method', $method_id);
-                    update_post_meta($order_id, '_payment_method_title', $method_title);
+                    if ($checkout) {
+                        $billmateOrder = $k->getPaymentinfo(array('number' => $billmateOrderNumber));
+                        if (isset($billmateOrder['PaymentData']['method_name']) AND $billmateOrder['PaymentData']['method_name'] != "") {
+                            if (strpos($billmateOrder['PaymentData']['method_name'], 'Del') !== false) {
+                                $pclasses = get_option('wc_gateway_billmate_partpayment_pclasses');
+                                $numberOfMonths = false;
+                                if ($pclasses) {
+                                    foreach ($pclasses as $pclass) {
+                                        if ($pclass['paymentplanid'] == $billmateOrder['PaymentData']['paymentplanid']) {
+                                            $numberOfMonths = sprintf(__('%s months', 'billmate'), $pclass['nbrofmonths']);
+                                        }
+                                    }
+                                }
+                                if ($numberOfMonths !== false) {
+                                    $method_title = $method_title . ' (' . $billmateOrder['PaymentData']['method_name'] . ' ' . $numberOfMonths . ')';
+                                } else {
+                                    $method_title = $method_title . ' (' . $billmateOrder['PaymentData']['method_name'] . ')';
+                                }
+                            }
+                            else if (isset($billmateOrder['Cart']['Handling']['withouttax']) AND isset($billmateOrder['Cart']['Handling']['taxrate'])) {
+                                $method_title = $method_title . ' (' . $billmateOrder['PaymentData']['method_name'] . ')';
+                                $billmateInvoice = new WC_Gateway_Billmate_Invoice();
+                                $invoice_fee = $billmateInvoice->invoice_fee;
+                                $invoice_fee_tax_class = $billmateInvoice->invoice_fee_tax_class;
+
+                                $feeTaxrate = intval($billmateOrder['Cart']['Handling']['taxrate']);
+
+                                $feeAmount = intval($billmateOrder['Cart']['Handling']['withouttax']);
+                                if ($feeAmount > 0) {
+                                    $feeAmount /= 100;
+                                }
+
+                                $feeTax = 0;
+                                if ($feeTaxrate > 0) {
+                                    $feeTax = ($feeAmount * (1 + ($feeTaxrate / 100))) - $feeAmount;
+                                }
+
+
+                                // Handling fee tax rates
+                                $tax = new WC_Tax();
+                                $rates = $tax->get_rates($invoice_fee_tax_class);
+                                $rate = $rates;
+                                $rate = array_pop($rate);
+                                $rate = $rate['rate'];
+
+                                $feeTaxdata = array();
+                                foreach ($rates AS $i => $rate) {
+                                    $feeTaxdata[$i] = wc_format_decimal(0);
+                                    if ($rate['rate'] > 0) {
+                                        $feeTaxdata[$i] = wc_format_decimal(($feeAmount * (1 + ($rate['rate'] / 100))) - $feeAmount);
+                                    }
+                                }
+
+                                $fee = new stdClass();
+                                $fee->name = __('Invoice fee', 'billmate');
+                                $fee->tax_class = $invoice_fee_tax_class;
+                                $fee->taxable = ($feeTax > 0) ? true : false;
+                                $fee->amount = wc_format_decimal($feeAmount);
+                                $fee->tax = wc_format_decimal($feeTax);
+                                $fee->tax_data = $feeTaxdata;
+
+                                if (version_compare(WC_VERSION, '3.0.0', '>=')) {
+                                    $run = true;
+                                    if ($order->get_meta('billmate_has_applied_invoice_fee', true) == 1){
+                                        $run = false;
+                                    }
+                                    if ($run) {
+                                        $item = new WC_Order_Item_Fee();
+                                        $item->set_props(array(
+                                            'name' => $fee->name,
+                                            'tax_class' => $fee->tax_class,
+                                            'total' => $fee->amount,
+                                            'total_tax' => $fee->tax,
+                                            'taxes' => array(
+                                                'total' => $fee->tax_data,
+                                            ),
+                                            'order_id' => $order->get_id(),
+                                        ));
+
+                                        $item->save();
+                                        $order->add_item($item);
+                                        $item_id = $item->get_id();
+
+                                        $order->calculate_totals(); // Recalculate order totals after fee is added
+                                        $order->update_meta_data('billmate_has_applied_invoice_fee',1);
+                                    }
+
+                                } else {
+                                    $run = true;
+                                    if ($order->get_meta('billmate_has_applied_invoice_fee', true) == 1){
+                                        $run = false;
+                                    }
+                                    if ($run) {
+                                        $item_id = $order->add_fee($fee);
+                                        $order->update_meta_data('billmate_has_applied_invoice_fee',1);
+                                    }
+                                }
+                                $order->calculate_taxes();
+                                $order->calculate_totals();
+                            }
+                            else
+                            {
+                                $method_title = $method_title . ' (' . $billmateOrder['PaymentData']['method_name'] . ')';
+                            }
+                        }
+                        $order->set_payment_method($method_id);
+                        $order->set_payment_method_title($method_title);
+                        update_post_meta($order_id, '_payment_method', $method_id);
+                        update_post_meta($order_id, '_payment_method_title', $method_title);
+                    }
                 }
 
                 // Bank payment can be pending
                 if ( $data['status'] == 'Pending' AND $checkout == true) {
                     $order->add_order_note(__($payment_note,'billmate'));
                     $order->update_status('pending');
+                    add_post_meta($order->get_id(), 'billmate_invoice_id', $data['number']);
+                    $order->add_order_note(sprintf(__('Billmate Invoice id: %s','billmate'),$data['number']));
                     delete_transient($transientPrefix.$order_id);
                 }
 
@@ -737,7 +852,6 @@ function init_billmate_gateway() {
                         $orderId = $order->id;
                     }
 
-                    $billmateOrderNumber = (isset($data['number'])) ? $data['number'] : '';
                     $billmateOrder = isset($billmateOrder) ? $billmateOrder : array();
                     if (!isset($billmateOrder['PaymentData']) AND $billmateOrderNumber != '') {
                         $billmateOrder = $k->getPaymentinfo(array('number' => $billmateOrderNumber));
@@ -820,17 +934,6 @@ function init_billmate_gateway() {
                     // If paid with Billmate Checkout, get payment method from Billmate order
                     if ( $checkout == true AND version_compare(WC_VERSION, '3.0.0', '>=') AND $method_id != get_post_meta($order_id, '_payment_method') ) {
                         $_method_title = $method_title;
-                        if ( $billmateOrderNumber != '' ) {
-                            if ( isset($billmateOrder['PaymentData']['method_name']) AND $billmateOrder['PaymentData']['method_name'] != "" ) {
-                                $_method_title = $_method_title . ' (' .$billmateOrder['PaymentData']['method_name']. ')';
-                            } else {
-                                $billmateOrderMethod = 1;   // 8 = card, 16 = bank
-                                if (isset($billmateOrder['PaymentData']['method'])) {
-                                    $billmateOrderMethod = $billmateOrder['PaymentData']['method'];
-                                }
-                            }
-
-                        }
                         $order->set_payment_method($method_id);
                         $order->set_payment_method_title($_method_title);
                         update_post_meta($order_id, '_payment_method', $method_id);

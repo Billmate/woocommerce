@@ -117,11 +117,28 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
     }
 
     public function get_title() {
-        return $this->method_title;
+        if (ctype_digit($_GET['post'])){
+            if (get_post_status($_GET['post']) !== FALSE){
+                return esc_html(get_post_meta($_GET['post'], '_payment_method_title', true));
+            }
+            else {
+                return $this->method_title;
+            }
+        }
+        else {
+            return $this->method_title;
+        }
     }
 
     function change_to_bco($url){
-        if (array_key_exists('payment', $_GET)){
+        $redirect = true;
+        $traces = debug_backtrace();
+        foreach ($traces as $trace){
+            if ($trace['function'] == 'get_checkout_order_received_url'){
+                $redirect = false;
+            }
+        }
+        if (!$redirect){
             return $url;
         }
         if(!is_admin()) {
@@ -931,6 +948,9 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         if ($this->privacy_policy_url > 0) {
             $orderValues['CheckoutData']['privacyPolicy'] = get_permalink($this->privacy_policy_url);
         }
+        if (get_option('woocommerce_billmate_checkout_settings')['billmate_checkout_mode'] == "business"){
+            $orderValues['CheckoutData']['companyView'] = "true";
+        }
 
         $lang = explode('_',get_locale());
 
@@ -940,7 +960,8 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             'currency' => get_woocommerce_currency(),
             'language' => $lang[0],
             'country' => $location['country'],
-            'orderid' => ltrim($order->get_order_number(),'#')
+            'orderid' => ltrim($order->get_order_number(),'#'),
+            'logo' => (strlen($this->logo)> 0) ? $this->logo : ''
         );
 
         $orderValues['PaymentData']['accepturl']    = billmate_add_query_arg(array('wc-api' => 'WC_Gateway_Billmate_Checkout', 'payment' => 'success','method' => 'checkout'));
@@ -1190,6 +1211,11 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             }
         }
 
+        $checkoutModeOptions = array(
+            'private' => __('Consumer', 'billmate'),
+            'business' => __('Company', 'billmate')
+        );
+
 
         $args = array(
             'sort_order' => 'asc',
@@ -1264,9 +1290,22 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                 'description' => __( 'Please select the Privacy Policy page.', 'billmate' ),
                 'default'     => '',
                 'options' => $pageOption
+            ),
+            'billmate_common_enable_overlay' => array(
+                'title' => __('Enable Overlay','billmate'),
+                'type' => 'checkbox',
+                'description' => __('Enable visual focus in Billmate Checkout', 'billmate'),
+                'default' => 'no'
+            ),
+            'billmate_checkout_mode' => array(
+                'title' => __('Checkout MODE','billmate'),
+                'type' => 'select',
+                'description' => __('Choose whether you want to emphasize shopping as a company or consumer first in Billmate Checkout.','billmate'),
+                'default' => 'default',
+                'options' => $checkoutModeOptions
             )
         ) );
-        
+
 
     }
 

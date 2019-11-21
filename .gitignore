@@ -1,4 +1,7 @@
 woocommerce-gateway-billmate/billmatecustom.css
 woocommerce-gateway-billmate/srv/billmatepclasses.json
+src/billmatecustom.css
+src/srv/billmatepclasses.json
 .idea
 .DS_Store
+vendor

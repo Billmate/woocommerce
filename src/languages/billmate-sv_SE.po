@@ -1061,6 +1061,27 @@ msgstr "Billmate Checkout kunde inte laddas, vänligen kontakta butiksansvarig. 
 msgid "Select another payment method"
 msgstr "Välj ett annat betalsätt"
 
+msgid "Enable visual focus in Billmate Checkout"
+msgstr "Aktivera visuellt fokus i Billmate Checkout"
+
+msgid "Enable Overlay"
+msgstr "Visuellt Fokus"
+
+msgid "%s months"
+msgstr "%s månader"
+
+msgid "Company"
+msgstr "Företag"
+
+msgid "Consumer"
+msgstr "Privatperson"
+
+msgid "Checkout MODE"
+msgstr "Kassaläge"
+
+msgid "Choose whether you want to emphasize shopping as a company or consumer first in Billmate Checkout."
+msgstr "Välj om du vill framhäva handla som företag eller privatperson först i Billmate Checkout."
+
 #~ msgid "Subscription Payment Failed: "
 #~ msgstr "Prenumerationsbetalning misslyckades:"
 
