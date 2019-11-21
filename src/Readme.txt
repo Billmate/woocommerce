@@ -91,9 +91,6 @@ https://www.billmate.se/press-och-media/
 *  Feature - Orders that get status pending now showing Billmate invoice number in the orderdetails
 *  Fix - Incorrect purchases in Billmate Checkout redirect to Billmate Checkout page instead of the standard checkout page
 
-
-*  Fix - Additional rules for checkout url to not be overwritten by billmatecheckout url
-
 =  3.6.2 (2019-11-20)
 *  Feature - Selected payment method in Billmate Checkout is shown in WooCommerce order details
 *  Fix - Additional rules for checkout url to not be overwritten by billmatecheckout url
