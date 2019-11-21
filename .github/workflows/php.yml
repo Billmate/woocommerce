@@ -19,5 +19,5 @@ jobs:
       - name: Run PHP codesniffer
         run: composer run php:codesniffer
 
-      - name: Run PHP Unit est suite
+      - name: Run PHP Unit test suite
         run: composer run php:unit-tests
