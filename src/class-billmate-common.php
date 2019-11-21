@@ -88,8 +88,8 @@ class BillmateCommon {
 	}
 	public function clear_pno($result,$order_id = null)
 	{
-		if(isset($_SESSION['billmate_pno']))
-			unset($_SESSION['billmate_pno']);
+		if(WC()->session->get('billmate_pno') !== null)
+			WC()->session->set('billmate_pno', null);
 		return $result;
 
 	}
@@ -104,7 +104,7 @@ class BillmateCommon {
                     </p>
                     <div class="clear"></div>
                     <p class="form-row form-row-first">
-                        <input type="text" autocomplete="off" name="pno" label="12345678-1235" class="form-row-wide input-text" value="<?php echo isset($_SESSION['billmate_pno']) ? $_SESSION['billmate_pno'] : ''; ?>"/>
+                        <input type="text" autocomplete="off" name="pno" label="12345678-1235" class="form-row-wide input-text" value="<?php echo WC()->session->get('billmate_pno') !== null ? C()->session->get('billmate_pno') : ''; ?>"/>
                     </p>
                     <p class="form-row form-row-last">
                         <label></label>
@@ -130,7 +130,7 @@ class BillmateCommon {
     {
 
         $billmate = new BillMate(get_option('billmate_common_eid'),get_option('billmate_common_secret'),true,false,false);
-		$_SESSION['billmate_pno'] = sanitize_text_field($_POST['pno']);
+        WC()->session->set('billmate_pno', sanitize_text_field($_POST['pno']));
         $addr = $billmate->getAddress(array('pno' => sanitize_text_field($_POST['pno'])));
         if(isset($addr['code'])) {
             $response['success'] = false;

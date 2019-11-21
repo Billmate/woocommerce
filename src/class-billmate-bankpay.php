@@ -12,8 +12,6 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
 	public function __construct() {
 		global $woocommerce;
 
-		if( !empty($_SESSION['order_created']) ) $_SESSION['order_created'] = '';
-
 		parent::__construct();
 
 		$this->id			= 'billmate_bankpay';
