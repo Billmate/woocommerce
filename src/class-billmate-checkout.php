@@ -138,7 +138,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                 $redirect = false;
             }
         }
-        if (array_key_exists('payment', $_GET) || !$redirect){
+        if (!$redirect){
             return $url;
         }
         if(!is_admin()) {
