@@ -1,0 +1,29 @@
+{
+  "name": "billmate/billmate-payment-gateway-for-woocommerce",
+  "description": "An eCommerce toolkit that helps you sell anything. Beautifully.",
+  "homepage": "https://woocommerce.com/",
+  "type": "wordpress-plugin",
+  "license": "GPL-3.0-or-later",
+  "prefer-stable": true,
+  "minimum-stability": "dev",
+  "require-dev": {
+    "phpunit/phpunit": "^7.5",
+    "wp-coding-standards/wpcs": "^2.2",
+    "brain/monkey": "^2.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "Billmate\\WooCommerce\\": "src/",
+      "Billmate\\WooCommerce\\Tests\\": "tests/",
+      "Billmate\\WooCommerce\\Tests\\Inc\\": "tests/inc/",
+      "Billmate\\WooCommerce\\Tests\\TestCases\\": "tests/testcases/"
+    }
+  },
+  "scripts": {
+    "post-install-cmd": "phpcs --config-set installed_paths vendor/wp-coding-standards/wpcs",
+    "post-update-cmd" : "phpcs --config-set installed_paths vendor/wp-coding-standards/wpcs",
+    "php:codesniffer": "phpcs --report=full --colors -p --standard=WordPress-Extra src/ tests/",
+    "php:unit-tests": "phpunit Tests/",
+    "tests:all": "composer php:codesniffer && composer php:unit-tests"
+  }
+}
