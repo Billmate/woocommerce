@@ -104,7 +104,7 @@ class BillmateCommon {
                     </p>
                     <div class="clear"></div>
                     <p class="form-row form-row-first">
-                        <input type="text" autocomplete="off" name="pno" label="12345678-1235" class="form-row-wide input-text" value="<?php echo WC()->session->get('billmate_pno') !== null ? C()->session->get('billmate_pno') : ''; ?>"/>
+                        <input type="text" autocomplete="off" name="pno" label="12345678-1235" class="form-row-wide input-text" value="<?php echo WC()->session->get('billmate_pno') !== null ? WC()->session->get('billmate_pno') : ''; ?>"/>
                     </p>
                     <p class="form-row form-row-last">
                         <label></label>
