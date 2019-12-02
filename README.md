@@ -61,5 +61,24 @@ Copy the code below for the size that fits your needs.
 ## Testing
 Tested with [Browserstack](http://www.browserstack.com)
 
+## Development
+The development tools are available through Composer scripts.
+
+To get all the necessary dependencies from composer, run this command in root directory:
+
+    composer install
+
+Run PHP codesniffer with WP coding standards:
+
+    composer run php:codesniffer
+
+Run PHPUnit for Unit tests:
+
+    composer run php:unit-tests
+
+To run the full test suite:
+
+    composer run tests:all
+
 ---
 Original code created by Niklas Högefjord - http://krokedil.com/

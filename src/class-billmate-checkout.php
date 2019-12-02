@@ -138,7 +138,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                 $redirect = false;
             }
         }
-        if (array_key_exists('payment', $_GET) || !$redirect){
+        if (!$redirect){
             return $url;
         }
         if(!is_admin()) {
@@ -948,6 +948,9 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         if ($this->privacy_policy_url > 0) {
             $orderValues['CheckoutData']['privacyPolicy'] = get_permalink($this->privacy_policy_url);
         }
+        if (get_option('woocommerce_billmate_checkout_settings')['billmate_checkout_mode'] == "business"){
+            $orderValues['CheckoutData']['companyView'] = "true";
+        }
 
         $lang = explode('_',get_locale());
 
@@ -1208,6 +1211,11 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             }
         }
 
+        $checkoutModeOptions = array(
+            'private' => __('Consumer', 'billmate'),
+            'business' => __('Company', 'billmate')
+        );
+
 
         $args = array(
             'sort_order' => 'asc',
@@ -1288,9 +1296,16 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
                 'type' => 'checkbox',
                 'description' => __('Enable visual focus in Billmate Checkout', 'billmate'),
                 'default' => 'no'
+            ),
+            'billmate_checkout_mode' => array(
+                'title' => __('Checkout MODE','billmate'),
+                'type' => 'select',
+                'description' => __('Choose whether you want to emphasize shopping as a company or consumer first in Billmate Checkout.','billmate'),
+                'default' => 'default',
+                'options' => $checkoutModeOptions
             )
         ) );
-        
+
 
     }
 

@@ -84,6 +84,14 @@ If you would like to use our logos on your site:
 https://www.billmate.se/press-och-media/
 == Changelog ==
 
+  3.7.1 (2019-11-22)
+ *  Fix - Loopback request that failure in WP built in site health
+ 
+  3.7.0 (2019-11-21)
+*  Feature - Support for choosing Billmate Checkout to act as a company or individual to prompt first
+*  Feature - Orders that get status pending now showing Billmate invoice number in the orderdetails
+*  Fix - Incorrect purchases in Billmate Checkout redirect to Billmate Checkout page instead of the standard checkout page
+
 =  3.6.2 (2019-11-20)
 *  Feature - Selected payment method in Billmate Checkout is shown in WooCommerce order details
 *  Fix - Additional rules for checkout url to not be overwritten by billmatecheckout url
