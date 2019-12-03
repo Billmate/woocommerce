@@ -303,63 +303,6 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
                 <a href="https://billmate.se/plugins/manual/Installationsmanual_Woocommerce_Billmate.pdf" target="_blank">Installationsmanual Billmate Modul ( Manual Svenska )</a><br />
                 <a href="https://billmate.se/plugins/manual/Installation_Manual_Woocommerce_Billmate.pdf" target="_blank">Installation Manual Billmate ( Manual English )</a>
             </p>
-        <?php
-        $content = get_option('wc_gateway_billmate_partpayment_pclasses',false);
-        if($content){
-            //$fields = array(_e('eid','billmate'),_e('paymentplanid','billmate'),_e('description','billmate'),_e('months','billmate'),_e('interestrate','billmate'),_e('startfee','billmate'),_e('handlingfee','billmate'),_e('minamount','billmate'),_e('maxamount','billmate'),_e('currency','billmate'),_e('country','billmate'),_e('expirydate','billmate'));
-            ?>
-            <table border="0" style="border:1px solid #000">
-                <tr>
-                    <th><?php echo ucfirst(_e('eid','billmate') )?></th>
-                    <th><?php echo ucfirst(_e('paymentplanid','billmate')); ?></th>
-                    <th><?php echo ucfirst(_e('description','billmate')); ?></th>
-                    <th><?php echo ucfirst(_e('months','billmate')); ?></th>
-                    <th><?php echo ucfirst(_e('interestrate','billmate')); ?></th>
-                    <th><?php echo ucfirst(_e('startfee','billmate')); ?></th>
-                    <th><?php echo ucfirst(_e('handlingfee','billmate')); ?></th>
-                    <th><?php echo ucfirst(_e('minamount','billmate')); ?></th>
-                    <th><?php echo ucfirst(_e('maxamount','billmate')); ?></th>
-                    <th><?php echo ucfirst(_e('currency','billmate')); ?></th>
-                    <th><?php echo ucfirst(_e('country','billmate')); ?></th>
-                    <th><?php echo ucfirst(_e('expirydate','billmate')); ?></th>
-                </tr>
-                <?php foreach( $content as $terms ):?>
-                    <tr>
-                        <td><?php echo $terms['eid']; ?></td>
-                        <td><?php echo $terms['paymentplanid']; ?></td>
-                        <td><?php echo $terms['description']; ?></td>
-                        <td><?php echo $terms['nbrofmonths']; ?></td>
-                        <td><?php echo $terms['interestrate']; ?></td>
-                        <td><?php echo $terms['startfee']; ?></td>
-                        <td><?php echo $terms['handlingfee'];?></td>
-                        <td><?php echo $terms['minamount'];?></td>
-                        <td><?php echo $terms['maxamount'];?></td>
-                        <td><?php echo $terms['currency'];?></td>
-                        <td><?php echo $terms['country']; ?></td>
-                        <td><?php echo $terms['expirydate']; ?></td>
-
-                    </tr>
-                <?php endforeach;?>
-            </table>
-            <?php
-        } else {
-            if (strlen($this->eid) > 0 && strlen($this->secret) > 0)
-                echo __('You will need to update the Pclasses','billmate');
-        }
-        if (isset($_GET['billmate_error_status']) && $_GET['billmate_error_status'] == '0') {
-            // billmatepclasses.json file saved sucessfully
-            echo '<div class="updated">'.__('The paymentplans is updated.','billmate').'</div>';
-        }
-        if (isset($_GET['billmate_error_status']) && $_GET['billmate_error_status'] == '1') {
-            // billmatepclasses.json file could not be updated
-            echo '<div class="error">'.__('Billmate paymentplans couldnt be uppdated, Billmate error message ','billmate').': ' . esc_html($_GET['billmate_error_code']) . '</div>';
-        }
-        ?>
-        <p>
-            <a class="button" href="<?php echo admin_url('admin.php?'.$_SERVER['QUERY_STRING'].'&billmatePclassListener=1');?>"><?php _e('Update Paymentplans', 'billmate'); ?> </a>
-            <a class="button" href="<?php echo admin_url('admin.php?'.$_SERVER['QUERY_STRING'].'&billmatePclassListener=1&resetPclasses=1');?>"><?php _e('Clear Paymentplans', 'billmate'); ?> </a>
-
-        </p>
     	<table class="form-table">
     	<?php
     		// Generate the HTML For the settings form.
