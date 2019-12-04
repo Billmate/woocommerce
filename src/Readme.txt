@@ -87,10 +87,10 @@ https://www.billmate.se/press-och-media/
 == Changelog ==
 
 =  3.7.2 (2019-12-04)
-  * Fix - Revert back - loopback health problem
+* Fix - Revert back - loopback health problem
 
 =  3.7.1 (2019-11-22)
- *  Fix - Loopback request that failure in WP built in site health
+*  Fix - Loopback request that failure in WP built in site health
 
 =  3.7.0 (2019-11-25)
 *  Feature - Support for choosing Billmate Checkout to act as a company or individual to prompt first
