@@ -262,7 +262,6 @@ function credit_billmate_order($order_id, $action = false, $isCancel = false){
                         $itemTaxTotals = json_decode(str_replace('\\', '', $_POST['line_item_tax_totals']), true);
                         $refundItems = array();
                         foreach ($order->get_items() as $item) {
-                            var_dump($item->get_id());
                             $shouldRefund = false;
                             foreach ($itemQtys as $key => $val) {
                                 if ($key == $item->get_id()) {
