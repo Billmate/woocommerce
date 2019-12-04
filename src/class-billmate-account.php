@@ -694,9 +694,9 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 		// Show billmate_warning_banner if NL
 		?>
         <?php
-        if(isset($_GET['pay_for_order']) && WC()->session->get('address_verification') !== null && (isset($_POST['billmate_pno']) && $_POST['billmate_pno'] != '')) {
-            echo esc_html(WC()->session->get('address_verification'));
-            WC()->session->set('address_verification', null);
+        if(isset($_GET['pay_for_order']) && isset($_SESSION['address_verification']) && (isset($_POST['billmate_pno']) && $_POST['billmate_pno'] != '')) {
+            echo esc_html($_SESSION['address_verification']);
+            unset($_SESSION['address_verification']);
         }
         ?>
 
@@ -1398,7 +1398,7 @@ parse_str($_POST['post_data'], $datatemp);
 					//wc_bm_errors($code);
 					die;
 				} else {
-                    WC()->session->set('address_verification', '<script type="text/javascript">setTimeout(function(){modalWin.ShowMessage(\''.$html.'\',350,500,\''.__('Pay by invoice can be made only to the address listed in the National Register. Would you like to make the purchase with address:','billmate').'\');},1000);</script>');
+					$_SESSION['address_verification'] = '<script type="text/javascript">setTimeout(function(){modalWin.ShowMessage(\''.$html.'\',350,500,\''.__('Pay by invoice can be made only to the address listed in the National Register. Would you like to make the purchase with address:','billmate').'\');},1000);</script>';
 					wc_bm_errors(__('Pay by invoice can be made only to the address listed in the National Register. Would you like to make the purchase with address:','billmate'));
 					return false;
 				}

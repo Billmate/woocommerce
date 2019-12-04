@@ -86,10 +86,13 @@ https://www.billmate.se/press-och-media/
 
 == Changelog ==
 
-  3.7.1 (2019-11-22)
- *  Fix - Loopback request that failure in WP built in site health
- 
-  3.7.0 (2019-11-21)
+=  3.7.2 (2019-12-04)
+*  Fix - Revert back - loopback health problem
+
+=  3.7.1 (2019-11-25)
+*  Fix - Loopback request that failure in WP built in site health
+
+=  3.7.0 (2019-11-22)
 *  Feature - Support for choosing Billmate Checkout to act as a company or individual to prompt first
 *  Feature - Orders that get status pending now showing Billmate invoice number in the orderdetails
 *  Fix - Incorrect purchases in Billmate Checkout redirect to Billmate Checkout page instead of the standard checkout page
