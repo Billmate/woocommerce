@@ -1,4 +1,4 @@
-<?php
+<?php @session_start();
 require_once "commonfunctions.php";
 
 class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
@@ -12,6 +12,7 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 	public function __construct() {
 		global $woocommerce;
 
+		if( !empty($_SESSION['order_created']) ) $_SESSION['order_created'] = '';
 
 		parent::__construct();
 
