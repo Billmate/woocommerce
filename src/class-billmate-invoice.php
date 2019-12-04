@@ -65,7 +65,7 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
                 $billmate_currency = 'EUR';
                 $billmate_invoice_terms = 'https://online.billmate.com/villkor_de.yaws?eid=' . $this->eid . '&charge=' . $this->invoice_fee;
                 //$billmate_invoice_icon = plugins_url(basename(dirname(__FILE__))."/images/billmate_invoice_de.png");
-                $billmate_invoice_icon = plugins_url( '/images/bm_faktura_l.png', __FILE__ );
+                $billmate_invoice_icon = plugins_url( '/images/bm_faktura_l.png', __FILE__ );;
                 break;
             case 'NL' :
                 $billmate_country = 'NL';
@@ -100,7 +100,7 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
                 $billmate_invoice_terms = '';
         }
 
-        $billmate_invoice_icon = plugins_url( '/images/bm_faktura_l.png', __FILE__ );
+        $billmate_invoice_icon = plugins_url( '/images/bm_faktura_l.png', __FILE__ );;
         // Apply filters to Country and language
         $this->billmate_country 		= apply_filters( 'billmate_country', $billmate_country );
         $this->billmate_language 		= apply_filters( 'billmate_language', $billmate_language );
@@ -378,9 +378,9 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
         <?php if ($billmate_description) : ?><p><?php echo $billmate_description; ?></p><?php endif; ?>
 
         <?php
-        if(isset($_GET['pay_for_order']) && WC()->session->get('address_verification') !== null && (isset($_POST['billmate_invo_pno']) && $_POST['billmate_invo_pno'] != "")) {
-            echo esc_html(WC()->session->get('address_verification'));
-            WC()->session->set('address_verification', null);
+        if(isset($_GET['pay_for_order']) && isset($_SESSION['address_verification']) && (isset($_POST['billmate_invo_pno']) && $_POST['billmate_invo_pno'] != "")) {
+            echo esc_html($_SESSION['address_verification']);
+            unset($_SESSION['address_verification']);
         }
         ?>
 
@@ -951,7 +951,7 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
                     //wc_bm_errors($code);
                     die;
                 } else {
-                    WC()->session->set('address_verification', '<script type="text/javascript">setTimeout(function(){modalWin.ShowMessage(\''.$html.'\',350,500,\''.__('Pay by invoice can be made only to the address listed in the National Register. Would you like to make the purchase with address:','billmate').'\');},1000);</script>');
+                    $_SESSION['address_verification'] = '<script type="text/javascript">setTimeout(function(){modalWin.ShowMessage(\''.$html.'\',350,500,\''.__('Pay by invoice can be made only to the address listed in the National Register. Would you like to make the purchase with address:','billmate').'\');},1000);</script>';
                     wc_bm_errors(__('Pay by invoice can be made only to the address listed in the National Register. Would you like to make the purchase with address:','billmate'));
                     return false;
                 }
