@@ -360,6 +360,9 @@ function credit_billmate_order($order_id, $action = false, $isCancel = false){
                         if (array_key_exists('message', $result)){
                             $order->add_order_note($result['message']);
                         }
+                        else {
+                            $order->add_order_note(sprintf(__('Billmate Invoice %s successfully Canceled, Billmate credit Invoice %s.', 'billmate'), $number, $result['number']));
+                        }
                     }
                 }
             }
