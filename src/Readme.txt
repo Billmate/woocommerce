@@ -84,6 +84,9 @@ If you would like to use our logos on your site:
 https://www.billmate.se/press-och-media/
 == Changelog ==
 
+=  3.8.0 (2019-12-09)
+*  Feature - Partpayment information retrieves directly from the Billmate API
+
 =  3.7.2 (2019-12-04)
 *  Fix - Revert back - loopback health problem
 
