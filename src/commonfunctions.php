@@ -1352,8 +1352,9 @@ if(!class_exists('BillmateOrder')){
 
             $discountTotals = array();
             $discountTotalTaxs = array();
-
+            $sentProducts = array();
             foreach ($orderArticles AS $orderArticle) {
+
                 /*
                  * Use discounted price if product discount
                  * If discount is for complete order, add discount later as new row

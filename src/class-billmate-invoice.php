@@ -575,6 +575,7 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
 
             <div class="clear"></div>
 
+
             <?php
             $datatemp = array('billing_email'=>'');
             if(!empty($_POST['post_data'])){

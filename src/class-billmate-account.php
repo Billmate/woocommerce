@@ -53,8 +53,8 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 		$this->show_monthly_cost_shop_prio		= ( isset( $this->settings['show_monthly_cost_shop_prio'] ) ) ? $this->settings['show_monthly_cost_shop_prio'] : '15';
 		$this->testmode							= ( isset( $this->settings['testmode'] ) ) ? $this->settings['testmode'] : '';
 		$this->de_consent_terms					= ( isset( $this->settings['de_consent_terms'] ) ) ? $this->settings['de_consent_terms'] : '';
-		$this->lower_threshold_monthly_cost		= ( isset( $this->settings['lower_threshold_monthly_cost'] ) ) ? $this->settings['lower_threshold_monthly_cost'] : '';
-		$this->upper_threshold_monthly_cost		= ( isset( $this->settings['upper_threshold_monthly_cost'] ) ) ? $this->settings['upper_threshold_monthly_cost'] : '';
+		$this->lower_threshold_monthly_cost		= '';
+		$this->upper_threshold_monthly_cost		= '';
 		$this->allowed_countries		= ( isset( $this->settings['billmateaccount_allowed_countries'] ) && !empty($this->settings['billmateaccount_allowed_countries'])) ? $this->settings['billmateaccount_allowed_countries'] : array('SE');
 		$this->shop_country				= strlen($this->shop_country) ? $this->shop_country: 'SE';
 		$this->order_status = (isset($this->settings['order_status'])) ? $this->settings['order_status'] : false;
@@ -258,37 +258,6 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 								'description' => __( 'Select where on the products page the Monthly cost information should be displayed.', 'billmate' ),
 								'default' => '15'
 							),
-			'show_monthly_cost_shop' => array(
-							'title' => __( 'Display monthly cost - shop page', 'billmate' ),
-							'type' => 'checkbox',
-							'label' => __( 'Display monthly cost next to each product on shop page.', 'billmate' ),
-							'default' => 'no'
-						),
-			'show_monthly_cost_shop_info' => array(
-							'title' => __( 'Text for Monthly cost - shop page', 'billmate' ),
-							'type' => 'textarea',
-							'description' => __( 'This controls the text displayed next to each product on shop page. You can use the following shortcodes: [billmate_img] [billmate_price] [billmate_currency] & [billmate_partpayment_info_link].', 'billmate' ),
-							'default' => __('From [billmate_price] [billmate_currency]/month', 'billmate')
-						),
-			'show_monthly_cost_shop_prio' => array(
-								'title' => __( 'Placement of monthly cost - shop page', 'billmate' ),
-								'type' => 'select',
-								'options' => array('0'=>__( 'Above Add to cart button', 'billmate' ), '15'=>__( 'Below Add to cart button', 'billmate')),
-								'description' => __( 'Select where on the shop page the Monthly cost information should be displayed.', 'billmate' ),
-								'default' => '15'
-							),
-			'lower_threshold_monthly_cost' => array(
-							'title' => __( 'Lower threshold for monthly cost', 'billmate' ),
-							'type' => 'text',
-							'description' => __( 'Disable the monthly cost feature if <i>product price</i> is lower than the specified value. Leave blank to disable.', 'billmate' ),
-							'default' => ''
-						),
-			'upper_threshold_monthly_cost' => array(
-							'title' => __( 'Upper threshold for monthly cost', 'billmate' ),
-							'type' => 'text',
-							'description' => __( 'Disable the monthly cost feature if <i>product price</i> is higher than the specified value. Leave blank to disable.', 'billmate' ),
-							'default' => ''
-						),
 
 			'testmode' => array(
 							'title' => __( 'Testmode', 'billmate' ),
@@ -334,63 +303,6 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
                 <a href="https://billmate.se/plugins/manual/Installationsmanual_Woocommerce_Billmate.pdf" target="_blank">Installationsmanual Billmate Modul ( Manual Svenska )</a><br />
                 <a href="https://billmate.se/plugins/manual/Installation_Manual_Woocommerce_Billmate.pdf" target="_blank">Installation Manual Billmate ( Manual English )</a>
             </p>
-        <?php
-        $content = get_option('wc_gateway_billmate_partpayment_pclasses',false);
-        if($content){
-            //$fields = array(_e('eid','billmate'),_e('paymentplanid','billmate'),_e('description','billmate'),_e('months','billmate'),_e('interestrate','billmate'),_e('startfee','billmate'),_e('handlingfee','billmate'),_e('minamount','billmate'),_e('maxamount','billmate'),_e('currency','billmate'),_e('country','billmate'),_e('expirydate','billmate'));
-            ?>
-            <table border="0" style="border:1px solid #000">
-                <tr>
-                    <th><?php echo ucfirst(_e('eid','billmate') )?></th>
-                    <th><?php echo ucfirst(_e('paymentplanid','billmate')); ?></th>
-                    <th><?php echo ucfirst(_e('description','billmate')); ?></th>
-                    <th><?php echo ucfirst(_e('months','billmate')); ?></th>
-                    <th><?php echo ucfirst(_e('interestrate','billmate')); ?></th>
-                    <th><?php echo ucfirst(_e('startfee','billmate')); ?></th>
-                    <th><?php echo ucfirst(_e('handlingfee','billmate')); ?></th>
-                    <th><?php echo ucfirst(_e('minamount','billmate')); ?></th>
-                    <th><?php echo ucfirst(_e('maxamount','billmate')); ?></th>
-                    <th><?php echo ucfirst(_e('currency','billmate')); ?></th>
-                    <th><?php echo ucfirst(_e('country','billmate')); ?></th>
-                    <th><?php echo ucfirst(_e('expirydate','billmate')); ?></th>
-                </tr>
-                <?php foreach( $content as $terms ):?>
-                    <tr>
-                        <td><?php echo $terms['eid']; ?></td>
-                        <td><?php echo $terms['paymentplanid']; ?></td>
-                        <td><?php echo $terms['description']; ?></td>
-                        <td><?php echo $terms['nbrofmonths']; ?></td>
-                        <td><?php echo $terms['interestrate']; ?></td>
-                        <td><?php echo $terms['startfee']; ?></td>
-                        <td><?php echo $terms['handlingfee'];?></td>
-                        <td><?php echo $terms['minamount'];?></td>
-                        <td><?php echo $terms['maxamount'];?></td>
-                        <td><?php echo $terms['currency'];?></td>
-                        <td><?php echo $terms['country']; ?></td>
-                        <td><?php echo $terms['expirydate']; ?></td>
-
-                    </tr>
-                <?php endforeach;?>
-            </table>
-            <?php
-        } else {
-            if (strlen($this->eid) > 0 && strlen($this->secret) > 0)
-                echo __('You will need to update the Pclasses','billmate');
-        }
-        if (isset($_GET['billmate_error_status']) && $_GET['billmate_error_status'] == '0') {
-            // billmatepclasses.json file saved sucessfully
-            echo '<div class="updated">'.__('The paymentplans is updated.','billmate').'</div>';
-        }
-        if (isset($_GET['billmate_error_status']) && $_GET['billmate_error_status'] == '1') {
-            // billmatepclasses.json file could not be updated
-            echo '<div class="error">'.__('Billmate paymentplans couldnt be uppdated, Billmate error message ','billmate').': ' . esc_html($_GET['billmate_error_code']) . '</div>';
-        }
-        ?>
-        <p>
-            <a class="button" href="<?php echo admin_url('admin.php?'.$_SERVER['QUERY_STRING'].'&billmatePclassListener=1');?>"><?php _e('Update Paymentplans', 'billmate'); ?> </a>
-            <a class="button" href="<?php echo admin_url('admin.php?'.$_SERVER['QUERY_STRING'].'&billmatePclassListener=1&resetPclasses=1');?>"><?php _e('Clear Paymentplans', 'billmate'); ?> </a>
-
-        </p>
     	<table class="form-table">
     	<?php
     		// Generate the HTML For the settings form.
@@ -409,8 +321,69 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 		global $woocommerce;
 		if(is_object($woocommerce->cart))
 		{
+
 			$cart_total                                = $woocommerce->cart->total;
-			$pclasses                                  = get_option('wc_gateway_billmate_partpayment_pclasses');
+
+
+
+            $storedPclassesSum = WC()->session->get('billmate_pclasses_sum');
+            $storedPclasses = WC()->session->get('billmate_pclasses');
+
+            if ($storedPclasses == null || $storedPclassesSum !== WC_Payment_Gateway::get_order_total()*100) {
+
+                $settings = get_option('woocommerce_billmate_partpayment_settings');
+                if ($settings['testmode'] == 'yes'):
+                    // Disable SSL if in testmode
+                    $billmate_ssl = 'false';
+                    $billmate_mode = 'test';
+                else :
+                    // Set SSL if used in webshop
+                    if (is_ssl()) {
+                        $billmate_ssl = 'true';
+                    } else {
+                        $billmate_ssl = 'false';
+                    }
+                    $billmate_mode = 'live';
+                endif;
+                $eid = (int)get_option('billmate_common_eid');
+
+                if (empty($eid)) {
+                    return false;
+                }
+
+                $secret = get_option('billmate_common_secret');
+                $country = self::$country;
+                $currency = get_woocommerce_currency();
+                $language = explode('_', get_locale());
+                if (!defined('BILLMATE_LANGUAGE')) define('BILLMATE_LANGUAGE', strtolower($language[0]));
+                global $wp_version;
+
+                // Meta to add to API requests, will be used for debug
+                $meta = array(
+                    'PHP_VERSION' => phpversion(),
+                    'WORDPRESS_VERSION' => $wp_version,
+                    'WOOCOMMERCE_VERSION' => WC_VERSION
+                );
+                $bm = new BillMate($eid, $secret, true, $settings['testmode'] == 'yes', false, $meta);
+
+                $values['PaymentData'] = array(
+                    'currency' => $currency,
+                    'language' => $language[0],
+                    'country' => $country,
+                    'totalwithtax' => WC_Payment_Gateway::get_order_total() * 100
+                );
+                $pclasses = $bm->getPaymentPlans($values);
+
+                WC()->session->set('billmate_pclasses_sum', WC_Payment_Gateway::get_order_total() * 100);
+                WC()->session->set('billmate_pclasses', $pclasses);
+            }
+            else {
+                $pclasses = $storedPclasses;
+            }
+
+
+
+
 			$flags                                     = BillmateFlags::CHECKOUT_PAGE;
 			$pclass                                    = BillmateCalc::getCheapestPClass($cart_total, $flags, $pclasses);
 			$billmate_partpayment_monthly_cost_message = false;
@@ -487,9 +460,64 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 				return false;
 			}
 			$pclasses_not_available = true;
+            $storedPclassesSum = WC()->session->get('billmate_pclasses_sum');
+            $storedPclasses = WC()->session->get('billmate_pclasses');
 
-			$pclasses = get_option('wc_gateway_billmate_partpayment_pclasses',false);
+            if ($storedPclasses == null || $storedPclassesSum !== WC_Payment_Gateway::get_order_total()*100) {
+                $settings = get_option('woocommerce_billmate_partpayment_settings');
 
+                if ($settings['testmode'] == 'yes'):
+                    // Disable SSL if in testmode
+                    $billmate_ssl = 'false';
+                    $billmate_mode = 'test';
+                else :
+                    // Set SSL if used in webshop
+                    if (is_ssl()) {
+                        $billmate_ssl = 'true';
+                    } else {
+                        $billmate_ssl = 'false';
+                    }
+                    $billmate_mode = 'live';
+                endif;
+                $eid = (int)get_option('billmate_common_eid');
+
+                if (empty($eid)) {
+                    return false;
+                }
+
+                $secret = get_option('billmate_common_secret');
+                $country = self::$country;
+                $currency = get_woocommerce_currency();
+                $language = explode('_', get_locale());
+                if (!defined('BILLMATE_LANGUAGE')) define('BILLMATE_LANGUAGE', strtolower($language[0]));
+                global $wp_version;
+
+                // Meta to add to API requests, will be used for debug
+                $meta = array(
+                    'PHP_VERSION' => phpversion(),
+                    'WORDPRESS_VERSION' => $wp_version,
+                    'WOOCOMMERCE_VERSION' => WC_VERSION
+                );
+                $bm = new BillMate($eid, $secret, true, $settings['testmode'] == 'yes', false, $meta);
+
+                $values['PaymentData'] = array(
+                    'currency' => $currency,
+                    'language' => $language[0],
+                    'country' => $country,
+                    'totalwithtax' => WC_Payment_Gateway::get_order_total() * 100
+                );
+                $pclasses = $bm->getPaymentPlans($values);
+                if (array_key_exists('code', $pclasses)){
+                    if ($pclasses['code'] == 5301){
+                        return false;
+                    }
+                }
+                WC()->session->set('billmate_pclasses_sum', WC_Payment_Gateway::get_order_total() * 100);
+                WC()->session->set('billmate_pclasses', $pclasses);
+            }
+            else {
+                $pclasses = $storedPclasses;
+            }
 			if($pclasses){
 				$billmate_cart_total = WC_Payment_Gateway::get_order_total();
 				$sum = apply_filters( 'billmate_cart_total', $billmate_cart_total ); // Cart total.
@@ -511,6 +539,8 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 
                     $sum -= ($availableFees[sanitize_title(__('Invoice fee','billmate'))]['amount'] + $availableFees[sanitize_title(__('Invoice fee','billmate'))]['tax']);
                 }
+
+                $sum = $sum*100;
 
 				foreach ($pclasses as $pclass) {
 					if (strlen($pclass['description']) > 0 ) {
@@ -569,6 +599,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 
 		return false;
 	}
+
 
     /**
      * Retrieve the PClasses from Billmate and store it in the file billmatepclasses.json.
@@ -645,7 +676,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 	 */
 
 	function payment_fields( ) {
-	   	global $woocommerce;
+        global $woocommerce;
 
 		$enabled_plcass = 'no';
 		// Test mode or Live mode
@@ -708,7 +739,59 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 			<?php
 			// Calculate lowest monthly cost and display it
 			if( $enabled_plcass == 'no' ) return false;
-			$pclasses = get_option('wc_gateway_billmate_partpayment_pclasses');
+            $storedPclassesSum = WC()->session->get('billmate_pclasses_sum');
+            $storedPclasses = WC()->session->get('billmate_pclasses');
+
+            if ($storedPclasses == null || $storedPclassesSum !== $sum*100) {
+                $settings = get_option('woocommerce_billmate_partpayment_settings');
+
+                if ($settings['testmode'] == 'yes'):
+                    // Disable SSL if in testmode
+                    $billmate_ssl = 'false';
+                    $billmate_mode = 'test';
+                else :
+                    // Set SSL if used in webshop
+                    if (is_ssl()) {
+                        $billmate_ssl = 'true';
+                    } else {
+                        $billmate_ssl = 'false';
+                    }
+                    $billmate_mode = 'live';
+                endif;
+                $eid = (int)get_option('billmate_common_eid');
+
+                if (empty($eid)) {
+                    return false;
+                }
+
+                $secret = get_option('billmate_common_secret');
+                $country = self::$country;
+                $currency = get_woocommerce_currency();
+                $language = explode('_', get_locale());
+                if (!defined('BILLMATE_LANGUAGE')) define('BILLMATE_LANGUAGE', strtolower($language[0]));
+                global $wp_version;
+
+                // Meta to add to API requests, will be used for debug
+                $meta = array(
+                    'PHP_VERSION' => phpversion(),
+                    'WORDPRESS_VERSION' => $wp_version,
+                    'WOOCOMMERCE_VERSION' => WC_VERSION
+                );
+                $bm = new BillMate($eid, $secret, true, $settings['testmode'] == 'yes', false, $meta);
+
+                $values['PaymentData'] = array(
+                    'currency' => $currency,
+                    'language' => $language[0],
+                    'country' => $country,
+                    'totalwithtax' => $sum * 100
+                );
+                $pclasses = $bm->getPaymentPlans($values);
+                WC()->session->set('billmate_pclasses_sum', $sum * 100);
+                WC()->session->set('billmate_pclasses', $pclasses);
+            }
+            else {
+                $pclasses = $storedPclasses;
+            }
 			if(!$pclasses) return false;
 			/*$pclass = BillmateCalc::getCheapestPClass($sum, $flag, $pclasses);
 
@@ -963,7 +1046,7 @@ parse_str($_POST['post_data'], $datatemp);
 					'country' => strtolower($country)
 				)
 			);
-			$data = $k->getPaymentplans($values);
+            $data = $k->getPaymentplans($values);
 			if(!is_array($data)){
 				throw new Exception($data);
 			}
@@ -997,12 +1080,61 @@ parse_str($_POST['post_data'], $datatemp);
 	 * Payment field opttions
 	**/
 	public static function payment_fields_options( $sum, $label = true ,$flag = BillmateFlags::CHECKOUT_PAGE){
-
-
 		$pclasses_not_available = true;
 		$enabled_plcass = 'no';
+        $storedPclassesSum = WC()->session->get('billmate_pclasses_sum');
+        $storedPclasses = WC()->session->get('billmate_pclasses');
 
-		$pclasses = get_option('wc_gateway_billmate_partpayment_pclasses',false);
+        if ($storedPclasses == null || $storedPclassesSum !== $sum*100) {
+            $settings = get_option('woocommerce_billmate_partpayment_settings');
+
+            if ($settings['testmode'] == 'yes'):
+                // Disable SSL if in testmode
+                $billmate_ssl = 'false';
+                $billmate_mode = 'test';
+            else :
+                // Set SSL if used in webshop
+                if (is_ssl()) {
+                    $billmate_ssl = 'true';
+                } else {
+                    $billmate_ssl = 'false';
+                }
+                $billmate_mode = 'live';
+            endif;
+            $eid = (int)get_option('billmate_common_eid');
+
+            if (empty($eid)) {
+                return false;
+            }
+
+            $secret = get_option('billmate_common_secret');
+            $country = self::$country;
+            $currency = get_woocommerce_currency();
+            $language = explode('_', get_locale());
+            if (!defined('BILLMATE_LANGUAGE')) define('BILLMATE_LANGUAGE', strtolower($language[0]));
+            global $wp_version;
+
+            // Meta to add to API requests, will be used for debug
+            $meta = array(
+                'PHP_VERSION' => phpversion(),
+                'WORDPRESS_VERSION' => $wp_version,
+                'WOOCOMMERCE_VERSION' => WC_VERSION
+            );
+            $bm = new BillMate($eid, $secret, true, $settings['testmode'] == 'yes', false, $meta);
+
+            $values['PaymentData'] = array(
+                'currency' => $currency,
+                'language' => $language[0],
+                'country' => $country,
+                'totalwithtax' => $sum * 100
+            );
+
+            $pclasses = $bm->getPaymentPlans($values);
+            WC()->session->set('billmate_pclasses_sum', $sum * 100);
+            WC()->session->set('billmate_pclasses', $pclasses);
+        } else {
+            $pclasses = $storedPclasses;
+        }
 		if(date('Y-m-d',strtotime('+1 week')) >= $pclasses[0]['expirydate']){
 			$_GET['billmatePclassListener'] = 1;
 			self::update_billmatepclasses_from_frontend();
@@ -1016,6 +1148,60 @@ parse_str($_POST['post_data'], $datatemp);
 			$pclasses = array($pclasses);
 			$flag = BillmateFlags::CHECKOUT_PAGE;
 		}
+
+        $storedPclassesSum = WC()->session->get('billmate_pclasses_sum');
+        $storedPclasses = WC()->session->get('billmate_pclasses');
+
+        if ($storedPclasses == null || $storedPclassesSum !== $sum*100) {
+            $settings = get_option('woocommerce_billmate_partpayment_settings');
+
+            if ($settings['testmode'] == 'yes'):
+                // Disable SSL if in testmode
+                $billmate_ssl = 'false';
+                $billmate_mode = 'test';
+            else :
+                // Set SSL if used in webshop
+                if (is_ssl()) {
+                    $billmate_ssl = 'true';
+                } else {
+                    $billmate_ssl = 'false';
+                }
+                $billmate_mode = 'live';
+            endif;
+            $eid = (int)get_option('billmate_common_eid');
+
+            if (empty($eid)) {
+                return false;
+            }
+
+            $secret = get_option('billmate_common_secret');
+            $country = self::$country;
+            $currency = get_woocommerce_currency();
+            $language = explode('_', get_locale());
+            if (!defined('BILLMATE_LANGUAGE')) define('BILLMATE_LANGUAGE', strtolower($language[0]));
+            global $wp_version;
+
+            // Meta to add to API requests, will be used for debug
+            $meta = array(
+                'PHP_VERSION' => phpversion(),
+                'WORDPRESS_VERSION' => $wp_version,
+                'WOOCOMMERCE_VERSION' => WC_VERSION
+            );
+            $bm = new BillMate($eid, $secret, true, $settings['testmode'] == 'yes', false, $meta);
+
+            $values['PaymentData'] = array(
+                'currency' => $currency,
+                'language' => $language[0],
+                'country' => $country,
+                'totalwithtax' => $sum * 100
+            );
+            $pclasses = $bm->getPaymentPlans($values);
+            WC()->session->set('billmate_pclasses_sum', $sum * 100);
+            WC()->session->set('billmate_pclasses', $pclasses);
+        } else {
+            $pclasses = $storedPclasses;
+        }
+
 		// Check if we have any PClasses
 		if(!$pclasses_not_available) {
 			if( $label ) {
@@ -1025,27 +1211,15 @@ parse_str($_POST['post_data'], $datatemp);
 
                 <?php
                 // Loop through the available PClasses stored in the file srv/billmatepclasses.json
-
+                $sum = $sum * 100;
                 foreach ($pclasses as $pclass2) {
 
                     $pclass = $pclass2;
 
                     if (strlen($pclass['description']) > 0 ) {
 
-                        // Get monthly cost for current pclass
-                        $monthly_cost = BillmateCalc::calc_monthly_cost(
-                                            $sum,
-                                            $pclass,
-                                            $flag
-                                        );
-
-                        // Get total credit purchase cost for current pclass
-                        // Only required in Norway
-                        $total_credit_purchase_cost = BillmateCalc::total_credit_purchase_cost(
-                                            $sum,
-                                            $pclass,
-                                            $flag
-                                        );
+                        $monthly_cost = $pclass2['monthlycost']/100;
+                        $total_credit_purchase_cost = $pclass2['totalfee']/100;
 
                         // Check that Cart total is larger than min amount for current PClass
                         if($sum >= $pclass['minamount'] && ($sum <= $pclass['maxamount'] || $pclass['maxamount'] == 0) ) {
@@ -1055,19 +1229,19 @@ parse_str($_POST['post_data'], $datatemp);
                                 if ( $pclass['type'] == 1 ) {
                                     //If Account - Do not show startfee. This is always 0.
                                     echo sprintf(__('%s - %s %s/month', 'billmate'), $pclass['description'], $monthly_cost, get_woocommerce_currency());
-                                    } else {
-                                        // Norway - Show total cost
-                                        echo sprintf(__('%s - %s %s/month - %s%s - Start %s - Tot %s %s', 'billmate'), $pclass['description'], $monthly_cost, get_woocommerce_currency(), $pclass['interestrate'], '%', $pclass['startfee'], $total_credit_purchase_cost, get_woocommerce_currency() );
-                                    }
                                 } else {
-                                    if ( $pclass['type'] == 1 ) {
-                                        //If Account - Do not show startfee. This is always 0.
-                                        echo sprintf(__('%s - %s %s/month', 'billmate'), $pclass['description'], $monthly_cost, get_woocommerce_currency() );
-                                    } else {
-                                        // Sweden, Denmark, Finland, Germany & Netherlands - Don't show total cost
-                                        echo sprintf(__('%s - %s %s/month - %s%s - Start %s', 'billmate'), $pclass['description'], $monthly_cost, get_woocommerce_currency(), $pclass['interestrate'], '%', $pclass['startfee'] );
-                                    }
+                                    // Norway - Show total cost
+                                    echo sprintf(__('%s - %s %s/month - %s%s - Start %s - Tot %s %s', 'billmate'), $pclass['description'], $monthly_cost, get_woocommerce_currency(), $pclass['interestrate'], '%', $pclass['startfee'], $total_credit_purchase_cost, get_woocommerce_currency() );
                                 }
+                            } else {
+                                if ( $pclass['type'] == 1 ) {
+                                    //If Account - Do not show startfee. This is always 0.
+                                    echo sprintf(__('%s - %s %s/month', 'billmate'), $pclass['description'], $monthly_cost, get_woocommerce_currency() );
+                                } else {
+                                    // Sweden, Denmark, Finland, Germany & Netherlands - Don't show total cost
+                                    echo sprintf(__('%s - %s %s/month - %s%s - Start %s', 'billmate'), $pclass['description'], $monthly_cost, get_woocommerce_currency(), $pclass['interestrate'], '%', $pclass['startfee'] );
+                                }
+                            }
                             echo '</option>';
 
                         } // End if ($sum > $pclass->getMinAmount())
@@ -1888,8 +2062,8 @@ parse_str($_POST['post_data'], $datatemp);
      * Calc monthly cost on single Product page and print it out when partpayment and/or checkout is enabled
      * @return void
      **/
-    static function print_product_monthly_cost() {
-
+    static function print_product_monthly_cost()
+    {
         $queried_object = get_queried_object();
 
         /* Settings */
@@ -1898,9 +2072,9 @@ parse_str($_POST['post_data'], $datatemp);
         $enabled = (isset($settings['enabled'])) ? $settings['enabled'] : '';
 
         // If partpayment is not enabled, check if Billmate Checkout is enabled.
-        if ( $enabled != "yes" ) {
-            $checkout_settings = get_option( "woocommerce_billmate_checkout_settings", array() );
-            $enabled = ( isset( $checkout_settings['enabled']) && $checkout_settings['enabled'] == 'yes' ) ? 'yes' : $enabled;
+        if ($enabled != "yes") {
+            $checkout_settings = get_option("woocommerce_billmate_checkout_settings", array());
+            $enabled = (isset($checkout_settings['enabled']) && $checkout_settings['enabled'] == 'yes') ? 'yes' : $enabled;
         }
 
         if ($enabled != "yes" OR $eid == '') {
@@ -1910,8 +2084,8 @@ parse_str($_POST['post_data'], $datatemp);
         $show_monthly_cost = (isset($settings['show_monthly_cost'])) ? $settings['show_monthly_cost'] : '';
         $show_monthly_cost_info = (isset($settings['show_monthly_cost_info'])) ? $settings['show_monthly_cost_info'] : '';
         $testmode = (isset($settings['testmode'])) ? $settings['testmode'] : '';
-        $lower_threshold_monthly_cost = (isset($settings['lower_threshold_monthly_cost'])) ? $settings['lower_threshold_monthly_cost'] : '';
-        $upper_threshold_monthly_cost = (isset($settings['upper_threshold_monthly_cost'])) ? $settings['upper_threshold_monthly_cost'] : '';
+        $lower_threshold_monthly_cost = '';
+        $upper_threshold_monthly_cost = '';
 
         $lower_threshold_monthly_cost = ($lower_threshold_monthly_cost != '') ? $lower_threshold_monthly_cost : 0;
         $upper_threshold_monthly_cost = ($upper_threshold_monthly_cost != '') ? $upper_threshold_monthly_cost : 10000000;
@@ -1924,64 +2098,117 @@ parse_str($_POST['post_data'], $datatemp);
         $billmate_partpayment_icon = isset($country_data['billmate_partpayment_icon']) ? $country_data['billmate_partpayment_icon'] : '';
         $billmate_basic_icon = isset($country_data['billmate_basic_icon']) ? $country_data['billmate_basic_icon'] : '';
 
-        $billmate_country                     = apply_filters( 'billmate_country', $billmate_country );
-        $billmate_language                    = apply_filters( 'billmate_language', $billmate_language );
-        $billmate_currency                    = apply_filters( 'billmate_currency', $billmate_currency );
-        $billmate_partpayment_info            = apply_filters( 'billmate_partpayment_info', $billmate_partpayment_info );
-        $icon                                 = apply_filters( 'billmate_partpayment_icon', $billmate_partpayment_icon );
-        $icon_basic                           = apply_filters( 'billmate_basic_icon', $billmate_basic_icon );
+        $billmate_country = apply_filters('billmate_country', $billmate_country);
+        $billmate_language = apply_filters('billmate_language', $billmate_language);
+        $billmate_currency = apply_filters('billmate_currency', $billmate_currency);
+        $billmate_partpayment_info = apply_filters('billmate_partpayment_info', $billmate_partpayment_info);
+        $icon = apply_filters('billmate_partpayment_icon', $billmate_partpayment_icon);
+        $icon_basic = apply_filters('billmate_basic_icon', $billmate_basic_icon);
 
         if (!in_array(get_option('woocommerce_currency'), array('SEK')) OR get_woocommerce_currency() != 'SEK') {
             return false;
         }
 
-		//global $woocommerce, $product, $billmate_partpayment_shortcode_currency, $billmate_partpayment_shortcode_price, $billmate_partpayment_shortcode_img, $billmate_partpayment_shortcode_info_link;
-		global $woocommerce, $product, $billmate_partpayment_shortcode_currency, $billmate_partpayment_shortcode_price, $billmate_shortcode_img, $billmate_partpayment_country,$billmate_partpayment_eid;
+        //global $woocommerce, $product, $billmate_partpayment_shortcode_currency, $billmate_partpayment_shortcode_price, $billmate_partpayment_shortcode_img, $billmate_partpayment_shortcode_info_link;
+        global $woocommerce, $product, $billmate_partpayment_shortcode_currency, $billmate_partpayment_shortcode_price, $billmate_shortcode_img, $billmate_partpayment_country, $billmate_partpayment_eid;
 
-		$pclasses = get_option('wc_gateway_billmate_partpayment_pclasses',false);
-		$billmate_partpayment_eid = $eid;
+        $storedPclassesSum = WC()->session->get('billmate_pclasses_sum');
+        $storedPclasses = WC()->session->get('billmate_pclasses');
 
-	 	// Only execute this if the feature is activated in the gateway settings
-		if ( $show_monthly_cost == 'yes' && is_array($pclasses) ) {
+        if ($storedPclasses == null || $storedPclassesSum !== WC_Payment_Gateway::get_order_total()*100) {
 
-			// Test mode or Live mode
-			if ( $testmode == 'yes' ):
-				// Disable SSL if in testmode
-				$billmate_ssl = 'false';
-				$billmate_mode = 'test';
-			else :
-				// Set SSL if used in webshop
-				if (is_ssl()) {
-					$billmate_ssl = 'true';
-				} else {
-					$billmate_ssl = 'false';
-				}
-				$billmate_mode = 'live';
-			endif;
+            $settings = get_option('woocommerce_billmate_partpayment_settings');
 
-			$pcURI = BILLMATE_DIR . 'srv/billmatepclasses.json';
-			$pclasses_not_available = true;
-			if($pclasses) $pclasses_not_available = false;
+            if ($settings['testmode'] == 'yes'):
+                // Disable SSL if in testmode
+                $billmate_ssl = 'false';
+                $billmate_mode = 'test';
+            else :
+                // Set SSL if used in webshop
+                if (is_ssl()) {
+                    $billmate_ssl = 'true';
+                } else {
+                    $billmate_ssl = 'false';
+                }
+                $billmate_mode = 'live';
+            endif;
+            $eid = (int)get_option('billmate_common_eid');
+
+            if (empty($eid)) {
+                return false;
+            }
+
+            $secret = get_option('billmate_common_secret');
+            $country = self::$country;
+            if ($country != "SE" && $country != "NO" && $country != "DK" && $country != "FI" && $country != "DE" && $country != "NL") {
+                $country = "SE";
+            }
+            $currency = get_woocommerce_currency();
+            $language = explode('_', get_locale());
+            if (!defined('BILLMATE_LANGUAGE')) define('BILLMATE_LANGUAGE', strtolower($language[0]));
+            global $wp_version;
+
+            // Meta to add to API requests, will be used for debug
+            $meta = array(
+                'PHP_VERSION' => phpversion(),
+                'WORDPRESS_VERSION' => $wp_version,
+                'WOOCOMMERCE_VERSION' => WC_VERSION
+            );
+            $bm = new BillMate($eid, $secret, true, $settings['testmode'] == 'yes', false, $meta);
+
+            $values['PaymentData'] = array(
+                'currency' => $currency,
+                'language' => $language[0],
+                'country' => $country,
+                'totalwithtax' => $product->get_price() * 100
+            );
+            $pclasses = $bm->getPaymentPlans($values);
+        } else {
+            $pclasses = $storedPclasses;
+        }
+        $billmate_partpayment_eid = $eid;
+
+        // Only execute this if the feature is activated in the gateway settings
+        if ($show_monthly_cost == 'yes' && is_array($pclasses)) {
+
+            // Test mode or Live mode
+            if ($testmode == 'yes'):
+                // Disable SSL if in testmode
+                $billmate_ssl = 'false';
+                $billmate_mode = 'test';
+            else :
+                // Set SSL if used in webshop
+                if (is_ssl()) {
+                    $billmate_ssl = 'true';
+                } else {
+                    $billmate_ssl = 'false';
+                }
+                $billmate_mode = 'live';
+            endif;
+
+            $pcURI = BILLMATE_DIR . 'srv/billmatepclasses.json';
+            $pclasses_not_available = true;
+            if ($pclasses) $pclasses_not_available = false;
 
 
-			// apply_filters to product price so we can filter this if needed
-			$billmate_product_total = $product->get_price();
-			$sum = apply_filters( 'billmate_product_total', $billmate_product_total ); // Product price.
-			$flag = BillmateFlags::PRODUCT_PAGE; //or BillmateFlags::PRODUCT_PAGE, if you want to do it for one item.
-			$pclass =  BillmateCalc::getCheapestPClass($sum, $flag, $pclasses);
+            // apply_filters to product price so we can filter this if needed
+            $billmate_product_total = $product->get_price();
+            $sum = apply_filters('billmate_product_total', $billmate_product_total); // Product price.
+            $flag = BillmateFlags::PRODUCT_PAGE; //or BillmateFlags::PRODUCT_PAGE, if you want to do it for one item.
+            $pclass = BillmateCalc::getCheapestPClass($sum, $flag, $pclasses);
 
 
-			//Did we get a PClass? (it is false if we didn't)
-			if($pclass) {
-	    		//Here we reuse the same values as above:
-   				$value = BillmateCalc::calc_monthly_cost(
-   		    	$sum,
-   		    	$pclass,
-   		    	$flag
-   				);
+            //Did we get a PClass? (it is false if we didn't)
+            if ($pclass) {
+                //Here we reuse the same values as above:
+                $value = BillmateCalc::calc_monthly_cost(
+                    $sum,
+                    $pclass,
+                    $flag
+                );
 
-	    		/* $value is now a rounded monthly cost amount to be displayed to the customer. */
-                if ( $lower_threshold_monthly_cost < $sum && $upper_threshold_monthly_cost > $sum ) {
+                /* $value is now a rounded monthly cost amount to be displayed to the customer. */
+                if ($lower_threshold_monthly_cost < $sum && $upper_threshold_monthly_cost > $sum) {
 
                     // Asign values to variables used for shortcodes.
                     $billmate_partpayment_shortcode_currency = $billmate_currency;
@@ -1989,112 +2216,15 @@ parse_str($_POST['post_data'], $datatemp);
                     $billmate_shortcode_img = $icon_basic;
                     $billmate_partpayment_country = $billmate_country;
 
-                    echo '<div class="billmate-product-monthly-cost">' . do_shortcode( $show_monthly_cost_info );
-		    		echo '</div>';
+                    echo '<div class="billmate-product-monthly-cost">' . do_shortcode($show_monthly_cost_info);
+                    echo '</div>';
 
-		    	}
+                }
 
-			} // End pclass check
+            } // End pclass check
 
-		} // End show_monthly_cost check
-
-	}
-
-
-	/**
-	 * Calc monthly cost on Shop page and print it out
-	 **/
-
- 	function print_product_monthly_cost_shop() {
-
- 		if ( $this->enabled!="yes" ) return;
-        if (!in_array(get_option('woocommerce_currency'), array('SEK')) OR get_woocommerce_currency() != 'SEK') {
-            return false;
-        }
- 		//global $woocommerce, $product, $billmate_partpayment_shortcode_currency, $billmate_partpayment_shortcode_price, $billmate_partpayment_shortcode_img, $billmate_partpayment_shortcode_info_link;
- 		global $woocommerce, $product, $billmate_partpayment_shortcode_currency, $billmate_partpayment_shortcode_price, $billmate_shortcode_img, $billmate_partpayment_country;
-
-	 	$pclasses = get_option('wc_gateway_billmate_partpayment_pclasses',false);
-
-	 	// Only execute this if the feature is activated in the gateway settings
-		if ( $this->show_monthly_cost_shop == 'yes' && is_array($pclasses) ) {
-
-			// Test mode or Live mode
-			if ( $this->testmode == 'yes' ):
-				// Disable SSL if in testmode
-				$billmate_ssl = 'false';
-				$billmate_mode = 'test';
-			else :
-				// Set SSL if used in webshop
-				if (is_ssl()) {
-					$billmate_ssl = 'true';
-				} else {
-					$billmate_ssl = 'false';
-				}
-				$billmate_mode = 'live';
-			endif;
-	   		if( empty( $this->eid) ){
-	   		    return false;
-	   		}
-
-			$eid = (int)$this->eid;
-			$secret = $this->secret;
-			$country = $this->billmate_country;
-			$language = $this->billmate_language;
-			$currency = $this->billmate_currency;
-
-
-			$k = new BillMate( $eid, $secret, true, false, $this->testmode == 'yes', false, $this->getRequestMeta() );
-
-			$pclasses_not_available = true;
-			if($pclasses) $pclasses_not_available = false;
-
-
-			// apply_filters to product price so we can filter this if needed
-			$billmate_product_total = $product->get_price();
-			$sum = apply_filters( 'billmate_product_total', $billmate_product_total ); // Product price.
-			$flag = BillmateFlags::PRODUCT_PAGE; //or BillmateFlags::PRODUCT_PAGE, if you want to do it for one item.
-			$pclass = BillmateCalc::getCheapestPClass($sum, $flag, $pclasses);
-
-
-			//Did we get a PClass? (it is false if we didn't)
-			if($pclass) {
-	    		//Here we reuse the same values as above:
-   				$value = BillmateCalc::calc_monthly_cost(
-   		    	$sum,
-   		    	$pclass,
-   		    	$flag
-   				);
-
-
-	    		// Asign values to variables used for shortcodes.
-	    		$billmate_partpayment_shortcode_currency = $this->billmate_currency;
-	    		$billmate_partpayment_shortcode_price = $value;
-	    		$billmate_shortcode_img = $this->icon_basic;
-	    		$billmate_partpayment_country = $this->billmate_country;
-	    		//$billmate_partpayment_shortcode_info_link = $this->billmate_partpayment_info;
-
-
-	    		//$billmate_partpayment_product_monthly_cost_message = sprintf(__('<img src="%s" /> <br/><a href="%s" target="_blank">Part pay from %s %s/month</a>', 'billmate'), $this->icon, $this->billmate_partpayment_info, $value, $this->billmate_currency );
-
-	    		// Monthly cost threshold check. This is done after apply_filters to product price ($sum).
-		    	if ( $this->lower_threshold_monthly_cost < $sum && $this->upper_threshold_monthly_cost > $sum ) {
-
-		    		echo '<div class="billmate-product-monthly-cost-shop-page">' . do_shortcode( $this->show_monthly_cost_shop_info );
-
-		    		// Show billmate_warning_banner if NL
-					if ( $this->shop_country == 'NL' ) {
-						echo '<img src="' . $this->billmate_wb_img_product_list . '" class="billmate-wb" style="max-width: 100%;"/>';
-					}
-
-		    		echo '</div>';
-
-	    		}
-
-			} // End pclass check
-
-		} // End show_monthly_cost_shop check
-	}
+        } // End show_monthly_cost check
+    }
 
 
 	/**
@@ -2224,14 +2354,6 @@ class WC_Gateway_Billmate_Partpayment_Extra {
 		$data = new WC_Gateway_Billmate_Partpayment;
 		$this->show_monthly_cost_shop_prio = $data->get_monthly_cost_shop_prio();
 		$this->show_monthly_cost_prio = $data->get_monthly_cost_prio();
-
-		// Actions
-		add_action('woocommerce_after_shop_loop_item', array(&$this, 'print_product_monthly_cost_shop'), $this->show_monthly_cost_shop_prio);
-	}
-
-	function print_product_monthly_cost_shop() {
-		$data = new WC_Gateway_Billmate_Partpayment;
-		$data->print_product_monthly_cost_shop();
 	}
 } // End class WC_Gateway_Billmate_Partpayment_Extra
 
