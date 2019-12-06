@@ -152,6 +152,9 @@ function credit_billmate_order($order_id, $action = false, $isCancel = false){
     $isPartial = false;
     $order = wc_get_order($order_id);
     $number = get_post_meta($order_id, 'billmate_invoice_id', true);
+    ob_start();
+    var_dump($order->get_refunds());
+    file_put_contents("gunk.log", ob_get_clean() . "\n", FILE_APPEND);
     if (array_key_exists('action', $_POST)){
         if ($_POST['action'] == "woocommerce_refund_line_items"){
             if ($order->get_total() != $_POST['refund_amount']){
@@ -358,9 +361,13 @@ function credit_billmate_order($order_id, $action = false, $isCancel = false){
                         $result = $billmate->creditPayment($values);
                         if (array_key_exists('message', $result)){
                             $order->add_order_note($result['message']);
+                            $refund = $order->get_refunds()[0];
+                            $refund_id = $refund->get_id();
+                            $refund->delete( true );
+                            do_action( 'woocommerce_refund_deleted', $refund_id, $order_id );
                         }
                         else {
-                            $order->add_order_note(sprintf(__('Billmate Invoice %s successfully Canceled, Billmate credit Invoice %s.', 'billmate'), $number, $result['number']));
+                            $order->add_order_note(sprintf(__('Billmate Invoice %s successfully credited, Billmate credit Invoice %s.', 'billmate'), $number, $result['number']));
                         }
                     }
                 }
