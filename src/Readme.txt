@@ -86,6 +86,7 @@ https://www.billmate.se/press-och-media/
 
 =  3.8.0 (2019-12-09)
 *  Feature - Partpayment information retrieves directly from the Billmate API
+*  Fix - WC_Payment_Gateway::get_order_total() not be called statically
 
 =  3.7.2 (2019-12-04)
 *  Fix - Revert back - loopback health problem
