@@ -543,13 +543,15 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
                 $sum = $sum*100;
 
 				foreach ($pclasses as $pclass) {
-					if (strlen($pclass['description']) > 0 ) {
-						// If sum over minamount and not over maxamount or maxamount is 0
-						if($sum >= $pclass['minamount'] && ($sum <= $pclass['maxamount'] || $pclass['maxamount'] == 0) )  {
-							$pclasses_not_available = false;
-							break;
-						}
-					}
+                    if (array_key_exists('description', $pclass)) {
+                        if (strlen($pclass['description']) > 0) {
+                            // If sum over minamount and not over maxamount or maxamount is 0
+                            if ($sum >= $pclass['minamount'] && ($sum <= $pclass['maxamount'] || $pclass['maxamount'] == 0)) {
+                                $pclasses_not_available = false;
+                                break;
+                            }
+                        }
+                    }
 				}
 			}else{
 				return false;
