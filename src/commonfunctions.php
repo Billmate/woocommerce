@@ -1,5 +1,5 @@
 <?php
-define('BILLPLUGIN_VERSION','3.7.2');
+define('BILLPLUGIN_VERSION','3.8.0');
 define('BILLMATE_CLIENT','PHP:Woocommerce:'.BILLPLUGIN_VERSION);
 define('BILLMATE_SERVER','2.1.9');
 
@@ -1352,8 +1352,9 @@ if(!class_exists('BillmateOrder')){
 
             $discountTotals = array();
             $discountTotalTaxs = array();
-
+            $sentProducts = array();
             foreach ($orderArticles AS $orderArticle) {
+
                 /*
                  * Use discounted price if product discount
                  * If discount is for complete order, add discount later as new row

@@ -7,7 +7,7 @@ Tested up to: 5.2.2
 Stable tag: __STABLE_TAG__
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
-WC tested up to: 3.6.5
+WC tested up to: 3.7.0
 
 Billmate offers a complete paymentsolution to your webshop.
 
@@ -29,7 +29,7 @@ If you have any questions please visit https://billmate.se/kontakt to make conta
 = Minimum Requirements =
 
 * Account at Billmate.se
-* WooCommerce version 2.5.5 - 3.6.3
+* WooCommerce version 2.5.5 - 3.7.0
 
 = Installation in Wordpress =
 
@@ -82,9 +82,11 @@ You need to make sure our callback IP, 54.194.217.63, is whitelisted  in Wordfen
 
 If you would like to use our logos on your site:
 https://www.billmate.se/press-och-media/
-
-
 == Changelog ==
+
+=  3.8.0 (2019-12-09)
+*  Feature - Partpayment information retrieves directly from the Billmate API
+*  Fix - WC_Payment_Gateway::get_order_total() not be called statically
 
 =  3.7.2 (2019-12-04)
 *  Fix - Revert back - loopback health problem
@@ -147,11 +149,11 @@ https://www.billmate.se/press-och-media/
   * Fix WhooCommerce shows correct company delivery address
   * Fix Wocommerce Subription sets the currency based on the order instead of the defualt currency
 
-= 3.4.6 (2019-05-22)
-  * Fix - Removed auto scroll on Billmate Checkout page
+= 3.4.6 (2019-05-22) =
+* Fix - Removed auto scroll on Billmate Checkout page
   
-= 3.4.5 (2019-05-20)
-  * Fix - Clear Billmate Checkout Session after a payment is made
+= 3.4.5 (2019-05-20) =
+* Fix - Clear Billmate Checkout Session after a payment is made
 
 = 3.4.4 (2019-03-05) =
 * Enhancement - Only get Billmate Checkout page when language is sv
