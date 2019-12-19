@@ -540,7 +540,7 @@ class BillmateCalc {
         foreach($pclasses as $pclass) {
             // Lowest for SE is 50
             if (is_array($pclass)) {
-                if (array_key_exists('country', $pclass)) {
+                if (array_key_exists('country', $pclass) && array_key_exists('monthlycost', $pclass)) {
                     $lowest_payment = BillmateCalc::get_lowest_payment_for_account(strtoupper($pclass['country']));
 
                     // Check if sum is over mintotal. And Type is 1 or less.
