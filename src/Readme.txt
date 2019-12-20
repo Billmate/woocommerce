@@ -85,7 +85,7 @@ https://www.billmate.se/press-och-media/
 == Changelog ==
 
 =  3.8.1 (2019-12-19)
-*  Fix -  Aditional check on payment class calculation to avoid errors
+*  Fix - Additional check on payment class calculation to avoid errors
 
 =  3.8.0 (2019-12-09)
 *  Feature - Partpayment information retrieves directly from the Billmate API
