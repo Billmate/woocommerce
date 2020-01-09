@@ -2113,7 +2113,9 @@ parse_str($_POST['post_data'], $datatemp);
 
         //global $woocommerce, $product, $billmate_partpayment_shortcode_currency, $billmate_partpayment_shortcode_price, $billmate_partpayment_shortcode_img, $billmate_partpayment_shortcode_info_link;
         global $woocommerce, $product, $billmate_partpayment_shortcode_currency, $billmate_partpayment_shortcode_price, $billmate_shortcode_img, $billmate_partpayment_country, $billmate_partpayment_eid;
-
+	if (!is_numeric($product->get_price())){
+		return;
+	}
         $storedPclassesSum = WC()->session->get('billmate_pclasses_sum');
         $storedPclasses = WC()->session->get('billmate_pclasses');
 
