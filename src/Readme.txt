@@ -84,6 +84,11 @@ If you would like to use our logos on your site:
 https://www.billmate.se/press-och-media/
 == Changelog ==
 
+WPM-87 [BUGFIX] added check to see if product has a price before trying to retrive it
+
+=  3.9.0 (2020-01-13)
+*  Fix - Added check to see if product has a price before payment class calculation
+
 =  3.8.1 (2019-12-19)
 *  Fix - Additional check on payment class calculation to avoid errors
 
