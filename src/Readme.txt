@@ -86,6 +86,7 @@ https://www.billmate.se/press-och-media/
 
 =  3.9.0 (2020-01-13)
 *  Fix - Added check to see if product has a price before payment class calculation
+*  Feature - Added support for credit /cancel Billmate orders in WooCommerce
 
 =  3.8.1 (2019-12-19)
 *  Fix - Additional check on payment class calculation to avoid errors
