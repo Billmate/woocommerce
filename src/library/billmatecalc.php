@@ -528,9 +528,8 @@ class BillmateCalc {
     }
 
     public static function getCheapestPClass($sum, $flags, $pclasses) {
-
         $sum = (is_numeric($sum)) ? $sum : 0;
-
+        $sum = $sum*100;
         if(!is_numeric ($flags) || !in_array ($flags,
                 array(BillmateFlags::CHECKOUT_PAGE, BillmateFlags::PRODUCT_PAGE))) {
             throw new Exception(
@@ -540,16 +539,20 @@ class BillmateCalc {
         $lowest_pp = $lowest = false;
         foreach($pclasses as $pclass) {
             // Lowest for SE is 50
-            $lowest_payment = BillmateCalc::get_lowest_payment_for_account(strtoupper($pclass['country']));
+            if (is_array($pclass)) {
+                if (array_key_exists('country', $pclass) && array_key_exists('monthlycost', $pclass)) {
+                    $lowest_payment = BillmateCalc::get_lowest_payment_for_account(strtoupper($pclass['country']));
 
-            // Check if sum is over mintotal. And Type is 1 or less.
-            if($pclass['type'] < 2 && $sum >= $pclass['minamount']) {
-                $minpay = BillmateCalc::calc_monthly_cost($sum, $pclass, $flags);
+                    // Check if sum is over mintotal. And Type is 1 or less.
+                    if ($pclass['type'] < 2 && $sum >= $pclass['minamount']) {
+                        $minpay = BillmateCalc::calc_monthly_cost($sum, $pclass, $flags);
 
-                if($minpay < $lowest_pp || $lowest_pp === false) {
-                    if($pclass['type'] == 1 || $minpay >= $lowest_payment) {
-                        $lowest_pp = $minpay;
-                        $lowest = $pclass;
+                        if ($minpay < $lowest_pp || $lowest_pp === false) {
+                            if ($pclass['type'] == 1 || $minpay >= $lowest_payment) {
+                                $lowest_pp = $minpay;
+                                $lowest = $pclass;
+                            }
+                        }
                     }
                 }
             }
@@ -588,23 +591,13 @@ class BillmateCalc {
      * @return float  The monthly cost.
      */
     public static function calc_monthly_cost($sum, $pclass, $flags) {
-        if(!is_numeric($sum)) {
+        if(!array_key_exists('monthlycost', $pclass)) {
             throw new Exception('Error in ' . __METHOD__ . ': Argument sum is not numeric!');
         }
         else if(is_numeric($sum) && (!is_int($sum) || !is_float($sum))) {
             $sum = floatval($sum);
         }
-
-        if(is_numeric($flags) && !is_int($flags)) {
-            $flags = intval($flags);
-        }
-        if(!is_numeric($flags) || !in_array($flags, array(BillmateFlags::CHECKOUT_PAGE, BillmateFlags::PRODUCT_PAGE))) {
-            throw new Exception('Error in ' . __METHOD__ . ': Flags argument invalid!');
-        }
-
-        $payarr = self::get_payarr($sum, $pclass, $flags);
-        $value = isset($payarr[0]) ? ($payarr[0]) : 0;
-        return (BillmateFlags::CHECKOUT_PAGE == $flags) ? round($value, 0) : self::pRound($value, $pclass['country']);
+        return $pclass['monthlycost']/100;
     }
 
     /**
