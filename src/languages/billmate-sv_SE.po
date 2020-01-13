@@ -17,6 +17,33 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: ..\n"
 
+msgid "Error: Can't cancel Billmate invoice %s, Unknown Method."
+msgstr "Fel: Kan inte avbryta beställningen Billmate faktura %s, okänd metod."
+
+msgid "Error: Can't cancel Billmate Invoice %s."
+msgstr "Fel: Kan inte avbryta beställningen Billmate faktura %s."
+
+msgid "Billmate Invoice %s successfully Canceled."
+msgstr "Billmate faktura %s har blivit avbruten."
+
+msgid "Billmate Invoice %s successfully Canceled, Billmate credit Invoice %s."
+msgstr "Billmate faktura %s har blivit avbruten, Billmate kreditfaktura %s."
+
+msgid "Error: Can't cancel Billmate Invoice ID is missing."
+msgstr "Fel: Det går inte att avbryta Billmate faktura ID saknas."
+
+msgid "Error: Can't credit Billmate invoice %s, Unknown Method."
+msgstr "Fel: Kan inte kreditera Billmate faktura %s, okänd metod."
+
+msgid "Error: Can't credit Billmate invoice %s."
+msgstr "Fel: Kan inte kreditera Billmate faktura %s."
+
+msgid "Billmate invoice %s successfully credited, Billmate credit Invoice %s."
+msgstr "Billmate Faktura %s har blivit krediterad, Billmate kreditfaktura %s."
+
+msgid "Error: Can't credit Billmate invoice ID is missing."
+msgstr "Fel: Det går inte att kreditera Billmate faktura ID saknas."
+
 #: ../class-billmate-account.php:20 ../class-billmate-account.php:307
 msgid "Billmate Part Payment"
 msgstr "Billmate Delbetalning"

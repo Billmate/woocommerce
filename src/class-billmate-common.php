@@ -67,7 +67,8 @@ class BillmateCommon {
 						if(isset($result['code'])) {
 							$orderNote = sprintf(__('Billmate: The order payment couldnt be activated, error code: %s error message: %s', 'billmate'), $result['code'], $result['message']);
 						} else {
-							$orderNote = __('Billmate: The order payment activated successfully', 'billmate');
+              $orderNote = __('Billmate: The order payment activated successfully', 'billmate');
+              add_post_meta($order_id, 'order_has_been_activated', 1);
 						}
 					} elseif(isset($paymentInfo['code'])) {
 						$paymentInfo['message'] = utf8_encode($paymentInfo['message']);

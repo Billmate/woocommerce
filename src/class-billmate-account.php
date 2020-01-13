@@ -94,7 +94,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
 
 		add_action('woocommerce_receipt_billmate_partpayment', array(&$this, 'receipt_page'));
 
-        add_action('woocommerce_single_product_summary', 'WC_Gateway_Billmate_Partpayment::print_product_monthly_cost', $this->show_monthly_cost_prio);
+        add_action('woocommerce_single_product_summary', array($this, 'WC_Gateway_Billmate_Partpayment::print_product_monthly_cost'), $this->show_monthly_cost_prio);
 
 		add_action('woocommerce_checkout_process', array(&$this, 'billmate_partpayment_checkout_field_process'));
 
@@ -2064,7 +2064,7 @@ parse_str($_POST['post_data'], $datatemp);
      * Calc monthly cost on single Product page and print it out when partpayment and/or checkout is enabled
      * @return void
      **/
-    static function print_product_monthly_cost()
+    function print_product_monthly_cost()
     {
         $queried_object = get_queried_object();
 
@@ -2113,7 +2113,9 @@ parse_str($_POST['post_data'], $datatemp);
 
         //global $woocommerce, $product, $billmate_partpayment_shortcode_currency, $billmate_partpayment_shortcode_price, $billmate_partpayment_shortcode_img, $billmate_partpayment_shortcode_info_link;
         global $woocommerce, $product, $billmate_partpayment_shortcode_currency, $billmate_partpayment_shortcode_price, $billmate_shortcode_img, $billmate_partpayment_country, $billmate_partpayment_eid;
-
+	if (!is_numeric($product->get_price())){
+		return;
+	}
         $storedPclassesSum = WC()->session->get('billmate_pclasses_sum');
         $storedPclasses = WC()->session->get('billmate_pclasses');
 
