@@ -84,6 +84,9 @@ If you would like to use our logos on your site:
 https://www.billmate.se/press-och-media/
 == Changelog ==
 
+=  3.9.1 (2020-01-15)
+* Feature - Visual/clearer description when approve email address is not checked for invoice/partial payment in WooCommere checkout
+
 =  3.9.0 (2020-01-13)
 *  Fix - Added check to see if product has a price before payment class calculation
 *  Feature - Added support for credit/cancel Billmate orders in WooCommerce
@@ -195,7 +198,7 @@ https://www.billmate.se/press-och-media/
 * Fix - Remove org.nr from Partpayment pno input label
 
 = 3.3.2 (2018-06-14) =
-* Fix - Check if session exists before try fetching customer postcode
+* Fix - Check if session exists before try fetching  per postcode
 * Enhancement - When saved address in Billmate Checkout Only update Checkout order when Shipping fee is affected
 * Enhancement - Minor code refactoring Use same function to calculate shipping fee when update Checkout
 

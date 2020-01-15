@@ -143,4 +143,43 @@ dirtyInput = this;
 jQuery('body').trigger('update_checkout');
 })
 })
-
+jQuery(document).ready(function(){
+	jQuery(document.body).on('checkout_error', function() {
+        jQuery('html, body').stop();
+		labels = document.getElementsByTagName('label');
+		invLabel = null;
+		partLabel = null;
+		for (var i = 0; i < labels.length; i++){
+			if (labels[i].htmlFor == 'payment_method_billmate_invoice'){
+				invLabel = labels[i];
+			}
+			if (labels[i].htmlFor == 'payment_method_billmate_partpayment'){
+				partLabel = labels[i];
+			}
+		}
+		var inv_label = $('label[for="payment_method_billmate_invoice"]');
+		var part_label = $('label[for="payment_method_billmate_partpayment"]');
+		if (inv_label.length == 1){
+			if (document.getElementsByTagName('input')['payment_method_billmate_invoice'].checked){
+				if (!document.getElementsByTagName('input')["valid_email_it_is_invoice"].checked) {
+					var text = document.getElementsByClassName("woocommerce-error")[0].innerText;
+					var prev = document.getElementsByClassName('payment_box payment_method_billmate_invoice')[0].innerHTML;
+                    var newText = prev + '<div class="billmate-error" style="color:red; text-decoration:underline">' + text + '</div>';
+                    document.getElementsByClassName('payment_box payment_method_billmate_invoice')[0].innerHTML = newText;
+					invLabel.scrollIntoView();
+				}
+			}
+		}
+		if (part_label.length == 1){
+			if (document.getElementsByTagName('input')['payment_method_billmate_partpayment'].checked){
+				if (!document.getElementsByTagName('input')["valid_email_it_is"].checked){
+					var text = document.getElementsByClassName("woocommerce-error")[0].innerText;
+                    var prev = document.getElementsByClassName('payment_box payment_method_billmate_partpayment')[0].innerHTML;
+                    var newText = prev + '<div class="billmate-error" style="color:red; text-decoration:underline">' + text + '</div>';
+                    document.getElementsByClassName('payment_box payment_method_billmate_partpayment')[0].innerHTML = newText;
+					invLabel.scrollIntoView();
+				}
+			}
+		}
+	})
+});
