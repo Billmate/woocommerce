@@ -85,7 +85,7 @@ https://www.billmate.se/press-och-media/
 == Changelog ==
 
 =  3.9.1 (2020-01-15)
-* Feature - Visual/clearer description when approve email address is not checked for invoice/partial payment in WooCommere standard checkout
+* Feature - Visual/clearer description when approve email address is not checked for invoice/partial payment in WooCommere checkout
 
 =  3.9.0 (2020-01-13)
 *  Fix - Added check to see if product has a price before payment class calculation
