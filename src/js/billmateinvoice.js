@@ -143,4 +143,36 @@ dirtyInput = this;
 jQuery('body').trigger('update_checkout');
 })
 })
-
+jQuery(document).ready(function(){
+	jQuery(document.body).on('checkout_error', function() {
+		labels = document.getElementsByTagName('label');
+		invLabel = null;
+		partLabel = null;
+		for (var i = 0; i < labels.length; i++){
+			if (labels[i].htmlFor == 'payment_method_billmate_invoice'){
+				invLabel = labels[i];
+			}
+			if (labels[i].htmlFor == 'payment_method_billmate_partpayment'){
+				partLabel = labels[i];
+			}
+		}
+		var inv_label = $('label[for="payment_method_billmate_invoice"]');
+		var part_label = $('label[for="payment_method_billmate_partpayment"]');
+		if (inv_label.length == 1){
+			if (document.getElementsByTagName('input')['payment_method_billmate_invoice'].checked){
+				if (!document.getElementsByTagName('input')["valid_email_it_is_invoice"].checked){
+					jQuery('html, body').stop();
+					invLabel.scrollIntoView();
+				}
+			}
+		}
+		if (part_label.length == 1){
+			if (document.getElementsByTagName('input')['payment_method_billmate_partpayment'].checked){
+				if (!document.getElementsByTagName('input')["valid_email_it_is"].checked){
+					jQuery('html, body').stop();
+					invLabel.scrollIntoView();
+				}
+			}
+		}
+	})
+});
