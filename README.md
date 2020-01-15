@@ -25,7 +25,7 @@ The invoice and part payment plugin only work if the currency is set to Swedish 
 2.5.5 - 3.7.0
 
 ## Compatibility PHP versions
-1.0 - 7.2
+1.0 - 7.4
 
 ## Installation
 The simplest way to install this module is through the WordPress Plugin Directory. However, if you want to install manually, follow the steps below-
