@@ -116,16 +116,19 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
         return true;
     }
 
-    public function get_title() {
-        if (ctype_digit($_GET['post'])){
-            if (get_post_status($_GET['post']) !== FALSE){
-                return esc_html(get_post_meta($_GET['post'], '_payment_method_title', true));
-            }
-            else {
+    public function get_title()
+    {
+        if (array_key_exists('post', $_GET)) {
+            if (ctype_digit($_GET['post'])) {
+                if (get_post_status($_GET['post']) !== FALSE) {
+                    return esc_html(get_post_meta($_GET['post'], '_payment_method_title', true));
+                } else {
+                    return $this->method_title;
+                }
+            } else {
                 return $this->method_title;
             }
-        }
-        else {
+        } else {
             return $this->method_title;
         }
     }
