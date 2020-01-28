@@ -477,6 +477,7 @@ function init_billmate_gateway() {
             $checkout =         false;
             $k =                new Billmate($this->eid,$this->secret,true,$testmode == 'yes',false);
             $payment_note =     '';
+            $redirect = '';
 
             if(!empty($_GET['method']) && $_GET['method'] == 'checkout')
                 $checkout = true;
@@ -968,6 +969,11 @@ function init_billmate_gateway() {
                                 && $storeOrderTotalCompare + 300 >= $billmateOrderTotalCompare
                         ) {
                             // Set order as paid if paid amount matches order total amount
+                            if (version_compare(WC_VERSION, '2.0.0', '<')) {
+                                $redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))));
+                            } else {
+                                $redirect = $this->get_return_url($order);
+                            }
                             $order->payment_complete();
                             if ($this->order_status != 'default') {
                                 $order->update_status($this->order_status);
@@ -1109,13 +1115,14 @@ function init_billmate_gateway() {
                 }
 
                 if( $accept_url_hit ){
-                    $redirect = '';
                     WC()->cart->empty_cart();
                     delete_transient($transientPrefix.$order_id);
-                    if(version_compare(WC_VERSION, '2.0.0', '<')){
-                        $redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))));
-                    } else {
-                        $redirect = $this->get_return_url($order);
+                    if ($redirect == '') {
+                        if (version_compare(WC_VERSION, '2.0.0', '<')) {
+                            $redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))));
+                        } else {
+                            $redirect = $this->get_return_url($order);
+                        }
                     }
                     WC()->session->__unset( 'billmate_checkout_hash' );
                     WC()->session->__unset( 'billmate_checkout_order' );
@@ -1129,10 +1136,12 @@ function init_billmate_gateway() {
             if( $accept_url_hit ) {
                 // Remove cart
                 WC()->cart->empty_cart();
-                if(version_compare(WC_VERSION, '2.0.0', '<')){
-                    $redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))));
-                } else {
-                    $redirect = $this->get_return_url($order);
+                if ($redirect == '') {
+                    if (version_compare(WC_VERSION, '2.0.0', '<')) {
+                        $redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(get_option('woocommerce_thanks_page_id'))));
+                    } else {
+                        $redirect = $this->get_return_url($order);
+                    }
                 }
                 WC()->session->__unset( 'billmate_checkout_hash' );
                 WC()->session->__unset( 'billmate_checkout_order' );
