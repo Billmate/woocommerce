@@ -14,10 +14,19 @@ function return_billmate_price() {
 	global $billmate_partpayment_shortcode_price, $eid;
     $product = new WC_Product( get_the_ID() );
     $settings = get_option('woocommerce_billmate_partpayment_settings');
+
     if(version_compare(WC_VERSION, '3.0.0', '>=')) {
         $price = $product->get_price();
     } else {
         $price = $product->price;
+    }
+    $prices_entered_incl_tax = get_option('woocommerce_prices_include_tax');
+    if ($prices_entered_incl_tax == "no"){
+        $tax_rates = WC_Tax::get_rates($product->get_tax_class());
+        if (!empty($tax_rates)){
+            $tax_rate = reset($tax_rates);
+            $price = $price*(1+($tax_rate['rate']/100));
+        }
     }
 
     if ($settings['testmode'] == 'yes'):
