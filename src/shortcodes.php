@@ -14,54 +14,70 @@ function return_billmate_price() {
 	global $billmate_partpayment_shortcode_price, $eid;
     $product = new WC_Product( get_the_ID() );
     $settings = get_option('woocommerce_billmate_partpayment_settings');
+
     if(version_compare(WC_VERSION, '3.0.0', '>=')) {
         $price = $product->get_price();
     } else {
         $price = $product->price;
     }
-
-    if ($settings['testmode'] == 'yes'):
-        // Disable SSL if in testmode
-        $billmate_ssl = 'false';
-        $billmate_mode = 'test';
-    else :
-        // Set SSL if used in webshop
-        if (is_ssl()) {
-            $billmate_ssl = 'true';
-        } else {
-            $billmate_ssl = 'false';
+    $prices_entered_incl_tax = get_option('woocommerce_prices_include_tax');
+    if ($prices_entered_incl_tax == "no"){
+        $tax_rates = WC_Tax::get_rates($product->get_tax_class());
+        if (!empty($tax_rates)){
+            $tax_rate = reset($tax_rates);
+            $price = $price*(1+($tax_rate['rate']/100));
         }
-        $billmate_mode = 'live';
-    endif;
-    $eid = (int)get_option('billmate_common_eid');
-
-
-    $secret = get_option('billmate_common_secret');
-    $country = get_option('woocommerce_default_country');
-    if ($country != 'SE' && $country != 'DK' && $country != 'FI' && $country != 'NO' && $country != 'NL'){
-        $country = "SE";
     }
-    $currency = get_woocommerce_currency();
-    $language = explode('_', get_locale());
-    if (!defined('BILLMATE_LANGUAGE')) define('BILLMATE_LANGUAGE', strtolower($language[0]));
-    global $wp_version;
+    $storedPclassesSum = WC()->session->get('billmate_pclasses_sum');
+    $storedPclasses = WC()->session->get('billmate_pclasses');
+    if ($storedPclasses == null || $storedPclassesSum != $price) {
+        if ($settings['testmode'] == 'yes'):
+            // Disable SSL if in testmode
+            $billmate_ssl = 'false';
+            $billmate_mode = 'test';
+        else :
+            // Set SSL if used in webshop
+            if (is_ssl()) {
+                $billmate_ssl = 'true';
+            } else {
+                $billmate_ssl = 'false';
+            }
+            $billmate_mode = 'live';
+        endif;
+        $eid = (int)get_option('billmate_common_eid');
 
-    // Meta to add to API requests, will be used for debug
-    $meta = array(
-        'PHP_VERSION' => phpversion(),
-        'WORDPRESS_VERSION' => $wp_version,
-        'WOOCOMMERCE_VERSION' => WC_VERSION
-    );
-    $bm = new BillMate($eid, $secret, true, $settings['testmode'] == 'yes', false, $meta);
 
-    $values['PaymentData'] = array(
-        'currency' => $currency,
-        'language' => $language[0],
-        'country' => $country,
-        'totalwithtax' => $price * 100
-    );
+        $secret = get_option('billmate_common_secret');
+        $country = get_option('woocommerce_default_country');
+        if ($country != 'SE' && $country != 'DK' && $country != 'FI' && $country != 'NO' && $country != 'NL') {
+            $country = "SE";
+        }
+        $currency = get_woocommerce_currency();
+        $language = explode('_', get_locale());
+        if (!defined('BILLMATE_LANGUAGE')) define('BILLMATE_LANGUAGE', strtolower($language[0]));
+        global $wp_version;
 
-    $pclasses = $bm->getPaymentPlans($values);
+        // Meta to add to API requests, will be used for debug
+        $meta = array(
+            'PHP_VERSION' => phpversion(),
+            'WORDPRESS_VERSION' => $wp_version,
+            'WOOCOMMERCE_VERSION' => WC_VERSION
+        );
+        $bm = new BillMate($eid, $secret, true, $settings['testmode'] == 'yes', false, $meta);
+
+        $values['PaymentData'] = array(
+            'currency' => $currency,
+            'language' => $language[0],
+            'country' => $country,
+            'totalwithtax' => $price * 100
+        );
+
+        $pclasses = $bm->getPaymentPlans($values);
+    }
+    else {
+        $pclasses = $storedPclasses;
+    }
+
 	$flag = BillmateFlags::CHECKOUT_PAGE;
 	$pclasses_not_available = true;
 

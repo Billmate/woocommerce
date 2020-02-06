@@ -84,6 +84,10 @@ If you would like to use our logos on your site:
 https://www.billmate.se/press-och-media/
 == Changelog ==
 
+=  3.9.4 (2020-02-06)
+* Fix - Reduced getpaymentplan's API calls
+* Fix - Part payment plan on product include VAT.
+
 =  3.9.3 (2020-01-28)
 * Fix - Card payment comes to the right thank you page with Polylang
 

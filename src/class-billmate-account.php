@@ -2116,10 +2116,19 @@ parse_str($_POST['post_data'], $datatemp);
 	if (!is_numeric($product->get_price())){
 		return;
 	}
+        $billmate_product_total = $product->get_price();
+        $sum = apply_filters('billmate_product_total', $billmate_product_total); // Product price.
         $storedPclassesSum = WC()->session->get('billmate_pclasses_sum');
         $storedPclasses = WC()->session->get('billmate_pclasses');
-
-        if ($storedPclasses == null || $storedPclassesSum !== WC_Payment_Gateway::get_order_total()*100) {
+        $prices_entered_incl_tax = get_option('woocommerce_prices_include_tax');
+        if ($prices_entered_incl_tax == "no"){
+            $tax_rates = WC_Tax::get_rates($product->get_tax_class());
+            if (!empty($tax_rates)){
+                $tax_rate = reset($tax_rates);
+                $sum = $sum*(1+($tax_rate['rate']/100));
+            }
+        }
+        if ($storedPclasses == null || $storedPclassesSum !== $sum) {
 
             $settings = get_option('woocommerce_billmate_partpayment_settings');
 
@@ -2164,9 +2173,11 @@ parse_str($_POST['post_data'], $datatemp);
                 'currency' => $currency,
                 'language' => $language[0],
                 'country' => $country,
-                'totalwithtax' => $product->get_price() * 100
+                'totalwithtax' => $sum * 100
             );
             $pclasses = $bm->getPaymentPlans($values);
+            WC()->session->set('billmate_pclasses_sum', $sum);
+            WC()->session->set('billmate_pclasses', $pclasses);
         } else {
             $pclasses = $storedPclasses;
         }
@@ -2194,13 +2205,8 @@ parse_str($_POST['post_data'], $datatemp);
             $pclasses_not_available = true;
             if ($pclasses) $pclasses_not_available = false;
 
-
-            // apply_filters to product price so we can filter this if needed
-            $billmate_product_total = $product->get_price();
-            $sum = apply_filters('billmate_product_total', $billmate_product_total); // Product price.
             $flag = BillmateFlags::PRODUCT_PAGE; //or BillmateFlags::PRODUCT_PAGE, if you want to do it for one item.
             $pclass = BillmateCalc::getCheapestPClass($sum, $flag, $pclasses);
-
 
             //Did we get a PClass? (it is false if we didn't)
             if ($pclass) {
