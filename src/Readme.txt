@@ -84,6 +84,10 @@ If you would like to use our logos on your site:
 https://www.billmate.se/press-och-media/
 == Changelog ==
 
+
+=  3.9.5 (2020-02-11)
+* Enhancement - Shipping tax rate correctly send to Billmate
+
 =  3.9.4 (2020-02-06)
 * Fix - Reduced getpaymentplan's API calls
 * Fix - Part payment plan on product include VAT.
