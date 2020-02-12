@@ -85,7 +85,7 @@ https://www.billmate.se/press-och-media/
 == Changelog ==
 
 =  3.9.6 (2020-02-12)
-* Fix - Rollback version 3.6.4 and 3.9.5
+* Fix - Rollback version 3.9.4 and 3.9.5
 
 =  3.9.3 (2020-01-28)
 * Fix - Card payment comes to the right thank you page with Polylang
