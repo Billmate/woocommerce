@@ -474,10 +474,13 @@ function init_billmate_gateway() {
             $recurring =        false;
             $cancel_url_hit =   false;
             $accept_url_hit =   false;
+            $callback_url_hit = false;
             $checkout =         false;
             $k =                new Billmate($this->eid,$this->secret,true,$testmode == 'yes',false);
             $payment_note =     '';
             $redirect = '';
+            $feeAmount = 0;
+            $feeTaxrate = 0;
 
             if(!empty($_GET['method']) && $_GET['method'] == 'checkout')
                 $checkout = true;
@@ -508,6 +511,7 @@ function init_billmate_gateway() {
                 $_POST = $this->woocommerce_clean((is_array($_GET) && isset($_GET['data'])) ? $_GET : file_get_contents("php://input"));
                 $accept_url_hit = false;
                 $payment_note = 'Note: Payment Completed (callback success).';
+                $callback_url_hit = true;
             }
             if(is_array($_POST))
             {
@@ -1114,6 +1118,79 @@ function init_billmate_gateway() {
                     exit;
                 }
 
+
+                if ($accept_url_hit || $callback_url_hit){
+                    $eid = (int)get_option('billmate_common_eid');
+                    $secret = get_option('billmate_common_secret');
+                    global $wp_version;
+                    $meta = array(
+                        'PHP_VERSION' => phpversion(),
+                        'WORDPRESS_VERSION' => $wp_version,
+                        'WOOCOMMERCE_VERSION' => WC_VERSION
+                    );
+                    $settings = get_option('woocommerce_billmate_checkout_settings');
+                    $bm = new BillMate($eid, $secret, true, $settings['testmode'] == 'yes', false, $meta);
+                    $paymentInfo = $bm->getPaymentinfo(array('number' => $data['number']));
+                    if ($paymentInfo['Cart']['Total']['rounding'] !== 0) {
+                        $bmsum = 0;
+                        foreach ($paymentInfo['Articles'] as $bmItem){
+                            $bmsum += $bmItem['withouttax']*(1+$bmItem['taxrate']/100);
+                        }
+                        $wooSum = 0;
+                        foreach ($order->get_items() as $item_id => $item_data) {
+                            $wooSum += $item_data->get_total() * 100;
+                        }
+                        if ($bmsum !== $wooSum) {
+                            $updatePaymentData = array();
+                            $updatePaymentData['PaymentData'] = array(
+                                "number" => $data['number'],
+                            );
+                            foreach ($order->get_items() as $item_id => $item_data) {
+                                $product = $item_data->get_product();
+                                $product_tax_class = $product->get_tax_class();
+                                $product_tax = $tax->get_rates($product_tax_class);
+                                $rate = array_pop($product_tax);
+                                $rate = $rate['rate'];
+                                $updatePaymentData["Articles"][] = array(
+                                    "artnr" => $product->get_sku(),
+                                    "title" => $item_data->get_name(),
+                                    "quantity" => $item_data->get_quantity(),
+                                    "aprice" => ($item_data->get_total() / $item_data->get_quantity()) * 100,
+                                    "taxrate" => $rate,
+                                    "discount" => "0",
+                                    "withouttax" => $item_data->get_total() * 100,
+                                );
+                            }
+                            $order->calculate_totals(true);
+                            $incltax = $order->get_total();
+                            $excltax = $order->get_total() - $order->get_total_tax();
+                            $taxtotal = $order->get_total_tax();
+                            $rates = current(WC_Tax::get_shipping_tax_rates());
+                            if (is_array($rates) AND isset($rates['rate'])) {
+                                $taxrate = round($rates['rate']);
+                            }
+                            $shippingcost = $order->get_shipping_total();
+                            $updatePaymentData["Cart"] = array(
+                                "Handling" => array(
+                                    "withouttax" => $feeAmount*100,
+                                    "taxrate" => $feeTaxrate
+                                ),
+                                "Shipping" => array(
+                                    "withouttax" => $shippingcost * 100,
+                                    "taxrate" => $taxrate
+                                ),
+                                "Total" => array(
+                                    "withouttax" => $excltax * 100,
+                                    "tax" => $taxtotal*100,
+                                    "rounding" => "0",
+                                    "withtax" => $incltax * 100
+                                )
+                            );
+                            $bm->updatePayment($updatePaymentData);
+                        }
+                    }
+                }
+
                 if( $accept_url_hit ){
                     WC()->cart->empty_cart();
                     delete_transient($transientPrefix.$order_id);
@@ -1132,6 +1209,78 @@ function init_billmate_gateway() {
                 wp_die('OK','ok',array('response' => 200));
             }
 
+
+            if ($accept_url_hit || $callback_url_hit){
+                $eid = (int)get_option('billmate_common_eid');
+                $secret = get_option('billmate_common_secret');
+                global $wp_version;
+                $meta = array(
+                    'PHP_VERSION' => phpversion(),
+                    'WORDPRESS_VERSION' => $wp_version,
+                    'WOOCOMMERCE_VERSION' => WC_VERSION
+                );
+                $settings = get_option('woocommerce_billmate_checkout_settings');
+                $bm = new BillMate($eid, $secret, true, $settings['testmode'] == 'yes', false, $meta);
+                $paymentInfo = $bm->getPaymentinfo(array('number' => $data['number']));
+                if ($paymentInfo['Cart']['Total']['rounding'] !== 0) {
+                    $bmsum = 0;
+                    foreach ($paymentInfo['Articles'] as $bmItem){
+                        $bmsum += $bmItem['withouttax']*(1+$bmItem['taxrate']/100);
+                    }
+                    $wooSum = 0;
+                    foreach ($order->get_items() as $item_id => $item_data) {
+                        $wooSum += $item_data->get_total() * 100;
+                    }
+                    if ($bmsum !== $wooSum) {
+                        $updatePaymentData = array();
+                        $updatePaymentData['PaymentData'] = array(
+                            "number" => $data['number'],
+                        );
+                        foreach ($order->get_items() as $item_id => $item_data) {
+                            $product = $item_data->get_product();
+                            $product_tax_class = $product->get_tax_class();
+                            $product_tax = $tax->get_rates($product_tax_class);
+                            $rate = array_pop($product_tax);
+                            $rate = $rate['rate'];
+                            $updatePaymentData["Articles"][] = array(
+                                "artnr" => $product->get_sku(),
+                                "title" => $item_data->get_name(),
+                                "quantity" => $item_data->get_quantity(),
+                                "aprice" => ($item_data->get_total() / $item_data->get_quantity()) * 100,
+                                "taxrate" => $rate,
+                                "discount" => "0",
+                                "withouttax" => $item_data->get_total() * 100,
+                            );
+                        }
+                        $order->calculate_totals(true);
+                        $incltax = $order->get_total();
+                        $excltax = $order->get_total() - $order->get_total_tax();
+                        $taxtotal = $order->get_total_tax();
+                        $rates = current(WC_Tax::get_shipping_tax_rates());
+                        if (is_array($rates) AND isset($rates['rate'])) {
+                            $taxrate = round($rates['rate']);
+                        }
+                        $shippingcost = $order->get_shipping_total();
+                        $updatePaymentData["Cart"] = array(
+                            "Handling" => array(
+                                "withouttax" => $feeAmount*100,
+                                "taxrate" => $feeTaxrate
+                            ),
+                            "Shipping" => array(
+                                "withouttax" => $shippingcost * 100,
+                                "taxrate" => $taxrate
+                            ),
+                            "Total" => array(
+                                "withouttax" => $excltax * 100,
+                                "tax" => $taxtotal*100,
+                                "rounding" => "0",
+                                "withtax" => $incltax * 100
+                            )
+                        );
+                        $bm->updatePayment($updatePaymentData);
+                    }
+                }
+            }
 
             if( $accept_url_hit ) {
                 // Remove cart
