@@ -1753,7 +1753,7 @@ if(!class_exists('BillmateOrder')){
                     $isOneTaxrate = false;
                 }
             }
-            $coupons = $this->order->get_coupon_codes();
+            $coupons = $this->order->get_used_coupons();
             $codes = "";
             for ($i = 0; $i < count ($coupons); $i++) {
                 if ($i == count($coupons) - 1) {
