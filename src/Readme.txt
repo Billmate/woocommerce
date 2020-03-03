@@ -85,10 +85,10 @@ https://www.billmate.se/press-och-media/
 == Changelog ==
 
 
-=  3.9.6 (2020-03-03)
+=  3.9.7 (2020-03-03)
 *  Fix - Notice: get_used_coupons deprecated 
 
-=  3.9.5 (2020-02-20)
+=  3.9.6 (2020-02-20)
 *  Fix - Revert back - 3.94
 
 =  3.9.5 (2020-02-11)
