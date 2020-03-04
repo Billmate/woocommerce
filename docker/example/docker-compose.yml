@@ -1,0 +1,40 @@
+version: "3.1"
+
+services:
+  woocommerce:
+    build:
+      context: ../
+      dockerfile: Dockerfile
+      args:
+        WOO_VERSION: 3.7.0 # woocommerce version to use.
+        BILLMATE_VERSION: dev # tag number or branch name at github to use for the billmate plugin
+    ports:
+      - 8080:80
+    environment:
+
+      # These values are used for the wp-data base setup and are required.
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: db_user
+      WORDPRESS_DB_PASSWORD: db_pass
+      WORDPRESS_DB_NAME: woo_db
+
+      #These values are used in the initial wp setup.
+      #Missing values will be filled with dull defaults.
+      #Please pay special attention to WP_URL, and make sure that it ends with the same port number that is exposed to the external network.
+      WP_URL: localhost:8080 # Default is 'localhost'
+      WP_TITLE: MyStore # Default is 'Test-title'
+      WP_ADMIN_USER: admin # Default is 'test'
+      WP_ADMIN_EMAIL: test@test.se # Default is 'test-admin@test.se'
+      WP_ADMIN_PASSWORD: 4dm1n # Default is 'test'
+    depends_on:
+      - db
+
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_DATABASE: woo_db
+      MYSQL_USER: db_user
+      MYSQL_PASSWORD: db_pass
+      MYSQL_RANDOM_ROOT_PASSWORD: "1"
+    ports:
+      - 3306:3306
