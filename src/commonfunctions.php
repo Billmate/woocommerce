@@ -1,5 +1,6 @@
 <?php
-define('BILLPLUGIN_VERSION','3.9.7');
+
+define('BILLPLUGIN_VERSION','3.9.9');
 define('BILLMATE_CLIENT','PHP:Woocommerce:'.BILLPLUGIN_VERSION);
 define('BILLMATE_SERVER','2.1.9');
 
@@ -1881,7 +1882,7 @@ if(!class_exists('BillmateOrder')){
                     // Get shipping tax rate from cart
                     $rates = current(WC_Tax::get_shipping_tax_rates());
                     if (is_array($rates) AND isset($rates['rate'])) {
-                        $taxrate = round($rates['rate']);
+                        $taxzrate = round($rates['rate']);
                     }
                 }
             } else {
