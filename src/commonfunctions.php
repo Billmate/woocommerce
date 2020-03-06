@@ -1881,7 +1881,7 @@ if(!class_exists('BillmateOrder')){
                     // Get shipping tax rate from cart
                     $rates = current(WC_Tax::get_shipping_tax_rates());
                     if (is_array($rates) AND isset($rates['rate'])) {
-                        $taxrate = round($rates['rate']);
+                        $taxzrate = round($rates['rate']);
                     }
                 }
             } else {
