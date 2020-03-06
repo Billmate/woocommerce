@@ -14,7 +14,6 @@ function return_billmate_price() {
 	global $billmate_partpayment_shortcode_price, $eid;
     $product = new WC_Product( get_the_ID() );
     $settings = get_option('woocommerce_billmate_partpayment_settings');
-
     if(version_compare(WC_VERSION, '3.0.0', '>=')) {
         $price = $product->get_price();
     } else {
