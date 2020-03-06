@@ -84,12 +84,14 @@ If you would like to use our logos on your site:
 https://www.billmate.se/press-och-media/
 == Changelog ==
 
+=  3.9.8 (2020-03-06)
+*  Fix - Performance improvements
 
 =  3.9.7 (2020-03-03)
-*  Fix - Notice: get_used_coupons deprecated 
+*  Fix - Notice: get_used_coupons deprecated
 
-=  3.9.6 (2020-02-20)
-*  Fix - Revert back - 3.94
+=  3.9.6 (2020-02-12)
+* Fix - Rollback version 3.9.4 and 3.9.5
 
 =  3.9.5 (2020-02-11)
 * Enhancement - Shipping tax rate correctly send to Billmate
