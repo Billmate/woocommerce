@@ -3,7 +3,7 @@ name: PHP Composer
 on: [push]
 
 jobs:
-  build:
+  php-composer-job:
 
     runs-on: ubuntu-latest
 
