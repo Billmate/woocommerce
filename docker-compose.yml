@@ -37,4 +37,4 @@ services:
       MYSQL_PASSWORD: db_pass
       MYSQL_RANDOM_ROOT_PASSWORD: "1"
     ports:
-      - 3306:3306
+      - 3366:3306
