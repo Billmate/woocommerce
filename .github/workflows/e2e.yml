@@ -16,5 +16,5 @@ jobs:
       - name: Check running Docker containers
         run: docker ps -a
 
-      - name: Ping Docker network
+      - name: Ping Docker network localhost:8282
         run: ping localhost -p 8282 -c 4
