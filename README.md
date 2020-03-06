@@ -64,6 +64,22 @@ Copy the code below for the size that fits your needs.
 ## Testing
 Tested with [Browserstack](http://www.browserstack.com)
 
+## Local environment
+To setup a local Wordpress with Woocommerce and Billmate Payment Gateway locally, the following steps are needed.
+
+Start a Docker instance:
+
+    docker-compose up
+
+A new instance of the CMS are now up and running at the following url:
+
+    localhost:8282
+
+To login to Wordpress the credentials are:
+
+    user: admin
+    password: 4dm1n
+
 ## Development
 The development tools are available through Composer scripts.
 
