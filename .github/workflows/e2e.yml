@@ -1,0 +1,19 @@
+name: PHP Composer
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+      - uses: actions/checkout@v1
+
+      - name: Build the docker-compose stack
+        run: docker-compose -f docker-compose.yml up -d
+
+      - name: Check running Docker containers
+        run: docker ps -a
+
+      - name: Check Docker logs
+        run: docker logs backend
