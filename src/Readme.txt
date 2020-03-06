@@ -84,6 +84,9 @@ If you would like to use our logos on your site:
 https://www.billmate.se/press-och-media/
 == Changelog ==
 
+=  3.9.9 (2020-03-06)
+*  Fix - Minor improvements
+
 =  3.9.8 (2020-03-06)
 *  Fix - Performance improvements
 
