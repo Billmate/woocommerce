@@ -2204,6 +2204,17 @@ parse_str($_POST['post_data'], $datatemp);
 
             //Did we get a PClass? (it is false if we didn't)
             if ($pclass) {
+                $prices_entered_incl_tax = get_option('woocommerce_prices_include_tax');
+                if (!$prices_entered_incl_tax){
+                    $tax_rates = WC_Tax::get_rates($product->get_tax_class());
+                    if (!empty($tax_rates)){
+                        $tax_rate = reset($tax_rates);
+                        ob_start();
+                        var_dump($tax_rate);
+                        file_put_contents("gunk.log", ob_get_clean() . "\n", FILE_APPEND);
+                        //$sum = 0;
+                    }
+                }
                 //Here we reuse the same values as above:
                 $value = BillmateCalc::calc_monthly_cost(
                     $sum,

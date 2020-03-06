@@ -26,7 +26,7 @@
     "post-install-cmd": "phpcs --config-set installed_paths vendor/wp-coding-standards/wpcs",
     "post-update-cmd" : "phpcs --config-set installed_paths vendor/wp-coding-standards/wpcs",
     "php:codesniffer": "phpcs --report=full --colors -p --standard=WordPress-Extra src/ tests/",
-    "php:unit-tests": "phpunit Tests/",
+    "php:unit-tests": "phpunit tests/",
     "tests:all": "composer php:codesniffer && composer php:unit-tests"
   }
 }
