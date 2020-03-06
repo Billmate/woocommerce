@@ -1,5 +1,5 @@
 <?php
-define('BILLPLUGIN_VERSION','3.9.6');
+define('BILLPLUGIN_VERSION','3.9.8');
 define('BILLMATE_CLIENT','PHP:Woocommerce:'.BILLPLUGIN_VERSION);
 define('BILLMATE_SERVER','2.1.9');
 
@@ -1753,7 +1753,7 @@ if(!class_exists('BillmateOrder')){
                     $isOneTaxrate = false;
                 }
             }
-            $coupons = $this->order->get_used_coupons();
+            $coupons = $this->order->get_coupon_codes()
             $codes = "";
             for ($i = 0; $i < count ($coupons); $i++) {
                 if ($i == count($coupons) - 1) {
