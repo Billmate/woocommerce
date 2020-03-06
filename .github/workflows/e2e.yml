@@ -17,4 +17,4 @@ jobs:
         run: docker ps -a
 
       - name: Ping Docker network
-        run: ping localhost:8282
+        run: ping localhost -p 8282
