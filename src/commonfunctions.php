@@ -1,6 +1,6 @@
 <?php
 
-define('BILLPLUGIN_VERSION','3.9.9');
+define('BILLPLUGIN_VERSION','4.0.0');
 define('BILLMATE_CLIENT','PHP:Woocommerce:'.BILLPLUGIN_VERSION);
 define('BILLMATE_SERVER','2.1.9');
 
