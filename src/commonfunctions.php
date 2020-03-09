@@ -1754,7 +1754,11 @@ if(!class_exists('BillmateOrder')){
                     $isOneTaxrate = false;
                 }
             }
-            $coupons = $this->order->get_coupon_codes();
+            if(version_compare(WC_VERSION, '3.7.0', '>=')) {
+                $coupons = $this->order->get_coupon_codes();
+            } else {
+                $coupons = $this->order->get_used_coupons();
+            }
             $codes = "";
             for ($i = 0; $i < count ($coupons); $i++) {
                 if ($i == count($coupons) - 1) {
