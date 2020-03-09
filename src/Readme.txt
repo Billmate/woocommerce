@@ -84,7 +84,7 @@ If you would like to use our logos on your site:
 https://www.billmate.se/press-och-media/
 == Changelog ==
 
-=  4.0.0 (2020-03-09)
+=  3.9.10 (2020-03-09)
 * Enhancement - added check for woocommerce versions for which coupon function should be used
 
 =  3.9.9 (2020-03-06)
