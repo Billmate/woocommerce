@@ -7,8 +7,9 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    container:
-      image: node:11.9.0
+    strategy:
+      matrix:
+        node-version: [12.x]
 
     steps:
       - uses: actions/checkout@v1
@@ -21,6 +22,11 @@ jobs:
 
       - name: Ping Docker network localhost:8282
         run: ping localhost -p 8282 -c 4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
 
       - name: Cache node modules
         uses: actions/cache@v1
