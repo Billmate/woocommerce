@@ -84,6 +84,9 @@ If you would like to use our logos on your site:
 https://www.billmate.se/press-och-media/
 == Changelog ==
 
+=  3.9.12 (2020-03-12)
+* Fix - price range for Billmate PartPayment
+
 =  3.9.11 (2020-03-12)
 * Fix - Undefined index: billmate_checkout_mode
 
