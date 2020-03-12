@@ -24,7 +24,8 @@
   "scripts": {
     "test": "test:e2e",
     "test:e2e": "testcafe chrome e2e/",
-    "test:e2e:ci": "testcafe chrome:headless e2e/"
+    "test:e2e:ci": "testcafe chrome:headless e2e/",
+    "dev:e2e": "testcafe chrome -L e2e/"
   },
   "devDependencies": {
     "testcafe": "^1.8.2"

@@ -77,6 +77,10 @@ This runs the tests in a headless mode.
 
     npm run test:e2e:ci
 
+When developing there is a live reload mode.
+
+    npm run dev:e2e
+
 ## Local environment
 To setup a local Wordpress with Woocommerce and Billmate Payment Gateway locally, the following steps are needed.
 
