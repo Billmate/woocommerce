@@ -2086,11 +2086,15 @@ parse_str($_POST['post_data'], $datatemp);
         $show_monthly_cost = (isset($settings['show_monthly_cost'])) ? $settings['show_monthly_cost'] : '';
         $show_monthly_cost_info = (isset($settings['show_monthly_cost_info'])) ? $settings['show_monthly_cost_info'] : '';
         $testmode = (isset($settings['testmode'])) ? $settings['testmode'] : '';
-        $lower_threshold_monthly_cost = '';
+        
         $upper_threshold_monthly_cost = '';
+        $upper_threshold_monthly_cost   = ( isset( $this->settings['upper_threshold'] ) AND $this->settings['upper_threshold'] != '' ) ? floatval(str_replace(",",".",$this->settings['upper_threshold'])) : '';
+        $upper_threshold_monthly_cost = ($upper_threshold_monthly_cost != 0) ? $upper_threshold_monthly_cost : 10000;
 
-        $lower_threshold_monthly_cost = ($lower_threshold_monthly_cost != '') ? $lower_threshold_monthly_cost : 0;
-        $upper_threshold_monthly_cost = ($upper_threshold_monthly_cost != '') ? $upper_threshold_monthly_cost : 10000000;
+        $lower_threshold_monthly_cost = '';
+        $lower_threshold_monthly_cost  = ( isset( $this->settings['lower_threshold'] ) AND $this->settings['lower_threshold'] != '' ) ? floatval(str_replace(",",".",$this->settings['lower_threshold'])) : '';
+        $lower_threshold_monthly_cost = ($lower_threshold_monthly_cost != 0) ? $lower_threshold_monthly_cost : 0;
+
 
         $country_data = self::get_country_data();
         $billmate_country = isset($country_data['billmate_country']) ? $country_data['billmate_country'] : '';
