@@ -1,0 +1,47 @@
+name: E2E tests
+
+on: [pull_request]
+
+jobs:
+  e2e-test-job:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x]
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Build the docker-compose stack
+        run: docker-compose -f docker-compose.yml up -d
+
+      - name: Check running Docker containers
+        run: docker ps -a
+
+      - name: Ping Docker network localhost:8282
+        run: ping localhost -p 8282 -c 4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Cache node modules
+        uses: actions/cache@v1
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm # npm cache files are stored in `~/.npm` on Linux/macOS
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run e2e tests (Testcafe)
+        run: npm run test:e2e:ci

@@ -1,0 +1,33 @@
+{
+  "name": "billmate-woocommerce",
+  "version": "1.0.0",
+  "description": "Billmate Payment Gateway for WooCommerce",
+  "main": "index.js",
+  "directories": {
+    "test": "e2e"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Billmate/woocommerce.git"
+  },
+  "author": "Billmate AB",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Billmate/woocommerce/issues"
+  },
+  "homepage": "https://github.com/Billmate/woocommerce#readme",
+  "keywords": [
+    "woocommerce",
+    "payment",
+    "billmate"
+  ],
+  "scripts": {
+    "test": "test:e2e",
+    "test:e2e": "testcafe chrome e2e/",
+    "test:e2e:ci": "testcafe chrome:headless e2e/",
+    "dev:e2e": "testcafe chrome -L e2e/"
+  },
+  "devDependencies": {
+    "testcafe": "^1.8.2"
+  }
+}
