@@ -84,6 +84,9 @@ If you would like to use our logos on your site:
 https://www.billmate.se/press-och-media/
 == Changelog ==
 
+=  3.9.11 (2020-03-09)
+* Fix added check for Billmate Checkout is setbefore checking its value
+
 =  3.9.10 (2020-03-09)
 * Enhancement - added check for woocommerce versions for which coupon function should be used
 
