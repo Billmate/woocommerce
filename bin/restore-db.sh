@@ -7,5 +7,5 @@ if [ -z "$file" ]; then
 fi
 
 # Restore database to db container
-cmd='exec mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"'
+cmd='exec mysql -udb_user -pdb_pass woo_db'
 docker exec -i $(docker-compose ps -q db) sh -c "$cmd" < $file
