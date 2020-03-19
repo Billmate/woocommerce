@@ -2223,7 +2223,7 @@ parse_str($_POST['post_data'], $datatemp);
                 $value = BillmateCalc::calc_monthly_cost(
                     $sum,
                     $pclass,
-                    $flag
+                    $fla
                 );
 
                 /* $value is now a rounded monthly cost amount to be displayed to the customer. */
@@ -2234,7 +2234,10 @@ parse_str($_POST['post_data'], $datatemp);
                     $billmate_partpayment_shortcode_price = $value;
                     $billmate_shortcode_img = $icon_basic;
                     $billmate_partpayment_country = $billmate_country;
-
+		   echo '<style>
+                        .billmate-product-monthly-cost {display: none;}
+                        .billmate-product-monthly-cost:nth-of-type(2n+1) {display: block;}
+                    </style>';
                     echo '<div class="billmate-product-monthly-cost">' . do_shortcode($show_monthly_cost_info);
                     echo '</div>';
 
@@ -2363,7 +2366,7 @@ parse_str($_POST['post_data'], $datatemp);
  * Class
  * @class 		WC_Gateway_Billmate_Partpayment_Extra
  * @since		1.5.4 (WC 2.0)
- *
+ *	
  **/
 
 class WC_Gateway_Billmate_Partpayment_Extra {
