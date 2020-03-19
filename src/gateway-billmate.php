@@ -1131,6 +1131,33 @@ function init_billmate_gateway() {
                 }
                 wp_die('OK','ok',array('response' => 200));
             }
+            else {
+                $billmateOrder = $k->getPaymentinfo(array('number' => $billmateOrderNumber));
+                if (isset($billmateOrder['PaymentData']['method_name']) AND $billmateOrder['PaymentData']['method_name'] != "") {
+                    if (strpos($billmateOrder['PaymentData']['method_name'], 'Del') !== false) {
+                        $pclasses = get_option('wc_gateway_billmate_partpayment_pclasses');
+                        $numberOfMonths = false;
+                        if ($pclasses) {
+                            foreach ($pclasses as $pclass) {
+                                if ($pclass['paymentplanid'] == $billmateOrder['PaymentData']['paymentplanid']) {
+                                    $numberOfMonths = sprintf(__('%s months', 'billmate'), $pclass['nbrofmonths']);
+                                }
+                            }
+                        }
+                        if ($numberOfMonths !== false) {
+                            $method_title = $method_title . ' (' . $billmateOrder['PaymentData']['method_name'] . ' ' . $numberOfMonths . ')';
+                        } else {
+                            $method_title = $method_title . ' (' . $billmateOrder['PaymentData']['method_name'] . ')';
+                        }
+                    } else {
+                        $method_title = $method_title . ' (' . $billmateOrder['PaymentData']['method_name'] . ')';
+                    }
+                    $order->set_payment_method($method_id);
+                    $order->set_payment_method_title($method_title);
+                    update_post_meta($order_id, '_payment_method', $method_id);
+                    update_post_meta($order_id, '_payment_method_title', $method_title);
+                }
+            }
 
 
             if( $accept_url_hit ) {
