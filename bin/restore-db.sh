@@ -8,4 +8,4 @@ fi
 
 # Restore database to db container
 cmd='exec mysql -P 3306 --protocol=tcp -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"'
-docker exec -i $(docker-compose ps -q db) sh -c "$cmd" < $file
+docker exec -i woocommerce_db_1 sh -c "$cmd" < $file
