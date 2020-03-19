@@ -2223,7 +2223,7 @@ parse_str($_POST['post_data'], $datatemp);
                 $value = BillmateCalc::calc_monthly_cost(
                     $sum,
                     $pclass,
-                    $fla
+                    $flag
                 );
 
                 /* $value is now a rounded monthly cost amount to be displayed to the customer. */
