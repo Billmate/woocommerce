@@ -26,11 +26,6 @@ If you have any questions please visit https://billmate.se/kontakt to make conta
 
 == Installation ==
 
-= Minimum Requirements =
-
-* Account at Billmate.se
-* WooCommerce version 2.5.5 - 3.7.0
-
 = Installation in Wordpress =
 
 Navigate to Plugins-Add New. Search for Billmate and then install the plugin.
