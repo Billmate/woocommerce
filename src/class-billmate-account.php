@@ -2235,8 +2235,7 @@ parse_str($_POST['post_data'], $datatemp);
                     $billmate_shortcode_img = $icon_basic;
                     $billmate_partpayment_country = $billmate_country;
 		   echo '<style>
-                        .billmate-product-monthly-cost {display: none;}
-                        .billmate-product-monthly-cost:nth-of-type(2n+1) {display: block;}
+                        .billmate-product-monthly-cost:nth-of-type(2n+1) {display: none;}
                     </style>';
                     echo '<div class="billmate-product-monthly-cost">' . do_shortcode($show_monthly_cost_info);
                     echo '</div>';
