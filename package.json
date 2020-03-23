@@ -28,6 +28,6 @@
     "dev:e2e": "testcafe chrome -L e2e/"
   },
   "devDependencies": {
-    "testcafe": "^1.8.2"
+    "testcafe": "^1.8.3"
   }
 }
