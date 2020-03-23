@@ -79,6 +79,9 @@ If you would like to use our logos on your site:
 https://www.billmate.se/press-och-media/
 == Changelog ==
 
+=  3.9.14 (2020-03-28)
+* Fix - Missing payment method title on orders
+
 =  3.9.13 (2020-03-19)
 * Fix - Double partial payment logos on the product page
 
