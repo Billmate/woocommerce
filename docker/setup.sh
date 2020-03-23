@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Wait for the db to be available
 wait-for-it.sh ${WORDPRESS_DB_HOST}:3306
