@@ -520,6 +520,9 @@ function init_billmate_gateway() {
             }
 
             $data = $k->verify_hash($_POST);
+            if (!is_array($data)){
+                wp_die('Verification error','verification error',array('response' => 405));
+            }
             if (array_key_exists('code', $data)){
                 if ($data['code'] == 9511){
                     wp_die('Verification error','verification error',array('response' => 405));
@@ -1237,6 +1240,7 @@ function init_billmate_gateway() {
                             "number" => $data['number'],
                         );
                         foreach ($order->get_items() as $item_id => $item_data) {
+                            $tax = new WC_Tax();
                             $product = $item_data->get_product();
                             $product_tax_class = $product->get_tax_class();
                             $product_tax = $tax->get_rates($product_tax_class);
