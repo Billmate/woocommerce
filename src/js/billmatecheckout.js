@@ -104,7 +104,12 @@ var BillmateIframe = new function(){
     }
     this.createOrder = function(data){
         // Create Order
-        data.action = 'billmate_complete_order';
+        if (data == null){
+            data = {action: 'billmate_complete_order',hash: window.hash};
+        }
+        else {
+            data.action = 'billmate_complete_order';
+        }
         self.showCheckoutLoading();
         jQuery.ajax({
             url : billmate.ajax_url,
@@ -117,6 +122,7 @@ var BillmateIframe = new function(){
         });
 
     };
+
     this.updateTotals = function(){
         self.showCheckoutLoading();
         jQuery.ajax({
