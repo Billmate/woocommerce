@@ -2234,7 +2234,9 @@ parse_str($_POST['post_data'], $datatemp);
                     $billmate_partpayment_shortcode_price = $value;
                     $billmate_shortcode_img = $icon_basic;
                     $billmate_partpayment_country = $billmate_country;
-
+		   echo '<style>
+                        .billmate-product-monthly-cost:nth-of-type(2n+1) {display: none;}
+                    </style>';
                     echo '<div class="billmate-product-monthly-cost">' . do_shortcode($show_monthly_cost_info);
                     echo '</div>';
 
@@ -2363,7 +2365,7 @@ parse_str($_POST['post_data'], $datatemp);
  * Class
  * @class 		WC_Gateway_Billmate_Partpayment_Extra
  * @since		1.5.4 (WC 2.0)
- *
+ *	
  **/
 
 class WC_Gateway_Billmate_Partpayment_Extra {

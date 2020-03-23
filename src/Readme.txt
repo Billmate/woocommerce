@@ -3,11 +3,11 @@ Contributors: Billmate
 Donate link:
 Tags: woocomerce, billmate, payments, cardpayments, invoice, partpayment, recurring, bankpayment
 Requires at least: 4.0
-Tested up to: 5.2.2
+Tested up to: 5.3.2
 Stable tag: __STABLE_TAG__
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
-WC tested up to: 3.7.0
+WC tested up to: 4.0.1
 
 Billmate offers a complete paymentsolution to your webshop.
 
@@ -25,11 +25,6 @@ If you have any questions please visit https://billmate.se/kontakt to make conta
 
 
 == Installation ==
-
-= Minimum Requirements =
-
-* Account at Billmate.se
-* WooCommerce version 2.5.5 - 3.7.0
 
 = Installation in Wordpress =
 
@@ -83,6 +78,9 @@ You need to make sure our callback IP, 54.194.217.63, is whitelisted  in Wordfen
 If you would like to use our logos on your site:
 https://www.billmate.se/press-och-media/
 == Changelog ==
+
+=  3.9.13 (2020-03-19)
+* Fix - Double partial payment logos on the product page
 
 =  3.9.12 (2020-03-12)
 * Fix - price range for Billmate PartPayment
