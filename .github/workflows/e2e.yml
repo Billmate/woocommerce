@@ -47,4 +47,4 @@ jobs:
         run: npm install
 
       - name: Run e2e tests (Cypress)
-        run: npm run cypress:open
+        run: npm run cypress:run
