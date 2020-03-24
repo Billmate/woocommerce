@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Update registry
-          run: apt-get -y update
+        run: apt-get -y update
 
       - name: Install registry dependencies
         run: apt-get -y install libgtk2.0-0 libgtk-3-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
@@ -26,8 +26,8 @@ jobs:
       - name: Check running Docker containers
         run: docker ps -a
 
-      - name: Import Wordpress database
-        run: ./bin/restore-db.sh data/site-dump.sql
+      #- name: Import Wordpress database
+      #  run: ./bin/restore-db.sh data/site-dump.sql
 
       - name: Ping Docker network localhost:8282
         run: ping localhost -p 8282 -c 4
