@@ -12,13 +12,16 @@ jobs:
         node-version: [12.x]
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
 
       - name: Build the docker-compose stack
         run: docker-compose -f docker-compose.yml up -d
 
       - name: Check running Docker containers
         run: docker ps -a
+
+      #- name: Import Wordpress database
+      #  run: ./bin/restore-db.sh data/site-dump.sql
 
       - name: Ping Docker network localhost:8282
         run: ping localhost -p 8282 -c 4
@@ -43,5 +46,5 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run e2e tests (Testcafe)
-        run: npm run test:e2e:ci
+      - name: Run e2e tests (Cypress)
+        run: npm run cypress:run

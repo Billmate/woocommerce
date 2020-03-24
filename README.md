@@ -64,22 +64,18 @@ Copy the code below for the size that fits your needs.
 ## Testing
 Tested with [Browserstack](http://www.browserstack.com)
 
-The e2e tests are using Testcafe (https://devexpress.github.io/testcafe/). 
+The e2e tests are using Cypress (https://www.cypress.io/). 
 To run the tests there is a need to do the following.
 
     npm install
 
 Once all dependencies are installed then there is set of commands that can be run to test.
 
-    npm run test:e2e
-
-This runs the tests in a headless mode.
-
-    npm run test:e2e:ci
+    npm run cypress:run
 
 When developing there is a live reload mode.
 
-    npm run dev:e2e
+    npm run cypress:open
 
 ## Local environment
 To setup a local Wordpress with Woocommerce and Billmate Payment Gateway locally, the following steps are needed.
@@ -87,6 +83,10 @@ To setup a local Wordpress with Woocommerce and Billmate Payment Gateway locally
 Start a Docker instance:
 
     docker-compose up
+
+After the containers are up and running. Then run the import database command.
+
+    ./bin/restore-db.sh data/site-dump.sql
 
 A new instance of the CMS are now up and running at the following url:
 

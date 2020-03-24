@@ -26,6 +26,7 @@ services:
       WP_ADMIN_USER: admin # Default is 'test'
       WP_ADMIN_EMAIL: test@test.se # Default is 'test-admin@test.se'
       WP_ADMIN_PASSWORD: 4dm1n # Default is 'test'
+      WPLANG: sv_SE # Swedish as default language
     depends_on:
       - db
 
