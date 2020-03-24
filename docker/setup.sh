@@ -1,11 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 
 # Wait for the db to be available
 wait-for-it.sh ${WORDPRESS_DB_HOST}:3306
 
 # Make sure that the upstream entrypoint does not call exec
 # TODO: Fix this in a pull request to docker-library/wordpress
-sed -i '/exec "$@"/d' /usr/local/bin/docker-entrypoint.sh
+sed -i '/exec "$@"/d' dos2unix /usr/local/bin/docker-entrypoint.sh
 
 # Run the entrypoint script form the wordpress image
 docker-entrypoint.sh "$@"

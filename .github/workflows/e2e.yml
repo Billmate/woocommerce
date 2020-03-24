@@ -12,7 +12,13 @@ jobs:
         node-version: [12.x]
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
+
+      - name: Update registry
+          run: apt-get -y update
+
+      - name: Install registry dependencies
+        run: apt-get -y install libgtk2.0-0 libgtk-3-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
 
       - name: Build the docker-compose stack
         run: docker-compose -f docker-compose.yml up -d
@@ -46,5 +52,5 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run e2e tests (Testcafe)
-        run: npm run test:e2e:ci
+      - name: Run e2e tests (Cypress)
+        run: npm run cypress:open
