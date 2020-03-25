@@ -84,10 +84,6 @@ Start a Docker instance:
 
     docker-compose up
 
-After the containers are up and running. Then run the import database command.
-
-    ./bin/restore-db.sh data/site-dump.sql
-
 A new instance of the CMS are now up and running at the following url:
 
     localhost:8282
