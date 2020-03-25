@@ -93,6 +93,13 @@ To login to Wordpress the credentials are:
     user: admin
     password: 4dm1n
 
+Docker contexts:
+
+    docker/remote - will pull all source from github
+
+    docker/local - will mount the local source (./src) for the Billmate payment gateway plugin
+
+
 ## Development
 The development tools are available through Composer scripts.
 
