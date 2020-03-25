@@ -39,4 +39,5 @@ services:
       MYSQL_RANDOM_ROOT_PASSWORD: "1"
     ports:
       - 3366:3306
-    options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+    volumes:
+      - ./data/site-dump.sql:/docker-entrypoint-initdb.d/site-dump.sql

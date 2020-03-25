@@ -21,11 +21,6 @@ jobs:
       - name: Check running Docker containers
         run: docker ps -a
 
-      - name: Import Wordpress database
-        run:  |
-          sudo /etc/init.d/mysql start
-          ./bin/restore-db.sh data/site-dump.sql
-
       - name: Ping Docker network localhost:8282
         run: ping localhost -p 8282 -c 4
 
