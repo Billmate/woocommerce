@@ -3,7 +3,7 @@ version: "3.1"
 services:
   woocommerce:
     build:
-      context: docker/
+      context: docker/local
       dockerfile: Dockerfile
       args:
         WOO_VERSION: 3.7.0 # Woocommerce version to use.
@@ -27,6 +27,8 @@ services:
       WP_ADMIN_EMAIL: test@test.se # Default is 'test-admin@test.se'
       WP_ADMIN_PASSWORD: 4dm1n # Default is 'test'
       WPLANG: sv_SE # Swedish as default language
+    volumes:
+      - ./src:/usr/src/billmate
     depends_on:
       - db
 
