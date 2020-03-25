@@ -23,7 +23,7 @@ jobs:
 
       - name: Import Wordpress database
         run:  |
-          sudo systemctl start mysql
+          sudo /etc/init.d/mysql start
           ./bin/restore-db.sh data/site-dump.sql
 
       - name: Ping Docker network localhost:8282
