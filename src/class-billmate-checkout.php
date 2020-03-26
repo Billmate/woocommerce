@@ -1052,9 +1052,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
         $billmate = $this->getBillmateConnection();
         $result = $billmate->initCheckout($orderValues);
-        ob_start();
-        var_dump(WC()->payment_gateways()->get_available_payment_gateways());
-        file_put_contents("test.log", ob_get_clean() . "\n", FILE_APPEND);
+
         // Save checkout hash
         if(!isset($result['code']) AND isset($result['url']) AND $result['url'] != "") {
            $url = $result['url'];
