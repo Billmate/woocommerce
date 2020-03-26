@@ -1,9 +1,10 @@
-name: CI
+name: Publish plugin to wordpress.org/plugins/
 
 on:
   push:
     tags:
       - "*.*.*"
+
 jobs:
   build:
 

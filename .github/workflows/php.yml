@@ -3,7 +3,7 @@ name: PHP Composer
 on: [push]
 
 jobs:
-  build:
+  php-composer-job:
 
     runs-on: ubuntu-latest
 
@@ -30,6 +30,3 @@ jobs:
 
       #- name: Run PHP codesniffer
       #  run: composer run php:codesniffer
-
-      - name: Run PHP Unit test suite
-        run: composer run php:unit-tests

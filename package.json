@@ -1,0 +1,33 @@
+{
+  "name": "billmate-woocommerce",
+  "version": "1.0.0",
+  "description": "Billmate Payment Gateway for WooCommerce",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Billmate/woocommerce.git"
+  },
+  "author": "Billmate AB",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Billmate/woocommerce/issues"
+  },
+  "homepage": "https://github.com/Billmate/woocommerce#readme",
+  "keywords": [
+    "woocommerce",
+    "payment",
+    "billmate"
+  ],
+  "scripts": {
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run"
+  },
+  "devDependencies": {
+    "@cypress/webpack-preprocessor": "^4.1.3",
+    "cypress": "^4.2.0",
+    "cypress-plugin-tab": "^1.0.5",
+    "ts-loader": "^6.2.2",
+    "typescript": "^3.8.3",
+    "webpack": "^4.42.1"
+  }
+}

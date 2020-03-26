@@ -64,6 +64,19 @@ Copy the code below for the size that fits your needs.
 ## Testing
 Tested with [Browserstack](http://www.browserstack.com)
 
+The e2e tests are using Cypress (https://www.cypress.io/). 
+To run the tests there is a need to do the following.
+
+    npm install
+
+Once all dependencies are installed then there is set of commands that can be run to test.
+
+    npm run cypress:run
+
+When developing there is a live reload mode.
+
+    npm run cypress:open
+
 ## Local environment
 To setup a local Wordpress with Woocommerce and Billmate Payment Gateway locally, the following steps are needed.
 
@@ -80,6 +93,13 @@ To login to Wordpress the credentials are:
     user: admin
     password: 4dm1n
 
+Docker contexts:
+
+    docker/remote - will pull all source from github
+
+    docker/local - will mount the local source (./src) for the Billmate payment gateway plugin
+
+
 ## Development
 The development tools are available through Composer scripts.
 
@@ -90,10 +110,6 @@ To get all the necessary dependencies from composer, run this command in root di
 Run PHP codesniffer with WP coding standards:
 
     composer run php:codesniffer
-
-Run PHPUnit for Unit tests:
-
-    composer run php:unit-tests
 
 To run the full test suite:
 
