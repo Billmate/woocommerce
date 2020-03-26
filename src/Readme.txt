@@ -79,7 +79,11 @@ If you would like to use our logos on your site:
 https://www.billmate.se/press-och-media/
 == Changelog ==
 
-=  3.9.14 (2020-03-28)
+=  3.9.15 (2020-03-26)
+* Enhancement - Accept / callback refactoring
+* Fix - payment_gateways->get_available_payment_gateways() does not print Billmate checkout as payment option
+
+=  3.9.14 (2020-03-23)
 * Fix - Missing payment method title on orders
 
 =  3.9.13 (2020-03-19)

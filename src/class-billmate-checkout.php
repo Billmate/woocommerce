@@ -1315,6 +1315,23 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
     }
 
     public function is_available() {
+        $redirect = true;
+        $traces = debug_backtrace();
+        foreach ($traces as $trace){
+            if ($trace['function'] == 'get_checkout_order_received_url'){
+                $redirect = false;
+            }
+        }
+        if (!$redirect){
+            return false;
+        }
+        if(!is_admin()) {
+            if($this->enabled == 'yes') {
+                if("sv" == strtolower(current(explode('_',get_locale())))) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
