@@ -1149,6 +1149,7 @@ function init_billmate_gateway() {
                                 "number" => $data['number'],
                             );
                             foreach ($order->get_items() as $item_id => $item_data) {
+                                $tax = new WC_Tax();
                                 $product = $item_data->get_product();
                                 $product_tax_class = $product->get_tax_class();
                                 $product_tax = $tax->get_rates($product_tax_class);
