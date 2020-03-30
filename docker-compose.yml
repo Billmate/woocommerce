@@ -3,7 +3,7 @@ version: "3.1"
 services:
   woocommerce:
     build:
-      context: docker/local
+      context: docker/ngrok
       dockerfile: Dockerfile
       args:
         WOO_VERSION: 3.7.0 # Woocommerce version to use.
@@ -43,3 +43,17 @@ services:
       - 3366:3306
     volumes:
       - ./data/site-dump.sql:/docker-entrypoint-initdb.d/site-dump.sql
+
+
+  ngrok:
+    container_name: ngrok
+    ports:
+      - "0.0.0.0:4040:4040"
+    image: wernight/ngrok
+    links:
+      - "woocommerce"
+    environment:
+      - NGROK_AUTH
+      - NGROK_REGION=eu
+      - NGROK_PORT=woocommerce:80
+
