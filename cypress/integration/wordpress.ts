@@ -1,12 +1,11 @@
 describe('Wordpress', () => {
 
     it('Check that Wordpress site is up and running', () => {
-        expect(cy.visit(Cypress.env('host'))).to.be.ok;
+        expect(cy.visitStore()).to.be.ok;
     });
 
     it('Login to Wordpress admin', () => {
-        expect(cy.visit(Cypress.env('host') + 'wp-admin'));
-        cy.wait(1000);
+        expect(cy.visitWpAdmin());
         cy.get('#user_login').should('be.visible').type('admin');
         cy.get('#user_pass').should('be.visible').type('4dm1n');
         cy.get('#wp-submit').click();

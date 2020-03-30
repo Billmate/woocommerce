@@ -23,3 +23,22 @@
 //
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+
+Cypress.Commands.add('visitStore', () => {
+    cy.request('http://localhost:4040/api/tunnels').then(
+        (request) => {
+            cy.visit(request.body.tunnels[0].public_url)
+        }
+    )
+})
+
+
+Cypress.Commands.add('visitWpAdmin', () => {
+    cy.request('http://localhost:4040/api/tunnels').then(
+        (request) => {
+            cy.visit(request.body.tunnels[0].public_url + '/wp-admin')
+        }
+    )
+})
+
+export { }

@@ -2,9 +2,8 @@ version: "3.1"
 
 services:
   woocommerce:
-    container_name: woocommerce
     build:
-      context: docker/ngrok
+      context: ./
       dockerfile: Dockerfile
       args:
         WOO_VERSION: 3.7.0 # Woocommerce version to use.
@@ -29,7 +28,7 @@ services:
       WP_ADMIN_PASSWORD: 4dm1n # Default is 'test'
       WPLANG: sv_SE # Swedish as default language
     volumes:
-      - ./src:/usr/src/billmate
+      - ../../src:/usr/src/billmate
     depends_on:
       - db
 
@@ -43,7 +42,7 @@ services:
     ports:
       - 3366:3306
     volumes:
-      - ./data/site-dump.sql:/docker-entrypoint-initdb.d/site-dump.sql
+      - ../../data/site-dump.sql:/docker-entrypoint-initdb.d/site-dump.sql
 
 
   ngrok:
@@ -54,7 +53,7 @@ services:
     links:
       - "woocommerce"
     environment:
-      - NGROK_AUTH # Set this to your ngrok token, or better yet set this value in a .env file see: https://docs.docker.com/compose/environment-variables/#the-env-file
+      - NGROK_AUTH
       - NGROK_REGION=eu
       - NGROK_PORT=woocommerce:80
 
