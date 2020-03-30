@@ -1315,6 +1315,9 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
     }
 
     public function is_available() {
+        if (is_checkout()){
+            return false;
+        }
         $redirect = true;
         $traces = debug_backtrace();
         foreach ($traces as $trace){
