@@ -17,9 +17,6 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: ..\n"
 
-msgid "Enable crediting/cancelling of payments in Billmate Online"
-msgstr "Aktivera kreditering/markulering av betalningar i Billmate Online"
-
 msgid "Error: Can't cancel Billmate invoice %s, Unknown Method."
 msgstr "Fel: Kan inte avbryta beställningen Billmate faktura %s, okänd metod."
 
