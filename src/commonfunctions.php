@@ -56,7 +56,7 @@ function cancel_billmate_order($order_id, $action = false){
     $order = wc_get_order($order_id);
     $method = $order->get_payment_method();
     if (strpos(strtolower($method), 'billmate') !== false) {
-        if (get_option('billmate_common_cancelonstatus') == 'active') {
+        if (get_option('billmate_common_activateonstatus') == 'active') {
             $number = get_post_meta($order_id, 'billmate_invoice_id', true);
             $hasBeenActivated = get_post_meta($order_id, 'order_has_been_activated', true);
             if ($hasBeenActivated == "") {
@@ -165,7 +165,7 @@ function credit_billmate_order($order_id, $action = false, $isCancel = false){
             }
         }
         if (!$isPartial) {
-            if (get_option('billmate_common_cancelonstatus') == 'active') {
+            if (get_option('billmate_common_activateonstatus') == 'active') {
                 if ($number !== null) {
                     $paymentMethod = get_post_meta($order_id, '_payment_method');
                     $methodClass = false;
