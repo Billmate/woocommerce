@@ -86,7 +86,13 @@ Start a Docker instance:
 
 A new instance of the CMS are now up and running at the following url:
 
-    localhost:8282
+    If you are using 'local' or 'remote' docker contexts:
+        http://localhost:8282
+
+    If you are using 'ngrok' docker context:
+        The public url can be found:
+            1. In the logs of the woocommerce container
+            2. At http://localhost:4040/status
 
 To login to Wordpress the credentials are:
 
@@ -98,6 +104,8 @@ Docker contexts:
     docker/remote - will pull all source from github
 
     docker/local - will mount the local source (./src) for the Billmate payment gateway plugin
+
+    docker/ngrok - will publish port 80 of the woocommerce container to a temporary public url powered by Ngrok.
 
 
 ## Development
