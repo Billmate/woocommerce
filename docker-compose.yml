@@ -2,6 +2,7 @@ version: "3.1"
 
 services:
   woocommerce:
+    container_name: woocommerce
     build:
       context: docker/ngrok
       dockerfile: Dockerfile
@@ -53,7 +54,7 @@ services:
     links:
       - "woocommerce"
     environment:
-      - NGROK_AUTH
+      - NGROK_AUTH # Set this to your ngrok token, or better yet set this value in a .env file see: https://docs.docker.com/compose/environment-variables/#the-env-file
       - NGROK_REGION=eu
       - NGROK_PORT=woocommerce:80
 
