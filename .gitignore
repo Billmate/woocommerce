@@ -12,3 +12,4 @@ cypress.env.json
 cypress/videos/*
 cypress/screenshots/*
 docker/ngrok/.env
+.env
