@@ -79,6 +79,9 @@ If you would like to use our logos on your site:
 https://www.billmate.se/press-och-media/
 == Changelog ==
 
+=  3.10.0 (2020-03-30)
+* Feature - Activation feature to credit / cancel payment to Billmate Online
+
 =  3.9.16 (2020-03-28)
 * Fix - Fixed error with that tax variable was not found
 
