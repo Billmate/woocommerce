@@ -1,3 +1,5 @@
+/// <reference path="../support/commands.d.ts" />
+
 describe('Wordpress', () => {
 
     it('Check that Wordpress site is up and running', () => {
