@@ -127,7 +127,7 @@ function get_billmate_checkout() {
 
         // Button to WooCommerce checkout page when another payment method is available
         $available_gateways = WC()->payment_gateways->get_available_payment_gateways();
-        if (is_array($available_gateways) AND count($available_gateways) > 0) {
+        if (is_array($available_gateways) AND count($available_gateways) > 1) {
             $return .= '<div class="billmate-checkout-another-payment-wrapper">
                 <a class="button" href="'.get_permalink(wc_get_page_id('checkout')).'">'.__('Select another payment method', 'billmate').'</a>
             </div>';
