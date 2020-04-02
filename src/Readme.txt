@@ -79,6 +79,9 @@ If you would like to use our logos on your site:
 https://www.billmate.se/press-och-media/
 == Changelog ==
 
+=  3.10.3 (2020-04-02)
+* Fix - Make sure Billmate Checkout page do not have "Välj Betalsätt" button available if no other payment methods are available
+
 =  3.10.2 (2020-03-31)
 * Fix - Billmate Checkout is a payment method in WooCommerce Checkout
 
