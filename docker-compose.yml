@@ -7,7 +7,7 @@ services:
       context: docker/ngrok
       dockerfile: Dockerfile
       args:
-        WOO_VERSION: 3.7.0 # Woocommerce version to use.
+        WOO_VERSION: 4.0.1 # Woocommerce version to use.
         BILLMATE_VERSION: dev # Tag number or branch name at github to use for the Billmate plugin
     ports:
       - 8282:80
