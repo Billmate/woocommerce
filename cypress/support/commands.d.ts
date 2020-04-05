@@ -14,8 +14,14 @@ declare global {
             checkout(): Chainable<Window>;
 
             billmateCheckout(): Chainable<Window>;
+
+            addProductByName(name: string): Chainable<Window>;
+
+            checkoutFillStepOne(email: string, pno: string, zip: string): Chainable<Window>;
+
+            checkoutCompleteStepTwoWithMethod(paymentMethod: number): Chainable<Window>;
         }
     }
 }
 
-export {}
+export { }
