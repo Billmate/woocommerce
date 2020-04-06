@@ -182,6 +182,11 @@ class BillmateCommon {
 			'billmate_common_activateonstatus',
 			array($this, 'sanitize')
 		);
+                register_setting(
+			'billmate_common',
+                        'billmate_common_cancelonstatus',
+                        array($this, 'sanitize')
+                );
 		register_setting(
 			'billmate_common',
 			'billmate_common_enable_overlay',
@@ -235,6 +240,13 @@ class BillmateCommon {
 			'billmate-settings',
 			'setting_credentials'
 		);
+                add_settings_field(
+                    'billmate_common_cancelonstatus',
+                    __('Enable crediting/cancelling of payments in Billmate Online', 'billmate'),
+                    array($this, 'cancelonstatus_callback'),
+                    'billmate-settings',
+                    'setting_credentials'
+                );
 		add_settings_field(
 			'billmate_common_logo',
 			__('Logo to be displayed in the invoice', 'billmate'),
@@ -273,6 +285,16 @@ class BillmateCommon {
 		echo '<option value="active"' . $active . '>' . __('Active', 'billmate') . '</option>';
 		echo '</select>';
 	}
+
+    public function cancelonstatus_callback() {
+        $value    = get_option('billmate_common_cancelonstatus', '');
+        $inactive = ($value == 'inactive') ? 'selected="selected"' : '';
+        $active   = ($value == 'active') ? 'selected="selected"' : '';
+        echo '<select name="billmate_common_cancelonstatus" id="billmate_common_cancelonstatus">';
+        echo '<option value="inactive"' . $inactive . '>' . __('Inactive', 'billmate') . '</option>';
+        echo '<option value="active"' . $active . '>' . __('Active', 'billmate') . '</option>';
+        echo '</select>';
+    }
 
     public function getaddress_callback()
     {
