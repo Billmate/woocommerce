@@ -35,7 +35,8 @@ The simplest way to install this module is through the WordPress Plugin Director
 4. Activate the plugin through the 'Plugins' menu in WordPress Administration.
 5. Go to --> Settings --> Billmate Settings and configure your Billmate ID and Secret.
 6. Go to --> WooCommerce --> Settings --> Payment Gateways and configure your Billmate settings.
-7. Billmate Part Payment: Click the button "Update paymentplans" on the settings page to fetch your shops PClasses and store them in the database.
+7. Go to --> WooCommerce --> Settings --> General --> Default Customer Location and set it to any setting except 'No location by default'
+8. Billmate Part Payment: Click the button "Update paymentplans" on the settings page to fetch your shops PClasses and store them in the database.
 
 ## Can I use Wordfence or any other Firewall plugin?
 You need to make sure our callback IP, 54.194.217.63, is whitelisted  in Wordfence. Navigate to "Wordfence -> Options" and scroll down to "Other Options". Add our ip-number next to "Whitelisted IP addresses that bypass all rules" and it should work. If not, please contact our support, support@billmate.se.
