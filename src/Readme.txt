@@ -79,6 +79,10 @@ If you would like to use our logos on your site:
 https://www.billmate.se/press-och-media/
 == Changelog ==
 
+=  3.10.4 (2020-04-08)
+* Enhancement - Activation feature to credit / cancel payment to Billmate Online
+* Fix - Add documentation regarding "Customer Location" and refresh problem with addresses. Go to --> WooCommerce --> Settings --> General --> Default Customer Location and set it to any setting except 'No location by default' (https://github.com/Billmate/woocommerce#installation)
+
 =  3.10.3 (2020-04-02)
 * Fix - Make sure Billmate Checkout page do not have "Välj Betalsätt" button available if no other payment methods are available
 
