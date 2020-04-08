@@ -22,7 +22,7 @@ The invoice and part payment plugin only work if the currency is set to Swedish 
 4.5.4 - 5.2.3
 
 ## Compatibility WooCommerce versions
-2.5.5 - 3.7.0
+2.5.5 - 4.0.1
 
 ## Compatibility PHP versions
 1.0 - 7.4
