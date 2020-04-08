@@ -2,6 +2,9 @@ name: E2E tests
 
 on: [pull_request]
 
+env:
+  NGROK_AUTH: ${{ secrets.NGROK_AUTH }}
+
 jobs:
   e2e-test-job:
 
