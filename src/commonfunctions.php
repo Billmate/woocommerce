@@ -1882,11 +1882,11 @@ if(!class_exists('BillmateOrder')){
                     $shipping_tax = $cart_shipping_tax;
                 }
 
-                if ($order_shipping_tax > 0 AND is_object(WC()->cart) == true AND method_exists(WC()->cart, 'get_cart_item_tax_classes') == true) {
+                if (is_object(WC()->cart) == true AND method_exists(WC()->cart, 'get_cart_item_tax_classes') == true) {
                     // Get shipping tax rate from cart
                     $rates = current(WC_Tax::get_shipping_tax_rates());
                     if (is_array($rates) AND isset($rates['rate'])) {
-                        $taxzrate = round($rates['rate']);
+                        $taxrate = round($rates['rate']);
                     }
                 }
             } else {
@@ -1906,6 +1906,9 @@ if(!class_exists('BillmateOrder')){
                     /** No taxrate available, get taxrate based on $shipping_total and $shipping_tax */
                     $taxrate = ($shipping_tax / $shipping_total) * 100;
                 }
+            }
+            if ($shipping_tax == 0 && $taxrate > 0){
+                $shipping_tax = $shipping_total*(1+($taxrate/100))-$shipping_total;
             }
 
             return array(
