@@ -34,7 +34,7 @@ Navigate to Plugins-Add New. Search for Billmate and then install the plugin.
 Quickinstallation
 1. Download the plugin
 2. Unzip the zip-file
-3. Upload the folder "billmate-payment-gateway-for-woocommerce" to /wp-content/plugins
+3. Upload the folder "billmate-payment-gateway-for-woocommerce" to /wp-content/plugins2
 4. Login to your Wordpress and navigate to Plugins-Installed Plugins and Activate "Woocommerce Billmate Gateway"
 5. Navigate to Settings under Wordpress, then "Billmate Settings" and enter your Billmate ID and Secret
 6. Navigate to Woocomerce-Settings-Checkout and setup the payment methods.
@@ -78,6 +78,9 @@ You need to make sure our callback IP, 54.194.217.63, is whitelisted  in Wordfen
 If you would like to use our logos on your site:
 https://www.billmate.se/press-och-media/
 == Changelog ==
+
+=  3.10.5 (2020-04-20)
+* Fix - Wrong total sum calculated
 
 =  3.10.4 (2020-04-08)
 * Enhancement - Activation feature to credit / cancel payment to Billmate Online
