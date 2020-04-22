@@ -497,6 +497,20 @@ function init_billmate_gateway() {
 
                 $accept_url_hit = true;
                 $payment_note = 'Note: Payment Completed Accept Url.';
+
+                //clearing the session incase user does not arrive on thank you page
+                WC()->session->set("billmate_checkout_number", null);
+                WC()->session->set("billmate_previous_calculated_order_total", null);
+                WC()->session->set("billmate_checkout_billing_country", null);
+                WC()->session->set("billmate_checkout_billing_postcode", null);
+                WC()->session->set("billmate_checkout_shipping_country", null);
+                WC()->session->set("billmate_checkout_shipping_postcode", null);
+                WC()->session->set("shipping_for_package_0", null);
+                WC()->session->set("previous_shipping_methods", null);
+                WC()->session->set("shipping_method_counts", null);
+                WC()->session->set("chosen_shipping_methods", null);
+                WC()->session->destroy_session();
+
             } elseif (!empty($_GET['payment']) && $_GET['payment'] == 'cancel'){
                 if( empty( $_POST ) ){
                     $_POST = $_GET;
@@ -529,7 +543,6 @@ function init_billmate_gateway() {
                 }
             }
             $order_id = $data['orderid'];
-
             if(function_exists('wc_seq_order_number_pro')){
                 $order_id = wc_seq_order_number_pro()->find_order_by_order_number( $data['orderid'] );
             }
@@ -547,7 +560,10 @@ function init_billmate_gateway() {
             }
 
             $order = new WC_Order( $order_id );
+            if ($callback_url_hit){
+                $customer_id = $order->get_customer_id();
 
+            }
             $method_id = ( isset( $config['method_id'] ) ) ? $config['method_id'] : $this->id;
             $method_title = ( isset( $config['method_title'] ) ) ? $config['method_title'] : $this->method_title;
             $transientPrefix = ( isset( $config['transientPrefix'] ) ) ? $config['transientPrefix'] : 'billmate_order_id_';
