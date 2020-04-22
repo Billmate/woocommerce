@@ -1284,32 +1284,34 @@ function init_billmate_gateway() {
                                 "withouttax" => $item_data->get_total() * 100,
                             );
                         }
-                        $order->calculate_totals(true);
-                        $incltax = $order->get_total();
-                        $excltax = $order->get_total() - $order->get_total_tax();
-                        $taxtotal = $order->get_total_tax();
-                        $rates = current(WC_Tax::get_shipping_tax_rates());
-                        if (is_array($rates) AND isset($rates['rate'])) {
-                            $taxrate = round($rates['rate']);
+                        if (count($updatePaymentData["Articles"]) > 0) {
+                            $order->calculate_totals(true);
+                            $incltax = $order->get_total();
+                            $excltax = $order->get_total() - $order->get_total_tax();
+                            $taxtotal = $order->get_total_tax();
+                            $rates = current(WC_Tax::get_shipping_tax_rates());
+                            if (is_array($rates) AND isset($rates['rate'])) {
+                                $taxrate = round($rates['rate']);
+                            }
+                            $shippingcost = $order->get_shipping_total();
+                            $updatePaymentData["Cart"] = array(
+                                "Handling" => array(
+                                    "withouttax" => $feeAmount * 100,
+                                    "taxrate" => $feeTaxrate
+                                ),
+                                "Shipping" => array(
+                                    "withouttax" => $shippingcost * 100,
+                                    "taxrate" => $taxrate
+                                ),
+                                "Total" => array(
+                                    "withouttax" => $excltax * 100,
+                                    "tax" => $taxtotal * 100,
+                                    "rounding" => "0",
+                                    "withtax" => $incltax * 100
+                                )
+                            );
+                            $bm->updatePayment($updatePaymentData);
                         }
-                        $shippingcost = $order->get_shipping_total();
-                        $updatePaymentData["Cart"] = array(
-                            "Handling" => array(
-                                "withouttax" => $feeAmount*100,
-                                "taxrate" => $feeTaxrate
-                            ),
-                            "Shipping" => array(
-                                "withouttax" => $shippingcost * 100,
-                                "taxrate" => $taxrate
-                            ),
-                            "Total" => array(
-                                "withouttax" => $excltax * 100,
-                                "tax" => $taxtotal*100,
-                                "rounding" => "0",
-                                "withtax" => $incltax * 100
-                            )
-                        );
-                        $bm->updatePayment($updatePaymentData);
                     }
                 }
             }
