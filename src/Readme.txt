@@ -79,6 +79,9 @@ If you would like to use our logos on your site:
 https://www.billmate.se/press-och-media/
 == Changelog ==
 
+=  3.10.6 (2020-04-23)
+* Fix - Make sure when updatePayment is called and status is "Created" that the method $order->payment_complete() is executed
+
 =  3.10.5 (2020-04-20)
 * Fix - Wrong total sum calculated
 
