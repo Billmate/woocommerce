@@ -1190,7 +1190,14 @@ function init_billmate_gateway() {
                                     "withtax" => $incltax * 100
                                 )
                             );
-                            $bm->updatePayment($updatePaymentData);
+                            $response = $bm->updatePayment($updatePaymentData);
+                            if ($response['data']['status'] == 'Created'){
+                                $order->payment_complete();
+                                if ($this->order_status != 'default') {
+                                    $order->update_status($this->order_status);
+                                    $order->save();
+                                }
+                            }
                         }
                     }
                 }
