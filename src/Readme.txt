@@ -79,6 +79,9 @@ If you would like to use our logos on your site:
 https://www.billmate.se/press-och-media/
 == Changelog ==
 
+=  3.10.8 (2020-04-28)
+* Fix - Ensure that updatePayment is not called twice during a purchase
+
 =  3.10.7 (2020-04-27)
 * Fix - Add session clearing to accept url handling, in case customer does not arrive on thank you page
 
