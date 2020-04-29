@@ -1180,10 +1180,10 @@ function init_billmate_gateway() {
                                     "artnr" => $billmateProduct->getSku(),
                                     "title" => $item_data->get_name(),
                                     "quantity" => $item_data->get_quantity(),
-                                    "aprice" => ($item_data->get_total() / $item_data->get_quantity()) * 100,
+                                    "aprice" => round(($item_data->get_total() / $item_data->get_quantity()) * 100, 0),
                                     "taxrate" => $rate,
                                     "discount" => "0",
-                                    "withouttax" => $item_data->get_total() * 100,
+                                    "withouttax" => round($item_data->get_total() * 100, 0),
                                 );
                             }
                             $order->calculate_totals(true);
