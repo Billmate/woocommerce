@@ -1164,15 +1164,20 @@ function init_billmate_gateway() {
                             $updatePaymentData['PaymentData'] = array(
                                 "number" => $data['number'],
                             );
+                            $addedSkus = array();
                             foreach ($order->get_items() as $item_id => $item_data) {
                                 $tax = new WC_Tax();
-                                $product = $item_data->get_product();
+                                $product = $this->order->get_product_from_item( $item );
+                                $billmateProduct = new BillmateProduct($product, [$item_id => $item_data]);
+                                if (in_array($billmateProduct->getSku(), $addedSkus)){
+                                    continue;
+                                }
                                 $product_tax_class = $product->get_tax_class();
                                 $product_tax = $tax->get_rates($product_tax_class);
                                 $rate = array_pop($product_tax);
                                 $rate = $rate['rate'];
                                 $updatePaymentData["Articles"][] = array(
-                                    "artnr" => $product->get_sku(),
+                                    "artnr" => $billmateProduct->getSku(),
                                     "title" => $item_data->get_name(),
                                     "quantity" => $item_data->get_quantity(),
                                     "aprice" => ($item_data->get_total() / $item_data->get_quantity()) * 100,
