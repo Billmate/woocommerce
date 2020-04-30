@@ -80,7 +80,7 @@ https://www.billmate.se/press-och-media/
 == Changelog ==
 
 =  3.10.9 (2020-04-30)
-* Fix - Ensure that duplicated article(s) appear on orders
+* Fix - Ensure that duplicated article(s) do not appear on orders
 
 =  3.10.8 (2020-04-28)
 * Fix - Ensure that updatePayment is not called twice during a purchase
