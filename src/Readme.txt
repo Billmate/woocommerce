@@ -79,6 +79,9 @@ If you would like to use our logos on your site:
 https://www.billmate.se/press-och-media/
 == Changelog ==
 
+=  3.10.9 (2020-04-30)
+* Fix - Ensure that duplicated article(s) appear on orders
+
 =  3.10.8 (2020-04-28)
 * Fix - Ensure that updatePayment is not called twice during a purchase
 
