@@ -1164,26 +1164,21 @@ function init_billmate_gateway() {
                             $updatePaymentData['PaymentData'] = array(
                                 "number" => $data['number'],
                             );
-                            $addedSkus = array();
                             foreach ($order->get_items() as $item_id => $item_data) {
                                 $tax = new WC_Tax();
-                                $product = $this->order->get_product_from_item( $item );
-                                $billmateProduct = new BillmateProduct($product, [$item_id => $item_data]);
-                                if (in_array($billmateProduct->getSku(), $addedSkus)){
-                                    continue;
-                                }
+                                $product = $item_data->get_product();
                                 $product_tax_class = $product->get_tax_class();
                                 $product_tax = $tax->get_rates($product_tax_class);
                                 $rate = array_pop($product_tax);
                                 $rate = $rate['rate'];
                                 $updatePaymentData["Articles"][] = array(
-                                    "artnr" => $billmateProduct->getSku(),
+                                    "artnr" => $product->get_sku(),
                                     "title" => $item_data->get_name(),
                                     "quantity" => $item_data->get_quantity(),
-                                    "aprice" => round(($item_data->get_total() / $item_data->get_quantity()) * 100, 0),
+                                    "aprice" => ($item_data->get_total() / $item_data->get_quantity()) * 100,
                                     "taxrate" => $rate,
                                     "discount" => "0",
-                                    "withouttax" => round($item_data->get_total() * 100, 0),
+                                    "withouttax" => $item_data->get_total() * 100,
                                 );
                             }
                             $order->calculate_totals(true);
