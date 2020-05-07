@@ -1164,9 +1164,14 @@ function init_billmate_gateway() {
                             $updatePaymentData['PaymentData'] = array(
                                 "number" => $data['number'],
                             );
+                            $addedSkus = array();
                             foreach ($order->get_items() as $item_id => $item_data) {
                                 $tax = new WC_Tax();
                                 $product = $item_data->get_product();
+                                if (in_array($product->get_sku(), $addedSkus)){
+                                    continue;
+                                }
+                                array_push($addedSkus, $product->get_sku);
                                 $product_tax_class = $product->get_tax_class();
                                 $product_tax = $tax->get_rates($product_tax_class);
                                 $rate = array_pop($product_tax);
@@ -1175,10 +1180,10 @@ function init_billmate_gateway() {
                                     "artnr" => $product->get_sku(),
                                     "title" => $item_data->get_name(),
                                     "quantity" => $item_data->get_quantity(),
-                                    "aprice" => ($item_data->get_total() / $item_data->get_quantity()) * 100,
+                                    "aprice" => round(($item_data->get_total() / $item_data->get_quantity()) * 100, 0),
                                     "taxrate" => $rate,
                                     "discount" => "0",
-                                    "withouttax" => $item_data->get_total() * 100,
+                                    "withouttax" => round($item_data->get_total() * 100, 0),
                                 );
                             }
                             $order->calculate_totals(true);
