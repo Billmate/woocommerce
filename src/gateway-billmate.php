@@ -1166,22 +1166,36 @@ function init_billmate_gateway() {
                             );
                             $addedSkus = array();
                             foreach ($order->get_items() as $item_id => $item_data) {
-                                $tax = new WC_Tax();
                                 $product = $item_data->get_product();
                                 if (in_array($product->get_sku(), $addedSkus)){
                                     continue;
                                 }
                                 array_push($addedSkus, $product->get_sku);
-                                $product_tax_class = $product->get_tax_class();
-                                $product_tax = $tax->get_rates($product_tax_class);
-                                $rate = array_pop($product_tax);
-                                $rate = $rate['rate'];
+
+                                $item_tax_percentage = 0;
+
+                                // is product taxable?
+                                if ($this->product->is_taxable()) {
+                                    $taxClass = $this->product->get_tax_class();
+                                    $tax = new WC_Tax();
+                                    $rates = $tax->get_rates($taxClass);
+                                    $item_tax_percentage = 0;
+                                    foreach ($rates as $row) {
+                                        // Is it Compound Tax?
+                                        if (isset($row['compund']) && $row['compound'] == 'yes') {
+                                            $item_tax_percentage += $row['rate'];
+                                        } else {
+                                            $item_tax_percentage = $row['rate'];
+                                        }
+                                    }
+                                }
+
                                 $updatePaymentData["Articles"][] = array(
                                     "artnr" => $product->get_sku(),
                                     "title" => $item_data->get_name(),
                                     "quantity" => $item_data->get_quantity(),
                                     "aprice" => round(($item_data->get_total() / $item_data->get_quantity()) * 100, 0),
-                                    "taxrate" => $rate,
+                                    "taxrate" => $item_tax_percentage,
                                     "discount" => "0",
                                     "withouttax" => round($item_data->get_total() * 100, 0),
                                 );
@@ -1296,18 +1310,30 @@ function init_billmate_gateway() {
                             "number" => $data['number'],
                         );
                         foreach ($order->get_items() as $item_id => $item_data) {
-                            $tax = new WC_Tax();
                             $product = $item_data->get_product();
-                            $product_tax_class = $product->get_tax_class();
-                            $product_tax = $tax->get_rates($product_tax_class);
-                            $rate = array_pop($product_tax);
-                            $rate = $rate['rate'];
+                            $item_tax_percentage = 0;
+                            // is product taxable?
+                            if ($this->product->is_taxable()) {
+                                $taxClass = $this->product->get_tax_class();
+                                $tax = new WC_Tax();
+                                $rates = $tax->get_rates($taxClass);
+                                $item_tax_percentage = 0;
+                                foreach ($rates as $row) {
+                                    // Is it Compound Tax?
+                                    if (isset($row['compund']) && $row['compound'] == 'yes') {
+                                        $item_tax_percentage += $row['rate'];
+                                    } else {
+                                        $item_tax_percentage = $row['rate'];
+                                    }
+                                }
+                            }
+
                             $updatePaymentData["Articles"][] = array(
                                 "artnr" => $product->get_sku(),
                                 "title" => $item_data->get_name(),
                                 "quantity" => $item_data->get_quantity(),
                                 "aprice" => ($item_data->get_total() / $item_data->get_quantity()) * 100,
-                                "taxrate" => $rate,
+                                "taxrate" => $item_tax_percentage,
                                 "discount" => "0",
                                 "withouttax" => $item_data->get_total() * 100,
                             );
