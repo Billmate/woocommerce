@@ -79,6 +79,9 @@ If you would like to use our logos on your site:
 https://www.billmate.se/press-och-media/
 == Changelog ==
 
+=  3.10.12 (2020-06-08)
+* Fix - Changed tax retrival in updatepayment to be in line with the retrival of tax when doing init and updatecheckout
+
 =  3.10.11 (2020-05-07)
 * Fix - Error 1170 in gateway-billmate.php class
 * Fix - Ensure that duplicated article(s) do not appear on orders
