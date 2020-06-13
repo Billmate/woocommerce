@@ -1175,8 +1175,8 @@ function init_billmate_gateway() {
                                 $item_tax_percentage = 0;
 
                                 // is product taxable?
-                                if ($this->product->is_taxable()) {
-                                    $taxClass = $this->product->get_tax_class();
+                                if ($product->is_taxable()) {
+                                    $taxClass = $product->get_tax_class();
                                     $tax = new WC_Tax();
                                     $rates = $tax->get_rates($taxClass);
                                     $item_tax_percentage = 0;
@@ -1313,8 +1313,8 @@ function init_billmate_gateway() {
                             $product = $item_data->get_product();
                             $item_tax_percentage = 0;
                             // is product taxable?
-                            if ($this->product->is_taxable()) {
-                                $taxClass = $this->product->get_tax_class();
+                            if ($product->is_taxable()) {
+                                $taxClass = $product->get_tax_class();
                                 $tax = new WC_Tax();
                                 $rates = $tax->get_rates($taxClass);
                                 $item_tax_percentage = 0;
