@@ -664,6 +664,16 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             define( 'WOOCOMMERCE_CART', true );
         }
 
+        // Check if store order already exists and if have connection to an existing Billmate payment
+        // If that is the case, the store order can no longer be used by cart and a new order need to be created
+        if (WC()->session->get('billmate_checkout_order')) {
+            if (get_post_meta(WC()->session->get('billmate_checkout_order'), 'billmate_invoice_id', true) != '') {
+                    // Store order exists and have Billmate payment connection. Store order can no longer be used by cart
+                    WC()->session->__unset('billmate_checkout_hash');
+                    WC()->session->__unset('billmate_checkout_order');
+            }
+        }
+
         if (
                 is_object(WC())
                 && property_exists(WC(), 'session')
