@@ -79,6 +79,9 @@ If you would like to use our logos on your site:
 https://www.billmate.se/press-och-media/
 == Changelog ==
 
+=  3.10.14 (2020-06-17)
+* Fix - Check if paid with Billmate Checkout on cart update
+
 =  3.10.12 (2020-06-08)
 * Fix - Changed tax retrival in updatepayment to be in line with the retrival of tax when doing init and updatecheckout
 
