@@ -1309,8 +1309,13 @@ function init_billmate_gateway() {
                         $updatePaymentData['PaymentData'] = array(
                             "number" => $data['number'],
                         );
+                        $sentSkus = array();
                         foreach ($order->get_items() as $item_id => $item_data) {
                             $product = $item_data->get_product();
+                            if (in_array($product->get_sku(), $sentSkus)){
+                                continue;
+                            }
+                            $sentSkus[] = $product->get_sku();
                             $item_tax_percentage = 0;
                             // is product taxable?
                             if ($product->is_taxable()) {
