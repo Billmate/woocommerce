@@ -79,6 +79,9 @@ If you would like to use our logos on your site:
 https://www.billmate.se/press-och-media/
 == Changelog ==
 
+=  3.10.15 (2020-06-24)
+* Fix - Add check to ensure duplicated articles should never be sent in an updatePayment call
+
 =  3.10.14 (2020-06-17)
 * Fix - Check if paid with Billmate Checkout on cart update
 
