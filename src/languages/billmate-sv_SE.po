@@ -572,7 +572,7 @@ msgstr "Ja, köp med denna adressen."
 #: ../class-billmate-account.php:1271 ../class-billmate-account.php:1581
 #: ../class-billmate-invoice.php:648
 msgid "No, I want to specify a different number or change payment method"
-msgstr "Nej jag vill ändra till ett annat nummer eller byta betalmetod."
+msgstr "Nej, ändra till annat personnummer eller byt betalmetod."
 
 #: ../class-billmate-account.php:1280 ../class-billmate-account.php:1284
 #: ../class-billmate-account.php:1590 ../class-billmate-account.php:1594
@@ -589,8 +589,7 @@ msgstr ""
 msgid ""
 "Please confirm the email %s is correct. The email will be used for invoicing."
 msgstr ""
-"Vänligen bekräfta att e-postadressen \"%s\" är korrekt. Denna kommer att "
-"användas för fakturering."
+"Vänligen bekräfta att e-postadressen "%s" är korrekt genom att markera kryssrutan nedan för att gå vidare med beställningen."
 
 #: ../class-billmate-account.php:1487 ../class-billmate-bankpay.php:626
 #: ../class-billmate-cardpay.php:652 ../class-billmate-cardpay.php:921
