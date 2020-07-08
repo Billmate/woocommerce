@@ -81,6 +81,7 @@ https://www.billmate.se/press-och-media/
 
 =  3.10.16 (2020-07-08)
 * Fix - Add a more thorough check for duplicate articles, by removing whitespace and control characters before comparison.
+* Fix - Usability improvements for confirmation checkbox on Checkout page.
 
 =  3.10.15 (2020-06-24)
 * Fix - Add check to ensure duplicated articles should never be sent in an updatePayment call
