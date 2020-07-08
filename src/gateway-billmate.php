@@ -1167,10 +1167,11 @@ function init_billmate_gateway() {
                             $addedSkus = array();
                             foreach ($order->get_items() as $item_id => $item_data) {
                                 $product = $item_data->get_product();
-                                if (in_array($product->get_sku(), $addedSkus)){
+                                $compSku = utf8_encode(preg_replace('/[\x00-\x1F\x7F\t\n\r\f ]/', '', $product->get_sku()));
+                                if (in_array($compSku, $addedSkus)){
                                     continue;
                                 }
-                                array_push($addedSkus, $product->get_sku);
+                                $addedSkus[] = $compSku;
 
                                 $item_tax_percentage = 0;
 
@@ -1312,10 +1313,11 @@ function init_billmate_gateway() {
                         $sentSkus = array();
                         foreach ($order->get_items() as $item_id => $item_data) {
                             $product = $item_data->get_product();
-                            if (in_array($product->get_sku(), $sentSkus)){
+                            $compSku = utf8_encode(preg_replace('/[\x00-\x1F\x7F\t\n\r\f ]/', '', $product->get_sku()));
+                            if (in_array($compSku, $sentSkus)){
                                 continue;
                             }
-                            $sentSkus[] = $product->get_sku();
+                            $sentSkus[] = $compSku;
                             $item_tax_percentage = 0;
                             // is product taxable?
                             if ($product->is_taxable()) {
