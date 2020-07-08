@@ -79,6 +79,9 @@ If you would like to use our logos on your site:
 https://www.billmate.se/press-och-media/
 == Changelog ==
 
+=  3.10.16 (2020-07-08)
+* Fix - Add a more thorough check for duplicate articles, by removing whitespace and control characters before comparison.
+
 =  3.10.15 (2020-06-24)
 * Fix - Add check to ensure duplicated articles should never be sent in an updatePayment call
 
