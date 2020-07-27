@@ -9,7 +9,7 @@ Text Domain: billmate
 Author URI: https://billmate.se
 Domain Path: /languages/
 
-WC tested up to: 3.7.0
+WC tested up to: 4.3.0
 
 */
 
