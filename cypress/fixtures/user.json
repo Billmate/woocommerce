@@ -1,0 +1,13 @@
+{
+    "firstName": "Testperson",
+    "lastName": "Approved",
+    "email": "test@example.com",
+    "pno" : "195501011018",
+    "zip" : "12345",
+    "phoneNumb": "0700123456",
+    "adminUser": "admin",
+    "adminPassword" : "4dm1n",
+    "companyName": "Testcompany",
+    "ORGnumber" : "5566779988",
+    "companyZip" : "54321"
+}
