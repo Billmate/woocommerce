@@ -108,7 +108,7 @@ class BillmateCommon {
                     </p>
                     <p class="form-row form-row-last">
                         <label></label>
-                        <button id="getaddress" class="'button getaddress-button"><?php echo __('Get Address','billmate'); ?></button>
+                        <button id="getaddress" class="button getaddress-button"><?php echo __('Get Address','billmate'); ?></button>
                     </p>
 
                     <p class="form-row">
