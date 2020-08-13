@@ -1572,7 +1572,7 @@ if(!class_exists('BillmateOrder')){
 
             $isOrderDiscount = true;    /* If true, all articles have discount, if false, discount is for individual articles */
             $orderArticles = array();
-
+            $usedSkus = array();
             if (sizeof($this->order->get_items())>0) {
                 foreach ($this->order->get_items() as $item) {
                     $_product = $this->order->get_product_from_item( $item );
@@ -1584,7 +1584,10 @@ if(!class_exists('BillmateOrder')){
 
                         $item_tax_percentage    = $billmateProduct->getTaxRate();
                         $sku                    = $billmateProduct->getSku();
-
+                        if (in_array($sku, $usedSkus)){
+                            continue;
+                        }
+                        $usedSkus[] = $sku;
                         /** Start with price including tax */
                         $_quantity              = (int)$item['qty'];
                         $_aprice_with_tax       = $this->order->get_item_total($item, true);
