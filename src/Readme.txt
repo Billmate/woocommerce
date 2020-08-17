@@ -79,6 +79,9 @@ If you would like to use our logos on your site:
 https://www.billmate.se/press-och-media/
 == Changelog ==
 
+=  3.10.19 (2020-08-17)
+* Revert - Add check to prevent duplicated articles in updateCheckout requests
+
 =  3.10.18 (2020-08-13)
 * Fix - Add check to prevent duplicated articles in updateCheckout requests
 
