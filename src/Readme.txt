@@ -79,6 +79,9 @@ If you would like to use our logos on your site:
 https://www.billmate.se/press-och-media/
 == Changelog ==
 
+=  3.10.21 (2020-08-19)
+* Revert - Fixed cause of loopback request failure and api failure
+
 =  3.10.20 (2020-08-19)
 * Fix - Fixed cause of loopback request failure and api failure
 
