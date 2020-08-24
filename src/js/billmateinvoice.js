@@ -159,25 +159,36 @@ jQuery(document).ready(function(){
 		}
 		var inv_label = $('label[for="payment_method_billmate_invoice"]');
 		var part_label = $('label[for="payment_method_billmate_partpayment"]');
-		if (inv_label.length == 1){
-			if (document.getElementsByTagName('input')['payment_method_billmate_invoice'].checked){
+		var billingEmailInput = $('#billing_email');
+		if (inv_label.length == 1) {
+			if (document.getElementsByTagName('input')['payment_method_billmate_invoice'].checked) {
 				if (!document.getElementsByTagName('input')["valid_email_it_is_invoice"].checked) {
-					var text = document.getElementsByClassName("woocommerce-error")[0].innerText;
+					var text = document.getElementsByClassName('woocommerce-error')[0].innerText;
 					var prev = document.getElementsByClassName('payment_box payment_method_billmate_invoice')[0].innerHTML;
-                    var newText = prev + '<div class="billmate-error" style="color:red; text-decoration:underline">' + text + '</div>';
-                    document.getElementsByClassName('payment_box payment_method_billmate_invoice')[0].innerHTML = newText;
-					invLabel.scrollIntoView();
+					var newText = prev + '<div class="billmate-error" style="color:red; text-decoration:underline">' + text + '</div>';
+					document.getElementsByClassName('payment_box payment_method_billmate_invoice')[0].innerHTML = newText;
+					if (billingEmailInput.val() === '') {
+						// Scroll to DOM element and not jQuery object
+						billingEmailInput.get(0).scrollIntoView();
+					} else {
+						invLabel.scrollIntoView();
+					}
 				}
 			}
 		}
-		if (part_label.length == 1){
-			if (document.getElementsByTagName('input')['payment_method_billmate_partpayment'].checked){
-				if (!document.getElementsByTagName('input')["valid_email_it_is"].checked){
+		if (part_label.length == 1) {
+			if (document.getElementsByTagName('input')['payment_method_billmate_partpayment'].checked) {
+				if (!document.getElementsByTagName('input')["valid_email_it_is"].checked) {
 					var text = document.getElementsByClassName("woocommerce-error")[0].innerText;
-                    var prev = document.getElementsByClassName('payment_box payment_method_billmate_partpayment')[0].innerHTML;
-                    var newText = prev + '<div class="billmate-error" style="color:red; text-decoration:underline">' + text + '</div>';
-                    document.getElementsByClassName('payment_box payment_method_billmate_partpayment')[0].innerHTML = newText;
-					invLabel.scrollIntoView();
+					var prev = document.getElementsByClassName('payment_box payment_method_billmate_partpayment')[0].innerHTML;
+					var newText = prev + '<div class="billmate-error" style="color:red; text-decoration:underline">' + text + '</div>';
+					document.getElementsByClassName('payment_box payment_method_billmate_partpayment')[0].innerHTML = newText;
+					if (billingEmailInput.val() === '') {
+						// Scroll to DOM element and not jQuery object
+						billingEmailInput.get(0).scrollIntoView();
+					} else {
+						invLabel.scrollIntoView();
+					}
 				}
 			}
 		}
