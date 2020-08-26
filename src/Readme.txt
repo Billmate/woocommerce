@@ -79,6 +79,9 @@ If you would like to use our logos on your site:
 https://www.billmate.se/press-och-media/
 == Changelog ==
 
+=  3.10.22 (2020-08-26)
+* Enhancement - Improve feedback for WooCommerce terms
+
 =  3.10.21 (2020-08-19)
 * Revert - Fixed cause of loopback request failure and api failure
 
