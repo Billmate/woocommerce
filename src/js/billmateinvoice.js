@@ -168,8 +168,8 @@ jQuery(document).ready(function(){
 					var newText = prev + '<div class="billmate-error" style="color:red; text-decoration:underline">' + text + '</div>';
 					document.getElementsByClassName('payment_box payment_method_billmate_invoice')[0].innerHTML = newText;
 					if (billingEmailInput.val() === '') {
-						// Scroll to DOM element and not jQuery object
-						billingEmailInput.get(0).scrollIntoView();
+						// Scroll to DOM element #billing_email
+						$('html, body').animate({ scrollTop: billingEmailInput.offset().top - 30}, 0);
 					} else {
 						invLabel.scrollIntoView();
 					}
@@ -184,8 +184,8 @@ jQuery(document).ready(function(){
 					var newText = prev + '<div class="billmate-error" style="color:red; text-decoration:underline">' + text + '</div>';
 					document.getElementsByClassName('payment_box payment_method_billmate_partpayment')[0].innerHTML = newText;
 					if (billingEmailInput.val() === '') {
-						// Scroll to DOM element and not jQuery object
-						billingEmailInput.get(0).scrollIntoView();
+						// Scroll to DOM element #billing_email
+						$('html, body').animate({ scrollTop: billingEmailInput.offset().top - 30}, 0);
 					} else {
 						invLabel.scrollIntoView();
 					}
