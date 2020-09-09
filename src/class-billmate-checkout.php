@@ -1008,7 +1008,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
             $tax = new WC_Tax();
             $rate = $tax->get_rates($invoice_fee->invoice_fee_tax_class);
             $rate = array_pop($rate);
-            $rate = round($rate['rate']);
+            $rate = (isset($rate['rate'])) ? round($rate['rate']) : 0;
             $invoiceFee = $invoice_fee->invoice_fee * 100;
 
             if($invoiceFee > 0) {
