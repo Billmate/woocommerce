@@ -155,216 +155,218 @@ function credit_billmate_order($order_id, $action = false, $isCancel = false){
     $isPartial = false;
     $order = wc_get_order($order_id);
     $method = $order->get_payment_method();
-    if (strpos(strtolower($method), 'billmate') !== false) {
-        $number = get_post_meta($order_id, 'billmate_invoice_id', true);
-        if (array_key_exists('action', $_POST)) {
-            if ($_POST['action'] == "woocommerce_refund_line_items") {
-                if ($order->get_total() != $_POST['refund_amount']) {
-                    $isPartial = true;
+    if (get_option('billmate_common_cancelonstatus') == 'active') {
+        if (strpos(strtolower($method), 'billmate') !== false) {
+            $number = get_post_meta($order_id, 'billmate_invoice_id', true);
+            if (array_key_exists('action', $_POST)) {
+                if ($_POST['action'] == "woocommerce_refund_line_items") {
+                    if ($order->get_total() != $_POST['refund_amount']) {
+                        $isPartial = true;
+                    }
                 }
             }
-        }
-        if (!$isPartial) {
-            if (get_option('billmate_common_cancelonstatus') == 'active') {
-                if ($number !== null) {
-                    $paymentMethod = get_post_meta($order_id, '_payment_method');
-                    $methodClass = false;
-                    switch ($paymentMethod[0]) {
-                        case 'billmate_partpayment':
-                            $methodClass = new WC_Gateway_Billmate_Partpayment();
-                            break;
-                        case 'billmate_invoice':
-                            $methodClass = new WC_Gateway_Billmate_Invoice();
-                            break;
-                        case 'billmate_bankpay':
-                            $methodClass = new WC_Gateway_Billmate_Bankpay();
-                            break;
-                        case 'billmate_cardpay':
-                            $methodClass = new WC_Gateway_Billmate_Cardpay();
-                            break;
-                        case 'billmate_checkout':
-                            $methodClass = new WC_Gateway_Billmate_Checkout();
-                            break;
-                        default:
+            if (!$isPartial) {
+                if (get_option('billmate_common_cancelonstatus') == 'active') {
+                    if ($number !== null) {
+                        $paymentMethod = get_post_meta($order_id, '_payment_method');
+                        $methodClass = false;
+                        switch ($paymentMethod[0]) {
+                            case 'billmate_partpayment':
+                                $methodClass = new WC_Gateway_Billmate_Partpayment();
+                                break;
+                            case 'billmate_invoice':
+                                $methodClass = new WC_Gateway_Billmate_Invoice();
+                                break;
+                            case 'billmate_bankpay':
+                                $methodClass = new WC_Gateway_Billmate_Bankpay();
+                                break;
+                            case 'billmate_cardpay':
+                                $methodClass = new WC_Gateway_Billmate_Cardpay();
+                                break;
+                            case 'billmate_checkout':
+                                $methodClass = new WC_Gateway_Billmate_Checkout();
+                                break;
+                            default:
+                                if ($isCancel) {
+                                    $order->add_order_note(sprintf(__('Error: Can\'t cancel Billmate invoice %s, Unknown Method.', 'billmate'), $number));
+                                } else {
+                                    $order->add_order_note(sprintf(__('Error: Can\'t credit Billmate invoice %s, Unknown Method.', 'billmate'), $number));
+                                }
+                                break;
+                        }
+                        if ($methodClass) {
+                            $bmRequestData["PaymentData"] = [
+                                "number" => $number
+                            ];
+                            $billmate = new BillMate(get_option('billmate_common_eid'), get_option('billmate_common_secret'), true, $methodClass->testmode == 'yes', false);
+                            $result = $billmate->creditPayment($bmRequestData);
+                            if ($result['status'] !== "Credited") {
+                                if ($isCancel) {
+                                    $order->add_order_note(sprintf(__('Error: Can\'t cancel Billmate Invoice %s.', 'billmate'), $number));
+                                } else {
+                                    $order->add_order_note(sprintf(__('Error: Can\'t credit Billmate faktura %s.', 'billmate'), $number));
+                                }
+                            } else {
+                                if ($isCancel) {
+                                    $order->add_order_note(sprintf(__('Billmate Invoice %s successfully Canceled, Billmate credit Invoice %s.', 'billmate'), $number, $result['number']));
+                                } else {
+                                    $order->add_order_note(sprintf(__('Billmate invoice %s successfully credited, Billmate credit Invoice %s.', 'billmate'), $number, $result['number']));
+                                }
+                            }
+                        } else {
                             if ($isCancel) {
                                 $order->add_order_note(sprintf(__('Error: Can\'t cancel Billmate invoice %s, Unknown Method.', 'billmate'), $number));
                             } else {
                                 $order->add_order_note(sprintf(__('Error: Can\'t credit Billmate invoice %s, Unknown Method.', 'billmate'), $number));
                             }
-                            break;
-                    }
-                    if ($methodClass) {
-                        $bmRequestData["PaymentData"] = [
-                            "number" => $number
-                        ];
-                        $billmate = new BillMate(get_option('billmate_common_eid'), get_option('billmate_common_secret'), true, $methodClass->testmode == 'yes', false);
-                        $result = $billmate->creditPayment($bmRequestData);
-                        if ($result['status'] !== "Credited") {
-                            if ($isCancel) {
-                                $order->add_order_note(sprintf(__('Error: Can\'t cancel Billmate Invoice %s.', 'billmate'), $number));
-                            } else {
-                                $order->add_order_note(sprintf(__('Error: Can\'t credit Billmate faktura %s.', 'billmate'), $number));
-                            }
-                        } else {
-                            if ($isCancel) {
-                                $order->add_order_note(sprintf(__('Billmate Invoice %s successfully Canceled, Billmate credit Invoice %s.', 'billmate'), $number, $result['number']));
-                            } else {
-                                $order->add_order_note(sprintf(__('Billmate invoice %s successfully credited, Billmate credit Invoice %s.', 'billmate'), $number, $result['number']));
-                            }
                         }
                     } else {
+                        if ($isCancel) {
+                            $order->add_order_note(sprintf(__('Error: Can\'t cancel Billmate Invoice ID is missing.', 'billmate')));
+                        } else {
+                            $order->add_order_note(sprintf(__('Error: Can\'t credit Billmate invoice ID is missing.', 'billmate')));
+                        }
+                    }
+                }
+            } else {
+                $methodClass = false;
+                $paymentMethod = get_post_meta($order_id, '_payment_method');
+                switch ($paymentMethod[0]) {
+                    case 'billmate_partpayment':
+                        $methodClass = new WC_Gateway_Billmate_Partpayment();
+                        break;
+                    case 'billmate_invoice':
+                        $methodClass = new WC_Gateway_Billmate_Invoice();
+                        break;
+                    case 'billmate_bankpay':
+                        $methodClass = new WC_Gateway_Billmate_Bankpay();
+                        break;
+                    case 'billmate_cardpay':
+                        $methodClass = new WC_Gateway_Billmate_Cardpay();
+                        break;
+                    case 'billmate_checkout':
+                        $methodClass = new WC_Gateway_Billmate_Checkout();
+                        break;
+                    default:
                         if ($isCancel) {
                             $order->add_order_note(sprintf(__('Error: Can\'t cancel Billmate invoice %s, Unknown Method.', 'billmate'), $number));
                         } else {
                             $order->add_order_note(sprintf(__('Error: Can\'t credit Billmate invoice %s, Unknown Method.', 'billmate'), $number));
                         }
-                    }
-                } else {
-                    if ($isCancel) {
-                        $order->add_order_note(sprintf(__('Error: Can\'t cancel Billmate Invoice ID is missing.', 'billmate')));
-                    } else {
-                        $order->add_order_note(sprintf(__('Error: Can\'t credit Billmate invoice ID is missing.', 'billmate')));
-                    }
+                        break;
                 }
-            }
-        } else {
-            $methodClass = false;
-            $paymentMethod = get_post_meta($order_id, '_payment_method');
-            switch ($paymentMethod[0]) {
-                case 'billmate_partpayment':
-                    $methodClass = new WC_Gateway_Billmate_Partpayment();
-                    break;
-                case 'billmate_invoice':
-                    $methodClass = new WC_Gateway_Billmate_Invoice();
-                    break;
-                case 'billmate_bankpay':
-                    $methodClass = new WC_Gateway_Billmate_Bankpay();
-                    break;
-                case 'billmate_cardpay':
-                    $methodClass = new WC_Gateway_Billmate_Cardpay();
-                    break;
-                case 'billmate_checkout':
-                    $methodClass = new WC_Gateway_Billmate_Checkout();
-                    break;
-                default:
-                    if ($isCancel) {
-                        $order->add_order_note(sprintf(__('Error: Can\'t cancel Billmate invoice %s, Unknown Method.', 'billmate'), $number));
-                    } else {
-                        $order->add_order_note(sprintf(__('Error: Can\'t credit Billmate invoice %s, Unknown Method.', 'billmate'), $number));
-                    }
-                    break;
-            }
-            if ($methodClass) {
-                if (array_key_exists('line_item_tax_totals', $_POST)) {
-                    if (array_key_exists('line_item_qtys', $_POST)) {
-                        if (array_key_exists('line_item_totals', $_POST)) {
-                            $itemQtys = json_decode(str_replace('\\', '', $_POST['line_item_qtys']), true);
-                            $itemTotals = json_decode(str_replace('\\', '', $_POST['line_item_totals']), true);
-                            $itemTaxTotals = json_decode(str_replace('\\', '', $_POST['line_item_tax_totals']), true);
-                            $refundItems = array();
-                            foreach ($order->get_items() as $item) {
-                                $shouldRefund = false;
-                                foreach ($itemQtys as $key => $val) {
-                                    if ($key == $item->get_id()) {
-                                        $shouldRefund = true;
-                                        break;
+                if ($methodClass) {
+                    if (array_key_exists('line_item_tax_totals', $_POST)) {
+                        if (array_key_exists('line_item_qtys', $_POST)) {
+                            if (array_key_exists('line_item_totals', $_POST)) {
+                                $itemQtys = json_decode(str_replace('\\', '', $_POST['line_item_qtys']), true);
+                                $itemTotals = json_decode(str_replace('\\', '', $_POST['line_item_totals']), true);
+                                $itemTaxTotals = json_decode(str_replace('\\', '', $_POST['line_item_tax_totals']), true);
+                                $refundItems = array();
+                                foreach ($order->get_items() as $item) {
+                                    $shouldRefund = false;
+                                    foreach ($itemQtys as $key => $val) {
+                                        if ($key == $item->get_id()) {
+                                            $shouldRefund = true;
+                                            break;
+                                        }
+                                    }
+                                    if ($shouldRefund) {
+                                        $_product = $order->get_product_from_item($item);
+                                        $billmateProduct = new BillmateProduct($_product, $item);
+                                        $item_tax_percentage = $billmateProduct->getTaxRate();
+                                        $sku = $billmateProduct->getSku();
+                                        if ($itemQtys[$item->get_id()] > 0) {
+                                            $refundItem = array(
+                                                'artnr' => $sku,
+                                                'title' => $billmateProduct->getTitle(),
+                                                'quantity' => $itemQtys[$item->get_id()],
+                                                'aprice' => round(($itemTotals[$item->get_id()] / $itemQtys[$item->get_id()]) * 100),
+                                                'taxrate' => $item_tax_percentage,
+                                                'withouttax' => round($itemTotals[$item->get_id()] * 100)
+                                            );
+                                            array_push($refundItems, $refundItem);
+                                        }
                                     }
                                 }
-                                if ($shouldRefund) {
-                                    $_product = $order->get_product_from_item($item);
-                                    $billmateProduct = new BillmateProduct($_product, $item);
-                                    $item_tax_percentage = $billmateProduct->getTaxRate();
-                                    $sku = $billmateProduct->getSku();
-                                    if ($itemQtys[$item->get_id()] > 0) {
-                                        $refundItem = array(
-                                            'artnr' => $sku,
-                                            'title' => $billmateProduct->getTitle(),
-                                            'quantity' => $itemQtys[$item->get_id()],
-                                            'aprice' => round(($itemTotals[$item->get_id()] / $itemQtys[$item->get_id()]) * 100),
-                                            'taxrate' => $item_tax_percentage,
-                                            'withouttax' => round($itemTotals[$item->get_id()] * 100)
-                                        );
-                                        array_push($refundItems, $refundItem);
+                                $shippingItemId = 0;
+                                $feeItemId = 0;
+                                $shippingItem = null;
+                                $feeItem = null;
+                                $totalExclTax = 0;
+                                $totalTax = 0;
+                                foreach ($itemTotals as $item_id => $itemTotal) {
+                                    $item = $order->get_item($item_id, true);
+                                    if ($itemTotal > 0) {
+                                        if (get_class($item) == WC_Order_Item_Shipping::class) {
+                                            $shippingItem = $item;
+                                            $shippingItemId = $item_id;
+                                        } else if (get_class($item) == WC_Order_Item_Fee::class) {
+                                            $feeItem = $item;
+                                            $feeItemId = $item_id;
+                                        }
+                                    }
+                                    $totalExclTax += $itemTotal;
+                                    if (is_array($itemTaxTotals[$item->get_id()])) {
+                                        foreach ($itemTaxTotals[$item->get_id()] as $taxItem) {
+                                            $totalTax += $taxItem;
+                                        }
+                                    } else {
+                                        $totalTax += $itemTaxTotals[$item->get_id()];
                                     }
                                 }
-                            }
-                            $shippingItemId = 0;
-                            $feeItemId = 0;
-                            $shippingItem = null;
-                            $feeItem = null;
-                            $totalExclTax = 0;
-                            $totalTax = 0;
-                            foreach ($itemTotals as $item_id => $itemTotal) {
-                                $item = $order->get_item($item_id, true);
-                                if ($itemTotal > 0) {
-                                    if (get_class($item) == WC_Order_Item_Shipping::class) {
-                                        $shippingItem = $item;
-                                        $shippingItemId = $item_id;
-                                    } else if (get_class($item) == WC_Order_Item_Fee::class) {
-                                        $feeItem = $item;
-                                        $feeItemId = $item_id;
-                                    }
-                                }
-                                $totalExclTax += $itemTotal;
-                                if (is_array($itemTaxTotals[$item->get_id()])) {
-                                    foreach ($itemTaxTotals[$item->get_id()] as $taxItem) {
-                                        $totalTax += $taxItem;
-                                    }
-                                } else {
-                                    $totalTax += $itemTaxTotals[$item->get_id()];
-                                }
-                            }
 
-                            $values["PaymentData"] = array(
-                                "number" => $number,
-                                "partcredit" => "true"
-                            );
-                            $values['Articles'] = $refundItems;
-                            $values['Cart'] = array();
-                            $values['Cart']['Total'] = array(
-                                "withouttax" => round($totalExclTax * 100),
-                                "tax" => round($totalTax * 100),
-                                "rounding" => 0,
-                                "withtax" => round(($totalExclTax + $totalTax) * 100)
-                            );
-                            if ($feeItem !== null) {
-                                $feeTaxTotal = 0;
-                                if (is_array($itemTaxTotals[$feeItemId])) {
-                                    foreach ($itemTaxTotals[$feeItemId] as $feeTaxItem) {
-                                        $feeTaxTotal += $feeTaxItem;
-                                    }
-                                } else {
-                                    $feeTaxTotal += $itemTaxTotals[$feeItemId];
-                                }
-                                $values['Cart']['Handling'] = array(
-                                    "withouttax" => round($itemTotals[$feeItemId] * 100),
-                                    "taxrate" => (($itemTotals[$feeItemId] + $feeTaxTotal) / $itemTotals[$feeItemId] - 1) * 100
+                                $values["PaymentData"] = array(
+                                    "number" => $number,
+                                    "partcredit" => "true"
                                 );
-                            }
-                            if ($shippingItem !== null) {
-                                $shippingTaxTotal = 0;
-                                if (is_array($itemTaxTotals[$shippingItemId])) {
-                                    foreach ($itemTaxTotals[$shippingItemId] as $shippingTaxItem) {
-                                        $shippingTaxTotal += $shippingTaxItem;
-                                    }
-                                } else {
-                                    $shippingTaxTotal += $itemTaxTotals[$shippingItemId];
-                                }
-                                $values['Cart']['Shipping'] = array(
-                                    "withouttax" => round($itemTotals[$shippingItemId] * 100),
-                                    "taxrate" => (($itemTotals[$shippingItemId] + $shippingTaxTotal) / $itemTotals[$shippingItemId] - 1) * 100
+                                $values['Articles'] = $refundItems;
+                                $values['Cart'] = array();
+                                $values['Cart']['Total'] = array(
+                                    "withouttax" => round($totalExclTax * 100),
+                                    "tax" => round($totalTax * 100),
+                                    "rounding" => 0,
+                                    "withtax" => round(($totalExclTax + $totalTax) * 100)
                                 );
-                            }
-                            $billmate = new BillMate(get_option('billmate_common_eid'), get_option('billmate_common_secret'), true, $methodClass->testmode == 'yes', false);
-                            $result = $billmate->creditPayment($values);
-                            if (array_key_exists('message', $result)) {
-                                $order->add_order_note($result['message']);
-                                $refund = $order->get_refunds()[0];
-                                $refund_id = $refund->get_id();
-                                $refund->delete(true);
-                                do_action('woocommerce_refund_deleted', $refund_id, $order_id);
-                            } else {
-                                $order->add_order_note(sprintf(__('Billmate invoice %s successfully credited, Billmate credit Invoice %s.', 'billmate'), $number, $result['number']));
+                                if ($feeItem !== null) {
+                                    $feeTaxTotal = 0;
+                                    if (is_array($itemTaxTotals[$feeItemId])) {
+                                        foreach ($itemTaxTotals[$feeItemId] as $feeTaxItem) {
+                                            $feeTaxTotal += $feeTaxItem;
+                                        }
+                                    } else {
+                                        $feeTaxTotal += $itemTaxTotals[$feeItemId];
+                                    }
+                                    $values['Cart']['Handling'] = array(
+                                        "withouttax" => round($itemTotals[$feeItemId] * 100),
+                                        "taxrate" => (($itemTotals[$feeItemId] + $feeTaxTotal) / $itemTotals[$feeItemId] - 1) * 100
+                                    );
+                                }
+                                if ($shippingItem !== null) {
+                                    $shippingTaxTotal = 0;
+                                    if (is_array($itemTaxTotals[$shippingItemId])) {
+                                        foreach ($itemTaxTotals[$shippingItemId] as $shippingTaxItem) {
+                                            $shippingTaxTotal += $shippingTaxItem;
+                                        }
+                                    } else {
+                                        $shippingTaxTotal += $itemTaxTotals[$shippingItemId];
+                                    }
+                                    $values['Cart']['Shipping'] = array(
+                                        "withouttax" => round($itemTotals[$shippingItemId] * 100),
+                                        "taxrate" => (($itemTotals[$shippingItemId] + $shippingTaxTotal) / $itemTotals[$shippingItemId] - 1) * 100
+                                    );
+                                }
+                                $billmate = new BillMate(get_option('billmate_common_eid'), get_option('billmate_common_secret'), true, $methodClass->testmode == 'yes', false);
+                                $result = $billmate->creditPayment($values);
+                                if (array_key_exists('message', $result)) {
+                                    $order->add_order_note($result['message']);
+                                    $refund = $order->get_refunds()[0];
+                                    $refund_id = $refund->get_id();
+                                    $refund->delete(true);
+                                    do_action('woocommerce_refund_deleted', $refund_id, $order_id);
+                                } else {
+                                    $order->add_order_note(sprintf(__('Billmate invoice %s successfully credited, Billmate credit Invoice %s.', 'billmate'), $number, $result['number']));
+                                }
                             }
                         }
                     }
