@@ -79,6 +79,9 @@ If you would like to use our logos on your site:
 https://www.billmate.se/press-och-media/
 == Changelog ==
 
+=  3.11.1 (2020-09-10)
+* Fix - Make sure property "billmate_common_enable_overlay" is set
+
 =  3.11.0 (2020-09-10)
 * Feature - Refactor the credit/cancel order feature to be more stable
 
