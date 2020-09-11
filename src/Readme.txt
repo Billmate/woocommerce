@@ -81,6 +81,7 @@ https://www.billmate.se/press-och-media/
 
 =  3.11.2 (2020-09-11)
 * Fix - Make sure order exists in Billmate Gateway
+* Fix - Remove updatePayment call after success
 
 =  3.11.1 (2020-09-10)
 * Fix - Make sure property "billmate_common_enable_overlay" is set
