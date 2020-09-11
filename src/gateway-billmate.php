@@ -561,10 +561,10 @@ function init_billmate_gateway() {
             }
 
             $order = new WC_Order( $order_id );
-            if ($callback_url_hit){
+            if ($callback_url_hit && $order) {
                 $customer_id = $order->get_customer_id();
-
             }
+
             $method_id = ( isset( $config['method_id'] ) ) ? $config['method_id'] : $this->id;
             $method_title = ( isset( $config['method_title'] ) ) ? $config['method_title'] : $this->method_title;
             $transientPrefix = ( isset( $config['transientPrefix'] ) ) ? $config['transientPrefix'] : 'billmate_order_id_';
