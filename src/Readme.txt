@@ -79,6 +79,9 @@ If you would like to use our logos on your site:
 https://www.billmate.se/press-och-media/
 == Changelog ==
 
+=  3.11.3 (2020-09-22)
+* Feature - Make the plugin compatible with Wordpress REST API
+
 =  3.11.2 (2020-09-11)
 * Fix - Make sure order exists in Billmate Gateway
 * Fix - Remove updatePayment call after success
