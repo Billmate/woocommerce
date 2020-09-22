@@ -757,3 +757,4 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
 		return $this->shop_country;
 	}
 } // End class WC_Gateway_Billmate_Invoice
+@session_write_close();
