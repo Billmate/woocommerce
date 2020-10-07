@@ -7,7 +7,7 @@ Tested up to: 5.3.2
 Stable tag: __STABLE_TAG__
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
-WC tested up to: 4.0.1
+WC tested up to: 4.5.0
 
 Billmate offers a complete paymentsolution to your webshop.
 
