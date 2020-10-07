@@ -80,7 +80,7 @@ https://www.billmate.se/press-och-media/
 == Changelog ==
 
 =  3.12.0 (2020-10-07)
-* Feature - Add support for WooCoomerce 4.5.0
+* Feature - Add support for WooCommerce 4.5.0
 
 =  3.11.4 (2020-09-24)
 * Fix - Revert the "Make the plugin compatible with Wordpress REST API"
