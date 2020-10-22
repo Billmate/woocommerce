@@ -79,6 +79,9 @@ If you would like to use our logos on your site:
 https://www.billmate.se/press-och-media/
 == Changelog ==
 
+=  3.12.1 (2020-10-22)
+* Feature - Update logotype for Billmate Bank (Trustly)
+
 =  3.12.0 (2020-10-07)
 * Feature - Add support for WooCommerce 4.5.0
 
