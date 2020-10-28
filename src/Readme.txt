@@ -79,6 +79,9 @@ If you would like to use our logos on your site:
 https://www.billmate.se/press-och-media/
 == Changelog ==
 
+=  3.12.2 (2020-10-28)
+* Fix - Merchant unable to credit an order when Billmate Complete is off
+
 =  3.12.1 (2020-10-22)
 * Feature - Update logotype for Billmate Bank (Trustly)
 
