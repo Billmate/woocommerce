@@ -2,9 +2,8 @@
 By Billmate AB - [https://billmate.se](https://billmate.se/ "billmate.se")
 
 ## Documentation
-[Installation manual in English](https://billmate.se/plugins/manual/Installation_Manual_Woocommerce_Billmate.pdf)
 
-[Installation manual in Swedish](https://billmate.se/plugins/manual/Installationsmanual_Woocommerce_Billmate.pdf)
+[Installation manual in Swedish](https://support.billmate.se/hc/sv/sections/360002286018-WooCommerce-Billmate-CustomPay)
 
 ## Description 
 Billmate Gateway is a payment plugin for WooCommerce that gives your customers the ability to pay with their favorite payment options. This plugin supports the WooCommerce standard checkout as well as the improved checkout experience that Billmate Checkout brings. Billmate Checkout integrates via a iframe solution.
