@@ -18,10 +18,10 @@ Billmate Gateway is a payment plugin for WooCommerce that gives your customers t
 The invoice and part payment plugin only work if the currency is set to Swedish Krona (SEK) and the Base country is set to Sweden.
 
 ## Compatibility WordPress versions
-4.5.4 - 5.2.3
+From 4.5.4
 
 ## Compatibility WooCommerce versions
-2.5.5 - 4.0.1
+From 2.5.5
 
 ## Compatibility PHP versions
 1.0 - 8.1
