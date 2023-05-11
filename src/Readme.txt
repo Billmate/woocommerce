@@ -1,7 +1,7 @@
-=== Billmate Payment Gateway for WooCommerce ===
-Contributors: Billmate
+=== Qvickly Payment Gateway for WooCommerce ===
+Contributors: Qvickly
 Donate link:
-Tags: woocomerce, billmate, payments, cardpayments, invoice, partpayment, recurring, bankpayment
+Tags: woocomerce, qvickly, payments, cardpayments, invoice, partpayment, recurring, bankpayment
 Requires at least: 4.0
 Tested up to: 5.3.2
 Stable tag: __STABLE_TAG__
@@ -9,26 +9,26 @@ License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 WC tested up to: 4.5.0
 
-Billmate offers a complete paymentsolution to your webshop.
+Qvickly offers a complete paymentsolution to your webshop.
 
 == Description ==
 
-Billmate Gateway is a plugin that extends WooCommerce, allowing your customers to get their products first and pay by invoice to Billmate later (https://billmate.se/). This plugin utilizes Billmate Invoice, Billmate Card, Billmate Bank and Billmate Part Payment.
+Qvickly Gateway is a plugin that extends WooCommerce, allowing your customers to get their products first and pay by invoice to Qvickly later (https://qvickly.io/). This plugin utilizes Qvickly Invoice, Qvickly Card, Qvickly Bank and Qvickly Part Payment.
 
-When the order is passed to Billmate a credit record of the customer is made. If the check turns out all right, Billmate creates an invoice in their system. After you (as the merchant) completes the order in WooCommerce, you need to log in to Billmate to approve/send the invoice.
+When the order is passed to Qvickly a credit record of the customer is made. If the check turns out all right, Qvickly creates an invoice in their system. After you (as the merchant) completes the order in WooCommerce, you need to log in to Qvickly to approve/send the invoice.
 
 All our plugins is tested with Browserstack - https://www.browserstack.com
 
-Billmate is a great payment alternative for merchants and customers in Sweden.
+Qvickly is a great payment alternative for merchants and customers in Sweden.
 
-If you have any questions please visit https://billmate.se/kontakt to make contact with us.
+If you have any questions please visit https://qvickly.io to make contact with us.
 
 
 == Installation ==
 
 = Installation in Wordpress =
 
-Navigate to Plugins-Add New. Search for Billmate and then install the plugin.
+Navigate to Plugins-Add New. Search for Qvickly and then install the plugin.
 
 = Manual Installation =
 Quickinstallation
@@ -36,7 +36,7 @@ Quickinstallation
 2. Unzip the zip-file
 3. Upload the folder "billmate-payment-gateway-for-woocommerce" to /wp-content/plugins2
 4. Login to your Wordpress and navigate to Plugins-Installed Plugins and Activate "Woocommerce Billmate Gateway"
-5. Navigate to Settings under Wordpress, then "Billmate Settings" and enter your Billmate ID and Secret
+5. Navigate to Settings under Wordpress, then "Qvickly Settings" and enter your Qvickly ID and Secret
 6. Navigate to Woocomerce-Settings-Checkout and setup the payment methods.
 
 Link to full documentation: https://billmate.se/plugins/manual/Installationsmanual_Woocommerce_Billmate.pdf (Swedish)
@@ -48,20 +48,20 @@ Before updating the plugin, please save your settings and make a backup of your 
 
 = How do I get started? =
 
-The first thing you have to do is to get an account at Billmate.se. Yo can create an account at https://billmate.se/anslut-webbshop/. Then you download the plugin and install it. If you like to make test purchases please contact Billmate, and we will help you.
+The first thing you have to do is to get an account at qvickly.io. Yo can create an account at https://qvickly.io. Then you download the plugin and install it. If you like to make test purchases please contact Qvickly, and we will help you.
 
 
-= How do I make contact with Billmate? =
+= How do I make contact with Qvickly? =
 
-You can contact us by phone or e-mail. You can find phonenumbers and mailadresses at https://billmate.se/kontakt/
+You can contact us by phone or e-mail. You can find phonenumbers and mailadresses at https://qvickly.io
 
-= Is there anything else I need before I can use Billmate plugin on my webstore? =
+= Is there anything else I need before I can use Qvickly plugin on my webstore? =
 
-I depends on what payment methods you will use. If you use cardpayment you need to sign a acquiring agreement with a acquirer. If you use bankpayment, you need a contract with Trustly. If you use Invoce or/and partpayment, then you need a contract with Billmate.
+I depends on what payment methods you will use. If you use cardpayment you need to sign a acquiring agreement with a acquirer. If you use bankpayment, you need a contract with Trustly. If you use Invoce or/and partpayment, then you need a contract with Qvickly.
 
-= How much does it cost to use Billmate? =
+= How much does it cost to use Qvickly? =
 
-We have different prices depending on what you choose. You can read more about it at https://billmate.se/priser
+We have different prices depending on what you choose. You can read more about it at https://qvickly.io
 
 = Can I use Wordfence or other Firewall plugin? =
 You need to make sure our callback IP, 54.194.217.63, is whitelisted  in Wordfence. Navigate to "Wordfence -> Options" and scroll down to "Other Options". Add our ip-number next to "Whitelisted IP addresses that bypass all rules" and it should go.
@@ -76,8 +76,14 @@ You need to make sure our callback IP, 54.194.217.63, is whitelisted  in Wordfen
 6. Billmate Partpayment - https://billmate.se/plugins/images/woocommerce/partpayment.png
 
 If you would like to use our logos on your site:
-https://www.billmate.se/press-och-media/
+https://qvickly.io/qvickly-grafiskt-material/
 == Changelog ==
+
+=  3.12.5 (2023-04-28)
+* Update plugin for Qvickly rebranding
+
+=  3.12.4 (2022-11-11)
+* Update plugin to support PHP 8+
 
 =  3.12.3 (2021-10-12)
 * Update PEM certificate
