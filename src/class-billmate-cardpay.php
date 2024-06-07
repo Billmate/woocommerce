@@ -2,7 +2,29 @@
 require_once "commonfunctions.php";
 
 class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
-
+    public $id;
+    public $method_title;
+    public $has_fields;
+    public $enabled;
+    public $title;
+    public $description;
+    public $secret;
+    public $eid;
+    public $lower_threshold;
+    public $upper_threshold;
+    public $invoice_fee_id;
+    public $invoice_fee_price;
+    public $invoice_fee_tax_percentage;
+    public $allowed_countries;
+    public $testmode;
+    public $logo;
+    public $de_consent_terms;
+    public $authentication_method;
+    public $order_status;
+    public $subscription_active;
+    public $billmate_country;
+    public $billmate_language;
+    public $billmate_currency;
 	/**
      * Class for Billmate Faktura payment.
      *
