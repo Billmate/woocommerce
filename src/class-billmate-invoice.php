@@ -24,6 +24,9 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
     public $billmate_language;
     public $billmate_currency;
     public $billmate_invoice_terms;
+    public $subscription_active;
+    public $de_consent_terms;
+
     /**
      * Class for Billmate Invoice payment.
      *

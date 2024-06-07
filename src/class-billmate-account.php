@@ -33,6 +33,7 @@ class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
     public $billmate_language;
     public $billmate_currency;
     public $billmate_partpayment_info;
+    public $show_monthly_cost_prio;
 
 	/**
      * Class for Billmate Part Payment payment.
