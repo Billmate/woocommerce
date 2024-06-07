@@ -3,6 +3,36 @@ require_once "commonfunctions.php";
 
 
 class WC_Gateway_Billmate_Partpayment extends WC_Gateway_Billmate {
+    public $id;
+    public $method_title;
+    public $has_fields;
+    public $enabled;
+    public $icon;
+    public $icon_basic;
+    public $title;
+    public $description;
+    public $eid;
+    public $secret;
+    public $logo;
+    public $lower_threshold;
+    public $upper_threshold;
+    public $show_monthly_cost;
+    public $show_monthly_cost_info;
+    public $show_monthly_cost_prio;
+    public $show_monthly_cost_shop;
+    public $show_monthly_cost_shop_info;
+    public $show_monthly_cost_shop_prio;
+    public $testmode;
+    public $de_consent_terms;
+    public $lower_threshold_monthly_cost;
+    public $upper_threshold_monthly_cost;
+    public $allowed_countries;
+    public $shop_country;
+    public $order_status;
+    public $billmate_country;
+    public $billmate_language;
+    public $billmate_currency;
+    public $billmate_partpayment_info;
 
 	/**
      * Class for Billmate Part Payment payment.

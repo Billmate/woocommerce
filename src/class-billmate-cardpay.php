@@ -21,6 +21,10 @@ class WC_Gateway_Billmate_Cardpay extends WC_Gateway_Billmate {
     public $de_consent_terms;
     public $authentication_method;
     public $order_status;
+    public $subscription_active;
+    public $billmate_country;
+    public $billmate_language;
+    public $billmate_currency;
 	/**
      * Class for Billmate Faktura payment.
      *
