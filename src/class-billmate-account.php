@@ -2401,7 +2401,7 @@ parse_str($_POST['post_data'], $datatemp);
 class WC_Gateway_Billmate_Partpayment_Extra {
     public $show_monthly_cost_shop_prio;
     public $show_monthly_cost_prio;
-    
+
 	public function __construct() {
 
 		$data = new WC_Gateway_Billmate_Partpayment;
