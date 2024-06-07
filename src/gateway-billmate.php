@@ -23,6 +23,7 @@ add_action('plugins_loaded', 'init_billmate_gateway', 0);
 
 //echo $cssfile = plugins_url( '/colorbox.css', __FILE__ );
 
+define('BILLMATE_PAYMENT_GATEWAY_VERSION', '3.13.0');
 define('BILLMATE_DIR', dirname(__FILE__) . '/');
 define('BILLMATE_LIB', dirname(__FILE__) . '/library/');
 require_once 'commonfunctions.php';
@@ -367,6 +368,7 @@ function init_billmate_gateway() {
 	load_plugin_textdomain('billmate', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/');
 	$dummy = __('Receive payments on your WooCommerce store via Billmate. Invoice, partpayment, credit/debit card and direct bank transfers. Secure and 100&#37; free plugin','billmate');
 	class WC_Gateway_Billmate extends WC_Payment_Gateway {
+        public $shop_country;
 
 		public function __construct() {
 			global $woocommerce;

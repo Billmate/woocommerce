@@ -79,6 +79,14 @@ If you would like to use our logos on your site:
 https://qvickly.io/qvickly-grafiskt-material/
 == Changelog ==
 
+=  3.13.0 (2024-06-07)
+* Fix - Fixed deprecated warnings to run better in PHP 8.x
+* Tested code with PHP 8.3
+* Tested code with WooCommerce 8.9.3
+* Tested code with WordPress 6.5.4
+* Fix - Fixed issue with WC internal formatting of postcode to conform with Qvickly API
+* Note - The codebase is old and partially outdated. Fixes in this release doesn't add functionality but rather fix issues with the codebase.
+
 =  3.12.5 (2023-04-28)
 * Update plugin for Qvickly rebranding
 

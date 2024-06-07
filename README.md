@@ -18,13 +18,13 @@ Qvickly Gateway is a payment plugin for WooCommerce that gives your customers th
 The invoice and part payment plugin only work if the currency is set to Swedish Krona (SEK) and the Base country is set to Sweden.
 
 ## Compatibility WordPress versions
-Wordpress 4.5.4 or higher
+WordPress 4.5.4 or higher
 
 ## Compatibility WooCommerce versions
 WooCommerce 2.5.5 or higher
 
 ## Compatibility PHP versions
-1.0 - 8.1
+1.0 - 8.3
 
 ## Installation
 The simplest way to install this module is through the WordPress Plugin Directory. However, if you want to install manually, follow the steps below-
