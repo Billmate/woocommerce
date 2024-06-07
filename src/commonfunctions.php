@@ -1457,6 +1457,8 @@ if(!class_exists('BillmateOrder')){
                 $billmate_billing_house_number      = $splitted_address[1];
                 $billmate_billing_house_extension   = $splitted_address[2];
                 $this->orderData['Customer']['Billing']['street'] = $billmate_billing_address;
+            } else if ( $this->shop_country == 'SE') {
+                $this->orderData['Customer']['Billing']['zip'] = str_replace(' ', '', $this->orderData['Customer']['Billing']['zip']);
             }
 
             return $this->orderData['Customer']['Billing'];
@@ -1526,6 +1528,8 @@ if(!class_exists('BillmateOrder')){
                 $billmate_shipping_house_number     = $splitted_address[1];
                 $billmate_shipping_house_extension  = $splitted_address[2];
                 $this->orderData['Customer']['Shipping']['street'] = $billmate_shipping_address;
+            } else if ( $this->shop_country == 'SE') {
+                $this->orderData['Customer']['Shipping']['zip'] = str_replace(' ', '', $this->orderData['Customer']['Shipping']['zip']);
             }
 
             return $this->orderData['Customer']['Shipping'];
