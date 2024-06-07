@@ -8,6 +8,22 @@
  */
 class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 {
+    public $id;
+    public $method_title;
+    public $has_fields;
+    public $enabled;
+    public $eid;
+    public $secret;
+    public $logo;
+    public $terms_url;
+    public $privacy_policy_url;
+    public $checkout_url;
+    public $testmode;
+    public $order_status;
+    public $show_order_comments;
+    public $errorCode;
+    public $errorMessage;
+
     public function __construct()
     {
         global $woocommerce;

@@ -2,6 +2,29 @@
 require_once "commonfunctions.php";
 
 class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
+    public $id;
+    public $method_title;
+    public $has_fields;
+    public $enabled;
+    public $title;
+    public $description;
+    public $secret;
+    public $eid;
+    public $lower_threshold;
+    public $upper_threshold;
+    public $invoice_fee_id;
+    public $logo;
+    public $testmode;
+    public $de_consent_terms;
+    public $allowed_countries;
+    public $authentication_method;
+    public $order_status;
+    public $invoice_fee_tax_percentage;
+    public $invoice_fee_price;
+    public $billmate_country;
+    public $billmate_language;
+    public $billmate_currency;
+    public $icon;
 
 	/**
      * Class for Billmate Faktura payment.
@@ -11,6 +34,7 @@ class WC_Gateway_Billmate_Bankpay extends WC_Gateway_Billmate {
     private $tst_url = 'https://cardpay.billmate.se/pay/test';
 	public function __construct() {
 		global $woocommerce;
+
 
 		if( !empty($_SESSION['order_created']) ) $_SESSION['order_created'] = '';
 

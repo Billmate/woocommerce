@@ -3,6 +3,29 @@ load_plugin_textdomain('billmate', false, dirname( plugin_basename( __FILE__ ) )
 require_once "commonfunctions.php";
 
 class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
+    public $id;
+    public $method_title;
+    public $has_fields;
+    public $icon;
+    public $title;
+    public $description;
+    public $secret;
+    public $eid;
+    public $logo;
+    public $testmode;
+    public $order_status;
+    public $lower_threshold;
+    public $upper_threshold;
+    public $invoice_fee_id;
+    public $invoice_fee;
+    public $invoice_fee_tax_class;
+    public $allowed_countries;
+    public $billmate_country;
+    public $billmate_language;
+    public $billmate_currency;
+    public $billmate_invoice_terms;
+    public $subscription_active;
+    public $de_consent_terms;
 
     /**
      * Class for Billmate Invoice payment.
