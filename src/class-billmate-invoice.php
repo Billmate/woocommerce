@@ -1750,8 +1750,8 @@ class WC_Gateway_Billmate_Invoice_Extra {
 
             $tax = new WC_Tax();
             $rate = $tax->get_rates($invoice_fee_tax_class);
-            $rate = array_pop($rate);
-            $rate = $rate['rate'];
+            $rate = array_pop($rate) ?? [];
+            $rate = $rate['rate'] ?? 0;
 
             $invoice_fee = BillmateOrder::maybeConvertCurrency($invoice_fee);
             $woocommerce->cart->add_fee(__('Invoice fee','billmate'), $invoice_fee, true, $invoice_fee_tax_class);

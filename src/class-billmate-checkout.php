@@ -65,7 +65,7 @@ class WC_Gateway_Billmate_Checkout extends WC_Gateway_Billmate
 
         add_action('woocommerce_receipt_billmate', array(&$this, 'receipt_page'));
 
-        add_action('init','register_billmate_incomplete_order_status');
+        // add_action('init','register_billmate_incomplete_order_status'); // This function never existed
         add_filter( 'wc_order_statuses', array( $this, 'add_billmate_incomplete_to_order_statuses' ) );
 
         // Update Address from Iframe

@@ -23,7 +23,6 @@ add_action('plugins_loaded', 'init_billmate_gateway', 0);
 
 //echo $cssfile = plugins_url( '/colorbox.css', __FILE__ );
 
-define('BILLMATE_PAYMENT_GATEWAY_VERSION', '3.13.0');
 define('BILLMATE_DIR', dirname(__FILE__) . '/');
 define('BILLMATE_LIB', dirname(__FILE__) . '/library/');
 require_once 'commonfunctions.php';
