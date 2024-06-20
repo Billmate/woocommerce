@@ -1720,6 +1720,7 @@ class WC_Gateway_Billmate_Invoice extends WC_Gateway_Billmate {
  **/
 
 class WC_Gateway_Billmate_Invoice_Extra {
+    public $shop_country;
 
     public function __construct() {
 
